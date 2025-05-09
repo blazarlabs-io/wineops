@@ -1,0 +1,26 @@
+@layer theme, base, mui, components, utilities;
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+.debug-red {
+  border: 1px solid rgb(255, 0, 0);
+}
+
+.debug-green {
+  border: 1px solid rgb(0, 255, 0);
+}
+
+.debug-blue {
+  border: 1px solid rgb(0, 0, 255);
+}
