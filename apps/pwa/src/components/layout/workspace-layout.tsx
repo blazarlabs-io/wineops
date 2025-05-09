@@ -10,11 +10,14 @@ import {
   Workspaces,
 } from "@mui/icons-material";
 import Home from "@mui/icons-material/Home";
+import { Box } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { AppProvider, type Navigation } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useDemoRouter } from "@toolpad/core/internal";
 import * as React from "react";
+import ToolsBar from "../widgets/tools-bar";
+import PersistentDrawerRight from "../widgets/quick-tasks";
 
 const NAVIGATION: Navigation = [
   {
@@ -113,7 +116,17 @@ export default function WorkspaceLayout(props: DemoProps) {
       window={demoWindow}
     >
       <DashboardLayout defaultSidebarCollapsed>
-        {props.children}
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            overflowY: "hidden",
+          }}
+        >
+          <PersistentDrawerRight>{props.children}</PersistentDrawerRight>
+        </Box>
       </DashboardLayout>
     </AppProvider>
   );
