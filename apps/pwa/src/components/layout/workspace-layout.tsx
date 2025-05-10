@@ -1,73 +1,39 @@
 "use client";
 
+import QickTasksWrapper from "@/components/widgets/quick-tasks";
+import { accounts } from "@/data/account-data-sample";
+import { CheckCircle, Hub } from "@mui/icons-material";
 import {
-  Compress,
-  Landscape,
-  OilBarrel,
-  Science,
-  ShoppingBasket,
-  Warehouse,
-  Workspaces,
-} from "@mui/icons-material";
-import Home from "@mui/icons-material/Home";
-import { Box } from "@mui/material";
+  Avatar,
+  Box,
+  Chip,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  MenuList,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { createTheme } from "@mui/material/styles";
-import { AppProvider, type Navigation } from "@toolpad/core/AppProvider";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
+import {
+  Account,
+  AccountPopoverFooter,
+  AccountPreview,
+  AccountPreviewProps,
+  SignOutButton,
+} from "@toolpad/core/Account";
+import { AppProvider, Session } from "@toolpad/core/AppProvider";
+import {
+  DashboardLayout,
+  SidebarFooterProps,
+} from "@toolpad/core/DashboardLayout";
 import { useDemoRouter } from "@toolpad/core/internal";
 import * as React from "react";
-import ToolsBar from "../widgets/tools-bar";
-import PersistentDrawerRight from "../widgets/quick-tasks";
-
-const NAVIGATION: Navigation = [
-  {
-    segment: "home",
-    title: "Home",
-    icon: <Home />,
-    children: [
-      {
-        segment: "Vineyards",
-        title: "Vineyards",
-        icon: <Landscape />,
-      },
-      {
-        segment: "Grapes",
-        title: "Grapes",
-        icon: <Workspaces />,
-      },
-      {
-        segment: "Must",
-        title: "Must",
-        icon: <Compress />,
-      },
-      {
-        segment: "Bulk",
-        title: "Bulk",
-        icon: <OilBarrel />,
-      },
-      {
-        segment: "Storage",
-        title: "Storage",
-        icon: <Warehouse />,
-      },
-    ],
-  },
-  {
-    segment: "Vessel Management",
-    title: "Vessel Management",
-    icon: <OilBarrel />,
-  },
-  {
-    segment: "Chemestry",
-    title: "Chemestry",
-    icon: <Science />,
-  },
-  {
-    segment: "Consumables",
-    title: "Consumables",
-    icon: <ShoppingBasket />,
-  },
-];
+import { NAVIGATION } from "@/components/navigation/sidebar-navigation";
+import SidebarFooterAccount from "../widgets/user-account";
+import Logo from "../data-display/logo";
 
 const demoTheme = createTheme({
   cssVariables: {
@@ -85,6 +51,10 @@ const demoTheme = createTheme({
   },
 });
 
+/////////////////////////////////
+
+////////////////////////////
+
 interface DemoProps {
   /**
    * Injected by the documentation to work in an iframe.
@@ -94,6 +64,14 @@ interface DemoProps {
   children?: React.ReactNode;
 }
 
+const demoSession = {
+  user: {
+    name: "Bharat Kashyap",
+    email: "bharatkashyap@outlook.com",
+    image: "https://avatars.githubusercontent.com/u/19550456",
+  },
+};
+
 export default function WorkspaceLayout(props: DemoProps) {
   const { window } = props;
 
@@ -102,20 +80,41 @@ export default function WorkspaceLayout(props: DemoProps) {
   // Remove this const when copying and pasting into your project.
   const demoWindow = window !== undefined ? window() : undefined;
 
+  const [session, setSession] = React.useState<Session | null>(demoSession);
+
+  const authentication = React.useMemo(() => {
+    return {
+      signIn: () => {
+        setSession(demoSession);
+      },
+      signOut: () => {
+        setSession(null);
+      },
+    };
+  }, []);
+
   return (
     // Remove this provider when copying and pasting into your project.
     <AppProvider
       navigation={NAVIGATION}
       branding={{
-        logo: <p className="font-bold text-2xl">WineOps</p>,
+        logo: <Logo />,
         title: "",
         homeUrl: "/toolpad/core/introduction",
       }}
       router={router}
       theme={demoTheme}
       window={demoWindow}
+      authentication={authentication}
+      session={session}
     >
-      <DashboardLayout defaultSidebarCollapsed>
+      <DashboardLayout
+        defaultSidebarCollapsed
+        slots={{
+          toolbarAccount: () => null,
+          sidebarFooter: SidebarFooterAccount,
+        }}
+      >
         <Box
           sx={{
             p: 2,
@@ -125,7 +124,7 @@ export default function WorkspaceLayout(props: DemoProps) {
             overflowY: "hidden",
           }}
         >
-          <PersistentDrawerRight>{props.children}</PersistentDrawerRight>
+          <QickTasksWrapper>{props.children}</QickTasksWrapper>
         </Box>
       </DashboardLayout>
     </AppProvider>

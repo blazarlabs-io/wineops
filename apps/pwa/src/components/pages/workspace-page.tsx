@@ -8,7 +8,7 @@ export default function WorkspacePage() {
   const { mode } = useColorScheme();
 
   return (
-    <Box className="flex gap-4 w-full h-full">
+    <Box className="flex w-full h-">
       <Box className="flex flex-col gap-4 w-full">
         <ToolsBar />
         <DataTable isDarkMode={mode === "dark"} />

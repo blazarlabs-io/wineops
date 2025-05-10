@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vineyard } from "@/models/types/db";
-import type { ColDef, GetDataPath } from "ag-grid-community";
+import type {
+  ColDef,
+  GetDataPath,
+  RowSelectionOptions,
+} from "ag-grid-community";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
   ModuleRegistry,
-  themeAlpine,
   themeBalham,
-  themeMaterial,
-  themeQuartz,
 } from "ag-grid-community";
 import {
   ExcelExportModule,
@@ -58,21 +58,11 @@ export const DataTable: FunctionComponent<Props> = ({
 
   const [colDefs] = useState<ColDef[]>(employeeColumns);
 
-  console.log(getData());
-
   const [rowData] = useState(getData());
   // const [rowData] = useState(vineyards);
   const getDataPath = useCallback<GetDataPath>((data) => {
     return data.group;
   }, []);
-
-  function myCustomSumFunction(values: any) {
-    let sum = 0;
-    values.forEach(function (value: any) {
-      sum += Number(value);
-    });
-    return sum;
-  }
 
   const themeClass = isDarkMode ? `${gridTheme}-dark` : gridTheme;
   const autoGroupColumnDef = useMemo<ColDef>(() => {
@@ -81,13 +71,28 @@ export const DataTable: FunctionComponent<Props> = ({
       field: "group",
       width: 168,
       pinned: "left",
-      aggFunc: myCustomSumFunction,
-      // sort: 'asc',
       cellRenderer: "agGroupCellRenderer",
       cellRendererParams: {
         innerRenderer: GroupCellRenderer,
         suppressCount: true,
       },
+    };
+  }, []);
+
+  const rowSelection = useMemo(() => {
+    return {
+      mode: "multiRow",
+      enableClickSelection: true,
+    };
+  }, []);
+
+  const selectionColumnDef = useMemo(() => {
+    return {
+      sortable: true,
+      resizable: true,
+      width: 48,
+      suppressHeaderMenuButton: false,
+      pinned: "left",
     };
   }, []);
 
@@ -100,6 +105,7 @@ export const DataTable: FunctionComponent<Props> = ({
       headerFontSize: "14px",
       headerFontWeight: "600",
       headerRowBorder: true,
+      wrapperBorderRadius: "8px",
       rowHeight: 88,
     })
     .withParams(
@@ -120,7 +126,6 @@ export const DataTable: FunctionComponent<Props> = ({
     );
 
   useEffect(() => {
-    console.log("isDarkMode", isDarkMode);
     if (isDarkMode) {
       document.body.dataset.agThemeMode = "dark";
     } else {
@@ -130,25 +135,18 @@ export const DataTable: FunctionComponent<Props> = ({
 
   return (
     <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-      {/* <p style={{ flex: 0 }}>
-        <label>
-          Dark mode:{" "}
-          <input
-            type="checkbox"
-            onChange={(e) => setDarkMode(e.target.checked)}
-          />
-        </label>
-      </p> */}
       <AgGridReact
         masterDetail={true}
         theme={myTheme}
         ref={gridRef}
         columnDefs={colDefs}
         rowData={rowData}
-        groupDefaultExpanded={-1}
+        groupDefaultExpanded={0}
         getDataPath={getDataPath}
         treeData
         autoGroupColumnDef={autoGroupColumnDef}
+        rowSelection={rowSelection as RowSelectionOptions}
+        selectionColumnDef={selectionColumnDef as ColDef}
       />
     </div>
   );

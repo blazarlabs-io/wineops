@@ -1,3 +1,4 @@
+import VineyardFormDrawer from "@/components/drawers/vineyard-form-drawer";
 import {
   Add,
   SelectAll,
@@ -7,8 +8,18 @@ import {
 } from "@mui/icons-material";
 import { Box, Fab, IconButton } from "@mui/material";
 import { EditIcon, Search } from "lucide-react";
+import { useState } from "react";
 
 export default function ToolsBar() {
+  const [openFormDrawer, setOpenFormDrawer] = useState<boolean>(false);
+
+  const handleCloseFormDrawer = () => {
+    setOpenFormDrawer(false);
+  };
+
+  const handleOpenFormDrawer = () => {
+    setOpenFormDrawer(true);
+  };
   return (
     <Box className="flex items-center w-full">
       <Box
@@ -19,6 +30,10 @@ export default function ToolsBar() {
         alignItems={"center"}
         className=""
       >
+        <VineyardFormDrawer
+          open={openFormDrawer}
+          onClose={handleCloseFormDrawer}
+        />
         <Fab
           color="primary"
           size="small"
@@ -27,6 +42,7 @@ export default function ToolsBar() {
           sx={{
             minWidth: "40px",
           }}
+          onClick={handleOpenFormDrawer}
         >
           <Add className="" />
         </Fab>
@@ -67,9 +83,7 @@ export default function ToolsBar() {
         <IconButton
           color="inherit"
           aria-label="filter"
-          onClick={() => {
-            console.log("filter");
-          }}
+          onClick={() => {}}
           className="ml-auto"
         >
           <Tune />
@@ -77,9 +91,7 @@ export default function ToolsBar() {
         <IconButton
           color="inherit"
           aria-label="filter"
-          onClick={() => {
-            console.log("filter");
-          }}
+          onClick={() => {}}
           className=""
         >
           <SwapVert />
@@ -87,9 +99,7 @@ export default function ToolsBar() {
         <IconButton
           color="inherit"
           aria-label="filter"
-          onClick={() => {
-            console.log("filter");
-          }}
+          onClick={() => {}}
           className=""
         >
           <Search />

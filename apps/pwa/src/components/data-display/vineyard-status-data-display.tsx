@@ -8,7 +8,6 @@ export type VineyardStatusDataDisplayProps = {
 export default function VineyardStatusDataDisplay({
   status,
 }: VineyardStatusDataDisplayProps) {
-  console.log("XXXXXXXXXXXXXXXXX", status, VineyardStatus.VEGETATION);
   return (
     <>
       {status && (

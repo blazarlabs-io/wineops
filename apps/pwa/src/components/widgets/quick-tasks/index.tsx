@@ -3,7 +3,7 @@ import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { FormatListBulleted } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import { styled } from "@mui/material/styles";
+import { styled, useColorScheme } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
 }>(({ theme }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  // padding: theme.spacing(3),
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -40,11 +40,12 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   ],
 }));
 
-export default function PersistentDrawerRight({
+export default function QickTasksWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { mode } = useColorScheme();
   const [open, setOpen] = useState<boolean>(false);
 
   const handleDrawerOpen = () => {
@@ -58,16 +59,20 @@ export default function PersistentDrawerRight({
         width: "100%",
         minHeight: "800px",
         height: "100%",
+        gap: 1,
       }}
     >
-      <Main sx={{ width: "100%" }} open={open}>
+      <Main
+        sx={{ width: "100%", paddingLeft: "16px", paddingTop: "16px" }}
+        open={open}
+      >
         {children}
       </Main>
 
       <QuickTasksDrawer open={open} onOpenChange={setOpen} />
 
       <Box
-        sx={{ marginTop: "24px" }}
+        sx={{ paddingTop: "16px" }}
         flexDirection={"column"}
         display={"flex"}
         alignItems={"center"}
@@ -91,6 +96,7 @@ export default function PersistentDrawerRight({
           // edge="end"
           onClick={handleDrawerOpen}
           sx={[open && { display: "none" }]}
+          style={{ backgroundColor: mode === "dark" ? "transparent" : "#333" }}
         >
           <QuickActionsIcon />
         </IconButton>
