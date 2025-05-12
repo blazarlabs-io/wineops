@@ -50,6 +50,10 @@ export const employeeColumns: ColDef[] = [
     flex: 1,
     cellRenderer: LabDataCellRenderer,
     cellStyle: { width: "100%" },
+    aggFunc: (params: any) => {
+      // console.log("LABDATA params", params);
+      return params.values;
+    },
   },
   {
     field: "tasks",
