@@ -1,6 +1,6 @@
-import { formatNumber } from '@/lib/utils/number-format';
-import { Metric, QUANTITY_COLORS } from './constants';
-import { capitalize } from '@/lib/utils/string-utils';
+import { formatNumber } from "@/utils/number-format";
+import { Metric, QUANTITY_COLORS } from "./constants";
+import { capitalize } from "@/utils/string-utils";
 
 interface LegendItemProps {
   name: Metric;
@@ -13,7 +13,7 @@ export default function LegendItem({
   name,
   value,
   backgroundColor,
-  color = '#7A7A7A',
+  color = "#7A7A7A",
 }: LegendItemProps) {
   return (
     <span className="flex items-center gap-1">

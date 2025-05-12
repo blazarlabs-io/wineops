@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vineyard } from "@/models/types/db";
 import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";

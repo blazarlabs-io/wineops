@@ -1,6 +1,6 @@
-import { cn } from '@repo/ui/lib/utils';
-import { ArrowUp } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { cn } from "@/utils/utils";
+import { ArrowUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export interface LabSingleItemDataDisplayProps {
   name: string;
@@ -19,7 +19,7 @@ export default function LabSingleItemDataDisplay({
   const mountRef = useRef<boolean>(false);
 
   useEffect(() => {
-    if (!mountRef.current && variation.charAt(0) === '-') {
+    if (!mountRef.current && variation.charAt(0) === "-") {
       setIsVariationPositive(false);
       mountRef.current = true;
     }
@@ -34,8 +34,8 @@ export default function LabSingleItemDataDisplay({
         </div>
         <div
           className={cn(
-            'max-h-fit mt-[-8px] flex gap-1',
-            isVariationPositive ? 'text-[#00C950]' : 'text-[#FF7878]'
+            "max-h-fit mt-[-8px] flex gap-1",
+            isVariationPositive ? "text-[#00C950]" : "text-[#FF7878]"
           )}
         >
           {isVariationPositive ? (
@@ -45,8 +45,12 @@ export default function LabSingleItemDataDisplay({
           )}
           <span className="text-[10px]">{variation}</span>
           <div className="flex gap-[1px]">
-            <span className="text-[10px]">{unit.slice(0, unit.length - 1)}</span>
-            <span className="text-[10px] mt-[-3px]">{unit.charAt(unit.length - 1)}</span>
+            <span className="text-[10px]">
+              {unit.slice(0, unit.length - 1)}
+            </span>
+            <span className="text-[10px] mt-[-3px]">
+              {unit.charAt(unit.length - 1)}
+            </span>
           </div>
         </div>
       </div>

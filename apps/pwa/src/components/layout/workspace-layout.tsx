@@ -1,7 +1,7 @@
 "use client";
 
+import InnerDashboardLayout from "@/components/layout/inner-dashboard-layout";
 import { NAVIGATION } from "@/components/navigation/sidebar-navigation";
-import QickTasksWrapper from "@/components/layout/inner-dashboard-layout";
 import { Box } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { AppProvider, Session } from "@toolpad/core/AppProvider";
@@ -10,7 +10,6 @@ import { useDemoRouter } from "@toolpad/core/internal";
 import * as React from "react";
 import Logo from "../data-display/logo";
 import SidebarFooterAccount from "../widgets/user-account";
-import InnerDashboardLayout from "@/components/layout/inner-dashboard-layout";
 
 const demoTheme = createTheme({
   cssVariables: {
