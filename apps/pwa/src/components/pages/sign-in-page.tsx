@@ -8,9 +8,8 @@ export default function SignInPage() {
     <AppProvider>
       <SignInPageTemplate
         providers={[{ id: "email", name: "Email" }]}
-        signIn={async (provider) => {
-          // Your sign in logic
-        }}
+        // signIn={async (provider) => {
+        // }}
       />
     </AppProvider>
   );

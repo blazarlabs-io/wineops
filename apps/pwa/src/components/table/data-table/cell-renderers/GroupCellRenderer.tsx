@@ -1,6 +1,6 @@
 import CertificationsDataDisplay from "@/components/data-display/certifications-data-display";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import { useEffect, type FunctionComponent } from "react";
+import { type FunctionComponent } from "react";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
