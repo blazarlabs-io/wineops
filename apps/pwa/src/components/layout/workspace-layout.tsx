@@ -1,39 +1,16 @@
 "use client";
 
-import QickTasksWrapper from "@/components/widgets/quick-tasks";
-import { accounts } from "@/data/account-data-sample";
-import { CheckCircle, Hub } from "@mui/icons-material";
-import {
-  Avatar,
-  Box,
-  Chip,
-  Divider,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  MenuList,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { NAVIGATION } from "@/components/navigation/sidebar-navigation";
+import QickTasksWrapper from "@/components/layout/inner-dashboard-layout";
+import { Box } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
-import {
-  Account,
-  AccountPopoverFooter,
-  AccountPreview,
-  AccountPreviewProps,
-  SignOutButton,
-} from "@toolpad/core/Account";
 import { AppProvider, Session } from "@toolpad/core/AppProvider";
-import {
-  DashboardLayout,
-  SidebarFooterProps,
-} from "@toolpad/core/DashboardLayout";
+import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useDemoRouter } from "@toolpad/core/internal";
 import * as React from "react";
-import { NAVIGATION } from "@/components/navigation/sidebar-navigation";
-import SidebarFooterAccount from "../widgets/user-account";
 import Logo from "../data-display/logo";
+import SidebarFooterAccount from "../widgets/user-account";
+import InnerDashboardLayout from "@/components/layout/inner-dashboard-layout";
 
 const demoTheme = createTheme({
   cssVariables: {
@@ -50,10 +27,6 @@ const demoTheme = createTheme({
     },
   },
 });
-
-/////////////////////////////////
-
-////////////////////////////
 
 interface DemoProps {
   /**
@@ -122,9 +95,10 @@ export default function WorkspaceLayout(props: DemoProps) {
             flexDirection: "column",
             gap: 2,
             overflowY: "hidden",
+            width: "100%",
           }}
         >
-          <QickTasksWrapper>{props.children}</QickTasksWrapper>
+          <InnerDashboardLayout>{props.children}</InnerDashboardLayout>
         </Box>
       </DashboardLayout>
     </AppProvider>

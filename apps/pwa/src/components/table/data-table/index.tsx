@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vineyard } from "@/models/types/db";
+import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
 import type {
   ColDef,
   GetDataPath,
   IRowNode,
-  RowNode,
   RowSelectionOptions,
   SelectionChangedEvent,
 } from "ag-grid-community";
@@ -35,7 +35,6 @@ import {
 import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
 import { employeeColumns } from "./columns";
 import { getData } from "./data";
-import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -184,6 +183,7 @@ export const DataTable: FunctionComponent<Props> = ({
         selectionColumnDef={selectionColumnDef as ColDef}
         onRowSelected={handleOnRowSelected}
         onSelectionChanged={handleOnSelectionChanged}
+        containerStyle={{ height: "100%", width: "100%" }}
       />
     </div>
   );

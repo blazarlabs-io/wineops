@@ -16,7 +16,7 @@ export default function WorkspacePage() {
     useSortToolsBarStates(selectionData);
 
   return (
-    <Box className="flex w-full h-">
+    <Box className="flex w-full h-full">
       <Box className="flex flex-col gap-4 w-full">
         <ToolsBar
           enableCreate={true}

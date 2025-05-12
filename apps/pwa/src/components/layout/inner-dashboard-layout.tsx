@@ -7,7 +7,7 @@ import { styled, useColorScheme } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
 
-const drawerWidth = 240;
+const drawerWidth = 320;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -48,8 +48,8 @@ export default function QickTasksWrapper({
   const { mode } = useColorScheme();
   const [open, setOpen] = useState<boolean>(false);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  const handleDrawerOpen = (state: boolean) => {
+    setOpen(state);
   };
 
   return (
@@ -57,19 +57,21 @@ export default function QickTasksWrapper({
       sx={{
         display: "flex",
         width: "100%",
-        minHeight: "800px",
+        // minHeight: "800px",
         height: "100%",
         gap: 1,
       }}
+      className=""
     >
       <Main
         sx={{ width: "100%", paddingLeft: "16px", paddingTop: "16px" }}
         open={open}
+        className=""
       >
         {children}
       </Main>
 
-      <QuickTasksDrawer open={open} onOpenChange={setOpen} />
+      <QuickTasksDrawer open={open} onOpenChange={handleDrawerOpen} />
 
       <Box
         sx={{ paddingTop: "16px" }}
@@ -84,7 +86,7 @@ export default function QickTasksWrapper({
           color="inherit"
           aria-label="open drawer"
           // edge="end"
-          onClick={handleDrawerOpen}
+          onClick={() => handleDrawerOpen(true)}
           sx={[open && { display: "none" }]}
           className=""
         >
@@ -94,7 +96,7 @@ export default function QickTasksWrapper({
           color="inherit"
           aria-label="open drawer"
           // edge="end"
-          onClick={handleDrawerOpen}
+          onClick={() => handleDrawerOpen(true)}
           sx={[open && { display: "none" }]}
           style={{ backgroundColor: mode === "dark" ? "transparent" : "#333" }}
         >
