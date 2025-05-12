@@ -10,7 +10,19 @@ import { Box, Fab, IconButton } from "@mui/material";
 import { EditIcon, Search } from "lucide-react";
 import { useState } from "react";
 
-export default function ToolsBar() {
+export type ToolsBarProps = {
+  enableCreate: boolean;
+  enableEdit: boolean;
+  enableGrouping: boolean;
+  enableDelete: boolean;
+};
+
+export default function ToolsBar({
+  enableCreate = true,
+  enableEdit,
+  enableGrouping,
+  enableDelete,
+}: ToolsBarProps) {
   const [openFormDrawer, setOpenFormDrawer] = useState<boolean>(false);
 
   const handleCloseFormDrawer = () => {
@@ -43,6 +55,7 @@ export default function ToolsBar() {
             minWidth: "40px",
           }}
           onClick={handleOpenFormDrawer}
+          disabled={!enableCreate}
         >
           <Add className="" />
         </Fab>
@@ -54,6 +67,7 @@ export default function ToolsBar() {
           sx={{
             minWidth: "40px",
           }}
+          disabled={!enableEdit}
         >
           <EditIcon className="w-[18px] h-[18px]" />
         </Fab>
@@ -65,6 +79,7 @@ export default function ToolsBar() {
           sx={{
             minWidth: "40px",
           }}
+          disabled={!enableGrouping}
         >
           <SelectAll className="" />
         </Fab>
@@ -76,6 +91,7 @@ export default function ToolsBar() {
           sx={{
             minWidth: "40px",
           }}
+          disabled={!enableDelete}
         >
           <DeleteOutline className="" />
         </Fab>

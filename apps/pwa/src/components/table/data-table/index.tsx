@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vineyard } from "@/models/types/db";
 import type {
   ColDef,
   GetDataPath,
+  IRowNode,
+  RowNode,
   RowSelectionOptions,
+  SelectionChangedEvent,
 } from "ag-grid-community";
 import {
   AllCommunityModule,
@@ -31,6 +35,7 @@ import {
 import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
 import { employeeColumns } from "./columns";
 import { getData } from "./data";
+import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -48,54 +53,30 @@ interface Props {
   gridTheme?: string;
   isDarkMode?: boolean;
   data?: Vineyard[];
+  onChangeData?: (data: Vineyard[]) => void;
 }
 
 export const DataTable: FunctionComponent<Props> = ({
   gridTheme = "ag-theme-quartz",
   isDarkMode,
+  onChangeData,
 }) => {
+  // * Main Data Grid Ref
   const gridRef = useRef<AgGridReact>(null);
 
+  // * Column Definitions
   const [colDefs] = useState<ColDef[]>(employeeColumns);
 
+  // * Row Data
   const [rowData] = useState(getData());
-  // const [rowData] = useState(vineyards);
+
+  // * Get Data Path ["group", "vineyard"]
   const getDataPath = useCallback<GetDataPath>((data) => {
     return data.group;
   }, []);
 
+  // * Theming
   const themeClass = isDarkMode ? `${gridTheme}-dark` : gridTheme;
-  const autoGroupColumnDef = useMemo<ColDef>(() => {
-    return {
-      headerName: "",
-      field: "group",
-      width: 168,
-      pinned: "left",
-      cellRenderer: "agGroupCellRenderer",
-      cellRendererParams: {
-        innerRenderer: GroupCellRenderer,
-        suppressCount: true,
-      },
-    };
-  }, []);
-
-  const rowSelection = useMemo(() => {
-    return {
-      mode: "multiRow",
-      enableClickSelection: true,
-    };
-  }, []);
-
-  const selectionColumnDef = useMemo(() => {
-    return {
-      sortable: true,
-      resizable: true,
-      width: 48,
-      suppressHeaderMenuButton: false,
-      pinned: "left",
-    };
-  }, []);
-
   const myTheme = themeBalham
     .withParams({
       fontFamily: "lato",
@@ -125,6 +106,60 @@ export const DataTable: FunctionComponent<Props> = ({
       "light"
     );
 
+  // * Define the auto-group column
+  const autoGroupColumnDef = useMemo<ColDef>(() => {
+    return {
+      headerName: "",
+      field: "group",
+      width: 168,
+      pinned: "left",
+      cellRenderer: "agGroupCellRenderer",
+      cellRendererParams: {
+        innerRenderer: GroupCellRenderer,
+        suppressCount: true,
+      },
+    };
+  }, []);
+
+  // * Row Selection Options
+  const rowSelection = useMemo(() => {
+    return {
+      mode: "multiRow",
+      enableClickSelection: true,
+      groupSelects: "descendants",
+    };
+  }, []);
+
+  // * Selection Column Definition
+  const selectionColumnDef = useMemo(() => {
+    return {
+      sortable: true,
+      resizable: true,
+      width: 48,
+      suppressHeaderMenuButton: false,
+      pinned: "left",
+    };
+  }, []);
+
+  // * Event Handlers
+  const handleOnRowSelected = useCallback((data: any) => {
+    // console.log(
+    //   "handleOnRowSelected",
+    //   data.node.group ? "is group" : "is not group"
+    // );
+  }, []);
+
+  const handleOnSelectionChanged = useCallback(
+    (event: SelectionChangedEvent) => {
+      const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
+      // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
+      const vineyards = nodesToVineyards(selectedNodes);
+      onChangeData?.(vineyards);
+    },
+    []
+  );
+
+  // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
       document.body.dataset.agThemeMode = "dark";
@@ -147,6 +182,8 @@ export const DataTable: FunctionComponent<Props> = ({
         autoGroupColumnDef={autoGroupColumnDef}
         rowSelection={rowSelection as RowSelectionOptions}
         selectionColumnDef={selectionColumnDef as ColDef}
+        onRowSelected={handleOnRowSelected}
+        onSelectionChanged={handleOnSelectionChanged}
       />
     </div>
   );
