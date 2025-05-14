@@ -36,11 +36,13 @@ export type VineyardFormProps = {
   children?: React.ReactNode;
   vineyard: Vineyard | null;
   closeDrawer?: () => void;
+  type?: "create" | "edit";
 };
 
 export default function VineyardForm({
   vineyard,
   closeDrawer,
+  type = "create",
 }: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -85,7 +87,8 @@ export default function VineyardForm({
   };
 
   async function handleCreateVineyard(uid: string, data: any) {
-    data.group = [data.name];
+    if (type === "create") data.group = [data.name];
+
     try {
       // * Check if vineyard already exists
       const getOneRes: DbResponse = await db.vineyard.getOne(uid, data.id);
@@ -130,7 +133,6 @@ export default function VineyardForm({
   }
 
   const onSubmit = (data: any, e: any) => {
-    console.log("XXXXXXXXXXXX");
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);

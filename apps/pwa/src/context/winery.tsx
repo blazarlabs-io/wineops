@@ -3,7 +3,7 @@
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { DbResponse, Winery } from "@/models/types/db";
-import { useSnackbar } from "notistack";
+// import { useSnackbar } from "notistack";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 interface WineryContextType {
@@ -25,7 +25,7 @@ export const useWinery = () => {
 
 export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
+  // const { enqueueSnackbar } = useSnackbar();
   const mountRef = useRef<boolean>(false);
   const [winery, setWinery] = useState<Winery | null>(null);
 
@@ -53,25 +53,25 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
                     name: "",
                     id: user.uid,
                   });
-                  enqueueSnackbar("winery created", { variant: "success" });
+                  // enqueueSnackbar("winery created", { variant: "success" });
                 } else {
                   setWinery(null);
-                  enqueueSnackbar("Error creating winery", {
-                    variant: "error",
-                  });
+                  // enqueueSnackbar("Error creating winery", {
+                  //   variant: "error",
+                  // });
                 }
               })
               .catch((err: DbResponse) => {
                 console.log("err", err);
                 setWinery(null);
-                enqueueSnackbar("Error creating winery", { variant: "error" });
+                // enqueueSnackbar("Error creating winery", { variant: "error" });
               });
           }
         })
         .catch((err: DbResponse) => {
           console.log("err", err);
           setWinery(null);
-          enqueueSnackbar("Error creating winery", { variant: "error" });
+          // enqueueSnackbar("Error creating winery", { variant: "error" });
         });
     }
   }, [user]);
