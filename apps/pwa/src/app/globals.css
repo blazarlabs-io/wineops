@@ -1,16 +1,26 @@
 @layer theme, base, mui, components, utilities;
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
+/* :root {
+  --background: var(--mui-palette-background-default);
   --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: var(--mui-palette-background-default);
     --foreground: #ededed;
   }
+} */
+
+@theme {
+  --color-background: var(--mui-palette-background-default);
+  --color-foreground: var(--muy-palette-text-primary);
+  --color-status-error: var(--mui-palette-error-main);
+  --color-status-error-dark: var(--mui-palette-error-light);
+  --color-on-surface: var(--mui-palette-text-primary);
+  --color-on-surface-dark: var(--mui-palette-text-dark);
+  --color-text-error: var(--mui-palette-error-main);
 }
 
 .debug-red {

@@ -8,7 +8,7 @@ import { QuantityCellRenderer } from "./cell-renderers/QuantityCellRenderer";
 import { StatusCellRenderer } from "./cell-renderers/StatusCellRenderer";
 import { TasksCellRenderer } from "./cell-renderers/TasksCellRenderer";
 
-export const employeeColumns: ColDef[] = [
+export const vineyardColumns: ColDef[] = [
   {
     field: "grapeVariety",
     minWidth: 164,

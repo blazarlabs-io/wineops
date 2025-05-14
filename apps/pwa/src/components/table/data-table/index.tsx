@@ -1,27 +1,24 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useVineyard } from "@/context/vineyard";
 import { Vineyard } from "@/models/types/db";
 import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
-import type {
-  ColDef,
-  GetDataPath,
-  IRowNode,
-  RowSelectionOptions,
-  SelectionChangedEvent,
-} from "ag-grid-community";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
-  ModuleRegistry,
-  themeBalham,
-} from "ag-grid-community";
-import {
+  ColDef,
   ExcelExportModule,
+  GetDataPath,
+  IDetailCellRendererParams,
+  IRowNode,
   MasterDetailModule,
+  ModuleRegistry,
   RichSelectModule,
   RowGroupingModule,
+  RowSelectionOptions,
+  SelectionChangedEvent,
   SetFilterModule,
   StatusBarModule,
+  themeBalham,
   TreeDataModule,
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
@@ -33,9 +30,9 @@ import {
   useRef,
   useState,
 } from "react";
+import DetailCellRenderer from "./cell-renderers/DetailCellRenderer";
 import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
-import { employeeColumns } from "./columns";
-import { getData } from "./data";
+import { vineyardColumns } from "./columns";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -61,14 +58,17 @@ export const DataTable: FunctionComponent<Props> = ({
   isDarkMode,
   onChangeData,
 }) => {
+  const { vineyards, updateSelectedVineyards } = useVineyard();
+
   // * Main Data Grid Ref
   const gridRef = useRef<AgGridReact>(null);
 
   // * Column Definitions
-  const [colDefs] = useState<ColDef[]>(employeeColumns);
+  const [colDefs] = useState<ColDef[]>(vineyardColumns);
 
   // * Row Data
-  const [rowData] = useState(getData());
+  // const [rowData] = useState(getData());
+  const [rowData, setRowData] = useState(vineyards);
 
   // * Get Data Path ["group", "vineyard"]
   const getDataPath = useCallback<GetDataPath>((data) => {
@@ -111,13 +111,14 @@ export const DataTable: FunctionComponent<Props> = ({
     return {
       headerName: "",
       field: "group",
-      width: 168,
+      width: 196,
       pinned: "left",
       cellRenderer: "agGroupCellRenderer",
       cellRendererParams: {
         innerRenderer: GroupCellRenderer,
-        suppressCount: true,
+        // suppressCount: true,
       },
+      suppressSizeToFit: true,
     };
   }, []);
 
@@ -127,6 +128,8 @@ export const DataTable: FunctionComponent<Props> = ({
       mode: "multiRow",
       enableClickSelection: true,
       groupSelects: "descendants",
+      suppressDoubleClickExpand: false,
+      suppressEnterExpand: false,
     };
   }, []);
 
@@ -135,7 +138,7 @@ export const DataTable: FunctionComponent<Props> = ({
     return {
       sortable: true,
       resizable: true,
-      width: 48,
+      width: 80, //48,
       suppressHeaderMenuButton: false,
       pinned: "left",
     };
@@ -143,10 +146,7 @@ export const DataTable: FunctionComponent<Props> = ({
 
   // * Event Handlers
   const handleOnRowSelected = useCallback((data: any) => {
-    // console.log(
-    //   "handleOnRowSelected",
-    //   data.node.group ? "is group" : "is not group"
-    // );
+    updateSelectedVineyards(data.api.getSelectedRows());
   }, []);
 
   const handleOnSelectionChanged = useCallback(
@@ -159,6 +159,38 @@ export const DataTable: FunctionComponent<Props> = ({
     []
   );
 
+  const detailCellRenderer = useCallback(DetailCellRenderer, []);
+
+  // params sent to the Detail Cell Renderer, in this case your MyCellRendererComp
+  const detailCellRendererParams = useMemo(() => {
+    return {
+      detailGridOptions: {},
+      getDetailRowData: function (params: any) {
+        console.log("params", params.data);
+        // params.successCallback(params.data.callRecords);
+      },
+      groupDefaultExpanded: 1,
+      masterDetail: true,
+      detailRowHeight: 240,
+      detailRowAutoHeight: true,
+      detailCellRendererParams: {
+        // level 3 grid options
+        detailGridOptions: {
+          // columnDefs: [
+          //   { field: "info.", cellRenderer: "agGroupCellRenderer" },
+          //   { field: "b3" },
+          // ],
+          defaultColDef: {
+            flex: 1,
+          },
+        },
+        getDetailRowData: (params) => {
+          params.successCallback(params.data.children);
+        },
+      } as IDetailCellRendererParams,
+    };
+  }, []);
+
   // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
@@ -168,24 +200,34 @@ export const DataTable: FunctionComponent<Props> = ({
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    if (vineyards && vineyards.length > 0) {
+      setRowData(vineyards);
+    }
+  }, [vineyards]);
+
   return (
     <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-      <AgGridReact
-        masterDetail={true}
-        theme={myTheme}
-        ref={gridRef}
-        columnDefs={colDefs}
-        rowData={rowData}
-        groupDefaultExpanded={0}
-        getDataPath={getDataPath}
-        treeData
-        autoGroupColumnDef={autoGroupColumnDef}
-        rowSelection={rowSelection as RowSelectionOptions}
-        selectionColumnDef={selectionColumnDef as ColDef}
-        onRowSelected={handleOnRowSelected}
-        onSelectionChanged={handleOnSelectionChanged}
-        containerStyle={{ height: "100%", width: "100%" }}
-      />
+      {rowData && rowData.length > 0 && (
+        <AgGridReact
+          masterDetail={true}
+          theme={myTheme}
+          ref={gridRef}
+          columnDefs={colDefs}
+          rowData={rowData}
+          groupDefaultExpanded={0}
+          getDataPath={getDataPath}
+          treeData
+          autoGroupColumnDef={autoGroupColumnDef}
+          rowSelection={rowSelection as RowSelectionOptions}
+          selectionColumnDef={selectionColumnDef as ColDef}
+          onRowSelected={handleOnRowSelected}
+          onSelectionChanged={handleOnSelectionChanged}
+          containerStyle={{ height: "100%", width: "100%" }}
+          detailCellRenderer={detailCellRenderer}
+          detailCellRendererParams={detailCellRendererParams}
+        />
+      )}
     </div>
   );
 };

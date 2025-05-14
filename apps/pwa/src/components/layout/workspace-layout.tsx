@@ -2,32 +2,19 @@
 
 import InnerDashboardLayout from "@/components/layout/inner-dashboard-layout";
 import { NAVIGATION } from "@/components/navigation/sidebar-navigation";
+import ToolBarActions from "@/components/navigation/tool-bar-actions";
+import SidebarFooterAccount from "@/components/widgets/user-account";
+import { useAuth } from "@/lib/firebase/auth";
+import { mainTheme } from "@/lib/themes/main-theme";
 import { Box } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
 import { AppProvider, Session } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useDemoRouter } from "@toolpad/core/internal";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import Logo from "../data-display/logo";
-import SidebarFooterAccount from "../widgets/user-account";
 
-const demoTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: "data-toolpad-color-scheme",
-  },
-  colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
-
-interface DemoProps {
+interface MainProps {
   /**
    * Injected by the documentation to work in an iframe.
    * Remove this when copying and pasting into your project.
@@ -36,34 +23,28 @@ interface DemoProps {
   children?: React.ReactNode;
 }
 
-const demoSession = {
-  user: {
-    name: "Bharat Kashyap",
-    email: "bharatkashyap@outlook.com",
-    image: "https://avatars.githubusercontent.com/u/19550456",
-  },
-};
-
-export default function WorkspaceLayout(props: DemoProps) {
+export default function WorkspaceLayout(props: MainProps) {
   const { window } = props;
+  const { user } = useAuth();
 
   const router = useDemoRouter("/dashboard");
 
   // Remove this const when copying and pasting into your project.
   const demoWindow = window !== undefined ? window() : undefined;
 
-  const [session, setSession] = React.useState<Session | null>(demoSession);
+  const [session, setSession] = useState<Session | null>(null);
 
-  const authentication = React.useMemo(() => {
-    return {
-      signIn: () => {
-        setSession(demoSession);
-      },
-      signOut: () => {
-        setSession(null);
-      },
-    };
-  }, []);
+  useEffect(() => {
+    if (user) {
+      setSession({
+        user: {
+          name: user.displayName,
+          email: user.email,
+          image: user.photoURL,
+        },
+      });
+    }
+  }, [user]);
 
   return (
     // Remove this provider when copying and pasting into your project.
@@ -72,18 +53,20 @@ export default function WorkspaceLayout(props: DemoProps) {
       branding={{
         logo: <Logo />,
         title: "",
-        homeUrl: "/toolpad/core/introduction",
+        homeUrl: "",
       }}
       router={router}
-      theme={demoTheme}
+      theme={mainTheme}
       window={demoWindow}
-      authentication={authentication}
       session={session}
     >
       <DashboardLayout
         defaultSidebarCollapsed
         slots={{
           toolbarAccount: () => null,
+          toolbarActions(props) {
+            return <ToolBarActions {...props} />;
+          },
           sidebarFooter: SidebarFooterAccount,
         }}
       >
