@@ -5,6 +5,7 @@ export const useSortToolsBarStates = (data: Vineyard[]) => {
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
   const [enableGrouping, setEnableGrouping] = useState<boolean>(false);
   const [enableDelete, setEnableDelete] = useState<boolean>(false);
+  const [enableUngrouping, setEnableUngrouping] = useState<boolean>(false);
 
   useEffect(() => {
     if (data && data !== undefined && data.length > 0) {
@@ -15,10 +16,17 @@ export const useSortToolsBarStates = (data: Vineyard[]) => {
       }
       setEnableGrouping(true);
       setEnableDelete(true);
+
+      const isDataGrouped = data.some(
+        ({ group }) => group && Array.isArray(group) && group.length > 1
+      );
+
+      setEnableUngrouping(isDataGrouped);
     } else {
       setEnableEdit(false);
       setEnableGrouping(false);
       setEnableDelete(false);
+      setEnableUngrouping(false);
     }
   }, [data]);
 
@@ -26,5 +34,6 @@ export const useSortToolsBarStates = (data: Vineyard[]) => {
     enableEdit,
     enableGrouping,
     enableDelete,
+    enableUngrouping,
   };
 };

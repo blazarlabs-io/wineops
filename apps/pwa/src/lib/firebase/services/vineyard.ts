@@ -1,8 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DbResponse, Group, Vineyard } from '@/models/types/db';
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
-import { db as fdb } from '../client';
-import { VINEYARDS, VINEYARDS_GROUPS, WINERY } from '../config';
+import { DbResponse, Group, Vineyard } from "@/models/types/db";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore";
+import { db as fdb } from "../client";
+import { VINEYARDS, VINEYARDS_GROUPS, WINERY } from "../config";
 
 let vineyard: any = {};
 
@@ -18,7 +26,7 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       return {
         data: null,
         error,
@@ -38,7 +46,7 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       return {
         data: null,
         error,
@@ -60,7 +68,7 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       return {
         data: null,
         error,
@@ -68,9 +76,13 @@ vineyard = {
       };
     }
   },
-  update: async (uid: string, id: string, data: Vineyard): Promise<DbResponse> => {
+  update: async (
+    uid: string,
+    id: string,
+    data: Vineyard
+  ): Promise<DbResponse> => {
     try {
-      console.log('uid', uid, 'id', id, 'data', data);
+      console.log("uid:", uid, "id:", id, "data:", data);
       const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
       await updateDoc(docRef, data);
       return {
@@ -79,7 +91,33 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
+      return {
+        data: null,
+        error,
+        status: 500,
+      };
+    }
+  },
+  updateGroup: async (uid: string, rows: Vineyard[], group: string[]) => {
+    try {
+      const batch = writeBatch(fdb);
+
+      rows.forEach(({ id, name }) => {
+        const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
+        batch.update(docRef, { group: [...group, name] });
+      });
+
+      await batch.commit();
+
+      return {
+        data: null,
+        error: null,
+        status: 200,
+      };
+    } catch (error) {
+      console.error("Error updating group:", error);
+
       return {
         data: null,
         error,
@@ -97,7 +135,7 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       return {
         data: null,
         error,
@@ -117,7 +155,7 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       return {
         data: null,
         error,
@@ -135,7 +173,7 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       return {
         data: null,
         error,

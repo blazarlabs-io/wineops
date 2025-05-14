@@ -207,7 +207,7 @@ const vineyardSample: Vineyard = {
       },
     },
   ],
-  group: "ungrouped",
+  group: [],
 };
 
 export default vineyardSample;

@@ -1,16 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type TaskStatus = 'todo' | 'in-progress' | 'overdue' | 'cancelled' | 'completed';
+export type TaskStatus =
+  | "todo"
+  | "in-progress"
+  | "overdue"
+  | "cancelled"
+  | "completed";
 
 export const VineyardStatus = {
-  MAINTENANCE: 'Maintenance',
-  VEGETATION: 'Vegetation',
-  RIPPING: 'Ripening',
-  READY_FOR_HARVEST: 'Ready for Harvest',
-  HARVESTING: 'Harvesting',
-  HARVEST_ENDED: 'Harvest Ended',
+  MAINTENANCE: "Maintenance",
+  VEGETATION: "Vegetation",
+  RIPPING: "Ripening",
+  READY_FOR_HARVEST: "Ready for Harvest",
+  HARVESTING: "Harvesting",
+  HARVEST_ENDED: "Harvest Ended",
 } as const;
 
-export type VineyardStatus = (typeof VineyardStatus)[keyof typeof VineyardStatus];
+export type VineyardStatus =
+  (typeof VineyardStatus)[keyof typeof VineyardStatus];
 
 export type MediaType = {
   type: string;
@@ -137,7 +143,7 @@ export type Vineyard = {
   tasks: TaskSummary[];
   notes: Note[];
   documents: SingleDocument[];
-  group: string;
+  group: string[];
 };
 
 export type Winery = {

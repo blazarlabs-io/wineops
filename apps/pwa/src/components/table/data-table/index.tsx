@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useVineyard } from "@/context/vineyard";
-import { Vineyard } from "@/models/types/db";
+import { DbResponse, Vineyard } from "@/models/types/db";
 import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
 import {
   AllCommunityModule,
@@ -10,6 +10,7 @@ import {
   GetDataPath,
   IDetailCellRendererParams,
   IRowNode,
+  IsGroupOpenByDefaultParams,
   MasterDetailModule,
   ModuleRegistry,
   RichSelectModule,
@@ -33,6 +34,12 @@ import {
 import DetailCellRenderer from "./cell-renderers/DetailCellRenderer";
 import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
 import { vineyardColumns } from "./columns";
+import { useGrouping } from "@/hooks/use-grouping";
+import GroupingDialog from "@/components/dialogs/grouping-dialog";
+import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
+import { db } from "@/lib/firebase/services";
+import { useAuth } from "@/lib/firebase/auth";
+import { useSnackbar } from "notistack";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -51,14 +58,23 @@ interface Props {
   isDarkMode?: boolean;
   data?: Vineyard[];
   onChangeData?: (data: Vineyard[]) => void;
+  openGroupingDialog: boolean;
+  handleCloseGroupingDialog: () => void;
+  openUngroupingDialog: boolean;
+  handleCloseUngroupingDialog: () => void;
 }
 
 export const DataTable: FunctionComponent<Props> = ({
   gridTheme = "ag-theme-quartz",
   isDarkMode,
   onChangeData,
+  openGroupingDialog,
+  handleCloseGroupingDialog,
+  openUngroupingDialog,
+  handleCloseUngroupingDialog,
 }) => {
   const { vineyards, updateSelectedVineyards } = useVineyard();
+  const { enqueueSnackbar } = useSnackbar();
 
   // * Main Data Grid Ref
   const gridRef = useRef<AgGridReact>(null);
@@ -155,6 +171,7 @@ export const DataTable: FunctionComponent<Props> = ({
       // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
       const vineyards = nodesToVineyards(selectedNodes);
       onChangeData?.(vineyards);
+      setSelectedRows(vineyards);
     },
     []
   );
@@ -200,34 +217,113 @@ export const DataTable: FunctionComponent<Props> = ({
     }
   }, [isDarkMode]);
 
+  const normalizedData: Vineyard[] = useMemo(
+    () =>
+      rowData.map((row: Vineyard) => ({
+        ...row,
+        group:
+          !row.group || row.group.length < 2 ? [row.id ?? row.name] : row.group,
+      })),
+    [rowData]
+  );
+
+  const {
+    groupToExpand,
+    uniqueGroups,
+    groupedData,
+    selectedRows,
+    setGroupedData,
+    setSelectedRows,
+    setGroupToExpand,
+  } = useGrouping<Vineyard>(normalizedData);
+
+  const { user } = useAuth();
+  const uid = user?.uid || "";
+
+  const updateRowsGroup = async (group?: string[]) => {
+    const isGrouping = group && group.length > 0;
+
+    if (!uid || selectedRows.length === 0) return;
+
+    setGroupToExpand(isGrouping ? group : []);
+
+    const rows = selectedRows.map(({ id, name }) => ({ id, name }));
+
+    const updateRes: DbResponse = await db.vineyard.updateGroup(
+      uid,
+      rows,
+      isGrouping ? group : []
+    );
+
+    if (updateRes.status === 200) {
+      enqueueSnackbar(`${isGrouping ? "Grouped" : "Ungrouped"} successfully.`, {
+        variant: "success",
+      });
+    } else {
+      enqueueSnackbar(`Failed to ${isGrouping ? "group" : "ungroup"}.`, {
+        variant: "error",
+      });
+    }
+  };
+
   useEffect(() => {
     if (vineyards && vineyards.length > 0) {
       setRowData(vineyards);
     }
   }, [vineyards]);
 
+  useEffect(() => {
+    if (normalizedData && normalizedData.length > 0) {
+      setGroupedData(normalizedData);
+    }
+  }, [normalizedData, setGroupedData]);
+
+  const isGroupOpenByDefault = useCallback(
+    (params: IsGroupOpenByDefaultParams) => {
+      const route = params.rowNode.getRoute();
+      return !!route?.every((item, idx) => groupToExpand[idx] === item);
+    },
+    [groupToExpand]
+  );
+
   return (
-    <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-      {rowData && rowData.length > 0 && (
-        <AgGridReact
-          masterDetail={true}
-          theme={myTheme}
-          ref={gridRef}
-          columnDefs={colDefs}
-          rowData={rowData}
-          groupDefaultExpanded={0}
-          getDataPath={getDataPath}
-          treeData
-          autoGroupColumnDef={autoGroupColumnDef}
-          rowSelection={rowSelection as RowSelectionOptions}
-          selectionColumnDef={selectionColumnDef as ColDef}
-          onRowSelected={handleOnRowSelected}
-          onSelectionChanged={handleOnSelectionChanged}
-          containerStyle={{ height: "100%", width: "100%" }}
-          detailCellRenderer={detailCellRenderer}
-          detailCellRendererParams={detailCellRendererParams}
-        />
-      )}
-    </div>
+    <>
+      <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
+        {groupedData && groupedData.length > 0 && (
+          <AgGridReact
+            masterDetail={true}
+            theme={myTheme}
+            ref={gridRef}
+            columnDefs={colDefs}
+            rowData={groupedData}
+            getDataPath={getDataPath}
+            treeData
+            autoGroupColumnDef={autoGroupColumnDef}
+            rowSelection={rowSelection as RowSelectionOptions}
+            selectionColumnDef={selectionColumnDef as ColDef}
+            onRowSelected={handleOnRowSelected}
+            onSelectionChanged={handleOnSelectionChanged}
+            containerStyle={{ height: "100%", width: "100%" }}
+            detailCellRenderer={detailCellRenderer}
+            detailCellRendererParams={detailCellRendererParams}
+            isGroupOpenByDefault={isGroupOpenByDefault}
+          />
+        )}
+      </div>
+
+      <GroupingDialog<Vineyard>
+        groups={uniqueGroups}
+        rows={selectedRows}
+        open={openGroupingDialog}
+        onClose={handleCloseGroupingDialog}
+        onAddToGroup={updateRowsGroup}
+      />
+      <UngroupingDialog<Vineyard>
+        rows={selectedRows}
+        open={openUngroupingDialog}
+        onClose={handleCloseUngroupingDialog}
+        onUngroup={updateRowsGroup}
+      />
+    </>
   );
 };

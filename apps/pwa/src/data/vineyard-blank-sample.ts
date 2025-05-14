@@ -63,7 +63,7 @@ const vineyardBlankSample: Vineyard = {
     },
   ],
   documents: [],
-  group: "ungrouped",
+  group: [],
 };
 
 export default vineyardBlankSample;

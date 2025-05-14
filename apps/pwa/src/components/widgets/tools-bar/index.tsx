@@ -16,12 +16,17 @@ import { Box, Fab, IconButton } from "@mui/material";
 import { EditIcon, Search } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import DeselectIcon from "@mui/icons-material/Deselect";
+import Tooltip from "@mui/material/Tooltip";
 
 export type ToolsBarProps = {
   enableCreate: boolean;
   enableEdit: boolean;
   enableGrouping: boolean;
   enableDelete: boolean;
+  enableUngrouping: boolean;
+  onClickGroup: () => void;
+  onClickUngroup: () => void;
 };
 
 export default function ToolsBar({
@@ -29,6 +34,9 @@ export default function ToolsBar({
   enableEdit,
   enableGrouping,
   enableDelete,
+  enableUngrouping,
+  onClickGroup,
+  onClickUngroup,
 }: ToolsBarProps) {
   const { selectedVineyards } = useVineyard();
 
@@ -135,18 +143,37 @@ export default function ToolsBar({
           >
             <EditIcon className="w-[18px] h-[18px]" />
           </Fab>
-          <Fab
-            color="primary"
-            size="small"
-            aria-label="add"
-            className="shadow-xs"
-            sx={{
-              minWidth: "40px",
-            }}
-            disabled={!enableGrouping}
-          >
-            <SelectAll className="" />
-          </Fab>
+          <Tooltip title="Add to group" arrow>
+            <Fab
+              color="primary"
+              size="small"
+              aria-label="group"
+              className="shadow-xs"
+              sx={{
+                minWidth: "40px",
+              }}
+              disabled={!enableGrouping}
+              onClick={onClickGroup}
+            >
+              <SelectAll className="" />
+            </Fab>
+          </Tooltip>
+
+          <Tooltip title="Ungroup" arrow>
+            <Fab
+              color="primary"
+              size="small"
+              aria-label="ungroup"
+              className="shadow-xs"
+              sx={{
+                minWidth: "40px",
+              }}
+              disabled={!enableUngrouping}
+              onClick={onClickUngroup}
+            >
+              <DeselectIcon className="" />
+            </Fab>
+          </Tooltip>
           <Fab
             color="error"
             size="small"

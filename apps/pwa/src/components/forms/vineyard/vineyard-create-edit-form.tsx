@@ -96,10 +96,17 @@ export default function VineyardForm({
         getOneRes.status === 200 &&
         (getOneRes.data === null || getOneRes.data !== undefined)
       ) {
+        const { id, name, group } = data;
+        const newData = {
+          ...data,
+          group:
+            group && group.length > 1 ? [...group.slice(0, -1), name] : [id],
+        };
+
         const updateRes: DbResponse = await db.vineyard.update(
           uid,
           data.id,
-          data
+          newData
         );
         if (updateRes.status === 200) {
           enqueueSnackbar(`Updated ${data.name} successfully`, {
