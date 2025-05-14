@@ -293,5 +293,88 @@ export function getData() {
         },
       ],
     },
+    // * Some ungrouped data
+    {
+      group: ["Ungrouped", "Vineyard 6"],
+      name: "Vineyard 8",
+      grapeVariety: "Cabernet Sauvignon",
+      status: "NOT-STARTED",
+      forcastedYield: 0,
+      labData: generateLabData(),
+      tasks: [
+        {
+          amount: 2,
+          id: "1",
+          status: "todo",
+          title: "Task 1",
+          description: "Task 1 description",
+        },
+        {
+          id: "2",
+          title: "Task 2",
+          description: "Task 2 description",
+          status: "in-progress",
+        },
+        {
+          id: "3",
+          title: "Task 3",
+          description: "Task 3 description",
+          status: "completed",
+        },
+      ],
+      notes: [
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "1",
+          title: "Welcome, new user!",
+        },
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "2",
+          title: "Welcome, new user!",
+        },
+      ],
+    },
+    {
+      group: ["Ungrouped", "Vineyard 9"],
+      name: "Vineyard 9",
+      grapeVariety: "Cabernet Sauvignon",
+      status: "NOT-STARTED",
+      forcastedYield: 0,
+      labData: generateLabData(),
+      tasks: [
+        {
+          amount: 2,
+          id: "1",
+          status: "todo",
+          title: "Task 1",
+          description: "Task 1 description",
+        },
+        {
+          id: "2",
+          title: "Task 2",
+          description: "Task 2 description",
+          status: "in-progress",
+        },
+        {
+          id: "3",
+          title: "Task 3",
+          description: "Task 3 description",
+          status: "completed",
+        },
+      ],
+      notes: [
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "1",
+          title: "Welcome, new user!",
+        },
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "2",
+          title: "Welcome, new user!",
+        },
+      ],
+    },
   ];
 }

@@ -5,7 +5,7 @@ import ToolsBar from "@/components/widgets/tools-bar";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { Vineyard } from "@/models/types/db";
 import { Box, useColorScheme } from "@mui/material";
-import { useState } from "react";
+import { StrictMode, useState } from "react";
 
 export default function WorkspacePage() {
   const { mode } = useColorScheme();
@@ -24,10 +24,13 @@ export default function WorkspacePage() {
           enableGrouping={enableGrouping}
           enableDelete={enableDelete}
         />
-        <DataTable
-          isDarkMode={mode === "dark"}
-          onChangeData={setSelectionData}
-        />
+
+        <StrictMode>
+          <DataTable
+            isDarkMode={mode === "dark"}
+            onChangeData={setSelectionData}
+          />
+        </StrictMode>
       </Box>
     </Box>
   );

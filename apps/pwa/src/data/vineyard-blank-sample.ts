@@ -1,69 +1,69 @@
-import { Vineyard, VineyardStatus } from '@/models/types/db';
+import { Vineyard, VineyardStatus } from "@/models/types/db";
 
 const vineyardBlankSample: Vineyard = {
-  id: '',
-  name: '',
+  id: Date.now().toString(),
+  name: "",
   status: VineyardStatus.MAINTENANCE,
-  grapeVariety: '',
-  grapeColor: '',
-  cadastralNumber: '',
+  grapeVariety: "",
+  grapeColor: "",
+  cadastralNumber: "",
   info: {
     location: {
       map: [],
       surface: 0,
-      country: '',
-      city: '',
+      country: "",
+      city: "",
       elevation: 0,
-      orientation: '',
+      orientation: "",
     },
     vines: {
       yearOfPlantation: 0,
       plantingScheme: {
         spacing: 0,
-        rowOrientation: '',
+        rowOrientation: "",
         density: 0,
         trellisSystem: false,
       },
-      soilType: '',
+      soilType: "",
       sunlightHours: 0,
     },
     certifications: {
       eco: {
         active: false,
-        fileUrl: '',
+        fileUrl: "",
       },
       igp: {
         active: false,
-        fileUrl: '',
+        fileUrl: "",
       },
       dop: {
         active: false,
-        fileUrl: '',
+        fileUrl: "",
       },
     },
   },
   grape: {
-    clonalSelection: '',
-    vivcNumber: '',
-    countryOfOrigin: '',
+    clonalSelection: "",
+    vivcNumber: "",
+    countryOfOrigin: "",
   },
   forecastedYield: 0,
   labData: {
-    id: '',
-    fileUrl: '',
+    id: "",
+    fileUrl: "",
     items: [],
-    date: '',
+    date: "",
   },
   tasks: [],
   notes: [
     {
       id: Date.now().toString(),
-      title: 'Welcome, new user!',
-      content: 'This is a test note. You can add, edit, and delete notes.',
+      title: "Welcome, new user!",
+      content: "This is a test note. You can add, edit, and delete notes.",
     },
   ],
   documents: [],
-  group: 'ungrouped',
+  group: "ungrouped",
 };
 
 export default vineyardBlankSample;

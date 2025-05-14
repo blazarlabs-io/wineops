@@ -1,28 +1,30 @@
+import VineyardCreateEditForm from "@/components/forms/vineyard/vineyard-create-edit-form";
+import { Vineyard } from "@/models/types/db";
 import { Close } from "@mui/icons-material";
-import {
-  Box,
-  Drawer,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Drawer, IconButton, Typography } from "@mui/material";
 
 export type VineyardFormDrawerProps = {
   open: boolean;
   onClose: () => void;
+  vineyard: Vineyard;
+  type: "create" | "edit";
 };
 
 export default function VineyardFormDrawer({
   open,
   onClose,
+  vineyard,
+  type,
 }: VineyardFormDrawerProps) {
   return (
-    <Drawer anchor="right" open={open} onClose={onClose} sx={{ zIndex: 9999 }}>
+    <Drawer anchor="right" open={open} onClose={onClose} sx={{ zIndex: 99 }}>
       <Box
         sx={{
           padding: 2,
-          minWidth: "400px",
+          minWidth: "320px",
+          maxWidth: "530px",
+          background: "var(--mui-palette-background-default)",
+          height: "100vh",
         }}
         display={"flex"}
         flexDirection={"column"}
@@ -32,50 +34,17 @@ export default function VineyardFormDrawer({
             <Close />
           </IconButton>
         </Box>
-        <Box
-          component="form"
-          sx={{ "& > :not(style)": { m: 1 } }}
-          noValidate
-          autoComplete="off"
-          className="w-full"
-        >
+        <Box padding={2} marginTop={2}>
           <Typography variant="h5" fontWeight={"medium"}>
-            New Vineyard
+            {type === "create" ? "New Vineyard" : "Edit Vineyard"}
           </Typography>
           <Typography variant="body2" className="opacity-75">
-            Add a new vineyard
+            {type === "create"
+              ? "Add a new vineyard"
+              : "Edit existing vineyard"}
           </Typography>
-          <Stack direction="column" spacing={2} paddingTop={4}>
-            <TextField
-              required
-              id="outlined-required"
-              label="Name"
-              defaultValue="Vinyard 1"
-              fullWidth
-            />
-            <TextField
-              required
-              id="outlined-required"
-              label="Grape Variety"
-              defaultValue=""
-              fullWidth
-            />
-            <TextField
-              required
-              id="outlined-required"
-              label="Grape Color"
-              defaultValue=""
-              fullWidth
-            />
-            <TextField
-              required
-              id="outlined-required"
-              label="Cadastral"
-              defaultValue=""
-              fullWidth
-            />
-          </Stack>
         </Box>
+        <VineyardCreateEditForm vineyard={vineyard} closeDrawer={onClose} />
       </Box>
     </Drawer>
   );
