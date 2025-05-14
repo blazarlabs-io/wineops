@@ -20,7 +20,7 @@ interface IAuthContext {
   user: User | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<User | null>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
@@ -107,22 +107,15 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const res = signInWithEmailAndPassword(auth, email, password).then(
-        (res) => {
-          setUser(res.user);
-
-          if (window !== undefined) {
-            window.location.href = "/workspace";
-          }
-
-          return { code: 200, message: "success", data: res.user };
-        }
-      );
-
-      return res;
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      setUser(res.user);
+      if (window !== undefined) {
+        window.location.href = "/workspace";
+      }
+      return res.user;
     } catch (error) {
       console.error(error);
-      return { code: 400, message: "error", data: null };
+      return null;
     }
   };
 

@@ -53,25 +53,25 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
                     name: "",
                     id: user.uid,
                   });
-                  enqueueSnackbar("winery created", { variant: "success" });
+                  // enqueueSnackbar("winery created", { variant: "success" });
                 } else {
                   setWinery(null);
-                  enqueueSnackbar("Error creating winery", {
-                    variant: "error",
-                  });
+                  // enqueueSnackbar("Error creating winery", {
+                  //   variant: "error",
+                  // });
                 }
               })
               .catch((err: DbResponse) => {
                 console.log("err", err);
                 setWinery(null);
-                enqueueSnackbar("Error creating winery", { variant: "error" });
+                // enqueueSnackbar("Error creating winery", { variant: "error" });
               });
           }
         })
         .catch((err: DbResponse) => {
           console.log("err", err);
           setWinery(null);
-          enqueueSnackbar("Error creating winery", { variant: "error" });
+          // enqueueSnackbar("Error creating winery", { variant: "error" });
         });
     }
   }, [user]);

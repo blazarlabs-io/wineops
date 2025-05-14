@@ -27,9 +27,7 @@ export default function SignInPage() {
         formData.get("password") as string
       );
 
-      console.log(res);
-
-      if (res.code === 200) {
+      if (res) {
         enqueueSnackbar("Sign in successful", { variant: "success" });
       } else {
         enqueueSnackbar("Sign in failed", { variant: "error" });
