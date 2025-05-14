@@ -3,7 +3,7 @@
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { DbResponse, Winery } from "@/models/types/db";
-import { useSnackbar } from "notistack";
+// import { useSnackbar } from "notistack";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 interface WineryContextType {
@@ -25,7 +25,7 @@ export const useWinery = () => {
 
 export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
+  // const { enqueueSnackbar } = useSnackbar();
   const mountRef = useRef<boolean>(false);
   const [winery, setWinery] = useState<Winery | null>(null);
 
