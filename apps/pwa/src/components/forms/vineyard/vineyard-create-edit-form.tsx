@@ -130,6 +130,8 @@ export default function VineyardForm({
   }
 
   const onSubmit = (data: any, e: any) => {
+    console.log("XXXXXXXXXXXX");
+    e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
     console.log("ERRORS:", errors);
@@ -142,6 +144,7 @@ export default function VineyardForm({
       reset(vineyard);
       // console.log('vineyard', vineyard);
       if (vineyard.name.length > 0) {
+        reset(vineyard);
         setFormData(vineyard);
       } else {
         setValue("name", `Vineyard ${vineyards?.length + 1}`);
@@ -150,9 +153,15 @@ export default function VineyardForm({
     }
   }, [vineyard]);
 
+  useEffect(() => {
+    if (errors) {
+      console.log("ERRORS", errors);
+    }
+  }, [errors]);
+
   return (
     <>
-      {formData && (
+      {formData && formData !== undefined && (
         <div className="px-4">
           <form
             onSubmit={handleSubmit(onSubmit)}
@@ -900,9 +909,11 @@ export default function VineyardForm({
             </div>
 
             <Box display={"flex"} justifyContent={"end"} gap={2} px={2}>
-              <Button type="submit" variant="contained" className="mt-8">
-                Save
-              </Button>
+              <FormControl>
+                <Button type="submit" variant="contained" className="mt-8">
+                  Save
+                </Button>
+              </FormControl>
             </Box>
           </form>
         </div>
