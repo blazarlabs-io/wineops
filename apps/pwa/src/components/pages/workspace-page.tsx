@@ -12,8 +12,27 @@ export default function WorkspacePage() {
 
   const [selectionData, setSelectionData] = useState<Vineyard[]>([]);
 
-  const { enableEdit, enableGrouping, enableDelete } =
+  const { enableEdit, enableGrouping, enableDelete, enableUngrouping } =
     useSortToolsBarStates(selectionData);
+
+  const [openGroupingDialog, setOpenGroupingDialog] = useState(false);
+  const [openUngroupingDialog, setOpenUngroupingDialog] = useState(false);
+
+  const handleClickOpenGroupingDialog = () => {
+    setOpenGroupingDialog(true);
+  };
+
+  const handleCloseGroupingDialog = () => {
+    setOpenGroupingDialog(false);
+  };
+
+  const handleClickOpenUngroupingDialog = () => {
+    setOpenUngroupingDialog(true);
+  };
+
+  const handleCloseUngroupingDialog = () => {
+    setOpenUngroupingDialog(false);
+  };
 
   return (
     <Box className="flex w-full h-full">
@@ -23,12 +42,19 @@ export default function WorkspacePage() {
           enableEdit={enableEdit}
           enableGrouping={enableGrouping}
           enableDelete={enableDelete}
+          enableUngrouping={enableUngrouping}
+          onClickGroup={handleClickOpenGroupingDialog}
+          onClickUngroup={handleClickOpenUngroupingDialog}
         />
 
         <StrictMode>
           <DataTable
             isDarkMode={mode === "dark"}
             onChangeData={setSelectionData}
+            openGroupingDialog={openGroupingDialog}
+            openUngroupingDialog={openUngroupingDialog}
+            handleCloseGroupingDialog={handleCloseGroupingDialog}
+            handleCloseUngroupingDialog={handleCloseUngroupingDialog}
           />
         </StrictMode>
       </Box>

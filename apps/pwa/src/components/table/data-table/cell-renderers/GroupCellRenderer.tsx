@@ -8,6 +8,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   value,
 }) => {
   console.log(node);
+
+  const rowName =
+    value && value.length > 1 ? value[value.length - 1] : node.data.name;
+
   return (
     <div
       style={{
@@ -52,9 +56,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                   : "",
           }}
         >
-          <Typography className="leading-[1]">
-            {value[value?.length - 1]}
-          </Typography>
+          <Typography className="leading-[1]">{rowName}</Typography>
           {node.data && (
             <p className="text-xs text-muted-foreground leading-[1]">
               {node.data.cadastralNumber || "Cadastral Number N/A"}
