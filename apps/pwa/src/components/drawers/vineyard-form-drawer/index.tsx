@@ -44,7 +44,11 @@ export default function VineyardFormDrawer({
               : "Edit existing vineyard"}
           </Typography>
         </Box>
-        <VineyardCreateEditForm vineyard={vineyard} closeDrawer={onClose} />
+        <VineyardCreateEditForm
+          vineyard={vineyard}
+          closeDrawer={onClose}
+          type={type}
+        />
       </Box>
     </Drawer>
   );

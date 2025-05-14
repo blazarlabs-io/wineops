@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "./client";
 import { firebaseConfig } from "./config";
-import { useSnackbar } from "notistack";
 
 interface IAuthContext {
   user: User | null;
@@ -50,7 +49,6 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(serverUser);
   const [loading, setLoading] = useState(true);
-  const { enqueueSnackbar } = useSnackbar();
 
   // NOTE: Register the service worker that sends auth state back to server
   // The service worker is built with `npm run build-service-worker`
@@ -109,16 +107,22 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      signInWithEmailAndPassword(auth, email, password).then((res) => {
-        setUser(res.user);
-        enqueueSnackbar("Sign in successful", { variant: "success" });
-        if (window !== undefined) {
-          window.location.href = "/workspace";
+      const res = signInWithEmailAndPassword(auth, email, password).then(
+        (res) => {
+          setUser(res.user);
+
+          if (window !== undefined) {
+            window.location.href = "/workspace";
+          }
+
+          return { code: 200, message: "success", data: res.user };
         }
-      });
+      );
+
+      return res;
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("Sign in failed", { variant: "error" });
+      return { code: 400, message: "error", data: null };
     }
   };
 

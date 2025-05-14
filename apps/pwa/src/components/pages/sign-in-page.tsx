@@ -10,9 +10,11 @@ import {
 } from "@toolpad/core/SignInPage";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "@/lib/firebase/auth";
+import { useSnackbar } from "notistack";
 
 export default function SignInPage() {
   const { signIn: fbSignIn } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const signIn = async (
     provider: AuthProvider,
@@ -20,13 +22,23 @@ export default function SignInPage() {
     callbackUrl?: string
   ) => {
     try {
-      const res = await fbSignIn(
+      const res: any = await fbSignIn(
         formData.get("email") as string,
         formData.get("password") as string
       );
+
+      console.log(res);
+
+      if (res.code === 200) {
+        enqueueSnackbar("Sign in successful", { variant: "success" });
+      } else {
+        enqueueSnackbar("Sign in failed", { variant: "error" });
+      }
+
       return res;
     } catch (error) {
       console.error(error);
+      enqueueSnackbar("Sign in failed", { variant: "error" });
       return null;
     }
   };
