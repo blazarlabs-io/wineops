@@ -62,9 +62,9 @@ export default function PolygonDrawingMap({
         disableDefaultUI={true}
         mapTypeId={"satellite"}
       />
-      {/* <MapControl position={ControlPosition.TOP_CENTER}>
+      <MapControl position={ControlPosition.TOP_CENTER}>
         <UndoRedoControl drawingManager={drawingManager} />
-      </MapControl> */}
+      </MapControl>
     </>
   );
 }

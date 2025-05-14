@@ -11,7 +11,6 @@ import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { vineyardSchema } from "@/models/schemas/vineyard-schema";
 import { Coordinates, DbResponse, Vineyard } from "@/models/types/db";
-import { extractCountryList } from "@/utils/extract-country-list";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { ExpandMore } from "@mui/icons-material";
 import {

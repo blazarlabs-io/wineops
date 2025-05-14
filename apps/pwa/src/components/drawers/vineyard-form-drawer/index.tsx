@@ -1,14 +1,7 @@
 import VineyardCreateEditForm from "@/components/forms/vineyard/vineyard-create-edit-form";
 import { Vineyard } from "@/models/types/db";
 import { Close } from "@mui/icons-material";
-import {
-  Box,
-  Drawer,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Drawer, IconButton, Typography } from "@mui/material";
 
 export type VineyardFormDrawerProps = {
   open: boolean;

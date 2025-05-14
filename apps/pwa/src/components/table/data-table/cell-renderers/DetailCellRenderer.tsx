@@ -6,7 +6,7 @@ const DetailCellRenderer = (params: any) => (
     <h4>Details for {params.data.name}</h4>
     <p>{params.data.details.description}</p>
     <ul>
-      {params.data.details.properties.map((prop, index) => (
+      {params.data.details.properties.map((prop: any, index: number) => (
         <li key={index}>{prop}</li>
       ))}
     </ul>
