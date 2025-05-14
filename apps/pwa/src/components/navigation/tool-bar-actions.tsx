@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/firebase/auth";
 import {
   Avatar,
   Box,
+  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -46,44 +47,60 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
     <Box display={"flex"} alignItems={"center"} gap={1} sx={{ flexGrow: 0 }}>
       <ThemeSwitcher />
 
-      <Tooltip title="Open settings">
-        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          {user?.photoURL ? (
-            <Avatar alt="Remy Sharp" src={user.photoURL} />
-          ) : (
-            <Avatar alt="Remy Sharp">
-              {user?.displayName?.charAt(0) || user?.email?.charAt(0)}
-            </Avatar>
-          )}
-        </IconButton>
-      </Tooltip>
+      {user ? (
+        <>
+          <Tooltip title="Open settings">
+            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              {user?.photoURL ? (
+                <Avatar alt="Remy Sharp" src={user.photoURL} />
+              ) : (
+                <Avatar alt="Remy Sharp">
+                  {user?.displayName?.charAt(0) || user?.email?.charAt(0)}
+                </Avatar>
+              )}
+            </IconButton>
+          </Tooltip>
 
-      <Menu
-        sx={{ mt: "45px" }}
-        id="menu-appbar"
-        anchorEl={anchorElUser}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        open={Boolean(anchorElUser)}
-        onClose={handleCloseUserMenu}
-      >
-        {settings.map((setting) => (
-          <MenuItem
-            key={setting}
-            onClick={handleCloseUserMenu}
-            onClickCapture={() => handleMenuItemClick(setting)}
+          <Menu
+            sx={{ mt: "45px" }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
           >
-            <Typography sx={{ textAlign: "center" }}>{setting}</Typography>
-          </MenuItem>
-        ))}
-      </Menu>
+            {settings.map((setting) => (
+              <MenuItem
+                key={setting}
+                onClick={handleCloseUserMenu}
+                onClickCapture={() => handleMenuItemClick(setting)}
+              >
+                <Typography sx={{ textAlign: "center" }}>{setting}</Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+        </>
+      ) : (
+        <Button
+          variant="contained"
+          sx={{ cursor: "pointer" }}
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.location.href = "/sign-in";
+            }
+          }}
+        >
+          Sign in
+        </Button>
+      )}
     </Box>
   );
 }
