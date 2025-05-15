@@ -1,10 +1,11 @@
+import { ENTITY_DETAILS } from "@/data/constants";
 import { LabDataSimple, Vineyard } from "@/models/types/db";
 import { generateLabData } from "@/utils/lab-data-generator";
 
 export function getData(): Vineyard[] {
   return [
     {
-      group: ["Group One", "Vineyard 1", "vineyardDetails"],
+      group: ["Group One", "dlsoeSX4f", ENTITY_DETAILS],
       name: "Vineyard 1",
       grapeVariety: "Cabernet Sauvignon",
       status: "Maintenance",
@@ -67,7 +68,7 @@ export function getData(): Vineyard[] {
       ],
     },
     {
-      group: ["Group One", "Vineyard 2", "vineyardDetails"],
+      group: ["Group One", "Xapes43", ENTITY_DETAILS],
       name: "Vineyard 2",
       grapeVariety: "Cabernet Sauvignon",
       status: "Maintenance",
@@ -104,7 +105,7 @@ export function getData(): Vineyard[] {
       ],
     },
     {
-      group: ["Group Two", "Vineyard 5", "vineyardDetails"],
+      group: ["Group Two", "Vineyard 5", ENTITY_DETAILS],
       name: "Vineyard 5",
       grapeVariety: "Cabernet Sauvignon",
       status: "Maintenance",
@@ -141,7 +142,7 @@ export function getData(): Vineyard[] {
       ],
     },
     {
-      group: ["Group Two", "Group Three", "Vineyard 4", "vineyardDetails"],
+      group: ["Group Two", "Group Three", "Vineyard 4", ENTITY_DETAILS],
       name: "Vineyard 4",
       grapeVariety: "Cabernet Sauvignon",
       status: "Maintenance",
@@ -178,7 +179,7 @@ export function getData(): Vineyard[] {
       ],
     },
     {
-      group: ["Group Two", "Group Three", "Vineyard 7", "vineyardDetails"],
+      group: ["Group Two", "Group Three", "Vineyard 7", ENTITY_DETAILS],
       name: "Vineyard 7",
       grapeVariety: "Cabernet Sauvignon",
       status: "Maintenance",
@@ -215,7 +216,7 @@ export function getData(): Vineyard[] {
       ],
     },
     {
-      group: ["Vineyard 3", "vineyardDetails"],
+      group: ["Vineyard 3", ENTITY_DETAILS],
       name: "Vineyard 2",
       grapeVariety: "Cabernet Sauvignon",
       status: "Maintenance",

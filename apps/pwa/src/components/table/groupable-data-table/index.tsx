@@ -14,6 +14,7 @@ import {
   SelectionChangedEvent,
   IRowNode,
   RowSelectionOptions,
+  RowSelectionModule,
 } from "ag-grid-community";
 import { TreeDataModule, RichSelectModule } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
@@ -34,6 +35,7 @@ ModuleRegistry.registerModules([
   CellStyleModule,
   CustomEditorModule,
   RichSelectModule,
+  RowSelectionModule,
   ...(process.env.NODE_ENV !== "production" ? [ValidationModule] : []),
 ]);
 

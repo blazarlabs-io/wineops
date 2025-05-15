@@ -1,0 +1,1 @@
+export const ENTITY_DETAILS = "ENTITY_DETAILS";
