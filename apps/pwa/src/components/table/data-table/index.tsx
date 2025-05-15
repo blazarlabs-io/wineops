@@ -8,7 +8,6 @@ import {
   ColDef,
   ExcelExportModule,
   GetDataPath,
-  IDetailCellRendererParams,
   IRowNode,
   IsGroupOpenByDefaultParams,
   MasterDetailModule,
@@ -127,7 +126,7 @@ export const DataTable: FunctionComponent<Props> = ({
   const autoGroupColumnDef = useMemo<ColDef>(() => {
     return {
       headerName: "",
-      field: "group",
+      // field: "status",
       width: 196,
       pinned: "left",
       cellRenderer: "agGroupCellRenderer",
@@ -136,6 +135,7 @@ export const DataTable: FunctionComponent<Props> = ({
         // suppressCount: true,
       },
       suppressSizeToFit: true,
+      hide: true,
     };
   }, []);
 
@@ -182,30 +182,19 @@ export const DataTable: FunctionComponent<Props> = ({
   // params sent to the Detail Cell Renderer, in this case your MyCellRendererComp
   const detailCellRendererParams = useMemo(() => {
     return {
-      detailGridOptions: {},
+      detailGridOptions: {
+        defaultColDef: {
+          flex: 1,
+        },
+      },
       getDetailRowData: function (params: any) {
         console.log("params", params.data);
-        // params.successCallback(params.data.callRecords);
+        params.successCallback(params.data);
       },
-      groupDefaultExpanded: 1,
+      // groupDefaultExpanded: 1,
       masterDetail: true,
       detailRowHeight: 240,
-      detailRowAutoHeight: true,
-      detailCellRendererParams: {
-        // level 3 grid options
-        detailGridOptions: {
-          // columnDefs: [
-          //   { field: "info.", cellRenderer: "agGroupCellRenderer" },
-          //   { field: "b3" },
-          // ],
-          defaultColDef: {
-            flex: 1,
-          },
-        },
-        getDetailRowData: (params) => {
-          params.successCallback(params.data.children);
-        },
-      } as IDetailCellRendererParams,
+      addedCellRenderer: true,
     };
   }, []);
 

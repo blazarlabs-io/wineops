@@ -7,10 +7,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  console.log(node);
-
   const rowName =
     value && value.length > 1 ? value[value.length - 1] : node.data.name;
+
+  console.log("XXXXXXX", value, rowName, node);
 
   return (
     <div
@@ -33,35 +33,11 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
       }}
       className=""
     >
-      {typeof value === "string" ? (
+      {typeof value === "string" && (
         <div className="flex flex-col gap-2 pl-2">
           <Typography variant="body1" className="max-h-fit leading-4">
-            {value}
+            {node.group ? value : node.data.name}
           </Typography>
-        </div>
-      ) : (
-        <div
-          className=""
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            gap: "4px",
-            paddingLeft:
-              node.group && node.data === undefined
-                ? ""
-                : node.level > 0
-                  ? "8px"
-                  : "",
-          }}
-        >
-          <Typography className="leading-[1]">{rowName}</Typography>
-          {node.data && (
-            <p className="text-xs text-muted-foreground leading-[1]">
-              {node.data.cadastralNumber || "Cadastral Number N/A"}
-            </p>
-          )}
         </div>
       )}
       {node.data && node.data.info && node.data.info.certifications ? (

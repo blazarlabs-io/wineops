@@ -139,7 +139,7 @@ export type Vineyard = {
   grape: VineyardGrape;
   status: VineyardStatus;
   forecastedYield: number;
-  labData: LabDataSimple;
+  labData: LabDataSimple[];
   tasks: TaskSummary[];
   notes: Note[];
   documents: SingleDocument[];
