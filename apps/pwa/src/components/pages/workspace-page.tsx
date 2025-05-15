@@ -51,22 +51,22 @@ export default function WorkspacePage() {
         />
 
         <StrictMode>
-          {/* <DataTable
+          <DataTable
             isDarkMode={mode === "dark"}
             onChangeData={setSelectionData}
             openGroupingDialog={openGroupingDialog}
             openUngroupingDialog={openUngroupingDialog}
             handleCloseGroupingDialog={handleCloseGroupingDialog}
             handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-          /> */}
-          <GroupableDataTable
-            isDarkMode={mode === "dark"}
-            //  onChangeData={setSelectionData}
-            //  openGroupingDialog={openGroupingDialog}
-            //  openUngroupingDialog={openUngroupingDialog}
-            //  handleCloseGroupingDialog={handleCloseGroupingDialog}
-            //  handleCloseUngroupingDialog={handleCloseUngroupingDialog}
           />
+          {/* <GroupableDataTable
+            isDarkMode={mode === "dark"}
+             onChangeData={setSelectionData}
+             openGroupingDialog={openGroupingDialog}
+             openUngroupingDialog={openUngroupingDialog}
+             handleCloseGroupingDialog={handleCloseGroupingDialog}
+             handleCloseUngroupingDialog={handleCloseUngroupingDialog}
+          /> */}
         </StrictMode>
       </Box>
     </Box>

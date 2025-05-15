@@ -7,7 +7,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build-storybook": "storybook build",
+    "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^32.3.5",
@@ -41,6 +43,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.3",
+    "storybook": "^8.6.12",
     "tailwind-merge": "^3.2.0",
     "zod": "^3.24.4"
   },
