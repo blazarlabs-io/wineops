@@ -48,7 +48,7 @@ export type VineyardDetailsWidgetProps = {
 export default function VineyardDetailsWidget({
   vineyard,
 }: VineyardDetailsWidgetProps) {
-  const [value, setValue] = useState<number>(0);
+  const [value, setValue] = useState<number>(2);
   const [localVineyard, setLocalVineyard] = useState<Vineyard>(vineyard);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
