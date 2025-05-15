@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LabElement } from "@/models/types/db";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
@@ -8,8 +9,6 @@ export type LabSimpleDataDisplayProps = {
 export default function LabSimpleDataDisplay({
   data,
 }: LabSimpleDataDisplayProps) {
-  console.log("LAB DATA", data);
-
   return (
     <div className="flex flex-col items-start justify-start gap-4">
       <p className="text-xs text-muted-foreground leading-[0.8]">12/05/2025</p>

@@ -6,6 +6,9 @@ import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { Vineyard } from "@/models/types/db";
 import { Box, useColorScheme } from "@mui/material";
 import { StrictMode, useState } from "react";
+import DemoTable from "../table/demo-table";
+import GroupableDataTable from "../table/groupable-data-table";
+// import DemoTable from "../table/demo-table";
 
 export default function WorkspacePage() {
   const { mode } = useColorScheme();
@@ -48,13 +51,21 @@ export default function WorkspacePage() {
         />
 
         <StrictMode>
-          <DataTable
+          {/* <DataTable
             isDarkMode={mode === "dark"}
             onChangeData={setSelectionData}
             openGroupingDialog={openGroupingDialog}
             openUngroupingDialog={openUngroupingDialog}
             handleCloseGroupingDialog={handleCloseGroupingDialog}
             handleCloseUngroupingDialog={handleCloseUngroupingDialog}
+          /> */}
+          <GroupableDataTable
+            isDarkMode={mode === "dark"}
+            //  onChangeData={setSelectionData}
+            //  openGroupingDialog={openGroupingDialog}
+            //  openUngroupingDialog={openUngroupingDialog}
+            //  handleCloseGroupingDialog={handleCloseGroupingDialog}
+            //  handleCloseUngroupingDialog={handleCloseUngroupingDialog}
           />
         </StrictMode>
       </Box>

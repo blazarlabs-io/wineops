@@ -1,15 +1,17 @@
 import { LabDataSimple, LabElement } from "@/models/types/db";
 
-export const generateLabData = () => {
+export const generateLabData = (): LabDataSimple[] => {
   const data: LabDataSimple[] = [];
+
   for (let i = 0; i < 100; i++) {
     data.push({
-      id: i.toString(),
+      id: Math.floor(Math.random() * 1000000).toString(), //i.toString(),
       fileUrl: "", // url generator
-      items: generateItems(Math.floor(Math.random() * 10)),
+      items: generateItems(7 + Math.floor(Math.random() * 10)),
       date: new Date().toISOString(),
     });
   }
+
   return data;
 };
 
@@ -18,10 +20,10 @@ const generateItems = (total: number) => {
   for (let i = 0; i < total; i++) {
     items.push({
       id: i.toString(),
-      name: `Item ${i}`,
+      name: `Lab Result ${i}`,
       value: Math.random() * 100,
-      variation: Math.random() * 10,
-      unit: "unit",
+      variation: Math.random() > 0.5 ? Math.random() * 10 : Math.random() * -10, //from getave to positive
+      unit: "dl3",
       responsible: {
         name: `Responsible ${i}`,
         email: `responsible${i}@email.com`,

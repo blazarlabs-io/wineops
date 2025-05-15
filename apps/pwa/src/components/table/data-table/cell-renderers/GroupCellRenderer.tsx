@@ -7,10 +7,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  console.log(node);
-
   const rowName =
     value && value.length > 1 ? value[value.length - 1] : node.data.name;
+
+  console.log("XXXXXXX", value, node, rowName);
 
   return (
     <div
