@@ -18,6 +18,8 @@ import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import DeselectIcon from "@mui/icons-material/Deselect";
 import Tooltip from "@mui/material/Tooltip";
+import VineyardMenu from "./vineyard-menu";
+import GroupingMenu from "./grouping-menu";
 
 export type ToolsBarProps = {
   enableCreate: boolean;
@@ -103,7 +105,9 @@ export default function ToolsBar({
         vineyards={selectedVineyards}
       />
       <Box className="flex items-center w-full">
-        <Box
+        <VineyardMenu />
+        <GroupingMenu />
+        {/* <Box
           width={"100%"}
           display={"flex"}
           flexDirection={"row"}
@@ -212,8 +216,7 @@ export default function ToolsBar({
           >
             <Search />
           </IconButton>
-          {/* </Box> */}
-        </Box>
+        </Box> */}
       </Box>
     </>
   );
