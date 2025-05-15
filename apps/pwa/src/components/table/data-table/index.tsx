@@ -39,6 +39,7 @@ import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
 import { useSnackbar } from "notistack";
+import { ENTITY_DETAILS } from "@/data/constants";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -210,8 +211,12 @@ export const DataTable: FunctionComponent<Props> = ({
     () =>
       rowData.map((row: Vineyard) => ({
         ...row,
-        group:
-          !row.group || row.group.length < 2 ? [row.id ?? row.name] : row.group,
+        group: [
+          ...(!row.group || row.group.length < 2
+            ? [row.name ?? row.id]
+            : row.group),
+          ENTITY_DETAILS,
+        ],
       })),
     [rowData]
   );
