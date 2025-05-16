@@ -47,6 +47,7 @@ export type LabElement = {
   variation: number;
   unit: string;
   responsible: ResponsibleTeamMember;
+  date: string;
 };
 
 export type ResponsibleTeamMember = {

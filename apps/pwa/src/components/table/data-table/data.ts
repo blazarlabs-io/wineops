@@ -1,4 +1,4 @@
-import { generateLabData } from "@/utils/lab-data-generator";
+import { generateLabData } from "@/utils/generators";
 
 export function getData() {
   return [

@@ -9,14 +9,14 @@ import { SingleDocument } from "@/models/types/db";
 //   TableHeader,
 //   TableRow,
 // } from '@repo/ui/components/base/table';
+import { Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Typography } from "@mui/material";
 
 export type DocumentsSimpleTableProps = {
   data: SingleDocument[];
@@ -25,30 +25,87 @@ export type DocumentsSimpleTableProps = {
 export default function DocumentsSimpleTable({
   data,
 }: DocumentsSimpleTableProps) {
+  console.log(data);
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <Typography>A list of your recent documents.</Typography>
+    <TableContainer
+      component={Paper}
+      sx={{
+        height: "100%",
+        width: "100%",
+        paddingRight: 8,
+        background: "transparent",
+        padding: 4,
+      }}
+    >
+      <Table
+        sx={{
+          minWidth: "fit-content",
+          width: "100%",
+          height: "100%",
+          background: "transparent",
+        }}
+        className="w-full"
+      >
         <TableHead>
           <TableRow>
-            <TableHead className="font-bold">File Name</TableHead>
-            <TableHead className="font-bold">Owner</TableHead>
-            <TableHead className="font-bold">Upload Date</TableHead>
-            <TableHead className="font-bold">File Size</TableHead>
+            <TableCell className="font-bold">
+              <Typography>File Name</Typography>
+            </TableCell>
+            <TableCell className="font-bold">
+              <Typography>Owner Name</Typography>
+            </TableCell>
+            <TableCell className="font-bold">
+              <Typography>Owner Email</Typography>
+            </TableCell>
+            <TableCell className="font-bold">
+              <Typography>Uploaded</Typography>
+            </TableCell>
+            <TableCell className="font-bold">
+              <Typography>File Ext.</Typography>
+            </TableCell>
+            <TableCell className="font-bold">
+              <Typography>File Size</Typography>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data &&
             data.length > 0 &&
-            data.map((item) => (
-              <TableRow key={item.id + item.name}>
-                <TableCell className="font-medium">{item.name}</TableCell>
-                <TableCell>{item.owner.name}</TableCell>
-                <TableCell>{convertIsoToShortDate(item.uploadDate)}</TableCell>
-                <TableCell className="text-left">
-                  {item.media.sizeMb} MB
-                </TableCell>
-              </TableRow>
+            data.map((item, index) => (
+              <>
+                {index < 4 && (
+                  <TableRow key={item.id + item.name}>
+                    <TableCell className="font-medium">
+                      <Typography color="textSecondary">{item.name}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography color="textSecondary">
+                        {item.owner.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography color="textSecondary">
+                        {item.owner.email}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography color="textSecondary">
+                        {convertIsoToShortDate(item.uploadDate)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography color="textSecondary">
+                        .{item.media.subtype}
+                      </Typography>
+                    </TableCell>
+                    <TableCell className="text-left">
+                      <Typography color="textSecondary">
+                        {item.media.sizeMb} MB
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
             ))}
         </TableBody>
       </Table>

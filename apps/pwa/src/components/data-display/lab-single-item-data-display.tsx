@@ -1,5 +1,5 @@
 import { cn } from "@/utils/utils";
-import { Typography } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -16,8 +16,12 @@ export default function LabSingleItemDataDisplay({
   unit,
   variation,
 }: LabSingleItemDataDisplayProps) {
+  const theme = useTheme();
   const [isVariationPositive, setIsVariationPositive] = useState<boolean>(true);
   const mountRef = useRef<boolean>(false);
+
+  const primaryColor: string = theme.palette.primary.main;
+  const secondaryColor: string = theme.palette.secondary.main;
 
   useEffect(() => {
     console.log("=================", name, value, unit, variation);
@@ -30,7 +34,12 @@ export default function LabSingleItemDataDisplay({
   return (
     <div className="flex flex-col items-start justify-center gap-0">
       <div className="flex items-center max-h-[24px] gap-1">
-        <div className="w-1 h-3 bg-[#00C950]" />
+        <div
+          className="w-1 h-3"
+          style={{
+            backgroundColor: name === "Sugar" ? primaryColor : secondaryColor,
+          }}
+        />
         <div>
           <p className="text-muted-foreground">{name}</p>
         </div>

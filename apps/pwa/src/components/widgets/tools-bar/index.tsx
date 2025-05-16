@@ -133,7 +133,6 @@ export default function ToolsBar({
           >
             <Edit />
           </IconButton>
-          {/* <Tooltip title="Add to group" arrow> */}
           <IconButton
             color="default"
             aria-label="group"
@@ -142,25 +141,18 @@ export default function ToolsBar({
           >
             <SelectAll />
           </IconButton>
-          {/* </Tooltip> */}
-
-          {/* <Tooltip title="Ungroup" arrow> */}
           <IconButton
             color="default"
             size="small"
             aria-label="ungroup"
             className="shadow-xs"
-            sx={{
-              minWidth: "40px",
-            }}
             disabled={!enableUngrouping}
             onClick={onClickUngroup}
           >
             <Deselect className="" />
           </IconButton>
-          {/* </Tooltip> */}
           <IconButton
-            color="default"
+            color="error"
             aria-label="delete"
             disabled={!enableDelete}
             onClick={handleOpenDeleteDialog}
@@ -192,7 +184,6 @@ export default function ToolsBar({
           >
             <Search />
           </IconButton>
-          {/* </Box> */}
         </Box>
       </Box>
     </>
