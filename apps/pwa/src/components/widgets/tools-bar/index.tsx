@@ -8,16 +8,16 @@ import { Vineyard } from "@/models/types/db";
 import {
   Add,
   DeleteOutline,
+  Deselect,
+  Edit,
   SelectAll,
   SwapVert,
   Tune,
 } from "@mui/icons-material";
-import { Box, Fab, IconButton } from "@mui/material";
-import { EditIcon, Search } from "lucide-react";
+import { Box, IconButton } from "@mui/material";
+import { Search } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-import DeselectIcon from "@mui/icons-material/Deselect";
-import Tooltip from "@mui/material/Tooltip";
 
 export type ToolsBarProps = {
   enableCreate: boolean;
@@ -117,76 +117,56 @@ export default function ToolsBar({
             open={openFormDrawer}
             onClose={handleCloseFormDrawer}
           />
-          <Fab
-            color="primary"
-            size="small"
+          <IconButton
+            color="default"
             aria-label="add"
-            className="shadow-xs"
-            sx={{
-              minWidth: "40px",
-            }}
             onClick={handleOpenFormDrawer}
             disabled={!enableCreate}
           >
             <Add className="" />
-          </Fab>
-          <Fab
-            color="primary"
-            size="small"
+          </IconButton>
+          <IconButton
+            color="default"
             aria-label="edit"
-            className="shadow-xs"
-            sx={{
-              minWidth: "40px",
-            }}
             disabled={!enableEdit}
             onClick={handleEditVineyards}
           >
-            <EditIcon className="w-[18px] h-[18px]" />
-          </Fab>
-          <Tooltip title="Add to group" arrow>
-            <Fab
-              color="primary"
-              size="small"
-              aria-label="group"
-              className="shadow-xs"
-              sx={{
-                minWidth: "40px",
-              }}
-              disabled={!enableGrouping}
-              onClick={onClickGroup}
-            >
-              <SelectAll className="" />
-            </Fab>
-          </Tooltip>
+            <Edit />
+          </IconButton>
+          {/* <Tooltip title="Add to group" arrow> */}
+          <IconButton
+            color="default"
+            aria-label="group"
+            disabled={!enableGrouping}
+            onClick={onClickGroup}
+          >
+            <SelectAll />
+          </IconButton>
+          {/* </Tooltip> */}
 
-          <Tooltip title="Ungroup" arrow>
-            <Fab
-              color="primary"
-              size="small"
-              aria-label="ungroup"
-              className="shadow-xs"
-              sx={{
-                minWidth: "40px",
-              }}
-              disabled={!enableUngrouping}
-              onClick={onClickUngroup}
-            >
-              <DeselectIcon className="" />
-            </Fab>
-          </Tooltip>
-          <Fab
-            color="error"
+          {/* <Tooltip title="Ungroup" arrow> */}
+          <IconButton
+            color="default"
             size="small"
-            aria-label="add"
+            aria-label="ungroup"
             className="shadow-xs"
             sx={{
               minWidth: "40px",
             }}
+            disabled={!enableUngrouping}
+            onClick={onClickUngroup}
+          >
+            <Deselect className="" />
+          </IconButton>
+          {/* </Tooltip> */}
+          <IconButton
+            color="default"
+            aria-label="delete"
             disabled={!enableDelete}
             onClick={handleOpenDeleteDialog}
           >
             <DeleteOutline className="" />
-          </Fab>
+          </IconButton>
 
           <IconButton
             color="inherit"

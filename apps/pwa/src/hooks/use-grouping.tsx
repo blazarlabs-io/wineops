@@ -1,3 +1,4 @@
+import { ENTITY_DETAILS } from "@/data/constants";
 import { Vineyard } from "@/models/types/db";
 import { SetStateAction, useCallback, useState } from "react";
 
@@ -8,7 +9,9 @@ export function useGrouping<T extends Vineyard>(data: T[]) {
 
   const groups = groupedData
     .filter(({ group }) => !!group && group.length > 1)
-    .map(({ group }) => group.slice(0, -1));
+    .map(({ group }) =>
+      group.slice(0, group[group.length - 1] === ENTITY_DETAILS ? -2 : -1)
+    );
 
   const uniqueGroups = [
     ...new Set(
@@ -16,10 +19,13 @@ export function useGrouping<T extends Vineyard>(data: T[]) {
         const joinedGroups = group.map((_, index) =>
           group.slice(0, index + 1).join(" > ")
         );
+
         return [...acc, ...joinedGroups];
       }, [])
     ),
   ].sort((a, b) => a.localeCompare(b));
+
+  // console.log("GROUPS", groupedData);
 
   const addRowToGroup = (group: string[]) => {
     if (selectedRows.length === 0 || group.length === 0) {

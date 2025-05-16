@@ -1,4 +1,5 @@
 import { cn } from "@/utils/utils";
+import { Typography } from "@mui/material";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -19,6 +20,7 @@ export default function LabSingleItemDataDisplay({
   const mountRef = useRef<boolean>(false);
 
   useEffect(() => {
+    console.log("=================", name, value, unit, variation);
     if (!mountRef.current && variation.charAt(0) === "-") {
       setIsVariationPositive(false);
       mountRef.current = true;
@@ -26,15 +28,15 @@ export default function LabSingleItemDataDisplay({
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center max-h-fit gap-1">
-        <div className="w-1 h-3 bg-primary" />
+    <div className="flex flex-col items-start justify-center gap-0">
+      <div className="flex items-center max-h-[24px] gap-1">
+        <div className="w-1 h-3 bg-[#00C950]" />
         <div>
           <p className="text-muted-foreground">{name}</p>
         </div>
         <div
           className={cn(
-            "max-h-fit mt-[-8px] flex gap-1",
+            "max-h-[24px] flex gap-1 mt-[-8px]",
             isVariationPositive ? "text-[#00C950]" : "text-[#FF7878]"
           )}
         >
@@ -43,23 +45,31 @@ export default function LabSingleItemDataDisplay({
           ) : (
             <ArrowUp className="w-3 h-3 rotate-180" />
           )}
-          <span className="text-[10px]">{variation}</span>
+          <Typography className="text-[10px]">
+            {parseFloat(variation).toFixed(2)}
+          </Typography>
           <div className="flex gap-[1px]">
-            <span className="text-[10px]">
+            <Typography className="text-[10px]">
               {unit.slice(0, unit.length - 1)}
-            </span>
-            <span className="text-[10px] mt-[-3px]">
+            </Typography>
+            <Typography className="text-[10px] mt-[-3px]">
               {unit.charAt(unit.length - 1)}
-            </span>
+            </Typography>
           </div>
         </div>
       </div>
       <div>
-        <div className="max-h-fit mt-[-16px] flex items-center gap-2">
-          <span className="text-sm">{value}</span>
+        <div className="max-h-fit  flex items-center gap-2">
+          <Typography className="text-sm">
+            {parseFloat(value).toFixed(2)}
+          </Typography>
           <div className="flex gap-1">
-            <span className="text-sm">{unit.slice(0, unit.length - 1)}</span>
-            <span className="text-[10px]">{unit.charAt(unit.length - 1)}</span>
+            <Typography className="text-sm">
+              {unit.slice(0, unit.length - 1)}
+            </Typography>
+            <Typography className="text-[10px]">
+              {unit.charAt(unit.length - 1)}
+            </Typography>
           </div>
         </div>
       </div>

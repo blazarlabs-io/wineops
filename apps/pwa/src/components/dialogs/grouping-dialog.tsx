@@ -1,25 +1,24 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
+import { Vineyard } from "@/models/types/db";
+import { SelectAll } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import DialogContent from "@mui/material/DialogContent";
-import Typography from "@mui/material/Typography";
+import { Box, Chip } from "@mui/material";
 import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import Stack from "@mui/material/Stack";
-import { ChangeEvent, useState } from "react";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import Tooltip from "@mui/material/Tooltip";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import Fab from "@mui/material/Fab";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import { Vineyard } from "@/models/types/db";
-import SelectAllIcon from "@mui/icons-material/SelectAll";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { ChangeEvent, useState } from "react";
 
 type GroupingDialogProps<T> = {
   open: boolean;
@@ -39,30 +38,57 @@ export default function GroupingDialog<T extends Vineyard>({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [selectedGroup, setSelectedGroup] = useState("");
-  const [newGroup, setNewGroup] = useState("");
-  const [isSwapped, setIsSwapped] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<string>("");
+  const [selectedGroupDisplayName, setSelectedGroupDisplayName] =
+    useState<string>("");
+  const [selectedParent, setSelectedParent] = useState<string>("");
+  const [newGroup, setNewGroup] = useState<string>("");
+  const [isSwapped, setIsSwapped] = useState<boolean>(false);
+  const [enableNewGroup, setEnableNewGroup] = useState<boolean>(false);
 
   const isAddToGroupDisabled = selectedGroup === "" && newGroup === "";
 
   const handleGroupChange = (event: SelectChangeEvent) => {
+    console.log("GROUP CHANGE:", event.target.value);
+    setSelectedGroup(event.target.value);
+    setSelectedGroupDisplayName(event.target.value);
+    if (selectedGroup === "new-group") {
+      setEnableNewGroup(false);
+    }
+  };
+
+  const handleParentChange = (event: SelectChangeEvent) => {
+    setSelectedParent(event.target.value);
     setSelectedGroup(event.target.value);
   };
 
   const handleNewGroupChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNewGroup(event.target.value);
+    console.log("NEW GROUP:", event.target.value);
+  };
+
+  const handleEnableNewGroup = () => {
+    setEnableNewGroup(true);
   };
 
   const handleClose = () => {
+    setEnableNewGroup(false);
     setNewGroup("");
     setSelectedGroup("");
+    setSelectedParent("");
+    setSelectedGroupDisplayName("");
     setIsSwapped(false);
     onClose();
   };
 
   const handleAddToGroup = () => {
     const selectedGroups =
-      selectedGroup !== "" ? selectedGroup.split(" > ") : [];
+      selectedGroup !== "" &&
+      selectedGroup !== "none" &&
+      selectedGroup !== "new-group" &&
+      selectedGroup !== "parent-select"
+        ? selectedGroup.split(" > ")
+        : [];
 
     const groupsToAdd =
       newGroup !== ""
@@ -75,7 +101,7 @@ export default function GroupingDialog<T extends Vineyard>({
     handleClose();
   };
 
-  const hasGroups = groups && groups.length > 0;
+  const hasGroups = true; //groups && groups.length > 0;
   const fullPath = isSwapped
     ? newGroup
       ? `${newGroup}${selectedGroup ? ` > ${selectedGroup}` : ""}`
@@ -93,12 +119,13 @@ export default function GroupingDialog<T extends Vineyard>({
       sx={{
         "& .MuiDialog-paper": {
           minWidth: "375px",
+          maxWidth: "375px",
         },
       }}
     >
       <DialogTitle sx={{ m: 0, p: 2 }} id="grouping-dialog-title">
-        <SelectAllIcon color="primary" sx={{ mr: 2 }} />
-        Grouping
+        <SelectAll color="action" sx={{ mr: 2 }} />
+        Add to group
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -115,8 +142,8 @@ export default function GroupingDialog<T extends Vineyard>({
       <DialogContent dividers>
         <Typography gutterBottom>
           {hasGroups
-            ? "Add to an existing group or create a new one:"
-            : "Create a new group:"}
+            ? "Add to an existing group or create a new one."
+            : "Create a new group."}
         </Typography>
         <Stack
           direction="row"
@@ -128,7 +155,7 @@ export default function GroupingDialog<T extends Vineyard>({
           }}
         >
           <Stack
-            direction={isSwapped ? "row-reverse" : "row"}
+            direction={"column"}
             spacing={2}
             sx={{
               alignItems: "center",
@@ -137,51 +164,107 @@ export default function GroupingDialog<T extends Vineyard>({
           >
             {hasGroups && (
               <>
-                <FormControl sx={{ width: 200 }}>
+                <FormControl sx={{ width: "100%" }}>
                   <InputLabel id="group-select-label">
-                    Existing group
+                    Select or create
                   </InputLabel>
                   <Select
                     labelId="group-select-label"
                     id="group-select"
-                    label="Existing group"
-                    value={selectedGroup}
+                    label="Select or create"
+                    value={selectedGroupDisplayName}
                     onChange={handleGroupChange}
+                    sx={{ width: "100%" }}
                   >
-                    <MenuItem aria-label="None" value="">
+                    <MenuItem aria-label="None" value="none">
                       <em>None</em>
                     </MenuItem>
                     {groups.map((group) => (
                       <MenuItem key={group} value={group}>
-                        {group}
+                        <Typography variant="body2">{group}</Typography>
                       </MenuItem>
                     ))}
+                    <div
+                      style={{
+                        borderBottom: "1px solid var(--mui-palette-divider)",
+                        paddingTop: "8px",
+                        paddingBottom: "0px",
+                      }}
+                    />
+                    <MenuItem
+                      value="new-group"
+                      className="flex items-center gap-2 mt-2"
+                      style={{
+                        backgroundColor:
+                          "var(--mui-palette-paper-background-default)",
+                      }}
+                      onClick={handleEnableNewGroup}
+                    >
+                      {/* <AddCircleOutline className="text-lg" /> */}
+                      <Typography variant="body2" color="primary">
+                        CREATE NEW GROUP
+                      </Typography>
+                    </MenuItem>
                   </Select>
                 </FormControl>
-
-                <Tooltip title="Swap group order" arrow>
-                  <Fab
-                    size="small"
-                    id="swap-groups"
-                    name="swap-groups"
-                    aria-label="swap"
-                    className="shadow-xs"
-                    onClick={() => setIsSwapped((prev) => !prev)}
-                  >
-                    <SwapHorizIcon />
-                  </Fab>
-                </Tooltip>
+                {enableNewGroup && (
+                  <>
+                    <FormControl sx={{ width: "100%" }}>
+                      <TextField
+                        id="new-group-name"
+                        label="New group name"
+                        variant="outlined"
+                        value={newGroup}
+                        onChange={handleNewGroupChange}
+                      />
+                    </FormControl>
+                    <FormControl sx={{ width: "100%" }}>
+                      <InputLabel id="parent-select-label">
+                        Choose parent
+                      </InputLabel>
+                      <Select
+                        labelId="parent-select-label"
+                        id="parent-select"
+                        label="Choose parent"
+                        value={selectedParent}
+                        onChange={handleParentChange}
+                        sx={{ width: "100%" }}
+                      >
+                        <MenuItem aria-label="Root" value="Root">
+                          <Typography variant="body2">Root</Typography>
+                        </MenuItem>
+                        {groups.map((group) => (
+                          <MenuItem key={group} value={group}>
+                            <Typography variant="body2">{group}</Typography>
+                          </MenuItem>
+                        ))}
+                        <div
+                          style={{
+                            borderBottom:
+                              "1px solid var(--mui-palette-divider)",
+                            paddingTop: "8px",
+                            paddingBottom: "0px",
+                          }}
+                        />
+                        {/* <MenuItem
+                          value="new-group"
+                          className="flex items-center gap-2 mt-2"
+                          style={{
+                            backgroundColor:
+                              "var(--mui-palette-paper-background-default)",
+                          }}
+                          onClick={handleEnableNewGroup}
+                        >
+                          <Typography variant="body2" color="primary">
+                            CREATE NEW GROUP
+                          </Typography>
+                        </MenuItem> */}
+                      </Select>
+                    </FormControl>
+                  </>
+                )}
               </>
             )}
-            <FormControl sx={{ width: hasGroups ? 200 : "100%" }}>
-              <TextField
-                id="new-group"
-                label="New group"
-                variant="outlined"
-                value={newGroup}
-                onChange={handleNewGroupChange}
-              />
-            </FormControl>
           </Stack>
         </Stack>
         <Stack sx={{ py: 2 }} gap={1}>
@@ -193,15 +276,23 @@ export default function GroupingDialog<T extends Vineyard>({
                 to <strong>{fullPath}</strong> group
               </>
             )}
-            :
           </Typography>
-          <Stack px={2} gap={1}>
-            {rows.map(({ id, name }, index) => (
-              <Typography key={id} variant="body2">
-                {index + 1}. {name}
-              </Typography>
+          <Box
+            display={"flex"}
+            flexWrap={"wrap"}
+            alignItems={"center"}
+            px={0}
+            gap={1}
+          >
+            {rows.map(({ id, name }) => (
+              <Chip
+                key={id}
+                variant="outlined"
+                label={name}
+                className="max-w-fit"
+              />
             ))}
-          </Stack>
+          </Box>
         </Stack>
       </DialogContent>
 

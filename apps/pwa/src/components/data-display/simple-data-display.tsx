@@ -1,13 +1,23 @@
+import { Card, Typography } from "@mui/material";
+
 export type SimpleDataDisplayProps = {
   label: string;
   value: string;
 };
 
-export default function SimpleDataDisplay({ label, value }: SimpleDataDisplayProps) {
+export default function SimpleDataDisplay({
+  label,
+  value,
+}: SimpleDataDisplayProps) {
   return (
-    <div>
-      <p className="text-xs text-muted-foreground font-medium">{label}</p>
-      <p className="text-sm">{value}</p>
-    </div>
+    <Card
+      variant="outlined"
+      className="min-w-[168px] flex flex-col gap-1 w-full p-2"
+    >
+      <Typography variant="body2" color="textDisabled">
+        {label}
+      </Typography>
+      <Typography>{value}</Typography>
+    </Card>
   );
 }

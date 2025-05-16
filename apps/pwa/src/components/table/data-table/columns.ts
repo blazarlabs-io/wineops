@@ -18,7 +18,7 @@ export const vineyardColumns: ColDef[] = [
     editable: true,
     cellEditor: "agRichTextCellEditor",
     aggFunc: (params: any) => {
-      console.log("params", params);
+      // console.log("params", params);
       const grapes = params.values.map((value: any) => {
         return value;
       });

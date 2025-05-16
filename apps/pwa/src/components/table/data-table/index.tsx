@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import GroupingDialog from "@/components/dialogs/grouping-dialog";
+import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
 import { useVineyard } from "@/context/vineyard";
+import { ENTITY_DETAILS } from "@/data/constants";
+import { useGrouping } from "@/hooks/use-grouping";
+import { useAuth } from "@/lib/firebase/auth";
+import { db } from "@/lib/firebase/services";
 import { DbResponse, Vineyard } from "@/models/types/db";
 import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
 import {
@@ -8,7 +14,6 @@ import {
   ColDef,
   ExcelExportModule,
   GetDataPath,
-  IDetailCellRendererParams,
   IRowNode,
   IsGroupOpenByDefaultParams,
   MasterDetailModule,
@@ -23,6 +28,7 @@ import {
   TreeDataModule,
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
+import { useSnackbar } from "notistack";
 import {
   type FunctionComponent,
   useCallback,
@@ -31,16 +37,9 @@ import {
   useRef,
   useState,
 } from "react";
-import DetailCellRenderer from "./cell-renderers/DetailCellRenderer";
 import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
 import { vineyardColumns } from "./columns";
-import { useGrouping } from "@/hooks/use-grouping";
-import GroupingDialog from "@/components/dialogs/grouping-dialog";
-import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
-import { db } from "@/lib/firebase/services";
-import { useAuth } from "@/lib/firebase/auth";
-import { useSnackbar } from "notistack";
-import { ENTITY_DETAILS } from "@/data/constants";
+import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -86,6 +85,8 @@ export const DataTable: FunctionComponent<Props> = ({
   // * Row Data
   // const [rowData] = useState(getData());
   const [rowData, setRowData] = useState(vineyards);
+  const [rowHeight] = useState(96);
+  const [expandedRowHeight] = useState(364);
 
   // * Get Data Path ["group", "vineyard"]
   const getDataPath = useCallback<GetDataPath>((data) => {
@@ -123,19 +124,37 @@ export const DataTable: FunctionComponent<Props> = ({
       "light"
     );
 
+  const defaultColDef = useMemo<ColDef>(() => {
+    return {
+      flex: 1,
+      minWidth: 100,
+      filter: true,
+    };
+  }, []);
+
   // * Define the auto-group column
   const autoGroupColumnDef = useMemo<ColDef>(() => {
     return {
-      headerName: "",
+      headerName: "Name",
       field: "group",
       width: 196,
-      pinned: "left",
+      // pinned: "left",
       cellRenderer: "agGroupCellRenderer",
+      filter: "agTextColumnFilter",
       cellRendererParams: {
         innerRenderer: GroupCellRenderer,
         // suppressCount: true,
       },
       suppressSizeToFit: true,
+      // colSpan: (params: any) => {
+      //   console.log("colSpan", params.node.group, colDefs.length);
+      //   if (params.node.group) {
+      //     return 1;
+      //   } else {
+      //     // return the length of all columns
+      //     return colDefs.length + 1;
+      //   }
+      // },
     };
   }, []);
 
@@ -143,21 +162,56 @@ export const DataTable: FunctionComponent<Props> = ({
   const rowSelection = useMemo(() => {
     return {
       mode: "multiRow",
-      enableClickSelection: true,
+      // enableClickSelection: true,
       groupSelects: "descendants",
       suppressDoubleClickExpand: false,
       suppressEnterExpand: false,
+      headerCheckboxSelection: true,
     };
   }, []);
 
   // * Selection Column Definition
   const selectionColumnDef = useMemo(() => {
     return {
-      sortable: true,
+      headerName: "",
+      field: "selection",
+      sortable: false,
       resizable: true,
       width: 80, //48,
-      suppressHeaderMenuButton: false,
-      pinned: "left",
+      suppressHeaderMenuButton: true,
+      // pinned: "left",
+      cellRenderer: "agGroupCellRenderer",
+      cellRendererParams: {
+        suppressCount: true,
+        innerRenderer: (params: any) => {
+          // console.log("SELECT-COLUMN", params);
+          return (
+            <>
+              {params.node.group ? (
+                <div style={{}}></div>
+              ) : (
+                <div
+                  style={{
+                    backgroundColor: "var(--mui-palette-background-default)",
+                  }}
+                  className="flex items-start justify-center flex-col gap-2 pl-2 absolute h-full top-0 left-0 w-full z-[999]"
+                >
+                  <VineyardDetailsWidget vineyard={params.node.data} />
+                </div>
+              )}
+            </>
+          );
+        },
+      },
+      colSpan: (params: any) => {
+        // console.log("colSpan", params.node.group, colDefs.length);
+        if (params.node.group) {
+          return 1;
+        } else {
+          // return the length of all columns
+          return colDefs.length + 2;
+        }
+      },
     };
   }, []);
 
@@ -176,38 +230,6 @@ export const DataTable: FunctionComponent<Props> = ({
     },
     []
   );
-
-  const detailCellRenderer = useCallback(DetailCellRenderer, []);
-
-  // params sent to the Detail Cell Renderer, in this case your MyCellRendererComp
-  const detailCellRendererParams = useMemo(() => {
-    return {
-      detailGridOptions: {},
-      getDetailRowData: function (params: any) {
-        console.log("params", params.data);
-        // params.successCallback(params.data.callRecords);
-      },
-      groupDefaultExpanded: 1,
-      masterDetail: true,
-      detailRowHeight: 240,
-      detailRowAutoHeight: true,
-      detailCellRendererParams: {
-        // level 3 grid options
-        detailGridOptions: {
-          // columnDefs: [
-          //   { field: "info.", cellRenderer: "agGroupCellRenderer" },
-          //   { field: "b3" },
-          // ],
-          defaultColDef: {
-            flex: 1,
-          },
-        },
-        getDetailRowData: (params) => {
-          params.successCallback(params.data.children);
-        },
-      } as IDetailCellRendererParams,
-    };
-  }, []);
 
   // * Change GRID Theme Mode on Mount
   useEffect(() => {
@@ -271,6 +293,18 @@ export const DataTable: FunctionComponent<Props> = ({
     }
   };
 
+  const getRowHeight = useCallback(
+    (params: any) => {
+      // console.log("params", params);
+      if (params.data) {
+        return expandedRowHeight;
+      } else {
+        return rowHeight;
+      }
+    },
+    [rowHeight]
+  );
+
   useEffect(() => {
     if (vineyards && vineyards.length > 0) {
       setRowData(vineyards);
@@ -309,9 +343,10 @@ export const DataTable: FunctionComponent<Props> = ({
             onRowSelected={handleOnRowSelected}
             onSelectionChanged={handleOnSelectionChanged}
             containerStyle={{ height: "100%", width: "100%" }}
-            detailCellRenderer={detailCellRenderer}
-            detailCellRendererParams={detailCellRendererParams}
             isGroupOpenByDefault={isGroupOpenByDefault}
+            getRowHeight={getRowHeight}
+            defaultColDef={defaultColDef}
+            suppressRowHoverHighlight={true}
           />
         )}
       </div>
