@@ -1,4 +1,5 @@
-import { Vineyard, VineyardStatus } from "@/models/types/db";
+import { LabDataSimple, Vineyard, VineyardStatus } from "@/models/types/db";
+import { generateLabData } from "@/utils/lab-data-generator";
 
 const vineyardSample: Vineyard = {
   id: Date.now().toString(),
@@ -48,79 +49,7 @@ const vineyardSample: Vineyard = {
     countryOfOrigin: "",
   },
   forecastedYield: 0,
-  labData: {
-    id: Date.now().toString(),
-    fileUrl: "",
-    items: [
-      {
-        id: Date.now().toString(),
-        name: "Sugar",
-        value: 3.2,
-        variation: 0.3,
-        unit: "g/dm3",
-        responsible: {
-          name: "John Doe",
-          email: "2Tb3T@example.com",
-        },
-      },
-      {
-        id: Date.now().toString(),
-        name: "Acidity",
-        value: 4.1,
-        variation: -0.6,
-        unit: "g/dm3",
-        responsible: {
-          name: "John Doe",
-          email: "2Tb3T@example.com",
-        },
-      },
-      {
-        id: Date.now().toString(),
-        name: "Sugar",
-        value: 2.9,
-        variation: -0.5,
-        unit: "g/dm3",
-        responsible: {
-          name: "John Doe",
-          email: "2Tb3T@example.com",
-        },
-      },
-      {
-        id: Date.now().toString(),
-        name: "Acidity",
-        value: 4.7,
-        variation: 0.4,
-        unit: "g/dm3",
-        responsible: {
-          name: "John Doe",
-          email: "2Tb3T@example.com",
-        },
-      },
-      {
-        id: Date.now().toString(),
-        name: "Sugar",
-        value: 3.1,
-        variation: -0.2,
-        unit: "g/dm3",
-        responsible: {
-          name: "John Doe",
-          email: "2Tb3T@example.com",
-        },
-      },
-      {
-        id: Date.now().toString(),
-        name: "Acidity",
-        value: 4.5,
-        variation: -0.3,
-        unit: "g/dm3",
-        responsible: {
-          name: "John Doe",
-          email: "2Tb3T@example.com",
-        },
-      },
-    ],
-    date: new Date().toISOString(),
-  },
+  labData: generateLabData() as LabDataSimple[],
   tasks: [
     {
       id: Date.now().toString(),

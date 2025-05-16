@@ -46,7 +46,6 @@ export default function WorkspacePage() {
           onClickGroup={handleClickOpenGroupingDialog}
           onClickUngroup={handleClickOpenUngroupingDialog}
         />
-
         <StrictMode>
           <DataTable
             isDarkMode={mode === "dark"}

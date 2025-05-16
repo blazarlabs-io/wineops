@@ -13,6 +13,7 @@ import { useDemoRouter } from "@toolpad/core/internal";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Logo from "../data-display/logo";
+import { useSidebar } from "@/context/sidebar";
 
 interface MainProps {
   /**
@@ -26,7 +27,7 @@ interface MainProps {
 export default function WorkspaceLayout(props: MainProps) {
   const { window } = props;
   const { user } = useAuth();
-
+  const { openSidebar } = useSidebar();
   const router = useDemoRouter("/dashboard");
 
   // Remove this const when copying and pasting into your project.
@@ -46,6 +47,10 @@ export default function WorkspaceLayout(props: MainProps) {
     }
   }, [user]);
 
+  useEffect(() => {
+    console.log(openSidebar);
+  }, [openSidebar]);
+
   return (
     // Remove this provider when copying and pasting into your project.
     <AppProvider
@@ -61,7 +66,10 @@ export default function WorkspaceLayout(props: MainProps) {
       session={session}
     >
       <DashboardLayout
-        defaultSidebarCollapsed
+        hideNavigation={!openSidebar}
+        disableCollapsibleSidebar
+        defaultSidebarCollapsed={false}
+        sidebarExpandedWidth={296}
         slots={{
           toolbarAccount: () => null,
           toolbarActions(props) {

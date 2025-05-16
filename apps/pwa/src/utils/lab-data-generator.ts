@@ -18,10 +18,10 @@ const generateItems = (total: number) => {
   for (let i = 0; i < total; i++) {
     items.push({
       id: i.toString(),
-      name: `Item ${i}`,
+      name: i % 2 === 0 ? "Sugar" : "Acidity",
       value: Math.random() * 100,
       variation: Math.random() * 10,
-      unit: "unit",
+      unit: "g/dm3",
       responsible: {
         name: `Responsible ${i}`,
         email: `responsible${i}@email.com`,
@@ -30,15 +30,3 @@ const generateItems = (total: number) => {
   }
   return items;
 };
-
-/*
-            
-            {
-              id: string;
-              name: string;
-              value: number;
-              variation: number;
-              unit: string;
-              responsible: ResponsibleTeamMember;
-            }
-            */

@@ -12,6 +12,7 @@ import { Vineyard } from "@/models/types/db";
 import DeselectIcon from "@mui/icons-material/Deselect";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
+import { Chip } from "@mui/material";
 
 type UngroupingDialogProps<T> = {
   open: boolean;
@@ -47,7 +48,7 @@ export default function UngroupingDialog<T extends Vineyard>({
       }}
     >
       <DialogTitle sx={{ m: 0, p: 2 }} id="ungrouping-dialog-title">
-        <DeselectIcon color="primary" sx={{ mr: 2 }} />
+        <DeselectIcon color="action" sx={{ mr: 2 }} />
         Ungrouping
       </DialogTitle>
       <IconButton
@@ -66,11 +67,14 @@ export default function UngroupingDialog<T extends Vineyard>({
         <Typography gutterBottom>
           Are you sure you want to ungroup the following items?
         </Typography>
-          <Stack px={2} gap={1}>
-          {rows.map(({ id, name }, index) => (
-            <Typography key={id} variant="body2">
-              {index + 1}. {name}
-            </Typography>
+        <Stack px={0} gap={1} marginTop={2} direction="row" flexWrap="wrap">
+          {rows.map(({ id, name }) => (
+            <Chip
+              key={id}
+              variant="outlined"
+              label={name}
+              className="max-w-fit"
+            />
           ))}
         </Stack>
       </DialogContent>
