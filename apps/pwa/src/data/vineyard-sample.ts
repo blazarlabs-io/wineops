@@ -1,5 +1,5 @@
 import { LabDataSimple, Vineyard, VineyardStatus } from "@/models/types/db";
-import { generateLabData } from "@/utils/lab-data-generator";
+import { generateDummyDocs, generateLabData } from "@/utils/generators";
 
 const vineyardSample: Vineyard = {
   id: Date.now().toString(),
@@ -74,68 +74,7 @@ const vineyardSample: Vineyard = {
       content: "This is a test note. You can add, edit, and delete notes.",
     },
   ],
-  documents: [
-    {
-      id: Date.now().toString(),
-      name: "Contract001.pdf",
-      fileUrl: "",
-      owner: {
-        name: "John Doe",
-        email: "2Tb3T@example.com",
-      },
-      uploadDate: new Date().toISOString(),
-      media: {
-        type: "pdf",
-        subtype: "application/pdf",
-        sizeMb: 2.12,
-      },
-    },
-    {
-      id: Date.now().toString(),
-      name: "Contract002.pdf",
-      fileUrl: "",
-      owner: {
-        name: "Fred Nelson",
-        email: "2Tb3T@example.com",
-      },
-      uploadDate: new Date().toISOString(),
-      media: {
-        type: "pdf",
-        subtype: "application/pdf",
-        sizeMb: 1.19,
-      },
-    },
-    {
-      id: Date.now().toString(),
-      name: "Contract003.pdf",
-      fileUrl: "",
-      owner: {
-        name: "Larry Jackson",
-        email: "2Tb3T@example.com",
-      },
-      uploadDate: new Date().toISOString(),
-      media: {
-        type: "pdf",
-        subtype: "application/pdf",
-        sizeMb: 2.23,
-      },
-    },
-    {
-      id: Date.now().toString(),
-      name: "Contract004.pdf",
-      fileUrl: "",
-      owner: {
-        name: "Jane Rose",
-        email: "2Tb3T@example.com",
-      },
-      uploadDate: new Date().toISOString(),
-      media: {
-        type: "pdf",
-        subtype: "application/pdf",
-        sizeMb: 1.12,
-      },
-    },
-  ],
+  documents: generateDummyDocs(10),
   group: [],
 };
 

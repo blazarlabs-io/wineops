@@ -72,6 +72,7 @@ const labDataSchema = Joi.object({
           name: Joi.string().optional().allow(""),
           email: Joi.string().optional().allow(""),
         }),
+        date: Joi.string().optional().allow(""),
       })
     )
     .optional(),

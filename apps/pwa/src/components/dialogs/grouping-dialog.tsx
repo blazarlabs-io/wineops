@@ -85,6 +85,7 @@ export default function GroupingDialog<T extends Vineyard>({
     const selectedGroups =
       selectedGroup !== "" &&
       selectedGroup !== "none" &&
+      selectedGroup !== "root" &&
       selectedGroup !== "new-group" &&
       selectedGroup !== "parent-select"
         ? selectedGroup.split(" > ")
@@ -230,7 +231,7 @@ export default function GroupingDialog<T extends Vineyard>({
                         onChange={handleParentChange}
                         sx={{ width: "100%" }}
                       >
-                        <MenuItem aria-label="Root" value="Root">
+                        <MenuItem aria-label="Root" value="root">
                           <Typography variant="body2">Root</Typography>
                         </MenuItem>
                         {groups.map((group) => (

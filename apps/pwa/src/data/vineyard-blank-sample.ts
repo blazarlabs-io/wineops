@@ -1,5 +1,5 @@
 import { LabDataSimple, Vineyard, VineyardStatus } from "@/models/types/db";
-import { generateLabData } from "@/utils/lab-data-generator";
+import { generateDummyDocs, generateLabData } from "@/utils/generators";
 
 const vineyardBlankSample: Vineyard = {
   id: Date.now().toString(),
@@ -58,7 +58,7 @@ const vineyardBlankSample: Vineyard = {
       content: "This is a test note. You can add, edit, and delete notes.",
     },
   ],
-  documents: [],
+  documents: generateDummyDocs(10),
   group: [],
 };
 

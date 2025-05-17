@@ -1,4 +1,5 @@
 import { Vineyard } from "@/models/types/db";
+import { DeleteOutline } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -32,7 +33,10 @@ export default function DeleteVineyardsDialog({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">Delete Vineyard(s)</DialogTitle>
+      <DialogTitle id="alert-dialog-title" className="flex items-center gap-1">
+        <DeleteOutline color="error" />
+        Delete Vineyard(s)
+      </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           Are you sure you want to delete these vineyard(s)?

@@ -268,13 +268,6 @@ export default function VineyardDetailsWidget({
         {localVineyard.labData && localVineyard.labData.length > 0 && (
           <div className="w-full">
             {localVineyard.labData.map((item, index) => {
-              // console.log(
-              //   "item",
-              //   index,
-              //   index < localVineyard.labData.length,
-              //   index % 2 === 0,
-              //   item
-              // );
               return (
                 <div key={item.id + index} className="w-full">
                   {index < 3 && (
@@ -293,12 +286,12 @@ export default function VineyardDetailsWidget({
                         unit={item.items[0].unit}
                         variation={item.items[0].variation.toString()}
                       />
-                      {/* <LabSingleItemDataDisplay
+                      <LabSingleItemDataDisplay
                         name={item.items[1].name}
                         value={item.items[1].value.toString()}
                         unit={item.items[1].unit}
                         variation={item.items[1].variation.toString()}
-                      /> */}
+                      />
                       {/* <LabSingleItemDataDisplay
                         name={item.items[2].name}
                         value={item.items[2].value.toString()}
@@ -332,7 +325,7 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={5}>
         <div className="flex gap-8 px-4 relative">
-          <div className="absolute -top-2 right-4 z-10">
+          <div className="absolute -top-6 right-4 z-10">
             <Link href="" className="underline">
               View All
             </Link>
