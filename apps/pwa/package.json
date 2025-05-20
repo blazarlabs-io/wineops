@@ -26,6 +26,7 @@
     "@mui/x-data-grid": "^8.3.0",
     "@mui/x-data-grid-generator": "^8.3.0",
     "@mui/x-data-grid-premium": "^8.3.0",
+    "@mui/x-date-pickers": "^8.3.1",
     "@storybook/react": "^8.6.12",
     "@toolpad/core": "^0.15.0",
     "@vis.gl/react-google-maps": "^1.5.2",

@@ -2,7 +2,12 @@
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
 import { useVineyard } from "@/context/vineyard";
-import { ENTITY_DETAILS } from "@/data/constants";
+import {
+  ENTITY_DETAILS,
+  GROUP_COLUMN_WIDTH,
+  ROW_HEIGHT_DEFAULT,
+  ROW_HEIGHT_EXPANDED,
+} from "@/data/constants";
 import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
@@ -40,6 +45,7 @@ import {
 import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
 import { vineyardColumns } from "./columns";
 import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
+import { Typography } from "@mui/material";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -85,8 +91,8 @@ export const DataTable: FunctionComponent<Props> = ({
   // * Row Data
   // const [rowData] = useState(getData());
   const [rowData, setRowData] = useState(vineyards);
-  const [rowHeight] = useState(96);
-  const [expandedRowHeight] = useState(364);
+  const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
+  const [expandedRowHeight] = useState(ROW_HEIGHT_EXPANDED);
 
   // * Get Data Path ["group", "vineyard"]
   const getDataPath = useCallback<GetDataPath>((data) => {
@@ -137,24 +143,13 @@ export const DataTable: FunctionComponent<Props> = ({
     return {
       headerName: "Name",
       field: "group",
-      width: 196,
-      // pinned: "left",
+      minWidth: GROUP_COLUMN_WIDTH,
       cellRenderer: "agGroupCellRenderer",
       filter: "agTextColumnFilter",
       cellRendererParams: {
         innerRenderer: GroupCellRenderer,
-        // suppressCount: true,
+        suppressCount: true,
       },
-      suppressSizeToFit: true,
-      // colSpan: (params: any) => {
-      //   console.log("colSpan", params.node.group, colDefs.length);
-      //   if (params.node.group) {
-      //     return 1;
-      //   } else {
-      //     // return the length of all columns
-      //     return colDefs.length + 1;
-      //   }
-      // },
     };
   }, []);
 
@@ -167,6 +162,7 @@ export const DataTable: FunctionComponent<Props> = ({
       suppressDoubleClickExpand: false,
       suppressEnterExpand: false,
       headerCheckboxSelection: true,
+      checkboxSelection: true,
     };
   }, []);
 
@@ -177,9 +173,8 @@ export const DataTable: FunctionComponent<Props> = ({
       field: "selection",
       sortable: false,
       resizable: true,
-      width: 80, //48,
+      width: 48,
       suppressHeaderMenuButton: true,
-      // pinned: "left",
       cellRenderer: "agGroupCellRenderer",
       cellRendererParams: {
         suppressCount: true,
@@ -187,9 +182,7 @@ export const DataTable: FunctionComponent<Props> = ({
           // console.log("SELECT-COLUMN", params);
           return (
             <>
-              {params.node.group ? (
-                <div style={{}}></div>
-              ) : (
+              {!params.node.group && (
                 <div
                   style={{
                     backgroundColor: "var(--mui-palette-background-default)",
@@ -224,9 +217,10 @@ export const DataTable: FunctionComponent<Props> = ({
     (event: SelectionChangedEvent) => {
       const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
       // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
-      const vineyards = nodesToVineyards(selectedNodes);
-      onChangeData?.(vineyards);
-      setSelectedRows(vineyards);
+      const _vineyards = nodesToVineyards(selectedNodes);
+      console.log("_vineyards", _vineyards);
+      onChangeData?.(_vineyards);
+      setSelectedRows(_vineyards);
     },
     []
   );
@@ -328,7 +322,7 @@ export const DataTable: FunctionComponent<Props> = ({
   return (
     <>
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-        {groupedData && groupedData.length > 0 && (
+        {groupedData && groupedData.length > 0 ? (
           <AgGridReact
             masterDetail={true}
             theme={myTheme}
@@ -348,6 +342,12 @@ export const DataTable: FunctionComponent<Props> = ({
             defaultColDef={defaultColDef}
             suppressRowHoverHighlight={true}
           />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Typography color="textSecondary" className="">
+              No Vineyards found.
+            </Typography>
+          </div>
         )}
       </div>
 

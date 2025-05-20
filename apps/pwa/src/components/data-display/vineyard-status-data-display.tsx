@@ -1,5 +1,6 @@
 import { VineyardStatus } from "@/models/types/db";
-import { cn } from "@/utils/styling";
+import { useColorScheme } from "@mui/material";
+import { useEffect, useState } from "react";
 
 export type VineyardStatusDataDisplayProps = {
   status: VineyardStatus;
@@ -8,25 +9,81 @@ export type VineyardStatusDataDisplayProps = {
 export default function VineyardStatusDataDisplay({
   status,
 }: VineyardStatusDataDisplayProps) {
+  const { mode } = useColorScheme();
+
+  const [styles, setStyles] = useState({});
+
+  const maintenanceStyles = {
+    color: mode === "light" ? "#7C8100" : "#FFEF93",
+    backgroundColor: mode === "light" ? "#FFEF93" : "#00000000",
+    BorderColor: mode === "light" ? "#7C8100" : "#FFEF93",
+  };
+
+  const harvestingStyles = {
+    color: mode === "light" ? "#89AC46" : "#C3FF99",
+    backgroundColor: mode === "light" ? "#C3FF99" : "#00000000",
+    BorderColor: mode === "light" ? "#89AC46" : "#C3FF99",
+  };
+
+  const vegetationStyles = {
+    color: mode === "light" ? "#481E14" : "#F2613F",
+    backgroundColor: mode === "light" ? "#F2613F" : "#00000000",
+    BorderColor: mode === "light" ? "#481E14" : "#F2613F",
+  };
+
+  const ripeningStyles = {
+    color: mode === "light" ? "#3B1C32" : "#DA0C81",
+    backgroundColor: mode === "light" ? "#DA0C81" : "#00000000",
+    BorderColor: mode === "light" ? "#3B1C32" : "#DA0C81",
+  };
+
+  const readyToHarvestStyles = {
+    color: mode === "light" ? "#17153B" : "#3DC2EC",
+    backgroundColor: mode === "light" ? "#3DC2EC" : "#00000000",
+    BorderColor: mode === "light" ? "#17153B" : "#3DC2EC",
+  };
+
+  const harvestEndedStyles = {
+    color: mode === "light" ? "#27374D" : "#9DB2BF",
+    backgroundColor: mode === "light" ? "#9DB2BF" : "#00000000",
+    BorderColor: mode === "light" ? "#27374D" : "#9DB2BF",
+  };
+
+  useEffect(() => {
+    if (status.toLocaleLowerCase() === "maintenance") {
+      setStyles(maintenanceStyles);
+    }
+    switch (status) {
+      case VineyardStatus.MAINTENANCE:
+        setStyles(maintenanceStyles);
+        break;
+      case VineyardStatus.VEGETATION:
+        setStyles(vegetationStyles);
+        break;
+      case VineyardStatus.HARVESTING:
+        setStyles(harvestingStyles);
+        break;
+      case VineyardStatus.RIPPING:
+        setStyles(ripeningStyles);
+        break;
+      case VineyardStatus.READY_FOR_HARVEST:
+        setStyles(readyToHarvestStyles);
+        break;
+      case VineyardStatus.HARVEST_ENDED:
+        setStyles(harvestEndedStyles);
+        break;
+      default:
+        setStyles({});
+        break;
+    }
+  }, [mode]);
+
   return (
     <>
       {status && (
         <div
-          className={cn(
-            "border max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-1",
-            status === VineyardStatus.MAINTENANCE &&
-              "border-[#7C8100] bg-[#FFEF93] text-[#7C8100]",
-            status === VineyardStatus.RIPPING &&
-              "border-[#AC3580] bg-[#F9D9ED] text-[#AC3580]",
-            status === VineyardStatus.VEGETATION &&
-              "border-[#FFAE52] bg-[#F9E6D1] text-[#FFAE52]",
-            status === VineyardStatus.READY_FOR_HARVEST &&
-              "border-[#35C8D2] bg-[#D9E8E9] text-[#35C8D2]",
-            status === VineyardStatus.HARVESTING &&
-              "border-[#00C950] bg-[#e7f9d9] text-[#00C950]",
-            status === VineyardStatus.HARVEST_ENDED &&
-              "border-[#A3A3A1] bg-[#E8E8E8] text-[#A3A3A1]"
-          )}
+          style={styles}
+          className="border max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-1"
         >
           {status.toUpperCase()}
         </div>

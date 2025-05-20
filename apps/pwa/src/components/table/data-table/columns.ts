@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { vineyardStatus } from "@/data/system-variables";
 import { ColDef } from "ag-grid-enterprise";
 import { GrapeVarietyCellRenderer } from "./cell-renderers/GrapeVarietyCellRenderer";
 import { LabDataCellRenderer } from "./cell-renderers/LabDataCellRenderer";
@@ -18,7 +17,6 @@ export const vineyardColumns: ColDef[] = [
     editable: true,
     cellEditor: "agRichTextCellEditor",
     aggFunc: (params: any) => {
-      // console.log("params", params);
       const grapes = params.values.map((value: any) => {
         return value;
       });
@@ -30,12 +28,10 @@ export const vineyardColumns: ColDef[] = [
     minWidth: 148,
     flex: 1,
     cellRenderer: StatusCellRenderer,
-    cellStyle: { width: "100%" },
-    editable: true,
-    cellEditor: "agRichSelectCellEditor",
-    cellEditorParams: {
-      values: vineyardStatus,
+    cellRendererParams: (params: any) => {
+      return params;
     },
+    cellStyle: { width: "100%" },
   },
   {
     field: "forcastedYield",
@@ -50,10 +46,9 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: LabDataCellRenderer,
     cellStyle: { width: "100%" },
-    aggFunc: (params: any) => {
-      // console.log("LABDATA params", params);
-      return params.values;
-    },
+    // aggFunc: (params: any) => {
+    //   return params.values;
+    // },
   },
   {
     field: "tasks",
@@ -61,6 +56,9 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: TasksCellRenderer,
     cellStyle: { width: "100%" },
+    aggFunc: (params: any) => {
+      return params.values;
+    },
   },
   {
     field: "notes",
@@ -68,5 +66,12 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: NotesCellRenderer,
     cellStyle: { width: "100%" },
+  },
+  {
+    field: "cadastralNumber",
+    hide: true,
+    aggFunc: (params: any) => {
+      return params.values;
+    },
   },
 ];

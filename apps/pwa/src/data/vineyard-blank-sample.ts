@@ -1,5 +1,4 @@
-import { LabDataSimple, Vineyard, VineyardStatus } from "@/models/types/db";
-import { generateDummyDocs, generateLabData } from "@/utils/generators";
+import { Vineyard, VineyardStatus } from "@/models/types/db";
 
 const vineyardBlankSample: Vineyard = {
   id: Date.now().toString(),
@@ -44,12 +43,13 @@ const vineyardBlankSample: Vineyard = {
     },
   },
   grape: {
+    id: "",
     clonalSelection: "",
     vivcNumber: "",
     countryOfOrigin: "",
   },
   forecastedYield: 0,
-  labData: generateLabData() as LabDataSimple[],
+  labData: [],
   tasks: [],
   notes: [
     {
@@ -58,7 +58,7 @@ const vineyardBlankSample: Vineyard = {
       content: "This is a test note. You can add, edit, and delete notes.",
     },
   ],
-  documents: generateDummyDocs(10),
+  documents: [],
   group: [],
 };
 

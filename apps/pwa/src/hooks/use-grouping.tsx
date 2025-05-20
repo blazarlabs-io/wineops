@@ -43,17 +43,44 @@ export function useGrouping<T extends Vineyard>(data: T[]) {
     );
   };
 
-  const ungroupRow = () => {
-    if (selectedRows.length === 0) {
-      return;
-    }
+  // const ungroupRow = () => {
+  //   if (selectedRows.length === 0) {
+  //     return;
+  //   }
 
-    const rowIds: string[] = selectedRows.map(({ id }) => id);
+  //   const rowIds: string[] = selectedRows.map(({ id }) => id);
+
+  //   _setGroupedData((prev) =>
+  //     prev.map((row) =>
+  //       rowIds.includes(row.id) ? { ...row, group: [row.id ?? row.name] } : row
+  //     )
+  //   );
+  // };
+
+  const ungroupRow = () => {
+    if (selectedRows.length === 0) return;
+
+    const groupNamesToUngroup = selectedRows.map(({ id }) => id);
 
     _setGroupedData((prev) =>
-      prev.map((row) =>
-        rowIds.includes(row.id) ? { ...row, group: [row.id ?? row.name] } : row
-      )
+      prev.map((row) => {
+        if (!row.group || !Array.isArray(row.group)) return row;
+
+        const groupIndex = row.group.findIndex((g) =>
+          groupNamesToUngroup.includes(g)
+        );
+
+        // Only ungroup if the group is not the last element (i.e., not a leaf item)
+        if (groupIndex >= 0 && groupIndex < row.group.length - 1) {
+          const newGroup = [
+            ...row.group.slice(0, groupIndex),
+            ...row.group.slice(groupIndex + 1),
+          ];
+          return { ...row, group: newGroup };
+        }
+
+        return row;
+      })
     );
   };
 
