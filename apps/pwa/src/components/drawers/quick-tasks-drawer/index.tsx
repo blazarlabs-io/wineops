@@ -1,3 +1,4 @@
+import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { Close, TaskAlt } from "@mui/icons-material";
 import {
   Avatar,
@@ -29,8 +30,6 @@ export default function QuickTasksDrawer({
   open,
   onOpenChange,
 }: QuickTasksDrawerProps) {
-  const drawerWidth = 320;
-
   const handleDrawerClose = () => {
     onOpenChange(false);
   };
@@ -38,10 +37,10 @@ export default function QuickTasksDrawer({
   return (
     <Drawer
       sx={{
-        width: drawerWidth,
+        width: RIGHT_DRAWER_WIDTH,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          // width: drawerWidth,
+          // width: RIGHT_DRAWER_WIDTH,
           overflowX: "hidden",
         },
         zIndex: (theme) => {
@@ -59,24 +58,24 @@ export default function QuickTasksDrawer({
       open={open}
       className="pointer-events-none"
     >
-      <DrawerHeader className="pointer-events-auto debug-red m-[0px] max-h-fit p-[0px] mt-[38px]">
-        <IconButton onClick={handleDrawerClose} className="debug-red">
+      <DrawerHeader className="pointer-events-auto m-[0px] max-h-sfit p-[0px] pt-6 mt-[38px]">
+        <IconButton onClick={handleDrawerClose} className="">
           <Close className="w-4 h-4" />
         </IconButton>
       </DrawerHeader>
 
       {/* * QUICK TASKS */}
 
-      <Box px={1} display={"flex"} flexDirection={"column"} gap={2}>
+      <Box px={2} display={"flex"} flexDirection={"column"} gap={2}>
         <Box display={"flex"} alignItems={"center"} gap={1}>
           <TaskAlt />
           <Typography variant="h5">Tasks</Typography>
         </Box>
-        <Box sx={{ width: drawerWidth, overflowX: "hidden" }}>
+        <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}>
           <Card
             sx={{
               minWidth: 0,
-              maxWidth: drawerWidth - 32,
+              maxWidth: RIGHT_DRAWER_WIDTH - 32,
               borderRadius: 3,
               position: "relative",
               paddingLeft: "12px",

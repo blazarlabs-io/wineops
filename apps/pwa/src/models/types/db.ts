@@ -42,6 +42,12 @@ export type Task = {
   assignee: string;
 };
 
+export type TaskSummary = {
+  id: string;
+  status: TaskStatus;
+  amount: number;
+};
+
 export type LabElement = {
   id: string;
   name: string;
@@ -67,12 +73,6 @@ export type LabDataSimple = {
 export type Coordinates = {
   lat: number;
   lng: number;
-};
-
-export type TaskSummary = {
-  id: string;
-  status: TaskStatus;
-  amount: number;
 };
 
 export type Location = {
@@ -112,6 +112,7 @@ export type Certifications = {
 };
 
 export type VineyardGrape = {
+  id: string;
   clonalSelection: string;
   vivcNumber: string;
   countryOfOrigin: string;

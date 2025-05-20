@@ -1,19 +1,30 @@
-import { CalendarX, Calendar, CalendarClock } from 'lucide-react';
+import { Task } from "@/models/types/db";
+import { CalendarX, Calendar, CalendarClock } from "lucide-react";
 
-export default function TasksDataDisplay() {
+export type TasksDataDisplayProps = {
+  todo: Task[];
+  inProgress: Task[];
+  completed: Task[];
+};
+
+export default function TasksDataDisplay({
+  todo,
+  inProgress,
+  completed,
+}: TasksDataDisplayProps) {
   return (
     <div className="flex flex-col h-full items-start justify-center">
       <button className="flex items-center gap-1 cursor-pointer max-h-[24px]">
         <CalendarX className="w-4 h-4 text-[#FF7878]" />
-        <span className="underline max-h-fit">10 overdue</span>
+        <span className="underline max-h-fit">{`${todo.length} to do`}</span>
       </button>
       <button className="flex items-center gap-1 cursor-pointer max-h-[24px]">
         <Calendar className="w-4 h-4 text-[#FFAE52]" />
-        <span className="underline max-h-fit">3 not started</span>
+        <span className="underline max-h-fit">{`${inProgress.length} in progress`}</span>
       </button>
       <button className="flex items-center gap-1 cursor-pointer max-h-[24px]">
         <CalendarClock className="w-4 h-4 text-[#00C950]" />
-        <span className="underline max-h-fit">7 ongoing</span>
+        <span className="underline max-h-fit">{`${completed.length} completed`}</span>
       </button>
     </div>
   );

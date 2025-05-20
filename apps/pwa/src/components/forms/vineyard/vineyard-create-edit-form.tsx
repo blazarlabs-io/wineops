@@ -11,7 +11,18 @@ import { setNestedValue } from "@/helpers/form-helpers";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { vineyardSchema } from "@/models/schemas/vineyard-schema";
-import { Coordinates, DbResponse, Vineyard } from "@/models/types/db";
+import {
+  Coordinates,
+  DbResponse,
+  LabDataSimple,
+  Vineyard,
+} from "@/models/types/db";
+import {
+  generateDummyDocs,
+  generateLabData,
+  generateNotes,
+  generateTasks,
+} from "@/utils/generators";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { ExpandMore } from "@mui/icons-material";
 import {
@@ -59,24 +70,15 @@ export default function VineyardForm({
     resolver: joiResolver(vineyardSchema),
   });
 
+  // ? Generate dummy data
   vineyardBlankSample.id = Date.now().toString();
+  vineyardBlankSample.labData = generateLabData() as LabDataSimple[];
+  vineyardBlankSample.tasks = generateTasks();
+  vineyardBlankSample.documents = generateDummyDocs(10);
+  vineyardBlankSample.notes = generateNotes();
+  // ?
+
   const [formData, setFormData] = useState<Vineyard>(vineyardBlankSample);
-
-  // const handleSelectChange = (name: string, value: string) => {
-  //   setValue(name, value);
-  //   setFormData((prevData: any) => {
-  //     const path = name.split(".");
-  //     return setNestedValue(prevData, path, value);
-  //   });
-  // };
-
-  // const handleCheckboxChange = (name: string, value: boolean) => {
-  //   setValue(name, value);
-  //   setFormData((prevData: any) => {
-  //     const path = name.split(".");
-  //     return setNestedValue(prevData, path, value);
-  //   });
-  // };
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
     const _path = "info.location.map";

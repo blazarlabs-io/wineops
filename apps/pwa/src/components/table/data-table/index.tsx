@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
+import { useVineyard } from "@/context/vineyard";
+import {
+  ENTITY_DETAILS,
+  GROUP_COLUMN_WIDTH,
+  ROW_HEIGHT_DEFAULT,
+  ROW_HEIGHT_EXPANDED,
+} from "@/data/constants";
 import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
-import { DbResponse } from "@/models/types/db";
+import { DbResponse, Vineyard } from "@/models/types/db";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
@@ -33,9 +40,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { ENTITY_DETAILS } from "@/data/constants";
-import { nodesToEntities } from "@/utils/notes-to-entities";
+import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
+import { vineyardColumns } from "./columns";
+import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
+import { Typography } from "@mui/material";
 import { DashboardEntity } from "@/models/types/dashboard";
+import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -90,6 +100,8 @@ export const DataTable = <T extends DashboardEntity>({
 }: DataTableProps<T>) => {
   const { enqueueSnackbar } = useSnackbar();
 
+  const { vineyards } = useVineyard();
+
   // * Main Data Grid Ref
   const gridRef = useRef<AgGridReact>(null);
 
@@ -98,9 +110,9 @@ export const DataTable = <T extends DashboardEntity>({
 
   // * Row Data
   // const [rowData] = useState(getData());
-  const [rowData, setRowData] = useState<T[]>(data);
-  const [rowHeight] = useState(96);
-  const [expandedRowHeight] = useState(364);
+  const [rowData, setRowData] = useState(vineyards);
+  const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
+  const [expandedRowHeight] = useState(ROW_HEIGHT_EXPANDED);
 
   // * Get Data Path ["group", "vineyard"]
   const getDataPath = useCallback<GetDataPath>((data) => {
@@ -151,29 +163,13 @@ export const DataTable = <T extends DashboardEntity>({
     return {
       headerName: "Name",
       field: "group",
-      minWidth: 200,
-      // pinned: "left",
-      flex: 1,
-      cellStyle: {
-        display: "flex",
-        alignItems: "center",
-      },
+      minWidth: GROUP_COLUMN_WIDTH,
       cellRenderer: "agGroupCellRenderer",
       filter: "agTextColumnFilter",
       cellRendererParams: {
-        //suppressCount: true,
+        innerRenderer: GroupCellRenderer,
+        suppressCount: true,
       },
-      suppressSizeToFit: true,
-      // colSpan: (params: any) => {
-      //   console.log("colSpan", params.node.group, colDefs.length);
-      //   if (params.node.group) {
-      //     return 1;
-      //   } else {
-      //     // return the length of all columns
-      //     return colDefs.length + 1;
-      //   }
-      // },
-      ...groupColumnDef,
     };
   }, [groupColumnDef]);
 
@@ -186,6 +182,7 @@ export const DataTable = <T extends DashboardEntity>({
       suppressDoubleClickExpand: false,
       suppressEnterExpand: false,
       headerCheckboxSelection: true,
+      checkboxSelection: true,
     };
   }, []);
 
@@ -196,13 +193,28 @@ export const DataTable = <T extends DashboardEntity>({
       field: "selection",
       sortable: false,
       resizable: true,
-      width: 80, //48,
+      width: 48,
       suppressHeaderMenuButton: true,
-      // pinned: "left",
       cellRenderer: "agGroupCellRenderer",
       cellRendererParams: {
         suppressCount: true,
-        innerRenderer: selectionCellRenderer,
+        innerRenderer: (params: any) => {
+          // console.log("SELECT-COLUMN", params);
+          return (
+            <>
+              {!params.node.group && (
+                <div
+                  style={{
+                    backgroundColor: "var(--mui-palette-background-default)",
+                  }}
+                  className="flex items-start justify-center flex-col gap-2 pl-2 absolute h-full top-0 left-0 w-full z-[999]"
+                >
+                  <VineyardDetailsWidget vineyard={params.node.data} />
+                </div>
+              )}
+            </>
+          );
+        },
       },
       colSpan: (params: any) => {
         // console.log("colSpan", params.node.group, colDefs.length);
@@ -229,11 +241,10 @@ export const DataTable = <T extends DashboardEntity>({
     (event: SelectionChangedEvent) => {
       const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
       // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
-      //const vineyards = nodesToVineyards(selectedNodes);
-      // TODO: chnage vineyards to more generic name like entity
-      const entities = nodesToEntities<T>(selectedNodes);
-      onChangeData?.(entities);
-      setSelectedRows(entities);
+      const _vineyards = nodesToVineyards(selectedNodes);
+      console.log("_vineyards", _vineyards);
+      onChangeData?.(_vineyards as T[]);
+      setSelectedRows(_vineyards as T[]);
     },
     []
   );
@@ -249,7 +260,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   const normalizedData: T[] = useMemo(
     () =>
-      rowData.map((row: T) => ({
+      (rowData as T[]).map((row: T) => ({
         ...row,
         group: [
           ...(!row.group || row.group.length < 2
@@ -317,7 +328,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   useEffect(() => {
     if (data && data.length > 0) {
-      setRowData(data);
+      setRowData(data as Vineyard[]);
     }
   }, [data]);
 
@@ -338,7 +349,7 @@ export const DataTable = <T extends DashboardEntity>({
   return (
     <>
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-        {groupedData && groupedData.length > 0 && (
+        {groupedData && groupedData.length > 0 ? (
           <AgGridReact
             masterDetail={true}
             theme={myTheme}
@@ -358,6 +369,12 @@ export const DataTable = <T extends DashboardEntity>({
             defaultColDef={defaultColDef}
             suppressRowHoverHighlight={true}
           />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Typography color="textSecondary" className="">
+              No Vineyards found.
+            </Typography>
+          </div>
         )}
       </div>
 

@@ -6,8 +6,8 @@ import IconButton from "@mui/material/IconButton";
 import { styled, useColorScheme } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
-
-const drawerWidth = 320;
+import QuickActionsDrawer from "../drawers/quick-actions-drawer";
+import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -18,7 +18,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  marginRight: -drawerWidth,
+  marginRight: -RIGHT_DRAWER_WIDTH,
   /**
    * This is necessary to enable the selection of content. In the DOM, the stacking order is determined
    * by the order of appearance. Following this rule, elements appearing later in the markup will overlay
@@ -46,10 +46,17 @@ export default function QickTasksWrapper({
   children: React.ReactNode;
 }) {
   const { mode } = useColorScheme();
-  const [open, setOpen] = useState<boolean>(false);
+  const [openQuickTasks, setOpenQuickTasks] = useState<boolean>(false);
+  const [openQuickActions, setOpenQuickActions] = useState<boolean>(false);
 
-  const handleDrawerOpen = (state: boolean) => {
-    setOpen(state);
+  const handleQuickTasksDrawerOpen = (state: boolean) => {
+    setOpenQuickTasks(state);
+    setOpenQuickActions(false);
+  };
+
+  const handleQuickActionsDrawerOpen = (state: boolean) => {
+    setOpenQuickActions(state);
+    setOpenQuickTasks(false);
   };
 
   return (
@@ -65,13 +72,28 @@ export default function QickTasksWrapper({
     >
       <Main
         sx={{ width: "100%", paddingLeft: "16px", paddingTop: "16px" }}
-        open={open}
+        open={openQuickTasks || openQuickActions}
         className=""
       >
         {children}
       </Main>
 
-      <QuickTasksDrawer open={open} onOpenChange={handleDrawerOpen} />
+      {openQuickTasks && (
+        <QuickTasksDrawer
+          open={openQuickTasks}
+          onOpenChange={handleQuickTasksDrawerOpen}
+        />
+      )}
+      {openQuickActions && (
+        <QuickActionsDrawer
+          open={openQuickActions}
+          onOpenChange={handleQuickActionsDrawerOpen}
+        />
+      )}
+
+      {!openQuickTasks && !openQuickActions && (
+        <div style={{ width: RIGHT_DRAWER_WIDTH }}></div>
+      )}
 
       <Box
         sx={{ paddingTop: "16px" }}
@@ -86,8 +108,8 @@ export default function QickTasksWrapper({
           color="inherit"
           aria-label="open drawer"
           // edge="end"
-          onClick={() => handleDrawerOpen(true)}
-          sx={[open && { display: "none" }]}
+          onClick={() => handleQuickTasksDrawerOpen(true)}
+          sx={[openQuickTasks && { display: "none" }]}
           className=""
         >
           <FormatListBulleted />
@@ -96,8 +118,8 @@ export default function QickTasksWrapper({
           color="inherit"
           aria-label="open drawer"
           // edge="end"
-          onClick={() => handleDrawerOpen(true)}
-          sx={[open && { display: "none" }]}
+          onClick={() => handleQuickActionsDrawerOpen(true)}
+          sx={[openQuickActions && { display: "none" }]}
           style={{ backgroundColor: mode === "dark" ? "transparent" : "#333" }}
         >
           <QuickActionsIcon />
