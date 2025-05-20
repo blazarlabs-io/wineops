@@ -8,11 +8,11 @@ import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Vineyard } from "@/models/types/db";
 import DeselectIcon from "@mui/icons-material/Deselect";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import { Chip } from "@mui/material";
+import { DashboardEntity } from "@/models/types/dashboard";
 
 type UngroupingDialogProps<T> = {
   open: boolean;
@@ -21,7 +21,7 @@ type UngroupingDialogProps<T> = {
   onUngroup: () => void;
 };
 
-export default function UngroupingDialog<T extends Vineyard>({
+export default function UngroupingDialog<T extends DashboardEntity>({
   open,
   rows,
   onClose,
@@ -90,7 +90,6 @@ export default function UngroupingDialog<T extends Vineyard>({
             id="ungroup"
             name="ungroup"
             aria-label="ungroup"
-            className="shadow-xs"
             onClick={handleUngroup}
           >
             Ungroup

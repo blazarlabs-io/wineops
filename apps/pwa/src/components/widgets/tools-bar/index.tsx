@@ -18,25 +18,18 @@ import { Box, IconButton } from "@mui/material";
 import { Search } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import { ButtonType, ButtonProps } from "./constants";
 
 export type ToolsBarProps = {
-  enableCreate: boolean;
-  enableEdit: boolean;
-  enableGrouping: boolean;
-  enableDelete: boolean;
-  enableUngrouping: boolean;
-  onClickGroup: () => void;
-  onClickUngroup: () => void;
+  buttons: Partial<Record<ButtonType, ButtonProps>>;
 };
 
 export default function ToolsBar({
-  enableCreate = true,
-  enableEdit,
-  enableGrouping,
-  enableDelete,
-  enableUngrouping,
-  onClickGroup,
-  onClickUngroup,
+  buttons = {
+    [ButtonType.ADD]: {
+      enabled: true,
+    },
+  },
 }: ToolsBarProps) {
   const { selectedVineyards } = useVineyard();
 
@@ -102,64 +95,77 @@ export default function ToolsBar({
         onClose={handleDeleteVineyards}
         vineyards={selectedVineyards}
       />
-      <Box className="flex items-center w-full">
-        <Box
-          width={"100%"}
-          display={"flex"}
-          flexDirection={"row"}
-          gap={1}
-          alignItems={"center"}
-          className=""
-        >
-          <VineyardFormDrawer
-            type={formType}
-            vineyard={localVineyard}
-            open={openFormDrawer}
-            onClose={handleCloseFormDrawer}
-          />
-          <IconButton
-            color="default"
-            aria-label="add"
-            onClick={handleOpenFormDrawer}
-            disabled={!enableCreate}
-          >
-            <Add className="" />
-          </IconButton>
-          <IconButton
-            color="default"
-            aria-label="edit"
-            disabled={!enableEdit}
-            onClick={handleEditVineyards}
-          >
-            <Edit />
-          </IconButton>
-          <IconButton
-            color="default"
-            aria-label="group"
-            disabled={!enableGrouping}
-            onClick={onClickGroup}
-          >
-            <SelectAll />
-          </IconButton>
-          <IconButton
-            color="default"
-            size="small"
-            aria-label="ungroup"
-            className="shadow-xs"
-            disabled={!enableUngrouping}
-            onClick={onClickUngroup}
-          >
-            <Deselect className="" />
-          </IconButton>
-          <IconButton
-            color="error"
-            aria-label="delete"
-            disabled={!enableDelete}
-            onClick={handleOpenDeleteDialog}
-          >
-            <DeleteOutline className="" />
-          </IconButton>
+      <Box
+        width={1}
+        display="flex"
+        gap={1}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <VineyardFormDrawer
+          type={formType}
+          vineyard={localVineyard}
+          open={openFormDrawer}
+          onClose={handleCloseFormDrawer}
+        />
+        <Box display="flex" gap={1}>
+          {buttons[ButtonType.ADD] && (
+            <IconButton
+              color="default"
+              aria-label="add"
+              onClick={handleOpenFormDrawer}
+              disabled={!buttons[ButtonType.ADD]?.enabled}
+            >
+              <Add className="" />
+            </IconButton>
+          )}
+          {buttons[ButtonType.EDIT] && (
+            <IconButton
+              color="default"
+              aria-label="edit"
+              disabled={!buttons[ButtonType.EDIT]?.enabled}
+              onClick={handleEditVineyards}
+            >
+              <Edit />
+            </IconButton>
+          )}
 
+          {buttons[ButtonType.GROUP] && (
+            <IconButton
+              color="default"
+              aria-label="group"
+              disabled={!buttons[ButtonType.GROUP]?.enabled}
+              onClick={buttons[ButtonType.GROUP]?.onClick}
+            >
+              <SelectAll />
+            </IconButton>
+          )}
+
+          {buttons[ButtonType.UNGROUP] && (
+            <IconButton
+              color="default"
+              size="small"
+              aria-label="ungroup"
+              disabled={!buttons[ButtonType.UNGROUP]?.enabled}
+              onClick={buttons[ButtonType.UNGROUP]?.onClick}
+            >
+              <Deselect className="" />
+            </IconButton>
+          )}
+
+          {buttons[ButtonType.DELETE] && (
+            <IconButton
+              color="error"
+              aria-label="delete"
+              disabled={!buttons[ButtonType.DELETE]?.enabled}
+              onClick={handleOpenDeleteDialog}
+            >
+              <DeleteOutline className="" />
+            </IconButton>
+          )}
+        </Box>
+
+        <Box>
           <IconButton
             color="inherit"
             aria-label="filter"

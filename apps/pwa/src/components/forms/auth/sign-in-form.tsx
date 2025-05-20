@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 // import { toast } from '@repo/ui/components/base/toast';
-import { cn } from "@/utils/utils";
+import { cn } from "@/utils/styling";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

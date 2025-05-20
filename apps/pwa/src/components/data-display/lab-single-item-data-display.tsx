@@ -1,4 +1,4 @@
-import { cn } from "@/utils/utils";
+import { cn } from "@/utils/styling";
 import { Typography, useTheme } from "@mui/material";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

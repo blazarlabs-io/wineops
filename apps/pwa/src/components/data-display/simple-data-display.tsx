@@ -1,8 +1,9 @@
+import { ReactNode } from "react";
 import { Card, Typography } from "@mui/material";
 
 export type SimpleDataDisplayProps = {
-  label: string;
-  value: string;
+  label: ReactNode;
+  value: ReactNode;
 };
 
 export default function SimpleDataDisplay({
@@ -17,7 +18,7 @@ export default function SimpleDataDisplay({
       <Typography variant="body2" color="textDisabled">
         {label}
       </Typography>
-      <Typography>{value}</Typography>
+      <Typography component="span">{value}</Typography>
     </Card>
   );
 }

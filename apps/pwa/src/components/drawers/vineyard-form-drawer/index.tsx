@@ -17,7 +17,12 @@ export default function VineyardFormDrawer({
   type,
 }: VineyardFormDrawerProps) {
   return (
-    <Drawer anchor="right" open={open} onClose={onClose} sx={{ zIndex: 99 }}>
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={onClose}
+      sx={{ zIndex: ({ zIndex }) => zIndex.drawer - 1 }}
+    >
       <Box
         sx={{
           padding: 2,

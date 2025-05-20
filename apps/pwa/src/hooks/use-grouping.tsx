@@ -1,8 +1,11 @@
 import { ENTITY_DETAILS } from "@/data/constants";
-import { Vineyard } from "@/models/types/db";
+import { DashboardEntity } from "@/models/types/dashboard";
 import { SetStateAction, useCallback, useState } from "react";
 
-export function useGrouping<T extends Vineyard>(data: T[]) {
+export function useGrouping<T extends DashboardEntity>(
+  data: T[],
+  entryKey?: keyof T
+) {
   const [groupedData, _setGroupedData] = useState<T[]>(data);
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [groupToExpand, setGroupToExpand] = useState<string[]>([]);
@@ -38,7 +41,9 @@ export function useGrouping<T extends Vineyard>(data: T[]) {
 
     _setGroupedData((prev) =>
       prev.map((row) =>
-        rowIds.includes(row.id) ? { ...row, group: [...group, row.name] } : row
+        rowIds.includes(row.id)
+          ? { ...row, group: [...group, row[entryKey ?? ("name" as keyof T)]] }
+          : row
       )
     );
   };
@@ -52,7 +57,9 @@ export function useGrouping<T extends Vineyard>(data: T[]) {
 
     _setGroupedData((prev) =>
       prev.map((row) =>
-        rowIds.includes(row.id) ? { ...row, group: [row.id ?? row.name] } : row
+        rowIds.includes(row.id)
+          ? { ...row, group: [row.id ?? row[entryKey ?? ("name" as keyof T)]] }
+          : row
       )
     );
   };

@@ -1,4 +1,9 @@
 import { createTheme } from "@mui/material/styles";
+import typography from "./typography";
+import MuiFab from "./components/buttons/Fab";
+import MuiButton from "./components/buttons/Button";
+import MuiStack from "./components/layout/Stack";
+import MuiPaper from "./components/surfaces/Paper";
 
 export const mainTheme = createTheme({
   cssVariables: {
@@ -14,7 +19,11 @@ export const mainTheme = createTheme({
       xl: 1536,
     },
   },
-  typography: {
-    fontFamily: "Lato, sans-serif",
+  typography,
+  components: {
+    MuiButton,
+    MuiFab,
+    MuiPaper,
+    MuiStack,
   },
 });

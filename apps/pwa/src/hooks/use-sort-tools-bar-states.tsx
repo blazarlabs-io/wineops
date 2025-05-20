@@ -1,7 +1,8 @@
-import { Vineyard } from "@/models/types/db";
 import { useEffect, useState } from "react";
+import { ENTITY_DETAILS } from "@/data/constants";
+import { DashboardEntity } from "@/models/types/dashboard";
 
-export const useSortToolsBarStates = (data: Vineyard[]) => {
+export const useSortToolsBarStates = <T extends DashboardEntity>(data: T[]) => {
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
   const [enableGrouping, setEnableGrouping] = useState<boolean>(false);
   const [enableDelete, setEnableDelete] = useState<boolean>(false);
@@ -18,7 +19,9 @@ export const useSortToolsBarStates = (data: Vineyard[]) => {
       setEnableDelete(true);
 
       const isDataGrouped = data.some(
-        ({ group }) => group && Array.isArray(group) && group.length > 1
+        ({ group }) =>
+          group &&
+          group.length > (group[group.length - 1] === ENTITY_DETAILS ? 2 : 1)
       );
 
       setEnableUngrouping(isDataGrouped);

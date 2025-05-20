@@ -1,15 +1,16 @@
-import { Fragment } from 'react';
-import StripedBar from './striped-bar';
-import { Metric, QUANTITY_COLORS } from './constants';
-import { SortedValueWithColor } from './types';
-import Legend from './legend';
-import Markers from './markers';
-import { VineyardStatus } from '@/models/types/db';
+import { Fragment } from "react";
+import StripedBar from "./striped-bar";
+import { Metric, QUANTITY_COLORS } from "./constants";
+import { SortedValueWithColor } from "./types";
+import Legend from "./legend";
+import Markers from "./markers";
+import { GrapeStatus, VineyardStatus } from "@/models/types/db";
+import { EntityStatus } from "@/models/types/dashboard";
 
 type Metrics = Partial<Record<Metric, number>>;
 
 export type QuantityWidgetProps = Metrics & {
-  status?: VineyardStatus;
+  status?: EntityStatus;
   metrics?: Metrics[];
 };
 
@@ -21,7 +22,9 @@ export default function QuantityWidget({
   metrics = [],
 }: QuantityWidgetProps) {
   const hasMetrics = Array.isArray(metrics) && metrics.length > 0;
-  const metricsObject = hasMetrics ? reduceByType(metrics) : { actual, supply, demand };
+  const metricsObject = hasMetrics
+    ? reduceByType(metrics)
+    : { actual, supply, demand };
 
   const actualValue = metricsObject.actual || 0;
   const supplyValue = metricsObject.supply || 0;
@@ -31,16 +34,32 @@ export default function QuantityWidget({
 
   const isPreHarvest = hasMetrics
     ? false
-    : status !== VineyardStatus.HARVESTING && status !== VineyardStatus.HARVEST_ENDED;
-  const isOnHarvest = hasMetrics ? false : status === VineyardStatus.HARVESTING;
-  const isPostHarvest = hasMetrics ? true : status === VineyardStatus.HARVEST_ENDED;
+    : status === GrapeStatus.IN_TRANSIT ||
+      (status !== VineyardStatus.HARVESTING &&
+        status !== VineyardStatus.HARVEST_ENDED);
+  const isOnHarvest = hasMetrics
+    ? false
+    : status === VineyardStatus.HARVESTING ||
+      status === GrapeStatus.FRIDGE_STORED ||
+      status === GrapeStatus.STORED;
+  const isPostHarvest = hasMetrics
+    ? true
+    : status === VineyardStatus.HARVEST_ENDED ||
+      status === GrapeStatus.DEHYDRATED ||
+      status === GrapeStatus.PROCESSED;
 
-  const sortedValuesWithColors: SortedValueWithColor[] = Object.entries(QUANTITY_COLORS)
+  const sortedValuesWithColors: SortedValueWithColor[] = Object.entries(
+    QUANTITY_COLORS
+  )
     .map(([type, colors]) => ({
       ...colors,
       type: type as Metric,
       value:
-        type === Metric.ACTUAL ? actualValue : type === Metric.SUPPLY ? supplyValue : demandValue,
+        type === Metric.ACTUAL
+          ? actualValue
+          : type === Metric.SUPPLY
+            ? supplyValue
+            : demandValue,
     }))
     .filter(({ value }) => value > 0)
     .sort((a, b) => a.value - b.value);
@@ -48,7 +67,11 @@ export default function QuantityWidget({
   return (
     <div className="flex flex-col gap-8 p-3 max-w-[216px]">
       <div className="relative">
-        <Legend actual={actualValue} supply={supplyValue} demand={demandValue} />
+        <Legend
+          actual={actualValue}
+          supply={supplyValue}
+          demand={demandValue}
+        />
 
         <div className="w-full h-7.5 flex overflow-hidden rounded-xs">
           {sortedValuesWithColors.length === 0 && (
@@ -73,7 +96,9 @@ export default function QuantityWidget({
               index
             ) => {
               const percentage = Math.round(
-                ((value - (sortedValuesWithColors[index - 1]?.value || 0)) / maxValue) * 100
+                ((value - (sortedValuesWithColors[index - 1]?.value || 0)) /
+                  maxValue) *
+                  100
               );
 
               const isActual = type === Metric.ACTUAL;
@@ -85,45 +110,57 @@ export default function QuantityWidget({
                 isSupply ||
                 (isOnHarvest && isDemand && value < supplyValue) ||
                 (isPostHarvest && isActual && supplyValue === 0)
-                  ? ''
-                  : (isPostHarvest && demandValue > 0 && demandValue < actualValue
+                  ? ""
+                  : (isPostHarvest &&
+                    demandValue > 0 &&
+                    demandValue < actualValue
                       ? secondaryDarkColor
                       : darkColor) || color;
 
               const isHigherDemand =
-                (isPreHarvest && isDemand && value > actualValue + supplyValue) ||
-                (isOnHarvest && (isActual || (isDemand && value > supplyValue)));
+                (isPreHarvest &&
+                  isDemand &&
+                  value > actualValue + supplyValue) ||
+                (isOnHarvest &&
+                  (isActual || (isDemand && value > supplyValue)));
 
               const isLowerDemand = isDemand && value <= actualValue;
 
-              const showStripedBar = isHigherDemand || (isLowerDemand && isOnHarvest);
+              const showStripedBar =
+                isHigherDemand || (isLowerDemand && isOnHarvest);
 
               return (
                 <Fragment key={index}>
                   <div
                     style={{
                       width: `${percentage}%`,
-                      transition: 'width 0.3s ease-in-out',
+                      transition: "width 0.3s ease-in-out",
                     }}
-                    className={`border-y border-gray-300 my-1 h-5.5 ${index === 0 ? 'ml-0 pl-0.5 rounded-l-xs border-l' : ''}`}
+                    className={`border-y border-gray-300 my-1 h-5.5 ${index === 0 ? "ml-0 pl-0.5 rounded-l-xs border-l" : ""}`}
                   >
                     {showStripedBar ? (
                       <StripedBar
-                        className={`my-0.5 ${index === 0 ? 'rounded-l-xs' : ''}`}
-                        lightColor={isLowerDemand ? secondaryLightColor : lightColor}
-                        darkColor={isLowerDemand ? secondaryDarkColor : darkColor}
+                        className={`my-0.5 ${index === 0 ? "rounded-l-xs" : ""}`}
+                        lightColor={
+                          isLowerDemand ? secondaryLightColor : lightColor
+                        }
+                        darkColor={
+                          isLowerDemand ? secondaryDarkColor : darkColor
+                        }
                       />
                     ) : (
                       <div
                         style={{ backgroundColor }}
-                        className={`h-4 overflow-hidden my-0.5 ${index === 0 ? 'rounded-l-xs' : ''}`}
+                        className={`h-4 overflow-hidden my-0.5 ${index === 0 ? "rounded-l-xs" : ""}`}
                       />
                     )}
                   </div>
                   <span
                     className="h-full w-[3px] rounded"
                     style={{
-                      backgroundColor: markerColor || (isLowerDemand ? secondaryDarkColor : color),
+                      backgroundColor:
+                        markerColor ||
+                        (isLowerDemand ? secondaryDarkColor : color),
                     }}
                   />
                 </Fragment>

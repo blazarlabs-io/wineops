@@ -1,4 +1,4 @@
-import { Vineyard } from "@/models/types/db";
+import { DashboardEntity } from "@/models/types/dashboard";
 import { SelectAll } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Chip } from "@mui/material";
@@ -28,7 +28,7 @@ type GroupingDialogProps<T> = {
   onAddToGroup: (group: string[]) => void;
 };
 
-export default function GroupingDialog<T extends Vineyard>({
+export default function GroupingDialog<T extends DashboardEntity>({
   open,
   rows,
   groups,
@@ -308,7 +308,6 @@ export default function GroupingDialog<T extends Vineyard>({
             id="add-to-group"
             name="add-to-group"
             aria-label="group"
-            className="shadow-xs"
             onClick={handleAddToGroup}
             disabled={isAddToGroupDisabled}
           >
