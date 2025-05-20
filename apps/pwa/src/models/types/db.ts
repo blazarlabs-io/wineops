@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Timestamp } from "firebase/firestore";
+
 export type TaskStatus =
   | "todo"
   | "in-progress"
@@ -167,4 +169,91 @@ export interface Group extends Vineyard {
 export type VineyardItemGroup = {
   groupName: string | null;
   vineyards: Vineyard[];
+};
+
+export const GrapeStatus = {
+  IN_TRANSIT: "In Transit",
+  PROCESSED: "Processed",
+  DEHYDRATED: "Dehydrated",
+  STORED: "Stored",
+  FRIDGE_STORED: "Fridge Stored",
+} as const;
+
+export type GrapeStatus = (typeof GrapeStatus)[keyof typeof GrapeStatus];
+
+export type GrapeEntry = {
+  grossWeight: number;
+  grossUnit?: string;
+  netWeight: number;
+  netUnit?: string;
+  tareWeight: number;
+  tareUnit?: string;
+  weigherName: string;
+  intakeDate: string | Timestamp;
+};
+
+export type Supplier = {
+  companyName: string;
+  dispatchInvoice: string;
+  invoiceNo: string;
+  vineyardName: string;
+};
+
+export type ProcessingInfo = {
+  receivingBay: string;
+  destemmer: string;
+  pressUsed: string;
+  vesselUsed: string;
+};
+
+export type TransportationInfo = {
+  id: string;
+  vehicleIdNo: string;
+  companyName: string;
+  driverIdNo: string;
+  certificate: string;
+  acquisitionInvoiceNo: string;
+};
+
+export type GrapeLabData = {
+  date: string | Timestamp;
+  sugar: Partial<LabElement>;
+  acidity: Partial<LabElement>;
+  density: Partial<LabElement>;
+  temperature: Partial<LabElement>;
+  spoiledGrapesPercentage: number;
+  crushedGrapesPercentage: number;
+  addedGrapesVarietiesPercentage: number;
+  labTechnicianName: string;
+  labCertificateID: string;
+};
+
+export const Metric = {
+  ACTUAL: "actual",
+  SUPPLY: "supply",
+  DEMAND: "demand",
+} as const;
+
+export type Metric = (typeof Metric)[keyof typeof Metric];
+
+export type Metrics = Partial<Record<Metric, number>>;
+
+export type Grape = {
+  id: string;
+  name: string;
+  entry: GrapeEntry;
+  date: string | Timestamp;
+  location: string;
+  status: GrapeStatus;
+  grapeVariety: string;
+  certifications: Certifications;
+  metrics: Metrics;
+  supplier: Supplier;
+  labData: GrapeLabData;
+  notes: Note[];
+  transportationInfo: TransportationInfo;
+  processingInfo: ProcessingInfo;
+  tasks: Task[];
+  documents: SingleDocument[];
+  group: string[];
 };

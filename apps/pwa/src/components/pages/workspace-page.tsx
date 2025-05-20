@@ -6,6 +6,12 @@ import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { Vineyard } from "@/models/types/db";
 import { Box, useColorScheme } from "@mui/material";
 import { StrictMode, useState } from "react";
+import { ButtonType } from "../widgets/tools-bar/constants";
+import { useVineyard } from "@/context/vineyard";
+import { vineyardColumns } from "../table/data-table/columns";
+import { GroupCellRenderer } from "../table/data-table/cell-renderers/GroupCellRenderer";
+import { db } from "@/lib/firebase/services";
+import { SelectionCellRenderer } from "../table/data-table/cell-renderers/SelectionCellRenderer";
 
 export default function WorkspacePage() {
   const { mode } = useColorScheme();
@@ -34,26 +40,58 @@ export default function WorkspacePage() {
     setOpenUngroupingDialog(false);
   };
 
+  const { vineyards, updateSelectedVineyards } = useVineyard();
+
+  const updateGroup = async (
+    uid: string,
+    rows: Partial<Vineyard>[],
+    group: string[]
+  ) => await db.vineyard.updateGroup(uid, rows, group);
+
   return (
     <Box className="flex w-full h-full">
       <Box className="flex flex-col gap-4 w-full">
         <ToolsBar
-          enableCreate={true}
-          enableEdit={enableEdit}
-          enableGrouping={enableGrouping}
-          enableDelete={enableDelete}
-          enableUngrouping={enableUngrouping}
-          onClickGroup={handleClickOpenGroupingDialog}
-          onClickUngroup={handleClickOpenUngroupingDialog}
+          buttons={{
+            [ButtonType.ADD]: {
+              enabled: true,
+            },
+            [ButtonType.EDIT]: {
+              enabled: enableEdit,
+            },
+            [ButtonType.DELETE]: {
+              enabled: enableDelete,
+            },
+            [ButtonType.GROUP]: {
+              enabled: enableGrouping,
+              onClick: handleClickOpenGroupingDialog,
+            },
+            [ButtonType.UNGROUP]: {
+              enabled: enableUngrouping,
+              onClick: handleClickOpenUngroupingDialog,
+            },
+          }}
         />
         <StrictMode>
-          <DataTable
+          <DataTable<Vineyard>
             isDarkMode={mode === "dark"}
             onChangeData={setSelectionData}
             openGroupingDialog={openGroupingDialog}
             openUngroupingDialog={openUngroupingDialog}
             handleCloseGroupingDialog={handleCloseGroupingDialog}
             handleCloseUngroupingDialog={handleCloseUngroupingDialog}
+            data={vineyards}
+            columns={vineyardColumns}
+            selectionCellRenderer={SelectionCellRenderer}
+            groupColumnDef={{
+              headerName: "Name",
+              cellRendererParams: {
+                innerRenderer: GroupCellRenderer,
+                suppressCount: false,
+              },
+            }}
+            updateGroup={updateGroup}
+            updateSelectedData={updateSelectedVineyards}
           />
         </StrictMode>
       </Box>

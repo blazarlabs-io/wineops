@@ -13,6 +13,6 @@ export const firebaseConfig = {
 export const WINERY = "winery";
 export const VINEYARDS = "vineyards";
 export const VINEYARDS_GROUPS = "vineyards_groups";
-export const GRAPES = "grape";
+export const GRAPES = "grapes";
 export const MUST = "must";
 export const BULKWINES = "bulkwines";

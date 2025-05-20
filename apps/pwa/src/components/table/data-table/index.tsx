@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
-import { useVineyard } from "@/context/vineyard";
-import { ENTITY_DETAILS } from "@/data/constants";
 import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
-import { db } from "@/lib/firebase/services";
-import { DbResponse, Vineyard } from "@/models/types/db";
-import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
+import { DbResponse } from "@/models/types/db";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
@@ -27,7 +23,7 @@ import {
   themeBalham,
   TreeDataModule,
 } from "ag-grid-enterprise";
-import { AgGridReact } from "ag-grid-react";
+import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
 import { useSnackbar } from "notistack";
 import {
   type FunctionComponent,
@@ -37,9 +33,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
-import { vineyardColumns } from "./columns";
-import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
+import { ENTITY_DETAILS } from "@/data/constants";
+import { nodesToEntities } from "@/utils/notes-to-entities";
+import { DashboardEntity } from "@/models/types/dashboard";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -53,18 +49,29 @@ ModuleRegistry.registerModules([
   TreeDataModule,
 ]);
 
-interface Props {
+interface DataTableProps<T extends DashboardEntity> {
   gridTheme?: string;
   isDarkMode?: boolean;
-  data?: Vineyard[];
-  onChangeData?: (data: Vineyard[]) => void;
   openGroupingDialog: boolean;
   handleCloseGroupingDialog: () => void;
   openUngroupingDialog: boolean;
   handleCloseUngroupingDialog: () => void;
+  data?: T[];
+  onChangeData?: (data: T[]) => void;
+  entryKey?: keyof T;
+  updateSelectedData: (data: T[]) => void;
+  columns: ColDef[];
+  //groupCellRenderer: FunctionComponent<CustomCellRendererProps>;
+  updateGroup: (
+    uid: string,
+    rows: Partial<T>[],
+    group: string[]
+  ) => Promise<DbResponse>;
+  selectionCellRenderer: FunctionComponent<CustomCellRendererProps>;
+  groupColumnDef?: ColDef<any, any>;
 }
 
-export const DataTable: FunctionComponent<Props> = ({
+export const DataTable = <T extends DashboardEntity>({
   gridTheme = "ag-theme-quartz",
   isDarkMode,
   onChangeData,
@@ -72,19 +79,26 @@ export const DataTable: FunctionComponent<Props> = ({
   handleCloseGroupingDialog,
   openUngroupingDialog,
   handleCloseUngroupingDialog,
-}) => {
-  const { vineyards, updateSelectedVineyards } = useVineyard();
+  data = [],
+  updateSelectedData,
+  entryKey = "name" as keyof T,
+  columns,
+  //groupCellRenderer,
+  updateGroup,
+  selectionCellRenderer,
+  groupColumnDef,
+}: DataTableProps<T>) => {
   const { enqueueSnackbar } = useSnackbar();
 
   // * Main Data Grid Ref
   const gridRef = useRef<AgGridReact>(null);
 
   // * Column Definitions
-  const [colDefs] = useState<ColDef[]>(vineyardColumns);
+  const colDefs = useMemo(() => columns, [columns]);
 
   // * Row Data
   // const [rowData] = useState(getData());
-  const [rowData, setRowData] = useState(vineyards);
+  const [rowData, setRowData] = useState<T[]>(data);
   const [rowHeight] = useState(96);
   const [expandedRowHeight] = useState(364);
 
@@ -137,13 +151,17 @@ export const DataTable: FunctionComponent<Props> = ({
     return {
       headerName: "Name",
       field: "group",
-      width: 196,
+      minWidth: 200,
       // pinned: "left",
+      flex: 1,
+      cellStyle: {
+        display: "flex",
+        alignItems: "center",
+      },
       cellRenderer: "agGroupCellRenderer",
       filter: "agTextColumnFilter",
       cellRendererParams: {
-        innerRenderer: GroupCellRenderer,
-        // suppressCount: true,
+        //suppressCount: true,
       },
       suppressSizeToFit: true,
       // colSpan: (params: any) => {
@@ -155,11 +173,12 @@ export const DataTable: FunctionComponent<Props> = ({
       //     return colDefs.length + 1;
       //   }
       // },
+      ...groupColumnDef,
     };
-  }, []);
+  }, [groupColumnDef]);
 
   // * Row Selection Options
-  const rowSelection = useMemo(() => {
+  const rowSelection = useMemo<RowSelectionOptions>(() => {
     return {
       mode: "multiRow",
       // enableClickSelection: true,
@@ -171,7 +190,7 @@ export const DataTable: FunctionComponent<Props> = ({
   }, []);
 
   // * Selection Column Definition
-  const selectionColumnDef = useMemo(() => {
+  const selectionColumnDef = useMemo<ColDef>(() => {
     return {
       headerName: "",
       field: "selection",
@@ -183,25 +202,7 @@ export const DataTable: FunctionComponent<Props> = ({
       cellRenderer: "agGroupCellRenderer",
       cellRendererParams: {
         suppressCount: true,
-        innerRenderer: (params: any) => {
-          // console.log("SELECT-COLUMN", params);
-          return (
-            <>
-              {params.node.group ? (
-                <div style={{}}></div>
-              ) : (
-                <div
-                  style={{
-                    backgroundColor: "var(--mui-palette-background-default)",
-                  }}
-                  className="flex items-start justify-center flex-col gap-2 pl-2 absolute h-full top-0 left-0 w-full z-[999]"
-                >
-                  <VineyardDetailsWidget vineyard={params.node.data} />
-                </div>
-              )}
-            </>
-          );
-        },
+        innerRenderer: selectionCellRenderer,
       },
       colSpan: (params: any) => {
         // console.log("colSpan", params.node.group, colDefs.length);
@@ -216,17 +217,23 @@ export const DataTable: FunctionComponent<Props> = ({
   }, []);
 
   // * Event Handlers
-  const handleOnRowSelected = useCallback((data: any) => {
-    updateSelectedVineyards(data.api.getSelectedRows());
-  }, []);
+  const handleOnRowSelected = useCallback(
+    (data: any) => {
+      //updateSelectedVineyards(data.api.getSelectedRows());
+      updateSelectedData(data.api.getSelectedRows());
+    },
+    [updateSelectedData]
+  );
 
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
       const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
       // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
-      const vineyards = nodesToVineyards(selectedNodes);
-      onChangeData?.(vineyards);
-      setSelectedRows(vineyards);
+      //const vineyards = nodesToVineyards(selectedNodes);
+      // TODO: chnage vineyards to more generic name like entity
+      const entities = nodesToEntities<T>(selectedNodes);
+      onChangeData?.(entities);
+      setSelectedRows(entities);
     },
     []
   );
@@ -240,18 +247,18 @@ export const DataTable: FunctionComponent<Props> = ({
     }
   }, [isDarkMode]);
 
-  const normalizedData: Vineyard[] = useMemo(
+  const normalizedData: T[] = useMemo(
     () =>
-      rowData.map((row: Vineyard) => ({
+      rowData.map((row: T) => ({
         ...row,
         group: [
           ...(!row.group || row.group.length < 2
-            ? [row.name ?? row.id]
+            ? [row[entryKey] ?? row.id]
             : row.group),
           ENTITY_DETAILS,
         ],
       })),
-    [rowData]
+    [entryKey, rowData]
   );
 
   const {
@@ -262,7 +269,7 @@ export const DataTable: FunctionComponent<Props> = ({
     setGroupedData,
     setSelectedRows,
     setGroupToExpand,
-  } = useGrouping<Vineyard>(normalizedData);
+  } = useGrouping<T>(normalizedData);
 
   const { user } = useAuth();
   const uid = user?.uid || "";
@@ -274,11 +281,14 @@ export const DataTable: FunctionComponent<Props> = ({
 
     setGroupToExpand(isGrouping ? group : []);
 
-    const rows = selectedRows.map(({ id, name }) => ({ id, name }));
+    const rows = selectedRows.map((row) => ({
+      id: row.id,
+      [entryKey]: row[entryKey],
+    }));
 
-    const updateRes: DbResponse = await db.vineyard.updateGroup(
+    const updateRes: DbResponse = await updateGroup(
       uid,
-      rows,
+      rows as Partial<T>[],
       isGrouping ? group : []
     );
 
@@ -306,10 +316,10 @@ export const DataTable: FunctionComponent<Props> = ({
   );
 
   useEffect(() => {
-    if (vineyards && vineyards.length > 0) {
-      setRowData(vineyards);
+    if (data && data.length > 0) {
+      setRowData(data);
     }
-  }, [vineyards]);
+  }, [data]);
 
   useEffect(() => {
     if (normalizedData && normalizedData.length > 0) {
@@ -338,8 +348,8 @@ export const DataTable: FunctionComponent<Props> = ({
             getDataPath={getDataPath}
             treeData
             autoGroupColumnDef={autoGroupColumnDef}
-            rowSelection={rowSelection as RowSelectionOptions}
-            selectionColumnDef={selectionColumnDef as ColDef}
+            rowSelection={rowSelection}
+            selectionColumnDef={selectionColumnDef}
             onRowSelected={handleOnRowSelected}
             onSelectionChanged={handleOnSelectionChanged}
             containerStyle={{ height: "100%", width: "100%" }}
@@ -351,14 +361,14 @@ export const DataTable: FunctionComponent<Props> = ({
         )}
       </div>
 
-      <GroupingDialog<Vineyard>
+      <GroupingDialog<T>
         groups={uniqueGroups}
         rows={selectedRows}
         open={openGroupingDialog}
         onClose={handleCloseGroupingDialog}
         onAddToGroup={updateRowsGroup}
       />
-      <UngroupingDialog<Vineyard>
+      <UngroupingDialog<T>
         rows={selectedRows}
         open={openUngroupingDialog}
         onClose={handleCloseUngroupingDialog}
