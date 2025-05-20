@@ -68,13 +68,6 @@ export function useGrouping<T extends DashboardEntity>(
     const groupNamesToUngroup = selectedRows.map(({ id }) => id);
 
     _setGroupedData((prev) =>
-<<<<<<< HEAD
-      prev.map((row) =>
-        rowIds.includes(row.id)
-          ? { ...row, group: [row.id ?? row[entryKey ?? ("name" as keyof T)]] }
-          : row
-      )
-=======
       prev.map((row) => {
         if (!row.group || !Array.isArray(row.group)) return row;
 
@@ -93,7 +86,6 @@ export function useGrouping<T extends DashboardEntity>(
 
         return row;
       })
->>>>>>> 8120910 (Added Harves quick action demo)
     );
   };
 

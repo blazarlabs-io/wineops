@@ -23,42 +23,43 @@ import {
 
 export const NAVIGATION: Navigation = [
   {
-    segment: "Wine Production",
+    segment: "wine-production",
     title: "Wine Production",
     icon: <Home />,
+    pattern: "workspace/wine-production/",
     children: [
       {
-        segment: "Vineyards Management",
+        segment: "vineyards",
         title: "Vineyards Management",
         icon: <Landscape />,
       },
       {
-        segment: "Grapes Management",
+        segment: "grapes",
         title: "Grapes Management",
         icon: <Workspaces />,
       },
       {
-        segment: "Primary Vinification",
+        segment: "primary-vinification",
         title: "Primary Vinification",
         icon: <WineBar />,
       },
       {
-        segment: "Secondary Vinification",
+        segment: "secondary-vinification",
         title: "Secondary Vinification",
         icon: <LocalBar />,
       },
       {
-        segment: "Wine Bottling",
+        segment: "bottling",
         title: "Wine Bottling",
         icon: <Liquor />,
       },
       {
-        segment: "Storage",
+        segment: "storage",
         title: "Storage",
         icon: <Warehouse />,
       },
       {
-        segment: "Vessel Management",
+        segment: "vessel-management",
         title: "Vessel Management",
         icon: <OilBarrel />,
       },

@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useState } from "react";
@@ -36,10 +36,11 @@ export default function GrapesDashboard() {
     <Stack
       spacing={2}
       sx={{
-        alignItems: "center",
+        alignItems: "left",
         justifyContent: "center",
       }}
     >
+      <Typography variant="h4">Grapes Management</Typography>
       <ToolsBar
         buttons={{
           [ButtonType.GROUP]: {

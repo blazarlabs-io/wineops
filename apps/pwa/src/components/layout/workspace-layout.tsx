@@ -9,7 +9,7 @@ import { mainTheme } from "@/lib/themes/main-theme";
 import { Box } from "@mui/material";
 import { AppProvider, Session } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { useDemoRouter } from "@toolpad/core/internal";
+import { DemoProvider, useDemoRouter } from "@toolpad/core/internal";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Logo from "../data-display/logo";
@@ -28,7 +28,7 @@ export default function WorkspaceLayout(props: MainProps) {
   const { window } = props;
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
-  const router = useDemoRouter("/dashboard");
+  const router = useDemoRouter("/wine-production");
 
   // Remove this const when copying and pasting into your project.
   const demoWindow = window !== undefined ? window() : undefined;
@@ -53,44 +53,48 @@ export default function WorkspaceLayout(props: MainProps) {
 
   return (
     // Remove this provider when copying and pasting into your project.
-    <AppProvider
-      navigation={NAVIGATION}
-      branding={{
-        logo: <Logo />,
-        title: "",
-        homeUrl: "",
-      }}
-      router={router}
-      theme={mainTheme}
-      window={demoWindow}
-      session={session}
-    >
-      <DashboardLayout
-        hideNavigation={!openSidebar}
-        disableCollapsibleSidebar
-        defaultSidebarCollapsed={false}
-        sidebarExpandedWidth={296}
-        slots={{
-          toolbarAccount: () => null,
-          toolbarActions(props) {
-            return <ToolBarActions {...props} />;
-          },
-          sidebarFooter: SidebarFooterAccount,
+    <DemoProvider window={demoWindow}>
+      <AppProvider
+        navigation={NAVIGATION}
+        branding={{
+          logo: <Logo />,
+          title: "",
+          homeUrl: "",
         }}
+        router={router}
+        theme={mainTheme}
+        window={demoWindow}
+        session={session}
       >
-        <Box
-          sx={{
-            p: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            overflowY: "hidden",
-            width: "100%",
+        <DashboardLayout
+          hideNavigation={!openSidebar}
+          disableCollapsibleSidebar
+          defaultSidebarCollapsed={false}
+          sidebarExpandedWidth={296}
+          slots={{
+            toolbarAccount: () => null,
+            toolbarActions(props) {
+              return <ToolBarActions {...props} />;
+            },
+            sidebarFooter: SidebarFooterAccount,
           }}
         >
-          <InnerDashboardLayout>{props.children}</InnerDashboardLayout>
-        </Box>
-      </DashboardLayout>
-    </AppProvider>
+          <Box
+            sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              overflowY: "hidden",
+              width: "100%",
+            }}
+          >
+            <InnerDashboardLayout pathname={router.pathname}>
+              {props.children}
+            </InnerDashboardLayout>
+          </Box>
+        </DashboardLayout>
+      </AppProvider>
+    </DemoProvider>
   );
 }

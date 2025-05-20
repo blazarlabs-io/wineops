@@ -45,7 +45,7 @@ export function SignInForm({
         console.log("Logged in successfully!", typeof window);
         if (typeof window !== "undefined") {
           localStorage.set("email", formData.email);
-          window.location.href = "/workspace";
+          window.location.href = "/workspace/wine-production/vineyards";
         }
       })
       .catch((error: any) => {

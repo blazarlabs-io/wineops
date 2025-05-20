@@ -5,9 +5,10 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { styled, useColorScheme } from "@mui/material/styles";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
+import { useRouter } from "next/navigation";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -42,10 +43,13 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 
 export default function QickTasksWrapper({
   children,
+  pathname,
 }: {
   children: React.ReactNode;
+  pathname: string;
 }) {
   const { mode } = useColorScheme();
+  const router = useRouter();
   const [openQuickTasks, setOpenQuickTasks] = useState<boolean>(false);
   const [openQuickActions, setOpenQuickActions] = useState<boolean>(false);
 
@@ -59,12 +63,17 @@ export default function QickTasksWrapper({
     setOpenQuickTasks(false);
   };
 
+  useEffect(() => {
+    if (pathname.startsWith("/workspace") || pathname === "/wine-production")
+      return;
+    router.push("/workspace" + pathname);
+  }, [pathname]);
+
   return (
     <Box
       sx={{
         display: "flex",
         width: "100%",
-        // minHeight: "800px",
         height: "100%",
         gap: 1,
       }}
@@ -96,7 +105,7 @@ export default function QickTasksWrapper({
       )}
 
       <Box
-        sx={{ paddingTop: "16px" }}
+        sx={{ paddingTop: "74px" }}
         flexDirection={"column"}
         display={"flex"}
         alignItems={"center"}

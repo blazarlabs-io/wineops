@@ -2,12 +2,9 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { SnackbarProvider } from "notistack";
 import { SidebarProvider } from "./sidebar";
-<<<<<<< HEAD
-import { GrapeProvider } from "./grape";
-=======
 import { VineyardProvider } from "./vineyard";
 import { WineryProvider } from "./winery";
->>>>>>> 8120910 (Added Harves quick action demo)
+import { GrapeProvider } from "./grape";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (

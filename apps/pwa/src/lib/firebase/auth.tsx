@@ -110,7 +110,7 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
       const res = await signInWithEmailAndPassword(auth, email, password);
       setUser(res.user);
       if (window !== undefined) {
-        window.location.href = "/workspace";
+        window.location.href = "/workspace/wine-production/vineyards";
       }
       return res.user;
     } catch (error) {

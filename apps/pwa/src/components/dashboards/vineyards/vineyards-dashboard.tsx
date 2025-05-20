@@ -4,16 +4,16 @@ import { DataTable } from "@/components/table/data-table";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { Vineyard } from "@/models/types/db";
-import { Box, useColorScheme } from "@mui/material";
+import { Box, Typography, useColorScheme } from "@mui/material";
 import { StrictMode, useState } from "react";
-import { ButtonType } from "../widgets/tools-bar/constants";
+import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { useVineyard } from "@/context/vineyard";
-import { vineyardColumns } from "../table/data-table/columns";
-import { GroupCellRenderer } from "../table/data-table/cell-renderers/GroupCellRenderer";
+import { vineyardColumns } from "@/components/table/data-table/columns";
+import { GroupCellRenderer } from "@/components/table/data-table/cell-renderers/GroupCellRenderer";
 import { db } from "@/lib/firebase/services";
-import { SelectionCellRenderer } from "../table/data-table/cell-renderers/SelectionCellRenderer";
+import { SelectionCellRenderer } from "@/components/table/data-table/cell-renderers/SelectionCellRenderer";
 
-export default function WorkspacePage() {
+export default function VineyardsDashboard() {
   const { mode } = useColorScheme();
 
   const [selectionData, setSelectionData] = useState<Vineyard[]>([]);
@@ -51,6 +51,7 @@ export default function WorkspacePage() {
   return (
     <Box className="flex w-full h-full">
       <Box className="flex flex-col gap-4 w-full">
+        <Typography variant="h4">Vineyards Management</Typography>
         <ToolsBar
           buttons={{
             [ButtonType.ADD]: {

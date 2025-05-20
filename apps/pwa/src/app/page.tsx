@@ -8,7 +8,8 @@ export default function Home() {
   const { user } = useAuth();
 
   const handleGoToWorkspace = () => {
-    if (typeof window !== "undefined") window.location.href = "/workspace";
+    if (typeof window !== "undefined")
+      window.location.href = "/workspace/wine-production/vineyards";
   };
 
   return (
