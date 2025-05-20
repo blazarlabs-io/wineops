@@ -372,7 +372,7 @@ export const DataTable = <T extends DashboardEntity>({
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <Typography color="textSecondary" className="">
-              No Vineyards found.
+              Nothing to show.
             </Typography>
           </div>
         )}
