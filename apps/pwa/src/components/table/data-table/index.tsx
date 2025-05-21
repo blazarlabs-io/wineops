@@ -10,7 +10,7 @@ import {
 } from "@/data/constants";
 import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
-import { DbResponse, Vineyard } from "@/models/types/db";
+import { DbResponse } from "@/models/types/db";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
@@ -40,12 +40,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
-import { vineyardColumns } from "./columns";
-import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
-import { Typography } from "@mui/material";
+import { nodesToEntities } from "@/utils/notes-to-entities";
 import { DashboardEntity } from "@/models/types/dashboard";
-import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
+import { Typography } from "@mui/material";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -110,7 +107,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   // * Row Data
   // const [rowData] = useState(getData());
-  const [rowData, setRowData] = useState(vineyards);
+  const [rowData, setRowData] = useState<T[]>(data);
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [expandedRowHeight] = useState(ROW_HEIGHT_EXPANDED);
 
@@ -166,10 +163,7 @@ export const DataTable = <T extends DashboardEntity>({
       minWidth: GROUP_COLUMN_WIDTH,
       cellRenderer: "agGroupCellRenderer",
       filter: "agTextColumnFilter",
-      cellRendererParams: {
-        innerRenderer: GroupCellRenderer,
-        suppressCount: true,
-      },
+      ...groupColumnDef,
     };
   }, [groupColumnDef]);
 
@@ -198,23 +192,7 @@ export const DataTable = <T extends DashboardEntity>({
       cellRenderer: "agGroupCellRenderer",
       cellRendererParams: {
         suppressCount: true,
-        innerRenderer: (params: any) => {
-          // console.log("SELECT-COLUMN", params);
-          return (
-            <>
-              {!params.node.group && (
-                <div
-                  style={{
-                    backgroundColor: "var(--mui-palette-background-default)",
-                  }}
-                  className="flex items-start justify-center flex-col gap-2 pl-2 absolute h-full top-0 left-0 w-full z-[999]"
-                >
-                  <VineyardDetailsWidget vineyard={params.node.data} />
-                </div>
-              )}
-            </>
-          );
-        },
+        innerRenderer: selectionCellRenderer,
       },
       colSpan: (params: any) => {
         // console.log("colSpan", params.node.group, colDefs.length);
@@ -241,10 +219,9 @@ export const DataTable = <T extends DashboardEntity>({
     (event: SelectionChangedEvent) => {
       const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
       // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
-      const _vineyards = nodesToVineyards(selectedNodes);
-      console.log("_vineyards", _vineyards);
-      onChangeData?.(_vineyards as T[]);
-      setSelectedRows(_vineyards as T[]);
+      const entities = nodesToEntities<T>(selectedNodes);
+      onChangeData?.(entities);
+      setSelectedRows(entities);
     },
     []
   );
@@ -260,7 +237,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   const normalizedData: T[] = useMemo(
     () =>
-      (rowData as T[]).map((row: T) => ({
+      rowData.map((row: T) => ({
         ...row,
         group: [
           ...(!row.group || row.group.length < 2
@@ -328,7 +305,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   useEffect(() => {
     if (data && data.length > 0) {
-      setRowData(data as Vineyard[]);
+      setRowData(data);
     }
   }, [data]);
 

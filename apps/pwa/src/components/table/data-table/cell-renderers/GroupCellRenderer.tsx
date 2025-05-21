@@ -1,5 +1,5 @@
 import CertificationsDataDisplay from "@/components/data-display/certifications-data-display";
-import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { GROUP_ITEMS_TO_SHOW, ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { normalizeToFlatStringArray } from "@/utils/data-normalization";
 import { Box, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
@@ -137,11 +137,14 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                     height={ROW_HEIGHT_DEFAULT}
                     gap={1}
                     sx={{
-                      borderLeft: node.level > 0 && index > 2 ? "8px" : "",
+                      borderLeft:
+                        node.level > 0 && index > GROUP_ITEMS_TO_SHOW
+                          ? "8px"
+                          : "",
                       borderStyle: "solid",
                       borderColor: "var(--mui-palette-divider)",
                       paddingLeft: "16px",
-                      display: index < 2 ? "flex" : "none",
+                      display: index < GROUP_ITEMS_TO_SHOW ? "flex" : "none",
                     }}
                     className="max-h-fit"
                   >
@@ -151,7 +154,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                     >
                       Cad Ref. {cad}
                     </Typography>
-                    {groupCadastrals.length - 2 > 0 && (
+                    {groupCadastrals.length - GROUP_ITEMS_TO_SHOW > 0 && (
                       <Typography
                         variant="body2"
                         className="max-h-fit leading-1.5 text-sm cursor-pointer underline"
@@ -160,7 +163,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                           display: index === 1 ? "flex" : "none",
                         }}
                       >
-                        + {groupCadastrals.length - 2} more
+                        + {groupCadastrals.length - GROUP_ITEMS_TO_SHOW} more
                       </Typography>
                     )}
                   </Box>

@@ -1,7 +1,7 @@
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 
-import VineyardStatusDataDisplay from "@/components/data-display/status-data-display";
+import StatusDataDisplay from "@/components/data-display/status-data-display";
 
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
@@ -11,7 +11,7 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       {params.node.allChildrenCount == 1 &&
         params.node.allLeafChildren &&
         params.node.allLeafChildren.length > 0 && (
-          <VineyardStatusDataDisplay
+          <StatusDataDisplay
             status={params.node.allLeafChildren[0].data.status}
           />
         )}

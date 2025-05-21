@@ -88,7 +88,7 @@ export default function VineyardsDashboard() {
               headerName: "Name",
               cellRendererParams: {
                 innerRenderer: GroupCellRenderer,
-                suppressCount: false,
+                suppressCount: true,
               },
             }}
             updateGroup={updateGroup}

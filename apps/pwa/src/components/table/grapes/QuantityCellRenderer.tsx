@@ -9,7 +9,7 @@ export const QuantityCellRenderer = ({ value }: CustomCellRendererProps) => {
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%" }}
+      sx={{ height: "100%", lineHeight: 1 }}
     >
       {value && Array.isArray(value) && Array.isArray(value[0]) ? (
         <></>
