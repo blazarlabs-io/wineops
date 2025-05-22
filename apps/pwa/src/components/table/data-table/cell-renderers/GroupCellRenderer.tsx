@@ -71,9 +71,9 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
     setHasCertifications(isCertified);
   }, []);
 
-  useEffect(() => {
-    console.log("groupCadastrals", groupCadastrals);
-  }, [groupCadastrals]);
+  // useEffect(() => {
+  //   console.log("groupCadastrals", groupCadastrals);
+  // }, [groupCadastrals]);
 
   return (
     <>
