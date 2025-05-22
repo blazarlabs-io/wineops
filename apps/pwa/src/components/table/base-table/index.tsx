@@ -21,8 +21,13 @@ import {
   themeBalham,
   ValidationModule,
   PinnedRowModule,
+  RowNode,
 } from "ag-grid-community";
-import { TreeDataModule } from "ag-grid-enterprise";
+import {
+  TreeDataModule,
+  PivotModule,
+  ContextMenuModule,
+} from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { columns, potentialParent, setPotentialParentForNode } from "./config";
@@ -40,6 +45,8 @@ ModuleRegistry.registerModules([
   TreeDataModule,
   RowSelectionModule,
   PinnedRowModule,
+  PivotModule,
+  ContextMenuModule,
   ...(process.env.NODE_ENV !== "production" ? [ValidationModule] : []),
 ]);
 
@@ -128,7 +135,6 @@ export default function BaseTable({
   }, []);
 
   const onRowDragLeave = useCallback((event: RowDragLeaveEvent) => {
-    // clear node to highlight
     setPotentialParentForNode(event.api, null);
   }, []);
 
@@ -177,17 +183,6 @@ export default function BaseTable({
     }
   }, [isDarkMode]);
 
-  // * DEFINE PINNED ROWS
-  const pinnedTopRowData = useMemo(() => {
-    return pinnedRows;
-  }, [pinnedRows]);
-
-  // const [pinnedTopRowData, setPinnedTopRowData] = useState<any>();
-
-  // useEffect(() => {
-  //   setPinnedTopRowData(pinnedRows);
-  // }, [pinnedRows]);
-
   const rowSelection = useMemo<RowSelectionOptions>(() => {
     return {
       mode: "multiRow",
@@ -203,20 +198,13 @@ export default function BaseTable({
     [onRowSelection]
   );
 
-  // const selectionColumnDef = useMemo<ColDef>(() => {
-  //   return {
-  //     headerName: "XXX",
-  //     field: "selection",
-  //     sortable: false,
-  //     resizable: true,
-  //     width: 48,
-  //     suppressHeaderMenuButton: true,
-  //     pinned: "left",
-  //     cellRenderer: "agGroupCellRenderer",
-  //     // cellRendererParams: {
-  //     //   checkbox: true,
-  //     // },
-  //   };
+  // const handlePinnedRowsChanged = useCallback(() => {
+  //   if (onRowSelection) onRowSelection(pinnedRows);
+  //   console.log("PINNED ROWS CHANGED", pinnedRows);
+  // }, [onRowSelection, pinnedRows]);
+
+  // const isRowPinned = useCallback((data: any) => {
+  //   return pinnedRows?.some((row: any) => row.id === data.data.id);
   // }, []);
 
   return (
@@ -237,9 +225,13 @@ export default function BaseTable({
         onRowDragEnd={onRowDragEnd}
         getRowHeight={getRowHeight}
         pinnedTopRowData={pinnedRows}
+        // pivotMode={true}
+        // sideBar="columns"
+        // onPinnedRowsChanged={handlePinnedRowsChanged}
+        // enableRowPinning={true}
+        // isRowPinned={isRowPinned}
         rowSelection={rowSelection}
         onRowSelected={handleOnRowSelected}
-        // selectionColumnDef={selectionColumnDef}
       />
     </div>
   );
