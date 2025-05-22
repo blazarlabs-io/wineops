@@ -49,7 +49,7 @@ export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
   };
 
   useEffect(() => {
-    if (status.toLocaleLowerCase() === "maintenance") {
+    if (status?.toLocaleLowerCase() === "maintenance") {
       setStyles(maintenanceStyles);
     }
     switch (status) {
