@@ -37,7 +37,7 @@ export default function GroupCellRenderer(params: ICellRendererParams) {
               size="small"
               onClick={handleMasterDetailExpansion}
             >
-              <ExpandMore className="w-4 h-4" />
+              <ExpandMore className="max-w-5 max-h-5 -rotate-90 opacity-60" />
             </IconButton>
             <span>{params.value}</span>
           </div>
