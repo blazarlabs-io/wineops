@@ -8,7 +8,7 @@ import { grapesColumns } from "./columns";
 import { GroupCellRenderer } from "./GroupCellRenderer";
 import { useGrape } from "@/context/grape";
 import { db } from "@/lib/firebase/services";
-import { SelectionCellRenderer } from "./SelectionCellRenderer";
+// import { SelectionCellRenderer } from "./SelectionCellRenderer";
 
 interface GrapesTableProps {
   onChangeData?: (data: Grape[]) => void;
@@ -62,7 +62,7 @@ export default function GrapesTable({
         handleCloseUngroupingDialog={handleCloseUngroupingDialog}
         data={normalizeGrapes}
         columns={grapesColumns}
-        selectionCellRenderer={SelectionCellRenderer}
+        // selectionCellRenderer={SelectionCellRenderer}
         groupColumnDef={{
           headerName: "Batch Entry",
           cellRendererParams: {

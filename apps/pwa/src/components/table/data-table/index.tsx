@@ -335,17 +335,13 @@ export const DataTable = <T extends DashboardEntity>({
       const source = event.node.data;
       const rowData = event.api.getGridOption("rowData");
 
-      // console.log("onRowDragEnd", rowData, source, target);
-
       if (rowData && source && source !== target) {
         const newRowData = shiftGroups(rowData, source, target);
-        // console.log("onRowDragEnd", newRowData);
         if (!newRowData) {
           console.log("invalid move");
         } else if (newRowData !== rowData) {
           console.log("onRowDragEnd, modifying grid row data");
           event.api.setGridOption("rowData", newRowData);
-          // setGroupedData(newRowData as T[]);
           updateGroup(uid, newRowData as T[], []);
           enqueueSnackbar("Saved changes", { variant: "success" });
         }
@@ -382,7 +378,6 @@ export const DataTable = <T extends DashboardEntity>({
             onSelectionChanged={handleOnSelectionChanged}
             containerStyle={{ height: "100%", width: "100%" }}
             isGroupOpenByDefault={isGroupOpenByDefault}
-            // getRowHeight={getRowHeight}
             onRowDragMove={onRowDragMove}
             onRowDragLeave={onRowDragLeave}
             onRowDragEnd={onRowDragEnd}
