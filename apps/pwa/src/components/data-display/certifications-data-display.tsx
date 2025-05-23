@@ -10,7 +10,7 @@ export default function CertificationsDataDisplay({
   certifications,
 }: CertificationsDataDisplayProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 max-w-fit">
       <button type="button" className="cursor-pointer">
         <Sprout
           className={cn(

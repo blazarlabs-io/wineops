@@ -32,10 +32,11 @@ import { AgGridReact } from "ag-grid-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { columns, potentialParent, setPotentialParentForNode } from "./config";
 import { getData } from "./data";
-import { IFile, moveFiles } from "./fileUtils";
+import { IFile, shiftGroups } from "./fileUtils";
 import GroupCellRenderer from "./group-cell-renderer";
 import "./style.css";
 import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
+import { DashboardEntity } from "@/models/types/dashboard";
 ModuleRegistry.registerModules([
   RowDragModule,
   ClientSideRowModelApiModule,
@@ -50,19 +51,21 @@ ModuleRegistry.registerModules([
   ...(process.env.NODE_ENV !== "production" ? [ValidationModule] : []),
 ]);
 
-interface BaseTableProps {
+interface BaseTableProps<T extends DashboardEntity> {
   gridTheme?: string;
   isDarkMode?: boolean;
   pinnedRows?: any;
   onRowSelection?: (rows: any) => void;
+  data?: T[];
 }
 
-export default function BaseTable({
+export default function BaseTable<T extends DashboardEntity>({
   gridTheme = "ag-theme-quartz",
   isDarkMode = false,
   pinnedRows,
   onRowSelection,
-}: BaseTableProps) {
+  data = [],
+}: BaseTableProps<T>) {
   const gridRef = useRef<AgGridReact<IFile>>(null);
   const [rowData] = useState<IFile[]>(getData());
   const [columnDefs] = useState<ColDef[]>(columns);
@@ -147,7 +150,7 @@ export default function BaseTable({
       const source = event.node.data;
       const rowData = event.api.getGridOption("rowData");
       if (rowData && source && source !== target) {
-        const newRowData = moveFiles(rowData, source, target);
+        const newRowData = shiftGroups(rowData, source, target);
         if (!newRowData) {
           console.log("invalid move");
         } else if (newRowData !== rowData) {
@@ -158,7 +161,7 @@ export default function BaseTable({
       // clear node to highlight
       setPotentialParentForNode(event.api, null);
     },
-    [moveFiles]
+    [shiftGroups]
   );
 
   // * ROW HEIGHT

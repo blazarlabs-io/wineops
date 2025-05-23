@@ -49,7 +49,7 @@ export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
   };
 
   useEffect(() => {
-    if (status.toLocaleLowerCase() === "maintenance") {
+    if (status && status.toLocaleLowerCase() === "maintenance") {
       setStyles(maintenanceStyles);
     }
     switch (status) {
@@ -80,12 +80,12 @@ export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
   return (
     <>
       {status && (
-        <div
+        <span
           style={styles}
           className="border max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-1"
         >
           {status.toUpperCase()}
-        </div>
+        </span>
       )}
     </>
   );
