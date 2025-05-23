@@ -57,7 +57,6 @@ export default function VineyardDetailsWidget({
 
   useEffect(() => {
     setLocalVineyard(vineyard);
-    console.log("localVineyard", localVineyard);
   }, [vineyard]);
 
   return (
@@ -266,49 +265,45 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={2}>
         {localVineyard.labData && localVineyard.labData.length > 0 && (
-          <div className="w-full">
-            {localVineyard.labData.map((item, index) => {
-              return (
-                <div key={item.id + index} className="w-full">
-                  {index < 3 && (
-                    <div className="flex items-center w-full justify-between gap-8 px-4 py-2 h-full min-h-[112px]">
-                      <SimpleDataDisplay
-                        label="Date"
-                        value={
-                          convertIsoToShortDate(
-                            localVineyard.labData[0].date
-                          ) || "N/A"
-                        }
-                      />
-                      <LabSingleItemDataDisplay
-                        name={item.items[0].name}
-                        value={item.items[0].value.toString()}
-                        unit={item.items[0].unit}
-                        variation={item.items[0].variation.toString()}
-                      />
-                      <LabSingleItemDataDisplay
-                        name={item.items[1].name}
-                        value={item.items[1].value.toString()}
-                        unit={item.items[1].unit}
-                        variation={item.items[1].variation.toString()}
-                      />
-                      {/* <LabSingleItemDataDisplay
-                        name={item.items[2].name}
-                        value={item.items[2].value.toString()}
-                        unit={item.items[2].unit}
-                        variation={item.items[2].variation.toString()}
-                      /> */}
-                      <div
-                        className="min-w-[600px] flex items-start justify-start"
-                        style={{ height: "96px" }}
-                      >
-                        <LabResultsChart data={item} />
+          <div className="flex w-full items-center gap-1">
+            <div className="w-full">
+              {localVineyard.labData.map((item, index) => {
+                return (
+                  <div key={item.id + index} className="w-full">
+                    {index < 3 && (
+                      <div className="flex items-center w-full justify-between gap-8 px-4 py-2 h-full ">
+                        <SimpleDataDisplay
+                          label="Date"
+                          value={
+                            convertIsoToShortDate(
+                              localVineyard.labData[0].date
+                            ) || "N/A"
+                          }
+                        />
+                        <LabSingleItemDataDisplay
+                          name={item.items[0].name}
+                          value={item.items[0].value.toString()}
+                          unit={item.items[0].unit}
+                          variation={item.items[0].variation.toString()}
+                        />
+                        <LabSingleItemDataDisplay
+                          name={item.items[1].name}
+                          value={item.items[1].value.toString()}
+                          unit={item.items[1].unit}
+                          variation={item.items[1].variation.toString()}
+                        />
                       </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div
+              className="min-w-[600px] flex items-start justify-start"
+              style={{ height: "96px" }}
+            >
+              <LabResultsChart data={localVineyard.labData[0]} />
+            </div>
           </div>
         )}
         <div className="absolute -top-2 right-4 z-10">

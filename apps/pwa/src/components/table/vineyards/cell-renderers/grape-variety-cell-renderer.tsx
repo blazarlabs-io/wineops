@@ -1,3 +1,4 @@
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { Box, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
@@ -11,7 +12,7 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
     <Box
       display="flex"
       flexDirection="column"
-      justifyContent="center"
+      justifyContent="start"
       gap={0.5}
       className="h-full"
     >
@@ -20,11 +21,20 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
           display={"flex"}
           flexDirection={"column"}
           justifyContent={"center"}
-          gap={0.5}
+          // gap={0.5}
           className="h-full"
         >
           {uniqueValues.map((v, index) => (
-            <Box key={index}>
+            <Box
+              key={index}
+              display={"flex"}
+              flexDirection={"column"}
+              justifyContent={"center"}
+              gap={0.5}
+              sx={{
+                height: ROW_HEIGHT_DEFAULT,
+              }}
+            >
               {index < 2 ? (
                 <p className="leading-[1] truncate">{v}</p>
               ) : (
@@ -42,7 +52,17 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
           ))}
         </Box>
       ) : (
-        <p className="leading-[1] truncate">{value}</p>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          justifyContent={"center"}
+          gap={0.5}
+          sx={{
+            height: ROW_HEIGHT_DEFAULT,
+          }}
+        >
+          <p className="leading-[1] truncate">{value}</p>
+        </Box>
       )}
     </Box>
   );

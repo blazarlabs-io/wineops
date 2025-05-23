@@ -430,6 +430,8 @@ export const DataTable = <T extends DashboardEntity>({
             onRowDragLeave={onRowDragLeave}
             onRowDragEnd={onRowDragEnd}
             getRowId={(params): string => params.data.id}
+            suppressRowHoverHighlight={true}
+            suppressCellFocus={true}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

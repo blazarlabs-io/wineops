@@ -3,6 +3,7 @@ import { type FunctionComponent } from "react";
 
 import VineyardStatusDataDisplay from "@/components/data-display/status-data-display";
 import { Box, Typography } from "@mui/material";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
@@ -13,7 +14,7 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       alignItems={"center"}
       justifyItems={"center"}
       width={"100%"}
-      height={"100%"}
+      height={ROW_HEIGHT_DEFAULT}
     >
       <Typography variant="body2">
         <VineyardStatusDataDisplay status={params.value} />

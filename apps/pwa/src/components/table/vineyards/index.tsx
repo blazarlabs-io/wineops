@@ -5,7 +5,7 @@ import { DataTable } from "@/components/table/data-table";
 import { Grape, Vineyard } from "@/models/types/db";
 import { StrictMode, useMemo } from "react";
 import { vineyardColumns } from "./columns";
-import { GroupCellRenderer } from "./cell-renderers/GroupCellRenderer";
+import { GroupCellRenderer } from "./cell-renderers/group-cell-renderer";
 import { db } from "@/lib/firebase/services";
 import { SelectionCellRenderer } from "./cell-renderers/SelectionCellRenderer";
 import { useVineyard } from "@/context/vineyard";
