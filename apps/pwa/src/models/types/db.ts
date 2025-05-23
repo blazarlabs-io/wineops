@@ -136,6 +136,7 @@ export type SingleDocument = {
 export type Vineyard = {
   id: string;
   name: string;
+  rowType?: "group" | "item";
   grapeVariety: string;
   grapeColor: string;
   cadastralNumber: string;

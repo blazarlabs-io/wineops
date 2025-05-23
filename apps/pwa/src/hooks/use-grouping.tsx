@@ -12,9 +12,7 @@ export function useGrouping<T extends DashboardEntity>(
 
   const groups = groupedData
     .filter(({ group }) => !!group && group.length > 1)
-    .map(({ group }) =>
-      group.slice(0, group[group.length - 1] === ENTITY_DETAILS ? -2 : -1)
-    );
+    .map(({ group }) => group.slice(0, -1));
 
   const uniqueGroups = [
     ...new Set(
@@ -28,7 +26,7 @@ export function useGrouping<T extends DashboardEntity>(
     ),
   ].sort((a, b) => a.localeCompare(b));
 
-  // console.log("GROUPS", groupedData);
+  console.log("GROUPS", groupedData);
 
   const addRowToGroup = (group: string[]) => {
     if (selectedRows.length === 0 || group.length === 0) {
