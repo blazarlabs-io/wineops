@@ -7,7 +7,6 @@ import type { CustomCellRendererProps } from "ag-grid-react";
 import {
   useCallback,
   useEffect,
-  useRef,
   useState,
   type FunctionComponent,
 } from "react";
@@ -16,8 +15,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  const detailRef = useRef<HTMLDivElement>(null);
-
   const [expanded, setExpanded] = useState<boolean>(false);
 
   // * master detail custom renderer
@@ -44,7 +41,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         borderLeft: node.level > 0 ? "8px" : "",
         borderStyle: "solid",
         borderColor: "var(--mui-palette-divider)",
-        pl: !node.level > 0 ? 2 : 0,
+        pl: !node.group ? 0 : 2,
+        ml: !node.group ? 2 : 2,
       }}
       className="w-full flex flex-col items-start gap-2"
     >

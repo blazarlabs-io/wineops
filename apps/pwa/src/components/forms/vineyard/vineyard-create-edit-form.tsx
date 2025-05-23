@@ -3,7 +3,6 @@
 
 import PolygonDrawingMap from "@/components/widgets/maps/polygon-drawing-map";
 import { useVineyard } from "@/context/vineyard";
-import { ENTITY_DETAILS } from "@/data/constants";
 import { countries } from "@/data/countries";
 import { orientations } from "@/data/system-variables";
 import vineyardBlankSample from "@/data/vineyard-blank-sample";
@@ -76,6 +75,7 @@ export default function VineyardForm({
   vineyardBlankSample.tasks = generateTasks();
   vineyardBlankSample.documents = generateDummyDocs(10);
   vineyardBlankSample.notes = generateNotes();
+  vineyardBlankSample.rowType = "item";
   // ?
 
   const [formData, setFormData] = useState<Vineyard>(vineyardBlankSample);
@@ -100,10 +100,10 @@ export default function VineyardForm({
         (getOneRes.data === null || getOneRes.data !== undefined)
       ) {
         const { id, name, group } = data;
+
+        // TODO Needs review
         const newGroup =
-          Array.isArray(group) && group[group.length - 1] === ENTITY_DETAILS
-            ? group.slice(0, -1)
-            : group;
+          Array.isArray(group) && group.length > 1 ? group.slice(0, -1) : group;
 
         const newData = {
           ...data,
@@ -181,7 +181,10 @@ export default function VineyardForm({
   return (
     <>
       {formData && formData !== undefined && (
-        <div className="px-4">
+        <div
+          className="px-4"
+          style={{ background: "var(--mui-palette-background-default)" }}
+        >
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-4 space-x-4"

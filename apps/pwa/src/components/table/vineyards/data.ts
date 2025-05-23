@@ -67,8 +67,8 @@ export function getData(): Vineyard[] {
     },
     {
       id: generateRandomId(),
-      group: ["Southern Lands"],
-      name: "Southern Lands",
+      group: ["Southern Lands", "Vineyard 4"],
+      name: "Vineyard 4",
       rowType: "group",
       cadastralNumber: "LP-123-456-789",
       grapeVariety: "Point Noir",

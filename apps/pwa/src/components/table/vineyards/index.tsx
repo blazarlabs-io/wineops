@@ -1,16 +1,14 @@
 "use client";
 
-import { useColorScheme } from "@mui/material";
 import { DataTable } from "@/components/table/data-table";
-import { Grape, Vineyard } from "@/models/types/db";
-import { StrictMode, useMemo } from "react";
-import { vineyardColumns } from "./columns";
-import { GroupCellRenderer } from "./cell-renderers/group-cell-renderer";
-import { db } from "@/lib/firebase/services";
-import { SelectionCellRenderer } from "./cell-renderers/SelectionCellRenderer";
 import { useVineyard } from "@/context/vineyard";
-import { getData } from "./data";
 import { GROUP_COLUMN_WIDTH } from "@/data/constants";
+import { db } from "@/lib/firebase/services";
+import { Vineyard } from "@/models/types/db";
+import { useColorScheme } from "@mui/material";
+import { StrictMode, useMemo } from "react";
+import { GroupCellRenderer } from "./cell-renderers/group-cell-renderer";
+import { vineyardColumns } from "./columns";
 import "./style.css";
 
 interface VineyardTableProps {
@@ -33,17 +31,17 @@ export default function VineyardsTable({
 
   const normalizedVineyards = useMemo(
     () =>
-      getData().map((vineyard) => ({
+      vineyards.map((vineyard) => ({
         ...vineyard,
       })),
-    []
+    [vineyards]
   );
 
   const updateGroup = async (
     uid: string,
     rows: Partial<Vineyard>[],
     group: string[]
-  ) => await db.vineyard.updateGroup(uid, rows, group);
+  ) => await db.vineyard.updateGroup(uid, rows);
 
   return (
     <StrictMode>
@@ -56,7 +54,6 @@ export default function VineyardsTable({
         handleCloseUngroupingDialog={handleCloseUngroupingDialog}
         data={normalizedVineyards}
         columns={vineyardColumns}
-        selectionCellRenderer={SelectionCellRenderer}
         groupColumnDef={{
           headerName: "Name",
           rowDrag: true,

@@ -14,8 +14,6 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: GrapeVarietyCellRenderer,
     cellStyle: { width: "100%" },
-    editable: true,
-    cellEditor: "agRichTextCellEditor",
     aggFunc: (params: any) => {
       const grapes = params.values.map((value: any) => {
         return value;

@@ -1,4 +1,3 @@
-import { ENTITY_DETAILS } from "@/data/constants";
 import { DashboardEntity } from "@/models/types/dashboard";
 import { SetStateAction, useCallback, useState } from "react";
 

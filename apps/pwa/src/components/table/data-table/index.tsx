@@ -1,22 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
-import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
-import { useVineyard } from "@/context/vineyard";
-import {
-  ENTITY_DETAILS,
-  ROW_HEIGHT_DEFAULT,
-  ROW_HEIGHT_EXPANDED,
-} from "@/data/constants";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
 import { DashboardEntity } from "@/models/types/dashboard";
 import { DbResponse, Vineyard } from "@/models/types/db";
-import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
+import { nodesToEntities } from "@/utils/notes-to-entities";
 import { Typography } from "@mui/material";
 import {
   AllCommunityModule,
-  CellClassParams,
   ClientSideRowModelModule,
   ColDef,
   ExcelExportModule,
@@ -39,20 +32,11 @@ import {
   StatusBarModule,
   themeBalham,
   TreeDataModule,
-  ValueFormatterParams,
 } from "ag-grid-enterprise";
-import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
+import { AgGridReact } from "ag-grid-react";
 import { useSnackbar } from "notistack";
-import {
-  type FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../vineyards/utils";
-import { nodesToEntities } from "@/utils/notes-to-entities";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -85,7 +69,6 @@ interface DataTableProps<T extends DashboardEntity> {
     rows: Partial<T>[],
     group: string[]
   ) => Promise<DbResponse>;
-  selectionCellRenderer: FunctionComponent<CustomCellRendererProps>;
   groupColumnDef?: ColDef<any, any>;
 }
 
@@ -103,12 +86,9 @@ export const DataTable = <T extends DashboardEntity>({
   columns,
   //groupCellRenderer,
   updateGroup,
-  selectionCellRenderer,
   groupColumnDef,
 }: DataTableProps<T>) => {
   const { enqueueSnackbar } = useSnackbar();
-
-  const { vineyards } = useVineyard();
 
   // * Main Data Grid Ref
   const gridRef = useRef<AgGridReact>(null);
@@ -117,11 +97,8 @@ export const DataTable = <T extends DashboardEntity>({
   const colDefs = useMemo(() => columns, [columns]);
 
   // * Row Data
-  // const [rowData] = useState(getData());
   const [rowData, setRowData] = useState<T[]>(data);
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
-  const [expandedRowHeight] = useState(ROW_HEIGHT_EXPANDED);
-
   const [potentialParent, setPotentialParent] = useState<any>(null);
 
   // * Get Data Path ["group", "vineyard"]
@@ -169,7 +146,6 @@ export const DataTable = <T extends DashboardEntity>({
   const rowSelection = useMemo<RowSelectionOptions>(() => {
     return {
       mode: "multiRow",
-      // enableClickSelection: true,
       groupSelects: "descendants",
       checkboxLocation: "autoGroupColumn",
     };
@@ -178,8 +154,6 @@ export const DataTable = <T extends DashboardEntity>({
   // * Event Handlers
   const handleOnRowSelected = useCallback(
     (data: any) => {
-      //updateSelectedVineyards(data.api.getSelectedRows());
-
       updateSelectedData(data.api.getSelectedRows());
     },
     [updateSelectedData]
@@ -213,7 +187,6 @@ export const DataTable = <T extends DashboardEntity>({
           ...(!row.group || row.group.length < 1
             ? [row[entryKey] ?? row.id]
             : row.group),
-          // ENTITY_DETAILS,
         ],
       })),
     [entryKey, rowData]
@@ -260,18 +233,6 @@ export const DataTable = <T extends DashboardEntity>({
       });
     }
   };
-
-  const getRowHeight = useCallback(
-    (params: any) => {
-      // console.log("params", params);
-      if (params.data) {
-        return rowHeight;
-      } else {
-        return rowHeight;
-      }
-    },
-    [rowHeight]
-  );
 
   useEffect(() => {
     if (groupColumnDef) {
@@ -353,7 +314,6 @@ export const DataTable = <T extends DashboardEntity>({
   // * DRAGGING EVENTS
   const onRowDragMove = useCallback(
     (event: RowDragMoveEvent) => {
-      // console.log("onRowDragMove", event);
       setPotentialParentForNode(event.api, event.overNode);
     },
     [setPotentialParentForNode]
@@ -368,8 +328,6 @@ export const DataTable = <T extends DashboardEntity>({
 
   const onRowDragEnd = useCallback(
     (event: RowDragEndEvent) => {
-      // console.log("onRowDragEnd", event, potentialParent);
-
       const target = event.overNode?.data;
       if (!potentialParent && target) {
         return; // no move
@@ -387,9 +345,9 @@ export const DataTable = <T extends DashboardEntity>({
         } else if (newRowData !== rowData) {
           console.log("onRowDragEnd, modifying grid row data");
           event.api.setGridOption("rowData", newRowData);
-          // setRowData(newRowData);
-          setGroupedData(newRowData as T[]);
-          // setSelectedRows(newRowData as T[]);
+          // setGroupedData(newRowData as T[]);
+          updateGroup(uid, newRowData as T[], []);
+          enqueueSnackbar("Saved changes", { variant: "success" });
         }
         gridRef.current!.api.clearFocusedCell();
       }
@@ -415,7 +373,6 @@ export const DataTable = <T extends DashboardEntity>({
               cellClassRules: {
                 ...autoGroupColumnDef.cellClassRules,
                 "hover-over": (params) => {
-                  // console.log("\nXXXX", params.node, potentialParent);
                   return params.node === potentialParent;
                 },
               },

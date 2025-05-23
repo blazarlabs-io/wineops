@@ -99,13 +99,13 @@ vineyard = {
       };
     }
   },
-  updateGroup: async (uid: string, rows: Vineyard[], group: string[]) => {
+  updateGroup: async (uid: string, rows: Vineyard[]) => {
     try {
       const batch = writeBatch(fdb);
 
-      rows.forEach(({ id, name }) => {
+      rows.forEach(({ id, group }) => {
         const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
-        batch.update(docRef, { group: [...group, name] });
+        batch.update(docRef, { group: group });
       });
 
       await batch.commit();

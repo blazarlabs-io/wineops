@@ -8,21 +8,26 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
 > = ({ value }) => {
   const uniqueValues: string[] =
     value && Array.isArray(value) ? [...new Set(value.flat(Infinity))] : [];
+
   return (
     <Box
       display="flex"
       flexDirection="column"
-      justifyContent="start"
-      gap={0.5}
-      className="h-full"
+      sx={{
+        height: ROW_HEIGHT_DEFAULT,
+      }}
+      className=""
     >
       {uniqueValues.length > 0 ? (
         <Box
           display={"flex"}
           flexDirection={"column"}
           justifyContent={"center"}
-          // gap={0.5}
-          className="h-full"
+          alignItems={"start"}
+          gap={1}
+          sx={{
+            height: ROW_HEIGHT_DEFAULT,
+          }}
         >
           {uniqueValues.map((v, index) => (
             <Box
@@ -30,10 +35,6 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
               display={"flex"}
               flexDirection={"column"}
               justifyContent={"center"}
-              gap={0.5}
-              sx={{
-                height: ROW_HEIGHT_DEFAULT,
-              }}
             >
               {index < 2 ? (
                 <p className="leading-[1] truncate">{v}</p>
