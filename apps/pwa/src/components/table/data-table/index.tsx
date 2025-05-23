@@ -52,6 +52,7 @@ import {
   useState,
 } from "react";
 import { shiftGroups } from "../vineyards/utils";
+import { nodesToEntities } from "@/utils/notes-to-entities";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
