@@ -1,27 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
+import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
 import { useVineyard } from "@/context/vineyard";
 import {
   ENTITY_DETAILS,
-  GROUP_COLUMN_WIDTH,
   ROW_HEIGHT_DEFAULT,
   ROW_HEIGHT_EXPANDED,
 } from "@/data/constants";
 import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
-import { DbResponse } from "@/models/types/db";
+import { DashboardEntity } from "@/models/types/dashboard";
+import { DbResponse, Vineyard } from "@/models/types/db";
+import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
+import { Typography } from "@mui/material";
 import {
   AllCommunityModule,
+  CellClassParams,
   ClientSideRowModelModule,
   ColDef,
   ExcelExportModule,
   GetDataPath,
+  GridApi,
   IRowNode,
   IsGroupOpenByDefaultParams,
   MasterDetailModule,
   ModuleRegistry,
+  RefreshCellsParams,
   RichSelectModule,
+  RowDragEndEvent,
+  RowDragLeaveEvent,
+  RowDragModule,
+  RowDragMoveEvent,
   RowGroupingModule,
   RowSelectionOptions,
   SelectionChangedEvent,
@@ -29,6 +39,7 @@ import {
   StatusBarModule,
   themeBalham,
   TreeDataModule,
+  ValueFormatterParams,
 } from "ag-grid-enterprise";
 import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
 import { useSnackbar } from "notistack";
@@ -40,9 +51,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { nodesToEntities } from "@/utils/notes-to-entities";
-import { DashboardEntity } from "@/models/types/dashboard";
-import { Typography } from "@mui/material";
+import { shiftGroups } from "../vineyards/utils";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -54,6 +63,7 @@ ModuleRegistry.registerModules([
   SetFilterModule,
   StatusBarModule,
   TreeDataModule,
+  RowDragModule,
 ]);
 
 interface DataTableProps<T extends DashboardEntity> {
@@ -111,6 +121,8 @@ export const DataTable = <T extends DashboardEntity>({
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [expandedRowHeight] = useState(ROW_HEIGHT_EXPANDED);
 
+  const [potentialParent, setPotentialParent] = useState<any>(null);
+
   // * Get Data Path ["group", "vineyard"]
   const getDataPath = useCallback<GetDataPath>((data) => {
     return data.group;
@@ -128,7 +140,7 @@ export const DataTable = <T extends DashboardEntity>({
       headerFontWeight: "600",
       headerRowBorder: true,
       wrapperBorderRadius: "8px",
-      rowHeight: 88,
+      rowHeight: rowHeight,
     })
     .withParams(
       {
@@ -147,24 +159,9 @@ export const DataTable = <T extends DashboardEntity>({
       "light"
     );
 
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      flex: 1,
-      minWidth: 100,
-      filter: true,
-    };
-  }, []);
-
   // * Define the auto-group column
   const autoGroupColumnDef = useMemo<ColDef>(() => {
-    return {
-      headerName: "Name",
-      field: "group",
-      minWidth: GROUP_COLUMN_WIDTH,
-      cellRenderer: "agGroupCellRenderer",
-      filter: "agTextColumnFilter",
-      ...groupColumnDef,
-    };
+    return { ...groupColumnDef };
   }, [groupColumnDef]);
 
   // * Row Selection Options
@@ -173,36 +170,7 @@ export const DataTable = <T extends DashboardEntity>({
       mode: "multiRow",
       // enableClickSelection: true,
       groupSelects: "descendants",
-      suppressDoubleClickExpand: false,
-      suppressEnterExpand: false,
-      headerCheckboxSelection: true,
-      checkboxSelection: true,
-    };
-  }, []);
-
-  // * Selection Column Definition
-  const selectionColumnDef = useMemo<ColDef>(() => {
-    return {
-      headerName: "",
-      field: "selection",
-      sortable: false,
-      resizable: true,
-      width: 48,
-      suppressHeaderMenuButton: true,
-      cellRenderer: "agGroupCellRenderer",
-      cellRendererParams: {
-        suppressCount: true,
-        innerRenderer: selectionCellRenderer,
-      },
-      colSpan: (params: any) => {
-        // console.log("colSpan", params.node.group, colDefs.length);
-        if (params.node.group) {
-          return 1;
-        } else {
-          // return the length of all columns
-          return colDefs.length + 2;
-        }
-      },
+      checkboxLocation: "autoGroupColumn",
     };
   }, []);
 
@@ -210,6 +178,7 @@ export const DataTable = <T extends DashboardEntity>({
   const handleOnRowSelected = useCallback(
     (data: any) => {
       //updateSelectedVineyards(data.api.getSelectedRows());
+
       updateSelectedData(data.api.getSelectedRows());
     },
     [updateSelectedData]
@@ -240,10 +209,10 @@ export const DataTable = <T extends DashboardEntity>({
       rowData.map((row: T) => ({
         ...row,
         group: [
-          ...(!row.group || row.group.length < 2
+          ...(!row.group || row.group.length < 1
             ? [row[entryKey] ?? row.id]
             : row.group),
-          ENTITY_DETAILS,
+          // ENTITY_DETAILS,
         ],
       })),
     [entryKey, rowData]
@@ -295,13 +264,23 @@ export const DataTable = <T extends DashboardEntity>({
     (params: any) => {
       // console.log("params", params);
       if (params.data) {
-        return expandedRowHeight;
+        return rowHeight;
       } else {
         return rowHeight;
       }
     },
     [rowHeight]
   );
+
+  useEffect(() => {
+    if (groupColumnDef) {
+      groupColumnDef.cellClassRules = {
+        "hover-over": (params) => {
+          return params.node === potentialParent;
+        },
+      };
+    }
+  }, [groupColumnDef]);
 
   useEffect(() => {
     if (data && data.length > 0) {
@@ -323,28 +302,133 @@ export const DataTable = <T extends DashboardEntity>({
     [groupToExpand]
   );
 
+  const setPotentialParentForNode = useCallback(
+    (
+      api: GridApi<Vineyard>,
+      overNode: IRowNode<Vineyard> | undefined | null
+    ) => {
+      let newPotentialParent: IRowNode<Vineyard> | null = null;
+      if (overNode) {
+        if (overNode.data?.rowType === "group") {
+          // over a group, we take the immediate row
+          newPotentialParent = overNode;
+        } else if (overNode.parent) {
+          // over a item/vineyard, we take the parent row (which will be a group)
+          newPotentialParent = overNode.parent;
+        }
+      }
+      const alreadySelected = potentialParent === newPotentialParent;
+      if (alreadySelected) {
+        return; // no change
+      }
+      // we refresh the previous selection (if it exists) to clear
+      // the highlighted and then the new selection.
+      const rowsToRefresh = [];
+      if (potentialParent) {
+        rowsToRefresh.push(potentialParent);
+      }
+      if (newPotentialParent) {
+        rowsToRefresh.push(newPotentialParent);
+      }
+      setPotentialParent(newPotentialParent);
+      refreshRows(api, rowsToRefresh);
+    },
+    [potentialParent]
+  );
+
+  function refreshRows(api: GridApi, rowsToRefresh: IRowNode<Vineyard>[]) {
+    const params: RefreshCellsParams<Vineyard> = {
+      // refresh these rows only.
+      rowNodes: rowsToRefresh,
+      // because the grid does change detection, the refresh
+      // will not happen because the underlying value has not
+      // changed. to get around this, we force the refresh,
+      // which skips change detection.
+      force: true,
+    };
+    api.refreshCells(params);
+  }
+
+  // * DRAGGING EVENTS
+  const onRowDragMove = useCallback(
+    (event: RowDragMoveEvent) => {
+      // console.log("onRowDragMove", event);
+      setPotentialParentForNode(event.api, event.overNode);
+    },
+    [setPotentialParentForNode]
+  );
+
+  const onRowDragLeave = useCallback(
+    (event: RowDragLeaveEvent) => {
+      setPotentialParentForNode(event.api, null);
+    },
+    [setPotentialParentForNode]
+  );
+
+  const onRowDragEnd = useCallback(
+    (event: RowDragEndEvent) => {
+      // console.log("onRowDragEnd", event, potentialParent);
+
+      const target = event.overNode?.data;
+      if (!potentialParent && target) {
+        return; // no move
+      }
+      const source = event.node.data;
+      const rowData = event.api.getGridOption("rowData");
+
+      // console.log("onRowDragEnd", rowData, source, target);
+
+      if (rowData && source && source !== target) {
+        const newRowData = shiftGroups(rowData, source, target);
+        // console.log("onRowDragEnd", newRowData);
+        if (!newRowData) {
+          console.log("invalid move");
+        } else if (newRowData !== rowData) {
+          console.log("onRowDragEnd, modifying grid row data");
+          event.api.setGridOption("rowData", newRowData);
+          // setRowData(newRowData);
+          setGroupedData(newRowData as T[]);
+          // setSelectedRows(newRowData as T[]);
+        }
+        gridRef.current!.api.clearFocusedCell();
+      }
+      // clear node to highlight
+      setPotentialParentForNode(event.api, null);
+    },
+    [potentialParent, setGroupedData, setPotentialParentForNode]
+  );
+
   return (
     <>
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
         {groupedData && groupedData.length > 0 ? (
           <AgGridReact
-            masterDetail={true}
             theme={myTheme}
             ref={gridRef}
             columnDefs={colDefs}
-            rowData={groupedData}
+            rowData={rowData}
             getDataPath={getDataPath}
             treeData
-            autoGroupColumnDef={autoGroupColumnDef}
+            autoGroupColumnDef={{
+              ...autoGroupColumnDef,
+              cellClassRules: {
+                ...autoGroupColumnDef.cellClassRules,
+                "hover-over": (params) => {
+                  // console.log("\nXXXX", params.node, potentialParent);
+                  return params.node === potentialParent;
+                },
+              },
+            }}
             rowSelection={rowSelection}
-            selectionColumnDef={selectionColumnDef}
             onRowSelected={handleOnRowSelected}
             onSelectionChanged={handleOnSelectionChanged}
             containerStyle={{ height: "100%", width: "100%" }}
             isGroupOpenByDefault={isGroupOpenByDefault}
-            getRowHeight={getRowHeight}
-            defaultColDef={defaultColDef}
-            suppressRowHoverHighlight={true}
+            // getRowHeight={getRowHeight}
+            onRowDragMove={onRowDragMove}
+            onRowDragLeave={onRowDragLeave}
+            onRowDragEnd={onRowDragEnd}
+            getRowId={(params): string => params.data.id}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
