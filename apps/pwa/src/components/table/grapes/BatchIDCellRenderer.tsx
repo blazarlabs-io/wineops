@@ -5,10 +5,16 @@ import type { CustomCellRendererProps } from "ag-grid-react";
 import type { FunctionComponent } from "react";
 import React from "react";
 
-export const BatchIDCellRenderer: FunctionComponent<
-  CustomCellRendererProps
-> = ({ value }) => {
-  const data = Array.isArray(value) ? value[0] : {};
+export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
+  params
+) => {
+  const { value, node, data } = params;
+  const isGroup = node.group || data.rowType === "group";
+
+  const localData = Array.isArray(value) ? value[0] : {};
+
+  console.log("BatchIDCellRenderer:value:", value);
+  console.log("BatchIDCellRenderer:params:", params);
 
   return (
     <Stack
@@ -16,9 +22,13 @@ export const BatchIDCellRenderer: FunctionComponent<
       justifyContent="center"
       sx={{ height: "100%" }}
     >
-      {value && Array.isArray(value) && Array.isArray(value[0]) ? (
+      {isGroup ||
+      (value &&
+        value?.length > 0 &&
+        Array.isArray(value) &&
+        Array.isArray(value[0])) ? (
         <>
-          {value.length} {value.length === 1 ? "Batch" : "Batches"}
+          {value?.length} {value?.length === 1 ? "Batch" : "Batches"}
         </>
       ) : (
         <Stack
@@ -28,13 +38,13 @@ export const BatchIDCellRenderer: FunctionComponent<
           justifyContent="flex-start"
         >
           <Stack justifyContent="flex-end">
-            <Typography>{data?.name}</Typography>
-            <Typography>{data?.grapeVariety}</Typography>
+            <Typography>{localData?.name}</Typography>
+            <Typography>{localData?.grapeVariety}</Typography>
           </Stack>
-          {data?.certifications && (
+          {localData?.certifications && (
             <Box sx={{ mb: 0.5 }}>
               <CertificationsDataDisplay
-                certifications={data?.certifications}
+                certifications={localData?.certifications}
               />
             </Box>
           )}

@@ -7,10 +7,11 @@ import formatDate from "@/utils/date-format";
 import { GROUP_ITEMS_TO_SHOW } from "@/data/constants";
 import StatusDataDisplay from "@/components/data-display/status-data-display";
 
-export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
-  node,
-  value,
-}) => {
+export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
+  params
+) => {
+  //console.log("GroupCellRenderer:params:", params);
+  const { node, value, data } = params;
   const { key, aggData } = node;
 
   const batchId = aggData?.batchId ?? [];
@@ -39,7 +40,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
 
   const rowData =
     batchId && Array.isArray(batchId)
-      ? batchId.find((data: any) => data?.name === key || data[0]?.name === key)
+      ? batchId.find(
+          (data: any) =>
+            data?.name === key || (Array.isArray(data) && data[0]?.name === key)
+        )
       : [];
 
   const detailedData =
@@ -59,37 +63,55 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
           height: "100%",
         }}
       >
-        {isDetailed ? (
-          <>
-            {detailedData?.date && (
-              <Typography variant="body2">
-                {formatDate(detailedData?.date, { locale: "ro-RO" })}
-              </Typography>
-            )}
-            {<GrapeLocation location={detailedData?.location} />}
-            {<StatusDataDisplay status={detailedData?.status} />}
-          </>
+        {node.group || data.rowType === "group" ? (
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined">(GROUP)</span>
+            <span>
+              {(node?.field === "entry" ? value?.location1 : value) ?? (
+                <i>unknown {node?.field}</i>
+              )}
+            </span>
+            {/*<span>({nonGroupChildren})</span>*/}
+          </div>
         ) : (
-          <Stack>
-            <Typography>{rowName}</Typography>
-            {uniqueDateLocation.map(({ date, location }: any, index: number) =>
-              index < GROUP_ITEMS_TO_SHOW ? (
-                <Stack
-                  key={`${date}-${location}`}
-                  direction={uniqueDateLocation.length === 1 ? "column" : "row"}
-                >
-                  <Typography variant="body2">{date}</Typography>
-                  <GrapeLocation location={location} />
-                </Stack>
-              ) : (
-                index === GROUP_ITEMS_TO_SHOW && (
-                  <Link href="#" sx={{ lineHeight: 1 }}>
-                    + {uniqueDateLocation.length - GROUP_ITEMS_TO_SHOW} more
-                  </Link>
-                )
-              )
+          <>
+            {isDetailed ? (
+              <>
+                {detailedData?.date && (
+                  <Typography variant="body2">
+                    {formatDate(detailedData?.date, { locale: "ro-RO" })}
+                  </Typography>
+                )}
+                {<GrapeLocation location={detailedData?.location} />}
+                {<StatusDataDisplay status={detailedData?.status} />}
+              </>
+            ) : (
+              <Stack>
+                <Typography>{rowName}</Typography>
+                {uniqueDateLocation.map(
+                  ({ date, location }: any, index: number) =>
+                    index < GROUP_ITEMS_TO_SHOW ? (
+                      <Stack
+                        key={`${date}-${location}`}
+                        direction={
+                          uniqueDateLocation.length === 1 ? "column" : "row"
+                        }
+                      >
+                        <Typography variant="body2">{date}</Typography>
+                        <GrapeLocation location={location} />
+                      </Stack>
+                    ) : (
+                      index === GROUP_ITEMS_TO_SHOW && (
+                        <Link href="#" sx={{ lineHeight: 1 }}>
+                          + {uniqueDateLocation.length - GROUP_ITEMS_TO_SHOW}{" "}
+                          more
+                        </Link>
+                      )
+                    )
+                )}
+              </Stack>
             )}
-          </Stack>
+          </>
         )}
       </Stack>
     </>

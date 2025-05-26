@@ -37,6 +37,7 @@ import { AgGridReact } from "ag-grid-react";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../vineyards/utils";
+import "./style.css";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -64,12 +65,9 @@ interface DataTableProps<T extends DashboardEntity> {
   updateSelectedData: (data: T[]) => void;
   columns: ColDef[];
   //groupCellRenderer: FunctionComponent<CustomCellRendererProps>;
-  updateGroup: (
-    uid: string,
-    rows: Partial<T>[],
-    group: string[]
-  ) => Promise<DbResponse>;
+  updateGroup: (uid: string, rows: Partial<T>[]) => Promise<DbResponse>;
   groupColumnDef?: ColDef<any, any>;
+  createGroup: (uid: string, group: Partial<T>) => Promise<DbResponse>;
 }
 
 export const DataTable = <T extends DashboardEntity>({
@@ -87,6 +85,7 @@ export const DataTable = <T extends DashboardEntity>({
   //groupCellRenderer,
   updateGroup,
   groupColumnDef,
+  createGroup,
 }: DataTableProps<T>) => {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -159,17 +158,6 @@ export const DataTable = <T extends DashboardEntity>({
     [updateSelectedData]
   );
 
-  const handleOnSelectionChanged = useCallback(
-    (event: SelectionChangedEvent) => {
-      const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
-      // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
-      const entities = nodesToEntities<T>(selectedNodes);
-      onChangeData?.(entities);
-      setSelectedRows(entities);
-    },
-    []
-  );
-
   // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
@@ -179,7 +167,7 @@ export const DataTable = <T extends DashboardEntity>({
     }
   }, [isDarkMode]);
 
-  const normalizedData: T[] = useMemo(
+  /*const normalizedData: T[] = useMemo(
     () =>
       rowData.map((row: T) => ({
         ...row,
@@ -190,7 +178,7 @@ export const DataTable = <T extends DashboardEntity>({
         ],
       })),
     [entryKey, rowData]
-  );
+  );*/
 
   const {
     groupToExpand,
@@ -200,28 +188,75 @@ export const DataTable = <T extends DashboardEntity>({
     setGroupedData,
     setSelectedRows,
     setGroupToExpand,
-  } = useGrouping<T>(normalizedData);
+  } = useGrouping<T>(rowData);
+
+  const handleOnSelectionChanged = useCallback(
+    (event: SelectionChangedEvent) => {
+      const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
+      // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
+      const entities = nodesToEntities<T>(selectedNodes);
+      onChangeData?.(entities);
+      setSelectedRows(entities);
+    },
+    [onChangeData, setSelectedRows]
+  );
 
   const { user } = useAuth();
   const uid = user?.uid || "";
 
-  const updateRowsGroup = async (group?: string[]) => {
-    const isGrouping = group && group.length > 0;
+  const createNewGroup = async (group: string[]) => {
+    if (!group || !data || group.length === 0 || data.length === 0) return;
+
+    const existingGroup = !!data.find(
+      (row) =>
+        row?.group &&
+        Array.isArray(row.group) &&
+        row.rowType === "group" &&
+        row.group.length === group.length &&
+        row.group.every((val, i) => val === group[i])
+    );
+
+    if (existingGroup) return;
+
+    const newGroup = {
+      id: Date.now().toString(),
+      rowType: "group",
+      group,
+    };
+
+    const createRes = await createGroup(uid, newGroup as Partial<T>);
+
+    if (createRes.status !== 200) return;
+
+    return newGroup;
+  };
+
+  const updateRowsGroup = async (group: string[] = []) => {
+    const isGrouping = group.length > 0;
 
     if (!uid || selectedRows.length === 0) return;
 
-    setGroupToExpand(isGrouping ? group : []);
+    setGroupToExpand(group);
 
-    const rows = selectedRows.map((row) => ({
+    console.log("updateRowsGroup:group:", group);
+
+    const newGroup = group && (await createNewGroup(group));
+
+    const updatedRows = selectedRows.map((row) => ({
       id: row.id,
-      [entryKey]: row[entryKey],
+      group:
+        group && row.rowType !== "group"
+          ? [...(newGroup?.group ?? group), row.name]
+          : row.group,
     }));
 
     const updateRes: DbResponse = await updateGroup(
       uid,
-      rows as Partial<T>[],
-      isGrouping ? group : []
+      updatedRows as Partial<T>[]
     );
+
+    /*setSelectedRows([]);
+    gridRef.current?.api?.deselectAll();*/
 
     if (updateRes.status === 200) {
       enqueueSnackbar(`${isGrouping ? "Grouped" : "Ungrouped"} successfully.`, {
@@ -251,10 +286,10 @@ export const DataTable = <T extends DashboardEntity>({
   }, [data]);
 
   useEffect(() => {
-    if (normalizedData && normalizedData.length > 0) {
-      setGroupedData(normalizedData);
+    if (rowData && rowData.length > 0) {
+      setGroupedData(rowData);
     }
-  }, [normalizedData, setGroupedData]);
+  }, [rowData, setGroupedData]);
 
   const isGroupOpenByDefault = useCallback(
     (params: IsGroupOpenByDefaultParams) => {
@@ -327,7 +362,7 @@ export const DataTable = <T extends DashboardEntity>({
   );
 
   const onRowDragEnd = useCallback(
-    (event: RowDragEndEvent) => {
+    async (event: RowDragEndEvent) => {
       const target = event.overNode?.data;
       if (!potentialParent && target) {
         return; // no move
@@ -342,7 +377,16 @@ export const DataTable = <T extends DashboardEntity>({
         } else if (newRowData !== rowData) {
           console.log("onRowDragEnd, modifying grid row data");
           event.api.setGridOption("rowData", newRowData);
-          updateGroup(uid, newRowData as T[], []);
+          console.log("newRowData:", newRowData);
+
+          if (target.group) {
+            setGroupToExpand(target.group);
+          }
+
+          /**setSelectedRows([]);
+          gridRef.current?.api?.deselectAll();*/
+
+          await updateGroup(uid, newRowData as T[]);
           enqueueSnackbar("Saved changes", { variant: "success" });
         }
         gridRef.current!.api.clearFocusedCell();
@@ -350,8 +394,16 @@ export const DataTable = <T extends DashboardEntity>({
       // clear node to highlight
       setPotentialParentForNode(event.api, null);
     },
-    [potentialParent, setGroupedData, setPotentialParentForNode]
+    [
+      enqueueSnackbar,
+      potentialParent,
+      setGroupToExpand,
+      setPotentialParentForNode,
+      uid,
+      updateGroup,
+    ]
   );
+  console.log("updateRowsGroup:selectedRows:", selectedRows);
 
   return (
     <>
@@ -381,7 +433,7 @@ export const DataTable = <T extends DashboardEntity>({
             onRowDragMove={onRowDragMove}
             onRowDragLeave={onRowDragLeave}
             onRowDragEnd={onRowDragEnd}
-            getRowId={(params): string => params.data.id}
+            getRowId={(params) => params.data.id}
             suppressRowHoverHighlight={true}
             suppressCellFocus={true}
           />

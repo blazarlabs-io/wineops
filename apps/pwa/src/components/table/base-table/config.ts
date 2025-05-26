@@ -2,12 +2,14 @@
 import {
   CellClassParams,
   ColDef,
+  ColGroupDef,
   GridApi,
   IRowNode,
   RefreshCellsParams,
   ValueFormatterParams,
 } from "ag-grid-enterprise";
 import { IFile } from "./fileUtils";
+import { EntryCellRenderer } from "./entry-cell-renderer";
 
 export let potentialParent: any = null;
 
@@ -15,7 +17,7 @@ const valueFormatter = function (params: ValueFormatterParams) {
   return params.value ? params.value + " MB" : "";
 };
 
-const cellClassRules = {
+export const cellClassRules = {
   "hover-over": (params: CellClassParams) => {
     return params.node === potentialParent;
   },
@@ -27,7 +29,7 @@ export function setPotentialParentForNode(
 ) {
   let newPotentialParent: IRowNode<IFile> | null = null;
   if (overNode) {
-    if (overNode.data?.type === "folder") {
+    if (overNode.data?.rowType === "group") {
       // over a folder, we take the immediate row
       newPotentialParent = overNode;
     } else if (overNode.parent) {
@@ -65,14 +67,110 @@ function refreshRows(api: GridApi, rowsToRefresh: IRowNode<IFile>[]) {
   api.refreshCells(params);
 }
 
-export const columns: ColDef[] = [
+export const columns: (ColDef | ColGroupDef)[] = [
+  {
+    headerName: "ENTRY",
+    /*children: [
+      {
+        field: "item",
+        headerName: "ALL DATA",
+        cellClassRules,
+
+        rowGroup: false,
+        hide: false,
+
+        enableValue: false,
+        enableRowGroup: false,
+        //enablePivot: false,
+
+        //keyCreator: ({ value }) => {
+          //return value?.location1 ?? value;
+        //},
+        cellRenderer: EntryCellRenderer,
+      },
+      {
+        hide: true,
+        //enableValue: false,
+        //enableRowGroup: false,
+        //enablePivot: false,
+        field: "entry.status",
+        headerName: "Status",
+        keyCreator: ({ value }) => {
+          console.log("keyCreator:value.status:", value?.status);
+          console.log("keyCreator:value:", value);
+          return value?.status ?? value;
+        },
+      },
+      {
+        hide: true,
+        field: "entry.date1",
+        headerName: "Date",
+        keyCreator: ({ value }) => {
+          console.log("keyCreator:value.date1:", value?.date1);
+          console.log("keyCreator:value:", value);
+          return value?.date1 ?? value;
+        },
+      },
+      {
+        hide: true,
+        field: "entry.location1",
+        headerName: "Location",
+        keyCreator: ({ value }) => {
+          console.log("keyCreator:value.location1:", value?.location1);
+          console.log("keyCreator:value:", value);
+          return value?.location1 ?? value;
+        },
+      },
+    ],*/
+    field: "item",
+    cellClassRules,
+
+    rowGroup: false,
+    hide: false,
+
+    enableValue: true,
+    enableRowGroup: true,
+    //enablePivot: true,
+
+    /*keyCreator: ({ value }) => {
+      return value?.location1 ?? value;
+    },*/
+    cellRenderer: EntryCellRenderer,
+  },
   {
     field: "dateModified",
-    cellClassRules: cellClassRules,
+    cellClassRules,
+
+    enableValue: true,
+    enableRowGroup: true,
+    //enablePivot: true,
+  },
+  {
+    headerName: "Location",
+    field: "location",
+    cellClassRules,
+
+    rowGroup: false,
+    hide: false,
+
+    enableValue: true,
+    enableRowGroup: true,
+    //enablePivot: true,
   },
   {
     field: "size",
-    valueFormatter: valueFormatter,
-    cellClassRules: cellClassRules,
+    valueFormatter,
+    cellClassRules,
+
+    enableValue: true,
+    enableRowGroup: true,
+    //enablePivot: true,
+
+    //pivot: true,
   },
+  /*{
+    headerName: "agg-size",
+    field: "size",
+    aggFunc: "sum",
+  },*/
 ];

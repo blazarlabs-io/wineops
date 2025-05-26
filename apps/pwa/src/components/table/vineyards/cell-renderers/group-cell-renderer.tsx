@@ -29,6 +29,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
     setExpanded(node.expanded);
   }, [node.expanded]);
 
+  const isGroup = node?.group || node?.data?.rowType === "group";
+
   return (
     <Box
       display={"flex"}
@@ -41,8 +43,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         borderLeft: node.level > 0 ? "8px" : "",
         borderStyle: "solid",
         borderColor: "var(--mui-palette-divider)",
-        pl: !node.group ? 0 : 2,
-        ml: !node.group ? 2 : 2,
+        pl: !isGroup ? 0 : 2,
+        ml: !isGroup ? 2 : 2,
       }}
       className="w-full flex flex-col items-start gap-2"
     >
@@ -72,7 +74,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         className="w-full"
       >
         <Box>
-          {!node.group && (
+          {!isGroup && (
             <>
               <div className="flex items-center gap-2">
                 <IconButton
@@ -126,7 +128,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
               />
             </div>
           )}
-          {!node.group && (
+          {!isGroup && (
             <p className="max-h-fit min-h-fit leading-4">
               {node.data.cadastralNumber}
             </p>

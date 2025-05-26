@@ -9,7 +9,6 @@ import { useColorScheme } from "@mui/material";
 import { StrictMode, useMemo } from "react";
 import { GroupCellRenderer } from "./cell-renderers/group-cell-renderer";
 import { vineyardColumns } from "./columns";
-import "./style.css";
 
 interface VineyardTableProps {
   onChangeData?: (data: Vineyard[]) => void;
@@ -37,11 +36,11 @@ export default function VineyardsTable({
     [vineyards]
   );
 
-  const updateGroup = async (
-    uid: string,
-    rows: Partial<Vineyard>[],
-    group: string[]
-  ) => await db.vineyard.updateGroup(uid, rows);
+  const updateGroup = async (uid: string, rows: Partial<Vineyard>[]) =>
+    await db.vineyard.updateGroup(uid, rows);
+
+  const createGroup = async (uid: string, group: Partial<Vineyard>) =>
+    await db.vineyard.create(uid, group);
 
   return (
     <StrictMode>
@@ -66,6 +65,7 @@ export default function VineyardsTable({
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedVineyards}
+        createGroup={createGroup}
       />
     </StrictMode>
   );

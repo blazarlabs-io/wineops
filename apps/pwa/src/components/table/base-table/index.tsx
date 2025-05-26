@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED } from "@/data/constants";
+import {
+  //ENTITY_DETAILS,
+  ROW_HEIGHT_DEFAULT,
+  ROW_HEIGHT_EXPANDED,
+} from "@/data/constants";
 import {
   CellStyleModule,
   ClientSideRowModelApiModule,
@@ -22,6 +26,9 @@ import {
   ValidationModule,
   PinnedRowModule,
   RowNode,
+  ValueFormatterParams,
+  StateUpdatedEvent,
+  IsGroupOpenByDefaultParams,
 } from "ag-grid-community";
 import {
   TreeDataModule,
@@ -30,13 +37,47 @@ import {
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { columns, potentialParent, setPotentialParentForNode } from "./config";
-import { getData } from "./data";
+import {
+  cellClassRules,
+  columns,
+  potentialParent,
+  setPotentialParentForNode,
+} from "./config";
+import { DATA } from "./data";
 import { IFile, shiftGroups } from "./fileUtils";
 import GroupCellRenderer from "./group-cell-renderer";
 import "./style.css";
 import { nodesToVineyards } from "@/utils/convert-node-to-vineyard";
+
+import {
+  RowGroupingModule,
+  RowGroupingPanelModule,
+  ColumnsToolPanelModule,
+  //PivotModule,
+  FiltersToolPanelModule,
+} from "ag-grid-enterprise";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+
+import { NumberFilterModule, PaginationModule } from "ag-grid-community";
+import { SetFilterModule, CellSelectionModule } from "ag-grid-enterprise";
+import { useGrouping } from "@/hooks/use-grouping";
 import { DashboardEntity } from "@/models/types/dashboard";
+import GroupingDialog from "@/components/dialogs/grouping-dialog";
+import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
+
+import {
+  Add,
+  DeleteOutline,
+  Deselect,
+  Edit,
+  SelectAll,
+  SwapVert,
+  Tune,
+} from "@mui/icons-material";
+import { enqueueSnackbar } from "notistack";
+import IconButton from "@mui/material/IconButton";
+
 ModuleRegistry.registerModules([
   RowDragModule,
   ClientSideRowModelApiModule,
@@ -49,6 +90,20 @@ ModuleRegistry.registerModules([
   PivotModule,
   ContextMenuModule,
   ...(process.env.NODE_ENV !== "production" ? [ValidationModule] : []),
+  // TODO: Row grouping
+  RowGroupingModule,
+  RowGroupingPanelModule,
+
+  ColumnsToolPanelModule,
+
+  // TODO: Pivoting
+  //PivotModule,
+  FiltersToolPanelModule,
+
+  NumberFilterModule,
+  PaginationModule,
+  SetFilterModule,
+  CellSelectionModule,
 ]);
 
 interface BaseTableProps<T extends DashboardEntity> {
@@ -67,17 +122,22 @@ export default function BaseTable<T extends DashboardEntity>({
   data = [],
 }: BaseTableProps<T>) {
   const gridRef = useRef<AgGridReact<IFile>>(null);
-  const [rowData] = useState<IFile[]>(getData());
-  const [columnDefs] = useState<ColDef[]>(columns);
+  const [rowData, setRowData] = useState<IFile[]>(DATA);
+  const [columnDefs, setColumnDefs] = useState<ColDef[]>(columns);
 
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       flex: 1,
+      minWidth: 100,
+      filter: true,
+      enableRowGroup: true,
+      //enablePivot: true,
+      enableValue: true,
     };
   }, []);
 
   // * DATA PATH
-  const getDataPath = useCallback((data: IFile) => data.filePath, []);
+  const getDataPath = useCallback((data: IFile) => data.group, []);
 
   // * ROW ID
   const getRowId = useCallback(({ data }: { data: IFile }) => data.id, []);
@@ -86,7 +146,7 @@ export default function BaseTable<T extends DashboardEntity>({
   const autoGroupColumnDef = useMemo<ColDef>(() => {
     return {
       rowDrag: true,
-      headerName: "Name",
+      headerName: "Group Name",
       minWidth: 300,
       cellRendererParams: {
         suppressCount: false,
@@ -141,28 +201,27 @@ export default function BaseTable<T extends DashboardEntity>({
     setPotentialParentForNode(event.api, null);
   }, []);
 
-  const onRowDragEnd = useCallback(
-    (event: RowDragEndEvent) => {
-      const target = event.overNode?.data;
-      if (!potentialParent && target) {
-        return; // no move
+  const onRowDragEnd = useCallback((event: RowDragEndEvent) => {
+    const target = event.overNode?.data;
+    if (!potentialParent && target) {
+      return; // no move
+    }
+    const source = event.node.data;
+    const rowData = event.api.getGridOption("rowData");
+    if (rowData && source && source !== target) {
+      const newRowData = shiftGroups(rowData, source, target);
+      if (!newRowData) {
+        console.log("invalid move");
+      } else if (newRowData !== rowData) {
+        event.api.setGridOption("rowData", newRowData);
+
+        console.log("newRowData:", newRowData);
       }
-      const source = event.node.data;
-      const rowData = event.api.getGridOption("rowData");
-      if (rowData && source && source !== target) {
-        const newRowData = shiftGroups(rowData, source, target);
-        if (!newRowData) {
-          console.log("invalid move");
-        } else if (newRowData !== rowData) {
-          event.api.setGridOption("rowData", newRowData);
-        }
-        gridRef.current!.api.clearFocusedCell();
-      }
-      // clear node to highlight
-      setPotentialParentForNode(event.api, null);
-    },
-    [shiftGroups]
-  );
+      gridRef.current!.api.clearFocusedCell();
+    }
+    // clear node to highlight
+    setPotentialParentForNode(event.api, null);
+  }, []);
 
   // * ROW HEIGHT
   const getRowHeight = (params: any) => {
@@ -210,32 +269,304 @@ export default function BaseTable<T extends DashboardEntity>({
   //   return pinnedRows?.some((row: any) => row.id === data.data.id);
   // }, []);
 
+  const [group, setGroup] = useState(false);
+
+  const handleGroupClick = () => {
+    setGroup((prev) => !prev);
+  };
+
+  const aggFuncs = useMemo(() => {
+    return {
+      yearsRange: ({ values }: any) => {
+        const years = values
+          ? values
+              .map((value: string) => value && new Date(value).getFullYear())
+              .filter((value: number) => value && !Number.isNaN(value))
+          : [];
+
+        const startYear = years.length > 0 ? Math.min(...years) : "";
+        const endYear = years.length > 0 ? Math.max(...years) : "";
+
+        return `${startYear === endYear ? startYear : `${startYear} - ${endYear}`} `;
+      },
+    };
+  }, []);
+
+  const treeData = gridRef.current?.api?.getGridOption("treeData");
+  const onStateUpdated = useCallback(
+    ({ state }: StateUpdatedEvent<IFile>) => {
+      if (
+        treeData &&
+        state.rowGroup &&
+        state.rowGroup?.groupColIds?.length > 0
+      ) {
+        //gridRef.current?.api?.setGridOption("treeData", false);
+        gridRef.current?.api?.updateGridOptions({ treeData: false });
+        gridRef.current?.api?.setRowGroupColumns(state.rowGroup.groupColIds);
+        gridRef.current?.api?.refreshClientSideRowModel("group");
+      }
+
+      if (!treeData && !state.rowGroup) {
+        //gridRef.current?.api?.setGridOption("treeData", true);
+        gridRef.current?.api?.updateGridOptions({ treeData: true });
+        gridRef.current?.api?.setRowGroupColumns([]);
+        gridRef.current?.api?.refreshClientSideRowModel("group");
+      }
+    },
+    [treeData]
+  );
+
+  console.log("rowData", rowData);
+
+  // TODO: dialogs for grouping
+
+  const [openGroupingDialog, setOpenGroupingDialog] = useState(false);
+  const [openUngroupingDialog, setOpenUngroupingDialog] = useState(false);
+
+  const handleClickOpenGroupingDialog = () => {
+    setOpenGroupingDialog(true);
+  };
+
+  const handleCloseGroupingDialog = () => {
+    setOpenGroupingDialog(false);
+  };
+
+  const handleClickOpenUngroupingDialog = () => {
+    setOpenUngroupingDialog(true);
+  };
+
+  const handleCloseUngroupingDialog = () => {
+    setOpenUngroupingDialog(false);
+  };
+
+  // TODO: END dialogs for grouping
+
+  const uid = "uid";
+  const entryKey = "name" as keyof T;
+
+  const normalizedData: T[] = useMemo(
+    () =>
+      (rowData as T[])?.map((row: T) => {
+        const keys = Object.keys(row);
+        const type = keys.every((key) => key === "id" || key === "group")
+          ? "group"
+          : row?.rowType;
+
+        return {
+          ...row,
+          /*group: [
+            ...(!row.group || row.group.length < 2
+              ? [row[entryKey] ?? row.id]
+              : row.group),
+            //ENTITY_DETAILS,
+          ],*/
+          type,
+        };
+      }),
+    [rowData]
+  );
+
+  const {
+    groupToExpand,
+    uniqueGroups,
+    groupedData,
+    selectedRows,
+    setGroupedData,
+    setSelectedRows,
+    setGroupToExpand,
+  } = useGrouping<T>(normalizedData as T[]);
+
+  const updateRowsGroup = async (group: string[] = []) => {
+    const isGrouping = group.length > 0;
+
+    if (!uid || selectedRows.length === 0) return;
+
+    setGroupToExpand(group);
+
+    const rows = selectedRows.map((row) => ({
+      id: row.id,
+      [entryKey]: row[entryKey],
+    }));
+
+    console.log("selectedRows:", selectedRows);
+
+    const rowsIds = selectedRows.map(({ id }) => id);
+
+    if (isGrouping || 1 === 1) {
+      const existingGroup = !!normalizedData.find(
+        (row) =>
+          row?.group &&
+          Array.isArray(row.group) &&
+          row.group.length === group.length &&
+          row.group.every((val, i) => val === group[i])
+      );
+
+      setRowData((prev) => [
+        ...(prev?.map((item) => ({
+          ...item,
+          group: rowsIds.includes(item.id)
+            ? [...group, item?.name ?? item?.group[item?.group?.length - 1]]
+            : item?.group,
+        })) as T[]),
+        ...(existingGroup
+          ? []
+          : [{ id: `${Date.now()}`, group, rowType: "group" } as T]),
+      ]);
+
+      setSelectedRows([]);
+      if (onRowSelection) onRowSelection([]);
+
+      gridRef.current?.api?.deselectAll();
+    }
+
+    /*const updateRes: DbResponse = await updateGroup(
+        uid,
+        rows as Partial<T>[],
+        isGrouping ? group : []
+      );*/
+    /*const updateRes = { status: 200 };
+
+    if (updateRes.status === 200) {
+      enqueueSnackbar(`${isGrouping ? "Grouped" : "Ungrouped"} successfully.`, {
+        variant: "success",
+      });
+    } else {
+      enqueueSnackbar(`Failed to ${isGrouping ? "group" : "ungroup"}.`, {
+        variant: "error",
+      });
+    }*/
+  };
+
+  const handleOnSelectionChanged = useCallback(
+    (event: SelectionChangedEvent) => {
+      const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
+      // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
+      const entries = nodesToVineyards(selectedNodes);
+      setSelectedRows(
+        entries.map((entry) => ({
+          ...entry,
+          name: entry?.name ?? entry?.group[entry?.group?.length - 1],
+        })) as T[]
+      );
+    },
+    [setSelectedRows]
+  );
+
+  const isGroupOpenByDefault = useCallback(
+    (params: IsGroupOpenByDefaultParams) => {
+      const route = params.rowNode.getRoute();
+      return !!route?.every((item, idx) => groupToExpand[idx] === item);
+    },
+    [groupToExpand]
+  );
+
+  useEffect(() => {
+    if (normalizedData && normalizedData.length > 0) {
+      setGroupedData(normalizedData);
+    }
+  }, [normalizedData, setGroupedData]);
+
+  const filteredData = normalizedData?.filter(
+    ({ rowType }) => rowType === "item" || rowType !== "group"
+  );
+
   return (
-    <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-      <AgGridReact
-        ref={gridRef}
-        theme={myTheme}
-        rowData={rowData}
-        columnDefs={columnDefs}
-        defaultColDef={defaultColDef}
-        treeData={true}
-        groupDefaultExpanded={-1}
-        getDataPath={getDataPath}
-        getRowId={getRowId}
-        autoGroupColumnDef={autoGroupColumnDef}
-        onRowDragMove={onRowDragMove}
-        onRowDragLeave={onRowDragLeave}
-        onRowDragEnd={onRowDragEnd}
-        getRowHeight={getRowHeight}
-        pinnedTopRowData={pinnedRows}
-        // pivotMode={true}
-        // sideBar="columns"
-        // onPinnedRowsChanged={handlePinnedRowsChanged}
-        // enableRowPinning={true}
-        // isRowPinned={isRowPinned}
-        rowSelection={rowSelection}
-        onRowSelected={handleOnRowSelected}
+    <>
+      <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
+        <Stack>
+          <Stack gap={2} direction="row" sx={{ my: 2, alignItems: "center" }}>
+            <IconButton
+              color="default"
+              aria-label="group"
+              disabled={false}
+              onClick={handleClickOpenGroupingDialog}
+            >
+              <SelectAll />
+            </IconButton>
+
+            <IconButton
+              color="default"
+              size="small"
+              aria-label="ungroup"
+              disabled={false}
+              onClick={handleClickOpenUngroupingDialog}
+            >
+              <Deselect className="" />
+            </IconButton>
+          </Stack>
+        </Stack>
+
+        <AgGridReact
+          ref={gridRef}
+          theme={myTheme}
+          rowData={!treeData || group ? filteredData : normalizedData}
+          columnDefs={
+            columnDefs
+            /*group
+              ? [
+                  {
+                    headerName: "Name",
+                    field: "group",
+                    cellClassRules: cellClassRules,
+
+                    valueFormatter: (params: ValueFormatterParams) =>
+                      Array.isArray(params?.value)
+                        ? params.value[params.value.length - 1]
+                        : params.value,
+                    enableValue: true,
+                    enableRowGroup: true,
+                    enablePivot: true,
+                  },
+                //{
+                  //headerName: "Years Range",
+                  //field: "dateModified",
+                  //aggFunc: "yearsRange",
+                  //enableValue: true,
+                  //enableRowGroup: true,
+                  //enablePivot: true,
+                //},
+                  ...columnDefs,
+                ]
+              : columnDefs*/
+          }
+          defaultColDef={defaultColDef}
+          treeData={!group}
+          groupDefaultExpanded={-1}
+          getDataPath={getDataPath}
+          getRowId={getRowId}
+          autoGroupColumnDef={autoGroupColumnDef}
+          onRowDragMove={onRowDragMove}
+          onRowDragLeave={onRowDragLeave}
+          onRowDragEnd={onRowDragEnd}
+          getRowHeight={getRowHeight}
+          pinnedTopRowData={pinnedRows}
+          rowSelection={rowSelection}
+          onRowSelected={handleOnRowSelected}
+          onSelectionChanged={handleOnSelectionChanged}
+          // selectionColumnDef={selectionColumnDef}
+          // TODO: Row grouping
+          //{...gridOptions}
+          rowGroupPanelShow="always"
+          sideBar={true}
+          aggFuncs={aggFuncs}
+          onStateUpdated={onStateUpdated}
+          isGroupOpenByDefault={isGroupOpenByDefault}
+        />
+      </div>
+
+      <GroupingDialog<T>
+        groups={uniqueGroups}
+        rows={selectedRows}
+        open={openGroupingDialog}
+        onClose={handleCloseGroupingDialog}
+        onAddToGroup={updateRowsGroup}
       />
-    </div>
+      <UngroupingDialog<T>
+        rows={selectedRows}
+        open={openUngroupingDialog}
+        onClose={handleCloseUngroupingDialog}
+        onUngroup={updateRowsGroup}
+      />
+    </>
   );
 }

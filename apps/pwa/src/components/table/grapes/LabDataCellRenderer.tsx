@@ -4,8 +4,11 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
-export const LabDataCellRenderer = ({ value }: CustomCellRendererProps) => {
-  const data = Array.isArray(value) ? value[0] : {};
+export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
+  const { value, node, data } = params;
+  const isGroup = node.group || data.rowType === "group";
+
+  const localData = Array.isArray(value) ? value[0] : {};
 
   return (
     <Stack
@@ -13,14 +16,14 @@ export const LabDataCellRenderer = ({ value }: CustomCellRendererProps) => {
       justifyContent="center"
       sx={{ height: "100%" }}
     >
-      {value && Array.isArray(value) && Array.isArray(value[0]) ? (
+      {isGroup || (value && Array.isArray(value) && Array.isArray(value[0])) ? (
         <></>
       ) : (
-        data && (
+        localData && (
           <Stack>
-            {data?.date && (
+            {localData?.date && (
               <Typography variant="caption" color="textDisabled">
-                {formatDate(data?.date, { locale: "ro-RO" })}
+                {formatDate(localData?.date, { locale: "ro-RO" })}
               </Typography>
             )}
 
@@ -28,12 +31,12 @@ export const LabDataCellRenderer = ({ value }: CustomCellRendererProps) => {
               <LabItem
                 variant="small"
                 label="Sugar"
-                data={data?.sugar ?? { value: "N/A" }}
+                data={localData?.sugar ?? { value: "N/A" }}
               />
               <LabItem
                 variant="small"
                 label="Acidity"
-                data={data?.acidity ?? { value: "N/A" }}
+                data={localData?.acidity ?? { value: "N/A" }}
               />
             </Stack>
           </Stack>

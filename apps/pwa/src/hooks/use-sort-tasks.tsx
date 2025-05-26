@@ -10,12 +10,12 @@ export const useSortTasks = (data: TaskSummary[]) => {
   useEffect(() => {
     if (!mountRef.current && data && data !== undefined && data.length > 0) {
       mountRef.current = true;
-      setTodoTasks(data.filter((task: TaskSummary) => task.status === "todo"));
+      setTodoTasks(data.filter((task: TaskSummary) => task?.status === "todo"));
       setInProgressTasks(
-        data.filter((task: TaskSummary) => task.status === "in-progress")
+        data.filter((task: TaskSummary) => task?.status === "in-progress")
       );
       setCompletedTasks(
-        data.filter((task: TaskSummary) => task.status === "completed")
+        data.filter((task: TaskSummary) => task?.status === "completed")
       );
     }
   }, [data]);

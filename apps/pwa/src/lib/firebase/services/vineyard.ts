@@ -104,8 +104,10 @@ vineyard = {
       const batch = writeBatch(fdb);
 
       rows.forEach(({ id, group }) => {
+        if (!group) return;
+
         const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
-        batch.update(docRef, { group: group });
+        batch.update(docRef, { group });
       });
 
       await batch.commit();

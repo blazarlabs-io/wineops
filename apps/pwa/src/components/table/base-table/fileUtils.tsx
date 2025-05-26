@@ -1,9 +1,15 @@
+import { RowType } from "@/models/types/db";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IFile {
   id: string;
-  filePath: string[];
-  type: "file" | "folder";
+  group: string[];
+  rowType?: RowType;
   dateModified?: string;
   size?: number;
+  location?: string;
+  entry?: Record<string, any>;
+  name?: string;
 }
 
 /**
@@ -22,12 +28,12 @@ export function shiftGroups(
     return null; // invalid move - no-op
   }
 
-  const sourcePath = source.filePath; // folder or file to move
+  const sourcePath = source.group; // folder or file to move
   let newParentPath: string[] | undefined; // folder to drop into is where we are going to move the file/folder to
 
   if (target) {
-    newParentPath = target.filePath;
-    if (target.type !== "folder") {
+    newParentPath = target.group;
+    if (target.rowType !== "group") {
       newParentPath = pathParent(newParentPath); // if over a file, we take the parent folder
     }
   }
@@ -49,20 +55,20 @@ export function shiftGroups(
   // All the rows before the split index not starting with the source path
   const rowsBefore = files
     .slice(0, splitIndex)
-    .filter((item) => !pathStartsWith(item.filePath, sourcePath));
+    .filter((item) => !pathStartsWith(item.group, sourcePath));
 
   // All the rows starting with the source path, with the path updated
   const rowsMiddle = files
-    .filter((item) => pathStartsWith(item.filePath, sourcePath))
+    .filter((item) => pathStartsWith(item.group, sourcePath))
     .map((item) => ({
       ...item,
-      filePath: pathReplaceBase(item.filePath, sourcePath, newParentPath),
+      group: pathReplaceBase(item.group, sourcePath, newParentPath),
     }));
 
   // All the rows after the split index not starting with the source path
   const rowsAfter = files
     .slice(splitIndex)
-    .filter((item) => !pathStartsWith(item.filePath, sourcePath));
+    .filter((item) => !pathStartsWith(item.group, sourcePath));
 
   // Merge the three parts
   return [...rowsBefore, ...rowsMiddle, ...rowsAfter];
@@ -106,11 +112,8 @@ function fileExtension(filename: string): string {
 }
 
 /** Get the CSS icon class for a file or folder */
-export function getFileCssIcon(
-  type: "file" | "folder" | undefined,
-  filename: string
-): string {
-  if (type !== "file") {
+export function getFileCssIcon(filename: string, type?: RowType): string {
+  if (type !== "item") {
     return "far fa-folder";
   }
   switch (fileExtension(filename)) {

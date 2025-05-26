@@ -8,6 +8,8 @@ export type LabSimpleDataDisplayProps = {
 export default function LabSimpleDataDisplay({
   data,
 }: LabSimpleDataDisplayProps) {
+  if (!data) return;
+
   return (
     <div className="flex flex-col items-start justify-start gap-4">
       <p className="text-xs text-muted-foreground leading-[0.8]">

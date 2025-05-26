@@ -1,16 +1,36 @@
-import { Grape } from "@/models/types/db";
-import { doc, writeBatch } from "firebase/firestore";
+import { DbResponse, Grape } from "@/models/types/db";
+import { doc, setDoc, writeBatch } from "firebase/firestore";
 import { db as fdb } from "../client";
 import { GRAPES, WINERY } from "../config";
 
 const grape = {
-  updateGroup: async (uid: string, rows: Grape[], group: string[]) => {
+  create: async (uid: string, data: Grape): Promise<DbResponse> => {
+    try {
+      const docRef = doc(fdb, WINERY, uid, GRAPES, data.id);
+      const newDocRef = await setDoc(docRef, data);
+
+      return {
+        data: newDocRef,
+        error: null,
+        status: 200,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error,
+        status: 500,
+      };
+    }
+  },
+  updateGroup: async (uid: string, rows: Grape[]) => {
     try {
       const batch = writeBatch(fdb);
 
-      rows.forEach(async ({ id, name }) => {
+      rows.forEach(async ({ id, group }) => {
+        if (!group) return;
+
         const docRef = doc(fdb, WINERY, uid, GRAPES, id);
-        batch.update(docRef, { group: [...group, name] });
+        batch.update(docRef, { group });
       });
 
       await batch.commit();
