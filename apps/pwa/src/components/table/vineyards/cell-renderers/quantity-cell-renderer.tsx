@@ -20,12 +20,14 @@ export const QuantityCellRenderer: FunctionComponent<
       width={"100%"}
       height={ROW_HEIGHT_DEFAULT}
     >
-      <QuantityWidget
-        actual={actual}
-        supply={supply}
-        demand={demand}
-        status={node.data?.status}
-      />
+      {!node.group && (
+        <QuantityWidget
+          actual={actual}
+          supply={supply}
+          demand={demand}
+          status={node.data?.status}
+        />
+      )}
     </Box>
   );
 };
