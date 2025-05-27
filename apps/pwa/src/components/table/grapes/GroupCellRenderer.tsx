@@ -42,8 +42,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 
   const batchesDateLocation = isGroup
     ? batchId.map(
-        ({ date, location }) =>
-          `${date ? formatDate(date, { locale: "ro-RO" }) : ""}***${location ?? ""}`
+        (batch) =>
+          `${batch?.date ? formatDate(batch?.date, { locale: "ro-RO" }) : ""}***${batch?.location ?? ""}`
       )
     : [];
 
