@@ -238,7 +238,7 @@ export const DataTable = <T extends DashboardEntity>({
 
     setGroupToExpand(group);
 
-    console.log("updateRowsGroup:group:", group);
+    // console.log("updateRowsGroup:group:", group);
 
     const newGroup = group && (await createNewGroup(group));
 
@@ -403,7 +403,7 @@ export const DataTable = <T extends DashboardEntity>({
       updateGroup,
     ]
   );
-  console.log("updateRowsGroup:selectedRows:", selectedRows);
+  // console.log("updateRowsGroup:selectedRows:", selectedRows);
 
   return (
     <>

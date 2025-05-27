@@ -85,6 +85,7 @@ export const vineyardSchema = Joi.object<Vineyard>({
   grapeVariety: Joi.string().required(), // * Input by user in form
   grapeColor: Joi.string().required(), // * Input by user in form
   cadastralNumber: Joi.string().optional().allow(""),
+  rowType: Joi.string().optional(),
   info: vineyardInfoSchema,
   grape: vineyardGrapeSchema.optional(),
   status: Joi.string().optional(), // * Input by user in form

@@ -36,7 +36,7 @@ export function useGrouping<T extends DashboardEntity>(
     ),
   ].sort((a, b) => a.localeCompare(b));
 
-  console.log("GROUPS", groupedData);
+  // console.log("GROUPS", groupedData);
 
   const addRowToGroup = (group: string[]) => {
     if (selectedRows.length === 0 || group.length === 0) {

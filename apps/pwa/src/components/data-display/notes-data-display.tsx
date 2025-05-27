@@ -8,7 +8,6 @@ export type NotesDataDisplayProps = {
 
 export default function NotesDataDisplay({ notes }: NotesDataDisplayProps) {
   if (!notes) return;
-  console.log("notes:", notes);
   return (
     <Stack
       direction="column"

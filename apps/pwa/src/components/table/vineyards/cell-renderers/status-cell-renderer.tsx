@@ -2,8 +2,8 @@ import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 
 import VineyardStatusDataDisplay from "@/components/data-display/status-data-display";
-import { Box, Typography } from "@mui/material";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { Box } from "@mui/material";
 
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
@@ -16,9 +16,9 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       width={"100%"}
       height={ROW_HEIGHT_DEFAULT}
     >
-      <Typography variant="body2">
+      {!params.node.group && (
         <VineyardStatusDataDisplay status={params.value} />
-      </Typography>
+      )}
     </Box>
   );
 };

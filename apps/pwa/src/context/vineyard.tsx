@@ -78,8 +78,19 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
           vineyards.push(doc.data() as Vineyard);
         });
 
-        // console.log("vineyards", vineyards);
+        console.log("\n====================================");
+        console.log("REALTIME SnapShot vineyards:", vineyards);
+        console.log("Selected Vineyards:", selectedVineyards);
+        console.log("====================================\n");
         setVineyards(vineyards);
+        // const updatedSelectedVineyards = vineyards.filter((vineyard) =>vineyard.id === selectedVineyards[0]?.id);
+
+        // * Check if any of theselted vineyards exist in the vineyards array
+        const updatedSelectedVineyards = selectedVineyards.filter((vineyard) =>
+          vineyards.some((v) => v.id === vineyard.id)
+        );
+
+        console.log("updatedSelectedVineyards:", updatedSelectedVineyards);
       });
 
       // * Vineyards Groups Realtime Updates
@@ -111,7 +122,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
       setVineyards([]);
       setVineyardsGroups([]);
     };
-  }, [user]);
+  }, [user, selectedVineyards]);
 
   return (
     <VineyardContext.Provider

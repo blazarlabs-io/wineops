@@ -84,7 +84,7 @@ vineyard = {
     try {
       console.log("uid:", uid, "id:", id, "data:", data);
       const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
-      await updateDoc(docRef, data);
+      await setDoc(docRef, data, { merge: true });
       return {
         data: null,
         error: null,

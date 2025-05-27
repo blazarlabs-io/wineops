@@ -30,7 +30,7 @@ export default function VineyardsTable({
 
   const normalizedVineyards = useMemo(
     () =>
-      vineyards.map((vineyard) => ({
+      vineyards.map((vineyard: Vineyard) => ({
         ...vineyard,
       })),
     [vineyards]

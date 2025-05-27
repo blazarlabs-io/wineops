@@ -99,24 +99,33 @@ export default function VineyardForm({
         getOneRes.status === 200 &&
         (getOneRes.data === null || getOneRes.data !== undefined)
       ) {
-        const { id, name, group } = data;
+        // const { id, name, group } = data;
+        console.log("Vineyard already exists", data);
+
+        if (data.group.length <= 1) {
+          data.group = [data.name];
+          console.log("data.group <=1", data.group);
+        } else {
+          data.group[data.group.length - 1] = data.name;
+          console.log("data.group else", data.group);
+        }
 
         // TODO Needs review
-        const newGroup =
-          Array.isArray(group) && group.length > 1 ? group.slice(0, -1) : group;
+        // const newGroup =
+        //   Array.isArray(group) && group.length > 1 ? group.slice(0, -1) : group;
 
-        const newData = {
-          ...data,
-          group:
-            Array.isArray(newGroup) && newGroup.length > 1
-              ? [...newGroup.slice(0, -1), name]
-              : [id],
-        };
+        // const newData = {
+        //   ...data,
+        //   group:
+        //     Array.isArray(newGroup) && newGroup.length > 1
+        //       ? [...newGroup.slice(0, -1), name]
+        //       : [id],
+        // };
 
         const updateRes: DbResponse = await db.vineyard.update(
           uid,
           data.id,
-          newData
+          data
         );
         if (updateRes.status === 200) {
           enqueueSnackbar(`Updated ${data.name} successfully`, {
@@ -129,6 +138,8 @@ export default function VineyardForm({
           });
         }
       } else {
+        data.group = [data.name];
+
         const createRes: DbResponse = await db.vineyard.create(uid, data);
         if (createRes.status === 200) {
           enqueueSnackbar(`Created ${data.name} successfully`, {
@@ -161,7 +172,7 @@ export default function VineyardForm({
   useEffect(() => {
     if (vineyard) {
       reset(vineyard);
-      // console.log('vineyard', vineyard);
+      console.log("VINEYARD FORM:", vineyard);
       if (vineyard.name.length > 0) {
         reset(vineyard);
         setFormData(vineyard);
@@ -500,10 +511,7 @@ export default function VineyardForm({
                       {/* * PLANTING SCHEME */}
                       <div className="flex items-center gap-2 mt-2">
                         <Leaf className="text-muted-foreground w-4 h-4" />
-                        <Typography
-                          variant="h3"
-                          className="font-medium text-base"
-                        >
+                        <Typography className="font-medium text-base">
                           Planting Scheme
                         </Typography>
                       </div>
@@ -755,9 +763,9 @@ export default function VineyardForm({
                       {/* ? CERTIFICATIONS */}
                       <div className="flex items-center gap-2 mt-2">
                         <Leaf className="text-muted-foreground w-4 h-4" />
-                        <h2 className="font-medium text-base">
+                        <Typography className="font-medium text-base">
                           Certifications
-                        </h2>
+                        </Typography>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
