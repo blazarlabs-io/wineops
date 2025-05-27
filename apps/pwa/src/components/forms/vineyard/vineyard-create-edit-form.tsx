@@ -110,18 +110,6 @@ export default function VineyardForm({
           console.log("data.group else", data.group);
         }
 
-        // TODO Needs review
-        // const newGroup =
-        //   Array.isArray(group) && group.length > 1 ? group.slice(0, -1) : group;
-
-        // const newData = {
-        //   ...data,
-        //   group:
-        //     Array.isArray(newGroup) && newGroup.length > 1
-        //       ? [...newGroup.slice(0, -1), name]
-        //       : [id],
-        // };
-
         const updateRes: DbResponse = await db.vineyard.update(
           uid,
           data.id,

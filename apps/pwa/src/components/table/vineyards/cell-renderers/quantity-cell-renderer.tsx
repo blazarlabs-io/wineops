@@ -7,19 +7,25 @@ import { type FunctionComponent } from "react";
 
 export const QuantityCellRenderer: FunctionComponent<
   CustomCellRendererProps
-> = ({ value }) => (
-  <Box
-    display={"flex"}
-    alignItems={"center"}
-    justifyItems={"center"}
-    width={"100%"}
-    height={ROW_HEIGHT_DEFAULT}
-  >
-    <QuantityWidget
-    // actual={data?.actual}
-    // supply={data?.supply}
-    // demand={data?.demand}
-    // status={data?.status}
-    />
-  </Box>
-);
+> = ({ value, node }) => {
+  const actual = Math.floor(Math.random() * 20);
+  const supply = Math.floor(Math.random() * 20);
+  const demand = Math.floor(Math.random() * 20);
+
+  return (
+    <Box
+      display={"flex"}
+      alignItems={"center"}
+      justifyItems={"center"}
+      width={"100%"}
+      height={ROW_HEIGHT_DEFAULT}
+    >
+      <QuantityWidget
+        actual={actual}
+        supply={supply}
+        demand={demand}
+        status={node.data?.status}
+      />
+    </Box>
+  );
+};
