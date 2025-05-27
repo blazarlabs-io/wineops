@@ -8,6 +8,8 @@ export type LabSimpleDataDisplayProps = {
 export default function LabSimpleDataDisplay({
   data,
 }: LabSimpleDataDisplayProps) {
+  if (!data) return;
+
   return (
     <div className="flex flex-col items-start justify-start gap-4">
       <p className="text-xs text-muted-foreground leading-[0.8]">
@@ -28,25 +30,27 @@ export default function LabSimpleDataDisplay({
           </div>
           <div className="flex items-start gap-1">
             <p className="text-muted-foreground leading-[0.8]">
-              {data[0].items[0].value}
+              {data[0].items[0].value.toFixed(2)}
             </p>
             <div
               className="flex items-start gap-[1px]"
               style={{
                 color:
-                  data[0].items[0].variation.toString().charAt(0) === "-"
+                  data[0].items[0].variation.toFixed(2).toString().charAt(0) ===
+                  "-"
                     ? "#FF7878"
                     : "#00C950",
               }}
             >
-              {data[0].items[0].variation.toString().charAt(0) === "-" ? (
+              {data[0].items[0].variation.toFixed(2).toString().charAt(0) ===
+              "-" ? (
                 <ArrowDown className="w-3 h-3" />
               ) : (
                 <ArrowUp className="w-3 h-3" />
               )}
 
               <p className="text-[10px] leading-[0.8]">
-                {data[0].items[0].variation}
+                {data[0].items[0].variation.toFixed(2)}
               </p>
             </div>
           </div>
@@ -66,25 +70,27 @@ export default function LabSimpleDataDisplay({
           </div>
           <div className="flex items-start gap-1">
             <p className="text-muted-foreground leading-[0.8]">
-              {data[0].items[1].value}
+              {data[0].items[1].value.toFixed(2)}
             </p>
             <div
               className="flex items-start gap-[1px]"
               style={{
                 color:
-                  data[0].items[1].variation.toString().charAt(0) === "-"
+                  data[0].items[1].variation.toFixed(2).toString().charAt(0) ===
+                  "-"
                     ? "#FF7878"
                     : "#00C950",
               }}
             >
-              {data[0].items[1].variation.toString().charAt(0) === "-" ? (
+              {data[0].items[1].variation.toFixed(2).toString().charAt(0) ===
+              "-" ? (
                 <ArrowDown className="w-3 h-3" />
               ) : (
                 <ArrowUp className="w-3 h-3" />
               )}
 
               <p className="text-[10px] leading-[0.8]">
-                {data[0].items[1].variation}
+                {data[0].items[1].variation.toFixed(2)}
               </p>
             </div>
           </div>

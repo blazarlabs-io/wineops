@@ -1,24 +1,17 @@
 "use client";
 
-import { DataTable } from "@/components/table/data-table";
+import VineyardsTable from "@/components/table/vineyards";
 import ToolsBar from "@/components/widgets/tools-bar";
+import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { Vineyard } from "@/models/types/db";
-import { Box, Typography, useColorScheme } from "@mui/material";
-import { StrictMode, useState } from "react";
-import { ButtonType } from "@/components/widgets/tools-bar/constants";
-import { useVineyard } from "@/context/vineyard";
-import { vineyardColumns } from "@/components/table/data-table/columns";
-import { GroupCellRenderer } from "@/components/table/data-table/cell-renderers/GroupCellRenderer";
-import { db } from "@/lib/firebase/services";
-import { SelectionCellRenderer } from "@/components/table/data-table/cell-renderers/SelectionCellRenderer";
+import { Box, Typography } from "@mui/material";
+import { useState } from "react";
 
 export default function VineyardsDashboard() {
-  const { mode } = useColorScheme();
-
   const [selectionData, setSelectionData] = useState<Vineyard[]>([]);
 
-  const { enableEdit, enableGrouping, enableDelete, enableUngrouping } =
+  const { enableGrouping, enableUngrouping, enableEdit, enableDelete } =
     useSortToolsBarStates(selectionData);
 
   const [openGroupingDialog, setOpenGroupingDialog] = useState(false);
@@ -39,14 +32,6 @@ export default function VineyardsDashboard() {
   const handleCloseUngroupingDialog = () => {
     setOpenUngroupingDialog(false);
   };
-
-  const { vineyards, updateSelectedVineyards } = useVineyard();
-
-  const updateGroup = async (
-    uid: string,
-    rows: Partial<Vineyard>[],
-    group: string[]
-  ) => await db.vineyard.updateGroup(uid, rows, group);
 
   return (
     <Box className="flex w-full h-full">
@@ -73,28 +58,13 @@ export default function VineyardsDashboard() {
             },
           }}
         />
-        <StrictMode>
-          <DataTable<Vineyard>
-            isDarkMode={mode === "dark"}
-            onChangeData={setSelectionData}
-            openGroupingDialog={openGroupingDialog}
-            openUngroupingDialog={openUngroupingDialog}
-            handleCloseGroupingDialog={handleCloseGroupingDialog}
-            handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-            data={vineyards}
-            columns={vineyardColumns}
-            selectionCellRenderer={SelectionCellRenderer}
-            groupColumnDef={{
-              headerName: "Name",
-              cellRendererParams: {
-                innerRenderer: GroupCellRenderer,
-                suppressCount: true,
-              },
-            }}
-            updateGroup={updateGroup}
-            updateSelectedData={updateSelectedVineyards}
-          />
-        </StrictMode>
+        <VineyardsTable
+          onChangeData={setSelectionData}
+          openGroupingDialog={openGroupingDialog}
+          openUngroupingDialog={openUngroupingDialog}
+          handleCloseGroupingDialog={handleCloseGroupingDialog}
+          handleCloseUngroupingDialog={handleCloseUngroupingDialog}
+        />
       </Box>
     </Box>
   );

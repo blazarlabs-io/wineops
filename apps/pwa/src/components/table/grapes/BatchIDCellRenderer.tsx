@@ -1,24 +1,26 @@
 import CertificationsDataDisplay from "@/components/data-display/certifications-data-display";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { Box, Typography } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import type { FunctionComponent } from "react";
 import React from "react";
 
-export const BatchIDCellRenderer: FunctionComponent<
-  CustomCellRendererProps
-> = ({ value }) => {
-  const data = Array.isArray(value) ? value[0] : {};
+export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
+  params
+) => {
+  const { value, data, node } = params;
+  const isGroup = node.group || data?.rowType === "group";
 
   return (
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%" }}
+      height={ROW_HEIGHT_DEFAULT}
     >
-      {value && Array.isArray(value) && Array.isArray(value[0]) ? (
+      {isGroup ? (
         <>
-          {value.length} {value.length === 1 ? "Batch" : "Batches"}
+          {value?.length} {value?.length === 1 ? "Batch" : "Batches"}
         </>
       ) : (
         <Stack

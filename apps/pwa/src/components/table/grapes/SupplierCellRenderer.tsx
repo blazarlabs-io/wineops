@@ -1,20 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { GROUP_ITEMS_TO_SHOW, ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { Link } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
-export const SupplierCellRenderer = ({ value }: CustomCellRendererProps) => {
-  const data = Array.isArray(value) ? value[0] : {};
+export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
+  const { value, node, data } = params;
+  const isGroup = node.group || data.rowType === "group";
+
+  const supplier: any[] = node?.aggData?.supplier ?? [];
+  const batchesSuppliers = isGroup
+    ? supplier
+        .filter((supplier) => supplier && supplier.companyName)
+        .map(({ companyName }) => companyName)
+    : [];
+
+  const uniqueSuppliers = [...new Set(batchesSuppliers)];
 
   return (
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%" }}
+      height={ROW_HEIGHT_DEFAULT}
     >
-      {value && Array.isArray(value) && Array.isArray(value[0]) ? (
-        <></>
+      {isGroup ? (
+        <>
+          {uniqueSuppliers.map((supplier, index) =>
+            index < GROUP_ITEMS_TO_SHOW ? (
+              <Stack key={`${supplier}-${index}`}>
+                <Typography variant="body2">{supplier}</Typography>
+              </Stack>
+            ) : (
+              index === GROUP_ITEMS_TO_SHOW && (
+                <Link href="#" key={index}>
+                  + {uniqueSuppliers.length - GROUP_ITEMS_TO_SHOW} more
+                </Link>
+              )
+            )
+          )}
+        </>
       ) : (
-        <Typography>{data?.companyName}</Typography>
+        <Typography>{value?.companyName}</Typography>
       )}
     </Stack>
   );

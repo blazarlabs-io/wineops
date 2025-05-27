@@ -7,6 +7,7 @@ const vineyardBlankSample: Vineyard = {
   grapeVariety: "",
   grapeColor: "",
   cadastralNumber: "",
+  rowType: "item",
   info: {
     location: {
       map: [],

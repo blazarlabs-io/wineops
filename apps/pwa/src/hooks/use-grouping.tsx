@@ -1,4 +1,4 @@
-import { ENTITY_DETAILS } from "@/data/constants";
+//import { ENTITY_DETAILS } from "@/data/constants";
 import { DashboardEntity } from "@/models/types/dashboard";
 import { SetStateAction, useCallback, useState } from "react";
 
@@ -6,14 +6,22 @@ export function useGrouping<T extends DashboardEntity>(
   data: T[],
   entryKey?: keyof T
 ) {
-  const [groupedData, _setGroupedData] = useState<T[]>(data);
-  const [selectedRows, setSelectedRows] = useState<T[]>([]);
+  const [groupedData, _setGroupedData] = useState<T[]>(data || []);
+  const [selectedRows, _setSelectedRows] = useState<T[]>([]);
   const [groupToExpand, setGroupToExpand] = useState<string[]>([]);
 
   const groups = groupedData
-    .filter(({ group }) => !!group && group.length > 1)
-    .map(({ group }) =>
-      group.slice(0, group[group.length - 1] === ENTITY_DETAILS ? -2 : -1)
+    .filter(
+      ({ group, rowType }) =>
+        !!group && (rowType === "group" || group.length > 1)
+    )
+    .map(({ group, rowType }) =>
+      rowType === "group"
+        ? group
+        : group.slice(
+            0,
+            /*group[group.length - 1] === ENTITY_DETAILS ? -2 : */ -1
+          )
     );
 
   const uniqueGroups = [
@@ -91,6 +99,11 @@ export function useGrouping<T extends DashboardEntity>(
 
   const setGroupedData = useCallback(
     (data: SetStateAction<T[]>) => _setGroupedData(data),
+    []
+  );
+
+  const setSelectedRows = useCallback(
+    (data: SetStateAction<T[]>) => _setSelectedRows(data),
     []
   );
 

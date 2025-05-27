@@ -31,7 +31,7 @@ export default function ToolsBar({
     },
   },
 }: ToolsBarProps) {
-  const { selectedVineyards } = useVineyard();
+  const { selectedVineyards, vineyards } = useVineyard();
 
   const { user } = useAuth();
 
@@ -79,6 +79,7 @@ export default function ToolsBar({
   };
 
   useEffect(() => {
+    console.log("XXXXXX", selectedVineyards, vineyards);
     if (selectedVineyards.length > 0) {
       setFormType("edit");
       setLocalVineyard(selectedVineyards[0]);
@@ -86,7 +87,15 @@ export default function ToolsBar({
       setFormType("create");
       setLocalVineyard(vineyardBlankSample);
     }
-  }, [selectedVineyards]);
+
+    if (localVineyard !== undefined && vineyards.length > 0) {
+      const _vineyard: Vineyard[] = vineyards.filter(
+        (vineyard) => vineyard.id === localVineyard.id
+      );
+      console.log("_vineyard", _vineyard);
+      setLocalVineyard(_vineyard[0]);
+    }
+  }, [selectedVineyards, vineyards]);
 
   return (
     <>

@@ -1,25 +1,29 @@
 import QuantityWidget from "@/components/widgets/quantity";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Stack from "@mui/material/Stack";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
-export const QuantityCellRenderer = ({ value }: CustomCellRendererProps) => {
-  const data = Array.isArray(value) ? value[0] : {};
+export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
+  const { value, node, data } = params;
+  const isGroup = node.group || data.rowType === "group";
 
   return (
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%", lineHeight: 1 }}
+      height={ROW_HEIGHT_DEFAULT}
     >
-      {value && Array.isArray(value) && Array.isArray(value[0]) ? (
+      {isGroup ? (
         <></>
       ) : (
-        <QuantityWidget
-          actual={data?.actual}
-          supply={data?.supply}
-          demand={data?.demand}
-          status={data?.status}
-        />
+        <>
+          <QuantityWidget
+            actual={value?.actual}
+            supply={value?.supply}
+            demand={value?.demand}
+            status={value?.status}
+          />
+        </>
       )}
     </Stack>
   );

@@ -1,77 +1,84 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, Stack, Typography } from "@mui/material";
+import { Box, IconButton, Link, Stack, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import { type FunctionComponent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type FunctionComponent,
+} from "react";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import formatDate from "@/utils/date-format";
-import { GROUP_ITEMS_TO_SHOW } from "@/data/constants";
+import {
+  GROUP_ITEMS_TO_SHOW,
+  ROW_HEIGHT_DEFAULT,
+  ROW_HEIGHT_EXPANDED_GRAPE,
+} from "@/data/constants";
 import StatusDataDisplay from "@/components/data-display/status-data-display";
+import { ExpandMore } from "@mui/icons-material";
+import GrapeDetailsWidget from "@/components/widgets/grape/grape-details-widget";
 
-export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
-  node,
-  value,
-}) => {
-  const { key, aggData } = node;
+export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
+  params
+) => {
+  const { value, node } = params;
 
-  const batchId = aggData?.batchId ?? [];
+  const [expanded, setExpanded] = useState<boolean>(false);
 
-  const isGroup =
-    batchId &&
-    Array.isArray(batchId) &&
-    batchId.every((item) => item && Array.isArray(item) && !!item[0]);
+  const handleMasterDetailExpansion = useCallback(() => {
+    setExpanded(!node.expanded);
+    node.setExpanded(!node.expanded);
+    node.setRowHeight(
+      node.expanded ? ROW_HEIGHT_EXPANDED_GRAPE : ROW_HEIGHT_DEFAULT
+    );
+  }, [node]);
+
+  useEffect(() => {
+    setExpanded(node.expanded);
+  }, [node.expanded]);
+
+  const batchId: any[] = node?.aggData?.batchId ?? [];
+  const isGroup = node?.group || node?.data?.rowType === "group";
 
   const batchesDateLocation = isGroup
-    ? batchId
-        .flat()
-        .map(
-          ({ date, location }) =>
-            `${date ? formatDate(date, { locale: "ro-RO" }) : ""}***${location ?? ""}`
-        )
+    ? batchId.map(
+        ({ date, location }) =>
+          `${date ? formatDate(date, { locale: "ro-RO" }) : ""}***${location ?? ""}`
+      )
     : [];
 
   const uniqueDateLocation = [
     ...new Set(batchesDateLocation.map((item) => item)),
-  ].map((item) => {
-    const [date, location] = item.split("***");
+  ]
+    .filter((item) => item !== "***")
+    .map((item) => {
+      const [date, location] = item.split("***");
 
-    return { date, location };
-  });
-
-  const rowData =
-    batchId && Array.isArray(batchId)
-      ? batchId.find((data: any) => data?.name === key || data[0]?.name === key)
-      : [];
-
-  const detailedData =
-    !isGroup && (node?.data ?? (Array.isArray(rowData) ? rowData[0] : rowData));
-
-  const rowName = value && Array.isArray(value) ? "" : value;
-
-  const isDetailed = (value && Array.isArray(value)) || !!detailedData;
+      return { date, location };
+    });
 
   return (
     <>
       <Stack
-        alignItems="flex-start"
         justifyContent="center"
+        gap={1}
+        justifyItems="flex-start"
+        height={ROW_HEIGHT_DEFAULT}
         sx={{
-          minHeight: "86px",
-          height: "100%",
+          borderLeft: node.level > 0 ? "8px" : "",
+          borderStyle: "solid",
+          borderColor: "var(--mui-palette-divider)",
+          pl: isGroup ? 2 : 0,
+          ml: 2,
         }}
       >
-        {isDetailed ? (
-          <>
-            {detailedData?.date && (
-              <Typography variant="body2">
-                {formatDate(detailedData?.date, { locale: "ro-RO" })}
-              </Typography>
-            )}
-            {<GrapeLocation location={detailedData?.location} />}
-            {<StatusDataDisplay status={detailedData?.status} />}
-          </>
-        ) : (
-          <Stack>
-            <Typography>{rowName}</Typography>
+        {isGroup ? (
+          <Stack justifyItems="center">
+            <Typography variant="body1">
+              {(node?.field === "entry" ? value?.location1 : value) ?? (
+                <i>unknown {node?.field}</i>
+              )}
+            </Typography>
             {uniqueDateLocation.map(({ date, location }: any, index: number) =>
               index < GROUP_ITEMS_TO_SHOW ? (
                 <Stack
@@ -83,12 +90,45 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                 </Stack>
               ) : (
                 index === GROUP_ITEMS_TO_SHOW && (
-                  <Link href="#" sx={{ lineHeight: 1 }}>
+                  <Link href="#" key={index}>
                     + {uniqueDateLocation.length - GROUP_ITEMS_TO_SHOW} more
                   </Link>
                 )
               )
             )}
+          </Stack>
+        ) : (
+          <Stack direction="row">
+            <Stack direction="row">
+              <div className="flex items-center gap-2">
+                <IconButton
+                  type="button"
+                  size="small"
+                  onClick={handleMasterDetailExpansion}
+                >
+                  <ExpandMore
+                    style={{
+                      rotate: expanded ? "0deg" : "-90deg",
+                    }}
+                    className="max-w-5 max-h-5 opacity-60"
+                  />
+                </IconButton>
+              </div>
+              {expanded && (
+                <Stack className="fixed bottom-0 flex items-center justify-center left-0 w-full h-[364px] bg-transparent z-[9999]">
+                  <GrapeDetailsWidget grape={node.data} />
+                </Stack>
+              )}
+            </Stack>
+            <Box>
+              {node?.data?.date && (
+                <Typography variant="body2">
+                  {formatDate(node?.data?.date, { locale: "ro-RO" })}
+                </Typography>
+              )}
+              {<GrapeLocation location={node?.data?.location} />}
+              {<StatusDataDisplay status={node?.data?.status} />}
+            </Box>
           </Stack>
         )}
       </Stack>

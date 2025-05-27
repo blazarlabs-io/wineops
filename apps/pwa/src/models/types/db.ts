@@ -133,9 +133,12 @@ export type SingleDocument = {
   media: MediaType;
 };
 
+export type RowType = "group" | "item";
+
 export type Vineyard = {
   id: string;
   name: string;
+  rowType?: RowType;
   grapeVariety: string;
   grapeColor: string;
   cadastralNumber: string;
@@ -257,4 +260,5 @@ export type Grape = {
   tasks: Task[];
   documents: SingleDocument[];
   group: string[];
+  rowType?: RowType;
 };

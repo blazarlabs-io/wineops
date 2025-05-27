@@ -8,7 +8,8 @@ import { grapesColumns } from "./columns";
 import { GroupCellRenderer } from "./GroupCellRenderer";
 import { useGrape } from "@/context/grape";
 import { db } from "@/lib/firebase/services";
-import { SelectionCellRenderer } from "./SelectionCellRenderer";
+import { GROUP_COLUMN_WIDTH } from "@/data/constants";
+// import { SelectionCellRenderer } from "./SelectionCellRenderer";
 
 interface GrapesTableProps {
   onChangeData?: (data: Grape[]) => void;
@@ -28,28 +29,36 @@ export default function GrapesTable({
   const { mode } = useColorScheme();
   const { grapes, updateSelectedGrapes } = useGrape();
 
-  const normalizeGrapes = useMemo(
+  const normalizedGrapes = useMemo(
     () =>
       grapes.map((grape) => ({
         ...grape,
-        batchId: {
-          name: grape?.name,
-          grapeVariety: grape?.grapeVariety,
-          certifications: grape?.certifications,
-          date: grape?.date,
-          location: grape?.location,
-          status: grape?.status,
-        },
-        metrics: { ...grape.metrics, status: grape.status },
+        ...(grape.rowType !== "group" && {
+          batchId: {
+            name: grape?.name,
+            grapeVariety: grape?.grapeVariety,
+            certifications: grape?.certifications,
+            date: grape?.date,
+            location: grape?.location,
+            status: grape?.status,
+          },
+          metrics: { ...grape.metrics, status: grape.status },
+        }),
+        group:
+          !grape?.group ||
+          grape?.group?.length === 0 ||
+          (grape?.group?.length > 0 &&
+            grape.name &&
+            grape.rowType !== "group" &&
+            grape?.group[grape?.group.length - 1] !== grape.name)
+            ? [...grape?.group.slice(0, -1), grape?.name]
+            : grape?.group,
       })),
     [grapes]
   );
 
-  const updateGroup = async (
-    uid: string,
-    rows: Partial<Grape>[],
-    group: string[]
-  ) => await db.grape.updateGroup(uid, rows, group);
+  const updateGroup = async (uid: string, rows: Partial<Grape>[]) =>
+    await db.grape.updateGroup(uid, rows);
 
   return (
     <StrictMode>
@@ -60,15 +69,18 @@ export default function GrapesTable({
         openUngroupingDialog={openUngroupingDialog}
         handleCloseGroupingDialog={handleCloseGroupingDialog}
         handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-        data={normalizeGrapes}
+        data={normalizedGrapes}
         columns={grapesColumns}
-        selectionCellRenderer={SelectionCellRenderer}
+        // selectionCellRenderer={SelectionCellRenderer}
         groupColumnDef={{
           headerName: "Batch Entry",
+          rowDrag: true,
           cellRendererParams: {
             innerRenderer: GroupCellRenderer,
             suppressCount: true,
           },
+          cellRenderer: "agGroupCellRenderer",
+          width: GROUP_COLUMN_WIDTH,
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedGrapes}

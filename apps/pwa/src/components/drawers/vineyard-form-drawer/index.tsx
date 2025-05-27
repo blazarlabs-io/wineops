@@ -25,11 +25,11 @@ export default function VineyardFormDrawer({
     >
       <Box
         sx={{
-          padding: 2,
           minWidth: "320px",
           maxWidth: "530px",
           background: "var(--mui-palette-background-default)",
-          height: "100vh",
+          minHeight: "100vh",
+          height: "100%",
         }}
         display={"flex"}
         flexDirection={"column"}
@@ -39,7 +39,7 @@ export default function VineyardFormDrawer({
             <Close />
           </IconButton>
         </Box>
-        <Box padding={2} marginTop={2}>
+        <Box padding={2} marginTop={4}>
           <Typography variant="h5" fontWeight={"medium"}>
             {type === "create" ? "New Vineyard" : "Edit Vineyard"}
           </Typography>

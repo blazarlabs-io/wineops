@@ -7,11 +7,13 @@ export type NotesDataDisplayProps = {
 };
 
 export default function NotesDataDisplay({ notes }: NotesDataDisplayProps) {
+  if (!notes) return;
+
   return (
     <Stack
       direction="column"
       spacing={0}
-      className="justify-center items-start gap-2"
+      className="justify-center items-start gap-1"
       height={"100%"}
     >
       {notes &&
@@ -24,12 +26,12 @@ export default function NotesDataDisplay({ notes }: NotesDataDisplayProps) {
             }}
             className="w-full min-h-fit flex items-center justify-center"
           >
-            {index < GROUP_ITEMS_TO_SHOW && (
+            {index < 1 && (
               <div className="flex relative flex-col items-start justify-start rounded-md border max-w-fit p-1 min-w-[150px] ">
                 <div className="absolute top-0 left-0 w-[4px] h-full bg-[#00C950] rounded-l-md" />
                 <Typography
-                  variant="body1"
-                  className="pl-2 text-sm truncate max-w-[140px]"
+                  variant="body2"
+                  className="pl-2 truncate max-w-[140px]"
                 >
                   {note.title}
                 </Typography>

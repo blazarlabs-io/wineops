@@ -3,7 +3,6 @@
 
 import PolygonDrawingMap from "@/components/widgets/maps/polygon-drawing-map";
 import { useVineyard } from "@/context/vineyard";
-import { ENTITY_DETAILS } from "@/data/constants";
 import { countries } from "@/data/countries";
 import { orientations } from "@/data/system-variables";
 import vineyardBlankSample from "@/data/vineyard-blank-sample";
@@ -76,6 +75,7 @@ export default function VineyardForm({
   vineyardBlankSample.tasks = generateTasks();
   vineyardBlankSample.documents = generateDummyDocs(10);
   vineyardBlankSample.notes = generateNotes();
+  vineyardBlankSample.rowType = "item";
   // ?
 
   const [formData, setFormData] = useState<Vineyard>(vineyardBlankSample);
@@ -100,26 +100,20 @@ export default function VineyardForm({
         (getOneRes.data === null || getOneRes.data !== undefined)
       ) {
         const { id, name, group } = data;
-        const newGroup =
-          Array.isArray(group) && group[group.length - 1] === ENTITY_DETAILS
-            ? group.slice(0, -1)
-            : group;
 
         const newData = {
           ...data,
-          group:
-            Array.isArray(newGroup) && newGroup.length > 1
-              ? [...newGroup.slice(0, -1), name]
-              : [id],
+          group: [...(group ?? []).slice(0, -1), name ?? id],
         };
 
         const updateRes: DbResponse = await db.vineyard.update(
           uid,
-          data.id,
+          id,
           newData
         );
+
         if (updateRes.status === 200) {
-          enqueueSnackbar(`Updated ${data.name} successfully`, {
+          enqueueSnackbar(`Updated ${name} successfully`, {
             variant: "success",
           });
           if (closeDrawer) closeDrawer();
@@ -129,6 +123,8 @@ export default function VineyardForm({
           });
         }
       } else {
+        data.group = [data.name];
+
         const createRes: DbResponse = await db.vineyard.create(uid, data);
         if (createRes.status === 200) {
           enqueueSnackbar(`Created ${data.name} successfully`, {
@@ -161,7 +157,7 @@ export default function VineyardForm({
   useEffect(() => {
     if (vineyard) {
       reset(vineyard);
-      // console.log('vineyard', vineyard);
+      console.log("VINEYARD FORM:", vineyard);
       if (vineyard.name.length > 0) {
         reset(vineyard);
         setFormData(vineyard);
@@ -181,7 +177,10 @@ export default function VineyardForm({
   return (
     <>
       {formData && formData !== undefined && (
-        <div className="px-4">
+        <div
+          className="px-4"
+          style={{ background: "var(--mui-palette-background-default)" }}
+        >
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-4 space-x-4"
@@ -497,10 +496,7 @@ export default function VineyardForm({
                       {/* * PLANTING SCHEME */}
                       <div className="flex items-center gap-2 mt-2">
                         <Leaf className="text-muted-foreground w-4 h-4" />
-                        <Typography
-                          variant="h3"
-                          className="font-medium text-base"
-                        >
+                        <Typography className="font-medium text-base">
                           Planting Scheme
                         </Typography>
                       </div>
@@ -752,9 +748,9 @@ export default function VineyardForm({
                       {/* ? CERTIFICATIONS */}
                       <div className="flex items-center gap-2 mt-2">
                         <Leaf className="text-muted-foreground w-4 h-4" />
-                        <h2 className="font-medium text-base">
+                        <Typography className="font-medium text-base">
                           Certifications
-                        </h2>
+                        </Typography>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">

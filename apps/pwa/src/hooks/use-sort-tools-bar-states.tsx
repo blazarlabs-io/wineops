@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { ENTITY_DETAILS } from "@/data/constants";
 import { DashboardEntity } from "@/models/types/dashboard";
+import { useEffect, useState } from "react";
 
 export const useSortToolsBarStates = <T extends DashboardEntity>(data: T[]) => {
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
@@ -18,11 +17,9 @@ export const useSortToolsBarStates = <T extends DashboardEntity>(data: T[]) => {
       setEnableGrouping(true);
       setEnableDelete(true);
 
-      const isDataGrouped = data.some(
-        ({ group }) =>
-          group &&
-          group.length > (group[group.length - 1] === ENTITY_DETAILS ? 2 : 1)
-      );
+      const isDataGrouped = data.some(({ group }) => group?.length > 1);
+
+      console.log("useSortToolsBarStates:", { isDataGrouped, data });
 
       setEnableUngrouping(isDataGrouped);
     } else {

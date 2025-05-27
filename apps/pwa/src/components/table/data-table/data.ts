@@ -1,380 +1,225 @@
-import { generateLabData } from "@/utils/generators";
+import { Certifications, SingleDocument, Vineyard } from "@/models/types/db";
+import {
+  generateDummyDocs,
+  generateLabData,
+  generateRandomId,
+} from "@/utils/generators";
 
-export function getData() {
+export function getData(): Vineyard[] {
   return [
     {
-      group: ["Group One", "Vineyard 2"],
-      name: "Vineyard 2",
-      grapeVariety: "Cabernet Sauvignon",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    {
-      group: ["Group One", "Vineyard 3"],
-      name: "Vineyard 3",
-      grapeVariety: "Chardonnay",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          amount: 1,
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          amount: 10,
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    {
-      group: ["Group One", "Sub Group One", "Vineyard 4"],
-      name: "Vineyard 4",
-      grapeVariety: "Merlot",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          amount: 9,
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          amount: 10,
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    {
-      group: ["Group One", "Sub Group Two", "Vineyard 5"],
-      name: "Vineyard 5",
-      grapeVariety: "Cabernet Sauvignon",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    {
-      group: ["Group One", "Sub Group Two", "Vineyard 7"],
-      name: "Vineyard 7",
-      grapeVariety: "Cabernet Sauvignon",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    {
-      group: ["Group Two", "Vineyard 1"],
+      id: generateRandomId(),
+      group: ["Northern Lands"],
+      // typse: "group",
       name: "Vineyard 1",
-      grapeVariety: "Cabernet Sauvignon",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
+      cadastralNumber: "123",
+      grapeVariety: "Grape 1",
+      grapeColor: "Red",
+      info: {
+        location: {
+          map: [],
+          surface: 0,
+          country: "",
+          city: "",
+          elevation: 0,
+          orientation: "",
+        },
+        vines: {
+          yearOfPlantation: 0,
+          plantingScheme: {
+            spacing: 0,
+            rowOrientation: "",
+            density: 0,
+            trellisSystem: false,
+          },
+          soilType: "",
+          sunlightHours: 0,
+        },
+        certifications: {} as Certifications,
+      },
       labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    {
-      group: ["Group Two", "Vineyard 6"],
-      name: "Vineyard 6",
-      grapeVariety: "Cabernet Sauvignon",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    // * Some ungrouped data
-    {
-      group: ["Ungrouped", "Vineyard 6"],
-      name: "Vineyard 8",
-      grapeVariety: "Cabernet Sauvignon",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
-    },
-    {
-      group: ["Ungrouped", "Vineyard 9"],
-      name: "Vineyard 9",
-      grapeVariety: "Cabernet Sauvignon",
-      status: "NOT-STARTED",
-      forcastedYield: 0,
-      labData: generateLabData(),
-      tasks: [
-        {
-          amount: 2,
-          id: "1",
-          status: "todo",
-          title: "Task 1",
-          description: "Task 1 description",
-        },
-        {
-          id: "2",
-          title: "Task 2",
-          description: "Task 2 description",
-          status: "in-progress",
-        },
-        {
-          id: "3",
-          title: "Task 3",
-          description: "Task 3 description",
-          status: "completed",
-        },
-      ],
-      notes: [
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "1",
-          title: "Welcome, new user!",
-        },
-        {
-          content: "This is a test note. You can add, edit, and delete notes.",
-          id: "2",
-          title: "Welcome, new user!",
-        },
-      ],
+      documents: generateDummyDocs(10),
+      grape: {
+        id: "",
+        clonalSelection: "",
+        vivcNumber: "",
+        countryOfOrigin: "",
+      },
+      status: "Maintenance",
+      forecastedYield: 0,
+      tasks: [],
+      notes: [],
     },
   ];
 }
+
+/*
+export function getData(): Vineyard[] {
+  return [
+    {
+      id: "",
+      group: ["Group One", "Vineyard 2"],
+      name: "Vineyard 2",
+      grapeVariety: "Cabernet Sauvignon",
+      status: "Maintenance",
+      forecastedYield: 0,
+      labData: generateLabData(),
+      tasks: [
+        {
+          amount: 2,
+          id: "1",
+          status: "todo",
+        },
+        {
+          id: "2",
+          amount: 2,
+          status: "in-progress",
+        },
+        {
+          id: "3",
+          amount: 10,
+          status: "completed",
+        },
+      ],
+      notes: [
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "1",
+          title: "Welcome, new user!",
+        },
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "2",
+          title: "Welcome, new user!",
+        },
+      ],
+      grapeColor: "Red",
+      cadastralNumber: "CX-123456",
+      info: {
+        location: {
+          map: [],
+          surface: 0,
+          country: "Argentina",
+          city: "Buenos Aires",
+          elevation: 10,
+          orientation: "North",
+        },
+        vines: {
+          yearOfPlantation: 0,
+          plantingScheme: {
+            spacing: 0,
+            rowOrientation: "",
+            density: 0,
+            trellisSystem: false,
+          },
+          soilType: "",
+          sunlightHours: 0,
+        },
+        certifications: {
+          eco: {
+            active: false,
+            fileUrl: "",
+          },
+          igp: {
+            active: false,
+            fileUrl: "",
+          },
+          dop: {
+            active: false,
+            fileUrl: "",
+          },
+        },
+      },
+      grape: {
+        id: "",
+        clonalSelection: "",
+        vivcNumber: "",
+        countryOfOrigin: "",
+      },
+      documents: [],
+    },
+    {
+      id: "",
+      group: [],
+      name: "Vineyard 2",
+      grapeVariety: "Cabernet Sauvignon",
+      status: "Maintenance",
+      forecastedYield: 0,
+      labData: generateLabData(),
+      tasks: [
+        {
+          amount: 2,
+          id: "1",
+          status: "todo",
+        },
+        {
+          id: "2",
+          amount: 2,
+          status: "in-progress",
+        },
+        {
+          id: "3",
+          amount: 10,
+          status: "completed",
+        },
+      ],
+      notes: [
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "1",
+          title: "Welcome, new user!",
+        },
+        {
+          content: "This is a test note. You can add, edit, and delete notes.",
+          id: "2",
+          title: "Welcome, new user!",
+        },
+      ],
+      grapeColor: "Red",
+      cadastralNumber: "CX-123456",
+      info: {
+        location: {
+          map: [],
+          surface: 0,
+          country: "Argentina",
+          city: "Buenos Aires",
+          elevation: 10,
+          orientation: "North",
+        },
+        vines: {
+          yearOfPlantation: 0,
+          plantingScheme: {
+            spacing: 0,
+            rowOrientation: "",
+            density: 0,
+            trellisSystem: false,
+          },
+          soilType: "",
+          sunlightHours: 0,
+        },
+        certifications: {
+          eco: {
+            active: false,
+            fileUrl: "",
+          },
+          igp: {
+            active: false,
+            fileUrl: "",
+          },
+          dop: {
+            active: false,
+            fileUrl: "",
+          },
+        },
+      },
+      grape: {
+        id: "",
+        clonalSelection: "",
+        vivcNumber: "",
+        countryOfOrigin: "",
+      },
+      documents: [],
+    },
+  ];
+}
+*/

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
-import { GrapeVarietyCellRenderer } from "./cell-renderers/GrapeVarietyCellRenderer";
-import { LabDataCellRenderer } from "./cell-renderers/LabDataCellRenderer";
-import { NotesCellRenderer } from "./cell-renderers/NotesCellRenderer";
-import { QuantityCellRenderer } from "./cell-renderers/QuantityCellRenderer";
-import { StatusCellRenderer } from "./cell-renderers/StatusCellRenderer";
-import { TasksCellRenderer } from "./cell-renderers/TasksCellRenderer";
+import { GrapeVarietyCellRenderer } from "./cell-renderers/grape-variety-cell-renderer";
+import { LabDataCellRenderer } from "./cell-renderers/lab-data-cell-renderer";
+import { NotesCellRenderer } from "./cell-renderers/notes-cell-renderer";
+import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";
+import { StatusCellRenderer } from "./cell-renderers/status-cell-renderer";
+import { TasksCellRenderer } from "./cell-renderers/tasks-cell-renderer";
 
 export const vineyardColumns: ColDef[] = [
   {
@@ -14,8 +14,6 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: GrapeVarietyCellRenderer,
     cellStyle: { width: "100%" },
-    editable: true,
-    cellEditor: "agRichTextCellEditor",
     aggFunc: (params: any) => {
       const grapes = params.values.map((value: any) => {
         return value;

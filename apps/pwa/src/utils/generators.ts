@@ -108,7 +108,7 @@ export const generateDummyDocs = (count: number) => {
 
 export const generateTasks = (): TaskSummary[] => {
   const tasks: TaskSummary[] = [];
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 10; i++) {
     tasks.push({
       id: new Date().toISOString(),
       amount: Math.floor(Math.random() * 20),
@@ -131,7 +131,7 @@ const getRandomNote = (notes: string[]): string => {
 
 export const generateNotes = (): Note[] => {
   const notes: Note[] = [];
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 10; i++) {
     notes.push({
       id: new Date().toISOString(),
       title: getRandomNote(wineryNotesTitles),
@@ -140,3 +140,14 @@ export const generateNotes = (): Note[] => {
   }
   return notes;
 };
+
+export function generateRandomId(length: number = 10): string {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}

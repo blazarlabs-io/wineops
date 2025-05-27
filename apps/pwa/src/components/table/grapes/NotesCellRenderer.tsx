@@ -1,23 +1,22 @@
 import NotesDataDisplay from "@/components/data-display/notes-data-display";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Stack from "@mui/material/Stack";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
-export const NotesCellRenderer = ({ value }: CustomCellRendererProps) => {
-  const data = Array.isArray(value) ? value[0] : {};
+export const NotesCellRenderer = (params: CustomCellRendererProps) => {
+  const { value, node, data } = params;
+  const isGroup = node.group || data.rowType === "group";
 
   return (
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%" }}
+      height={ROW_HEIGHT_DEFAULT}
     >
-      {value &&
-      Array.isArray(value) &&
-      Array.isArray(value[0]) &&
-      (!data || (data && Array.isArray(data) && !data[0])) ? (
+      {isGroup ? (
         <></>
       ) : (
-        <NotesDataDisplay notes={Array.isArray(data) ? data : []} />
+        <NotesDataDisplay notes={Array.isArray(value) ? value : []} />
       )}
     </Stack>
   );
