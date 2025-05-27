@@ -17,13 +17,9 @@ export const useSortToolsBarStates = <T extends DashboardEntity>(data: T[]) => {
       setEnableGrouping(true);
       setEnableDelete(true);
 
-      const isDataGrouped = data.some(({ group }) => {
-        if (group && group.length > 0) {
-          return 2;
-        } else {
-          return 1;
-        }
-      });
+      const isDataGrouped = data.some(({ group }) => group?.length > 1);
+
+      console.log("useSortToolsBarStates:", { isDataGrouped, data });
 
       setEnableUngrouping(isDataGrouped);
     } else {

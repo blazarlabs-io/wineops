@@ -1,36 +1,29 @@
 import { DbResponse, Grape } from "@/models/types/db";
-import { doc, setDoc, writeBatch } from "firebase/firestore";
+import { deleteDoc, doc, writeBatch } from "firebase/firestore";
 import { db as fdb } from "../client";
 import { GRAPES, WINERY } from "../config";
 
 const grape = {
-  create: async (uid: string, data: Grape): Promise<DbResponse> => {
-    try {
-      const docRef = doc(fdb, WINERY, uid, GRAPES, data.id);
-      const newDocRef = await setDoc(docRef, data);
-
-      return {
-        data: newDocRef,
-        error: null,
-        status: 200,
-      };
-    } catch (error) {
-      return {
-        data: null,
-        error,
-        status: 500,
-      };
-    }
-  },
   updateGroup: async (uid: string, rows: Grape[]) => {
     try {
       const batch = writeBatch(fdb);
 
-      rows.forEach(async ({ id, group }) => {
-        if (!group) return;
+      rows.forEach(({ id, group, rowType }) => {
+        const data: Partial<Grape> = {};
+
+        if (group) data.group = group;
+        if (rowType === "group") data.rowType = rowType;
+
+        if (Object.keys(data).length === 0) return;
 
         const docRef = doc(fdb, WINERY, uid, GRAPES, id);
-        batch.update(docRef, { group });
+
+        // Empty groups
+        if (rowType === "group" && (!group || group.length === 0)) {
+          batch.delete(docRef);
+        } else {
+          batch.set(docRef, data, { merge: true });
+        }
       });
 
       await batch.commit();
@@ -43,6 +36,24 @@ const grape = {
     } catch (error) {
       console.error("Error updating group:", error);
 
+      return {
+        data: null,
+        error,
+        status: 500,
+      };
+    }
+  },
+  deleteOne: async (uid: string, id: string): Promise<DbResponse> => {
+    try {
+      const docRef = doc(fdb, WINERY, uid, GRAPES, id);
+      await deleteDoc(docRef);
+      return {
+        data: null,
+        error: null,
+        status: 200,
+      };
+    } catch (error) {
+      console.log("error", error);
       return {
         data: null,
         error,

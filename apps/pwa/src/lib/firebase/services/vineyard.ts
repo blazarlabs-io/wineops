@@ -39,7 +39,13 @@ vineyard = {
       const docRef = doc(fdb, WINERY, id);
       const subcollectionRef = collection(docRef, VINEYARDS);
       const querySnapshot = await getDocs(subcollectionRef);
-      const data = querySnapshot.docs.map((doc) => doc.data());
+      const data = querySnapshot.docs.map((doc) => {
+        const id = doc.id;
+        const data = doc.data();
+
+        return { ...data, id: data?.id ?? id };
+      });
+
       return {
         data,
         error: null,
@@ -103,11 +109,23 @@ vineyard = {
     try {
       const batch = writeBatch(fdb);
 
-      rows.forEach(({ id, group }) => {
-        if (!group) return;
+      console.log("updateGroup:rows:", rows);
+      rows.forEach(({ id, group, rowType }) => {
+        const data: Partial<Vineyard> = {};
+
+        if (group) data.group = group;
+        if (rowType === "group") data.rowType = rowType;
+
+        if (Object.keys(data).length === 0) return;
 
         const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
-        batch.update(docRef, { group });
+
+        // Empty groups
+        if (rowType === "group" && (!group || group.length === 0)) {
+          batch.delete(docRef);
+        } else {
+          batch.set(docRef, data, { merge: true });
+        }
       });
 
       await batch.commit();

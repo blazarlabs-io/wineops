@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useState } from "react";
@@ -33,34 +33,43 @@ export default function GrapesDashboard() {
   };
 
   return (
-    <Stack
-      spacing={2}
+    <Box
       sx={{
-        alignItems: "left",
-        justifyContent: "center",
+        display: "flex",
+        width: "100%",
+        height: "100%",
       }}
     >
-      <Typography variant="h4">Grapes Management</Typography>
-      <ToolsBar
-        buttons={{
-          [ButtonType.GROUP]: {
-            enabled: enableGrouping,
-            onClick: handleClickOpenGroupingDialog,
-          },
-          [ButtonType.UNGROUP]: {
-            enabled: enableUngrouping,
-            onClick: handleClickOpenUngroupingDialog,
-          },
+      <Stack
+        spacing={2}
+        sx={{
+          width: "100%",
+          alignItems: "left",
+          justifyContent: "center",
         }}
-      />
+      >
+        <Typography variant="h4">Grapes Management</Typography>
+        <ToolsBar
+          buttons={{
+            [ButtonType.GROUP]: {
+              enabled: enableGrouping,
+              onClick: handleClickOpenGroupingDialog,
+            },
+            [ButtonType.UNGROUP]: {
+              enabled: enableUngrouping,
+              onClick: handleClickOpenUngroupingDialog,
+            },
+          }}
+        />
 
-      <GrapesTable
-        onChangeData={setSelectionData}
-        openGroupingDialog={openGroupingDialog}
-        openUngroupingDialog={openUngroupingDialog}
-        handleCloseGroupingDialog={handleCloseGroupingDialog}
-        handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-      />
-    </Stack>
+        <GrapesTable
+          onChangeData={setSelectionData}
+          openGroupingDialog={openGroupingDialog}
+          openUngroupingDialog={openUngroupingDialog}
+          handleCloseGroupingDialog={handleCloseGroupingDialog}
+          handleCloseUngroupingDialog={handleCloseUngroupingDialog}
+        />
+      </Stack>
+    </Box>
   );
 }

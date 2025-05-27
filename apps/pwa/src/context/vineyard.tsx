@@ -74,8 +74,10 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         }
 
         querySnapshot.forEach((doc) => {
-          // console.log("doc", doc);
-          vineyards.push(doc.data() as Vineyard);
+          const id = doc.id;
+          const data = doc.data();
+
+          vineyards.push({ ...data, id: data?.id ?? id } as Vineyard);
         });
 
         console.log("\n====================================");

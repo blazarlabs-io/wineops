@@ -1,7 +1,6 @@
 import { EntityStatus } from "@/models/types/dashboard";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { useColorScheme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
 
 export type StatusDataDisplayProps = {
   status: EntityStatus;
@@ -10,72 +9,7 @@ export type StatusDataDisplayProps = {
 export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
   const { mode } = useColorScheme();
 
-  const [styles, setStyles] = useState({});
-
-  const maintenanceStyles = {
-    color: mode === "light" ? "#7C8100" : "#FFEF93",
-    backgroundColor: mode === "light" ? "#FFEF93" : "#00000000",
-    BorderColor: mode === "light" ? "#7C8100" : "#FFEF93",
-  };
-
-  const harvestingStyles = {
-    color: mode === "light" ? "#89AC46" : "#C3FF99",
-    backgroundColor: mode === "light" ? "#C3FF99" : "#00000000",
-    BorderColor: mode === "light" ? "#89AC46" : "#C3FF99",
-  };
-
-  const vegetationStyles = {
-    color: mode === "light" ? "#481E14" : "#F2613F",
-    backgroundColor: mode === "light" ? "#F2613F" : "#00000000",
-    BorderColor: mode === "light" ? "#481E14" : "#F2613F",
-  };
-
-  const ripeningStyles = {
-    color: mode === "light" ? "#3B1C32" : "#DA0C81",
-    backgroundColor: mode === "light" ? "#DA0C81" : "#00000000",
-    BorderColor: mode === "light" ? "#3B1C32" : "#DA0C81",
-  };
-
-  const readyToHarvestStyles = {
-    color: mode === "light" ? "#17153B" : "#3DC2EC",
-    backgroundColor: mode === "light" ? "#3DC2EC" : "#00000000",
-    BorderColor: mode === "light" ? "#17153B" : "#3DC2EC",
-  };
-
-  const harvestEndedStyles = {
-    color: mode === "light" ? "#27374D" : "#9DB2BF",
-    backgroundColor: mode === "light" ? "#9DB2BF" : "#00000000",
-    BorderColor: mode === "light" ? "#27374D" : "#9DB2BF",
-  };
-
-  useEffect(() => {
-    if (status && status.toLocaleLowerCase() === "maintenance") {
-      setStyles(maintenanceStyles);
-    }
-    switch (status) {
-      case VineyardStatus.MAINTENANCE:
-        setStyles(maintenanceStyles);
-        break;
-      case VineyardStatus.VEGETATION:
-        setStyles(vegetationStyles);
-        break;
-      case VineyardStatus.HARVESTING || status === GrapeStatus.PROCESSED:
-        setStyles(harvestingStyles);
-        break;
-      case VineyardStatus.RIPPING || status === GrapeStatus.IN_TRANSIT:
-        setStyles(ripeningStyles);
-        break;
-      case VineyardStatus.READY_FOR_HARVEST:
-        setStyles(readyToHarvestStyles);
-        break;
-      case VineyardStatus.HARVEST_ENDED || GrapeStatus.FRIDGE_STORED:
-        setStyles(harvestEndedStyles);
-        break;
-      default:
-        setStyles({});
-        break;
-    }
-  }, [mode]);
+  const styles = getStatusStyles(status, mode);
 
   return (
     <>
@@ -90,3 +24,57 @@ export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
     </>
   );
 }
+
+const getStatusStyles = (status: EntityStatus, mode?: string) => {
+  const isLight = mode === "light";
+
+  const stylesMap: Partial<Record<EntityStatus, React.CSSProperties>> = {
+    [VineyardStatus.MAINTENANCE]: {
+      color: isLight ? "#7C8100" : "#FFEF93",
+      backgroundColor: isLight ? "#FFEF93" : "#00000000",
+      borderColor: isLight ? "#7C8100" : "#FFEF93",
+    },
+    [VineyardStatus.VEGETATION]: {
+      color: isLight ? "#481E14" : "#F2613F",
+      backgroundColor: isLight ? "#F2613F" : "#00000000",
+      borderColor: isLight ? "#481E14" : "#F2613F",
+    },
+    [VineyardStatus.HARVESTING]: {
+      color: isLight ? "#479A3C" : "#C3FF99",
+      backgroundColor: isLight ? "#DDFFD9" : "#00000000",
+      borderColor: isLight ? "#479A3C" : "#C3FF99",
+    },
+    [GrapeStatus.PROCESSED]: {
+      color: isLight ? "#479A3C" : "#C3FF99",
+      backgroundColor: isLight ? "#DDFFD9" : "#00000000",
+      borderColor: isLight ? "#479A3C" : "#C3FF99",
+    },
+    [VineyardStatus.RIPPING]: {
+      color: isLight ? "#AC3580" : "#DA0C81",
+      backgroundColor: isLight ? "#F9D9ED" : "#00000000",
+      borderColor: isLight ? "#3B1C32" : "#DA0C81",
+    },
+    [GrapeStatus.IN_TRANSIT]: {
+      color: isLight ? "#AC3580" : "#DA0C81",
+      backgroundColor: isLight ? "#F9D9ED" : "#00000000",
+      borderColor: isLight ? "#AC3580" : "#DA0C81",
+    },
+    [VineyardStatus.READY_FOR_HARVEST]: {
+      color: isLight ? "#17153B" : "#3DC2EC",
+      backgroundColor: isLight ? "#3DC2EC" : "#00000000",
+      borderColor: isLight ? "#17153B" : "#3DC2EC",
+    },
+    [VineyardStatus.HARVEST_ENDED]: {
+      color: isLight ? "#A3A3A1" : "#9DB2BF",
+      backgroundColor: isLight ? "#E8E8E8" : "#00000000",
+      borderColor: isLight ? "#A3A3A1" : "#9DB2BF",
+    },
+    [GrapeStatus.FRIDGE_STORED]: {
+      color: isLight ? "#A3A3A1" : "#9DB2BF",
+      backgroundColor: isLight ? "#E8E8E8" : "#00000000",
+      borderColor: isLight ? "#A3A3A1" : "#9DB2BF",
+    },
+  };
+
+  return stylesMap[status] ?? {};
+};

@@ -39,9 +39,6 @@ export default function VineyardsTable({
   const updateGroup = async (uid: string, rows: Partial<Vineyard>[]) =>
     await db.vineyard.updateGroup(uid, rows);
 
-  const createGroup = async (uid: string, group: Partial<Vineyard>) =>
-    await db.vineyard.create(uid, group);
-
   return (
     <StrictMode>
       <DataTable<Vineyard>
@@ -65,7 +62,6 @@ export default function VineyardsTable({
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedVineyards}
-        createGroup={createGroup}
       />
     </StrictMode>
   );

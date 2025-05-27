@@ -8,6 +8,7 @@ export type NotesDataDisplayProps = {
 
 export default function NotesDataDisplay({ notes }: NotesDataDisplayProps) {
   if (!notes) return;
+
   return (
     <Stack
       direction="column"
@@ -45,7 +46,7 @@ export default function NotesDataDisplay({ notes }: NotesDataDisplayProps) {
             )}
           </div>
         ))}
-      {notes.length > 1 && (
+      {notes.length > GROUP_ITEMS_TO_SHOW && (
         <Typography
           color="primary"
           variant="body2"

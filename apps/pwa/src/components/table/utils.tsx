@@ -1,4 +1,4 @@
-import { Vineyard } from "@/models/types/db";
+import { DashboardEntity } from "@/models/types/dashboard";
 
 /**
  * Move a file or a folder. This is a pure function, it does not modify the original data.
@@ -7,11 +7,11 @@ import { Vineyard } from "@/models/types/db";
  * @param target the target file or folder to move to
  * @returns the new list of files, or null if the move is invalid
  */
-export function shiftGroups(
-  items: Vineyard[],
-  source: Vineyard,
-  target: Vineyard | null | undefined
-): Vineyard[] | null {
+export function shiftGroups<T extends DashboardEntity>(
+  items: T[],
+  source: T,
+  target: T | null | undefined
+): T[] | null {
   if (source === target) {
     return null; // invalid move - no-op
   }

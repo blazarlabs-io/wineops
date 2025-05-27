@@ -47,21 +47,18 @@ export default function GrapesTable({
         group:
           !grape?.group ||
           grape?.group?.length === 0 ||
-          (grape?.group?.length === 1 &&
+          (grape?.group?.length > 0 &&
             grape.name &&
             grape.rowType !== "group" &&
-            grape?.group[0] !== grape.name)
-            ? [grape?.name]
-            : grape.group,
+            grape?.group[grape?.group.length - 1] !== grape.name)
+            ? [...grape?.group.slice(0, -1), grape?.name]
+            : grape?.group,
       })),
     [grapes]
   );
 
   const updateGroup = async (uid: string, rows: Partial<Grape>[]) =>
     await db.grape.updateGroup(uid, rows);
-
-  const createGroup = async (uid: string, group: Partial<Grape>) =>
-    await db.grape.create(uid, group);
 
   return (
     <StrictMode>
@@ -87,7 +84,6 @@ export default function GrapesTable({
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedGrapes}
-        createGroup={createGroup}
       />
     </StrictMode>
   );

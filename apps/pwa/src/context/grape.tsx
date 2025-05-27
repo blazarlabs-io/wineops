@@ -62,7 +62,10 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
         }
 
         querySnapshot.forEach((doc) => {
-          grapes.push(doc.data() as Grape);
+          const id = doc.id;
+          const data = doc.data();
+
+          grapes.push({ ...data, id: data?.id ?? id } as Grape);
         });
 
         setGrapes(grapes);

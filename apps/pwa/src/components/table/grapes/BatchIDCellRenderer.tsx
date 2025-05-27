@@ -1,4 +1,5 @@
 import CertificationsDataDisplay from "@/components/data-display/certifications-data-display";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { Box, Typography } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import type { CustomCellRendererProps } from "ag-grid-react";
@@ -8,25 +9,16 @@ import React from "react";
 export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
 ) => {
-  const { value, node, data } = params;
-  const isGroup = node.group || data.rowType === "group";
-
-  const localData = Array.isArray(value) ? value[0] : {};
-
-  console.log("BatchIDCellRenderer:value:", value);
-  console.log("BatchIDCellRenderer:params:", params);
+  const { value, data, node } = params;
+  const isGroup = node.group || data?.rowType === "group";
 
   return (
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%" }}
+      height={ROW_HEIGHT_DEFAULT}
     >
-      {isGroup ||
-      (value &&
-        value?.length > 0 &&
-        Array.isArray(value) &&
-        Array.isArray(value[0])) ? (
+      {isGroup ? (
         <>
           {value?.length} {value?.length === 1 ? "Batch" : "Batches"}
         </>
@@ -38,13 +30,13 @@ export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
           justifyContent="flex-start"
         >
           <Stack justifyContent="flex-end">
-            <Typography>{localData?.name}</Typography>
-            <Typography>{localData?.grapeVariety}</Typography>
+            <Typography>{data?.name}</Typography>
+            <Typography>{data?.grapeVariety}</Typography>
           </Stack>
-          {localData?.certifications && (
+          {data?.certifications && (
             <Box sx={{ mb: 0.5 }}>
               <CertificationsDataDisplay
-                certifications={localData?.certifications}
+                certifications={data?.certifications}
               />
             </Box>
           )}

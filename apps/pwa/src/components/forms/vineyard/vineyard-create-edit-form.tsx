@@ -99,24 +99,21 @@ export default function VineyardForm({
         getOneRes.status === 200 &&
         (getOneRes.data === null || getOneRes.data !== undefined)
       ) {
-        // const { id, name, group } = data;
-        console.log("Vineyard already exists", data);
+        const { id, name, group } = data;
 
-        if (data.group.length <= 1) {
-          data.group = [data.name];
-          console.log("data.group <=1", data.group);
-        } else {
-          data.group[data.group.length - 1] = data.name;
-          console.log("data.group else", data.group);
-        }
+        const newData = {
+          ...data,
+          group: [...(group ?? []).slice(0, -1), name ?? id],
+        };
 
         const updateRes: DbResponse = await db.vineyard.update(
           uid,
-          data.id,
-          data
+          id,
+          newData
         );
+
         if (updateRes.status === 200) {
-          enqueueSnackbar(`Updated ${data.name} successfully`, {
+          enqueueSnackbar(`Updated ${name} successfully`, {
             variant: "success",
           });
           if (closeDrawer) closeDrawer();

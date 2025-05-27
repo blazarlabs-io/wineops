@@ -1,4 +1,5 @@
 import LabItem from "@/components/data-display/lab-item";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import formatDate from "@/utils/date-format";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -8,22 +9,20 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
   const { value, node, data } = params;
   const isGroup = node.group || data.rowType === "group";
 
-  const localData = Array.isArray(value) ? value[0] : {};
-
   return (
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%" }}
+      height={ROW_HEIGHT_DEFAULT}
     >
-      {isGroup || (value && Array.isArray(value) && Array.isArray(value[0])) ? (
+      {isGroup ? (
         <></>
       ) : (
-        localData && (
+        value && (
           <Stack>
-            {localData?.date && (
+            {value?.date && (
               <Typography variant="caption" color="textDisabled">
-                {formatDate(localData?.date, { locale: "ro-RO" })}
+                {formatDate(value?.date, { locale: "ro-RO" })}
               </Typography>
             )}
 
@@ -31,12 +30,12 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
               <LabItem
                 variant="small"
                 label="Sugar"
-                data={localData?.sugar ?? { value: "N/A" }}
+                data={value?.sugar ?? { value: "N/A" }}
               />
               <LabItem
                 variant="small"
                 label="Acidity"
-                data={localData?.acidity ?? { value: "N/A" }}
+                data={value?.acidity ?? { value: "N/A" }}
               />
             </Stack>
           </Stack>

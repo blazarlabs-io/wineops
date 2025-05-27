@@ -5,7 +5,7 @@ import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
 import { DashboardEntity } from "@/models/types/dashboard";
-import { DbResponse, Vineyard } from "@/models/types/db";
+import { DbResponse } from "@/models/types/db";
 import { nodesToEntities } from "@/utils/notes-to-entities";
 import { Typography } from "@mui/material";
 import {
@@ -36,7 +36,7 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { shiftGroups } from "../vineyards/utils";
+import { shiftGroups } from "../utils";
 import "./style.css";
 
 ModuleRegistry.registerModules([
@@ -67,7 +67,6 @@ interface DataTableProps<T extends DashboardEntity> {
   //groupCellRenderer: FunctionComponent<CustomCellRendererProps>;
   updateGroup: (uid: string, rows: Partial<T>[]) => Promise<DbResponse>;
   groupColumnDef?: ColDef<any, any>;
-  createGroup: (uid: string, group: Partial<T>) => Promise<DbResponse>;
 }
 
 export const DataTable = <T extends DashboardEntity>({
@@ -80,12 +79,10 @@ export const DataTable = <T extends DashboardEntity>({
   handleCloseUngroupingDialog,
   data = [],
   updateSelectedData,
-  entryKey = "name" as keyof T,
   columns,
   //groupCellRenderer,
   updateGroup,
   groupColumnDef,
-  createGroup,
 }: DataTableProps<T>) => {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -100,7 +97,7 @@ export const DataTable = <T extends DashboardEntity>({
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [potentialParent, setPotentialParent] = useState<any>(null);
 
-  // * Get Data Path ["group", "vineyard"]
+  // * Get Data Path ["group", "item name"]
   const getDataPath = useCallback<GetDataPath>((data) => {
     return data.group;
   }, []);
@@ -193,7 +190,7 @@ export const DataTable = <T extends DashboardEntity>({
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
       const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
-      // * Selected vineyards in an array format, Only list of vineyards grouping is ignored
+      // * Selected items in an array format, Only list of items grouping is ignored
       const entities = nodesToEntities<T>(selectedNodes);
       onChangeData?.(entities);
       setSelectedRows(entities);
@@ -204,7 +201,7 @@ export const DataTable = <T extends DashboardEntity>({
   const { user } = useAuth();
   const uid = user?.uid || "";
 
-  const createNewGroup = async (group: string[]) => {
+  const createNewGroup = (group: string[]) => {
     if (!group || !data || group.length === 0 || data.length === 0) return;
 
     const existingGroup = !!data.find(
@@ -218,17 +215,11 @@ export const DataTable = <T extends DashboardEntity>({
 
     if (existingGroup) return;
 
-    const newGroup = {
+    return {
       id: Date.now().toString(),
       rowType: "group",
       group,
     };
-
-    const createRes = await createGroup(uid, newGroup as Partial<T>);
-
-    if (createRes.status !== 200) return;
-
-    return newGroup;
   };
 
   const updateRowsGroup = async (group: string[] = []) => {
@@ -238,25 +229,45 @@ export const DataTable = <T extends DashboardEntity>({
 
     setGroupToExpand(group);
 
-    // console.log("updateRowsGroup:group:", group);
-
-    const newGroup = group && (await createNewGroup(group));
+    const newGroup = createNewGroup(group);
 
     const updatedRows = selectedRows.map((row) => ({
       id: row.id,
+      rowType: row.rowType,
       group:
-        group && row.rowType !== "group"
-          ? [...(newGroup?.group ?? group), row.name]
-          : row.group,
+        group.length > 0
+          ? row.rowType === "group"
+            ? (newGroup?.group ?? group)
+            : [...(newGroup?.group ?? group), row.name]
+          : row.rowType === "group"
+            ? [...row.group.slice(0, -2), row.group[row.group.length - 1]]
+            : [...row.group.slice(0, -2), row.name],
     }));
+
+    const updatedMap = new Map(updatedRows.map((row) => [row.id, row]));
+
+    const allRows = rowData.map(
+      (row) => (updatedMap.has(row.id) ? updatedMap.get(row.id) : row) as T
+    );
+
+    const unusedGroups = getUnusedGroups(allRows);
+
+    const unusedGroupsIds = unusedGroups.map(({ id }) => id);
+
+    const updatedRowsWithUnused = [
+      ...unusedGroups.map((row) => ({ ...row, group: [] })),
+      ...updatedRows.filter(({ id }) => !unusedGroupsIds.includes(id)),
+    ];
+
+    setSelectedRows([]);
+    gridRef.current?.api?.deselectAll();
 
     const updateRes: DbResponse = await updateGroup(
       uid,
-      updatedRows as Partial<T>[]
+      (newGroup
+        ? [...updatedRowsWithUnused, newGroup]
+        : updatedRowsWithUnused) as Partial<T>[]
     );
-
-    /*setSelectedRows([]);
-    gridRef.current?.api?.deselectAll();*/
 
     if (updateRes.status === 200) {
       enqueueSnackbar(`${isGrouping ? "Grouped" : "Ungrouped"} successfully.`, {
@@ -300,17 +311,14 @@ export const DataTable = <T extends DashboardEntity>({
   );
 
   const setPotentialParentForNode = useCallback(
-    (
-      api: GridApi<Vineyard>,
-      overNode: IRowNode<Vineyard> | undefined | null
-    ) => {
-      let newPotentialParent: IRowNode<Vineyard> | null = null;
+    (api: GridApi<T>, overNode: IRowNode<T> | undefined | null) => {
+      let newPotentialParent: IRowNode<T> | null = null;
       if (overNode) {
         if (overNode.data?.rowType === "group") {
           // over a group, we take the immediate row
           newPotentialParent = overNode;
         } else if (overNode.parent) {
-          // over a item/vineyard, we take the parent row (which will be a group)
+          // over a item, we take the parent row (which will be a group)
           newPotentialParent = overNode.parent;
         }
       }
@@ -333,8 +341,8 @@ export const DataTable = <T extends DashboardEntity>({
     [potentialParent]
   );
 
-  function refreshRows(api: GridApi, rowsToRefresh: IRowNode<Vineyard>[]) {
-    const params: RefreshCellsParams<Vineyard> = {
+  function refreshRows(api: GridApi, rowsToRefresh: IRowNode<T>[]) {
+    const params: RefreshCellsParams<T> = {
       // refresh these rows only.
       rowNodes: rowsToRefresh,
       // because the grid does change detection, the refresh
@@ -371,7 +379,7 @@ export const DataTable = <T extends DashboardEntity>({
       const rowData = event.api.getGridOption("rowData");
 
       if (rowData && source && source !== target) {
-        const newRowData = shiftGroups(rowData, source, target);
+        const newRowData = shiftGroups<T>(rowData, source, target);
         if (!newRowData) {
           console.log("invalid move");
         } else if (newRowData !== rowData) {
@@ -379,14 +387,23 @@ export const DataTable = <T extends DashboardEntity>({
           event.api.setGridOption("rowData", newRowData);
           console.log("newRowData:", newRowData);
 
-          if (target.group) {
+          const unusedGroupsIds = getUnusedGroups(newRowData).map(
+            ({ id }) => id
+          );
+
+          const updatedNewRowData = newRowData.map((row) => ({
+            ...row,
+            group: unusedGroupsIds.includes(row.id) ? [] : row.group,
+          }));
+
+          setSelectedRows([]);
+          gridRef.current?.api?.deselectAll();
+
+          if (target?.group) {
             setGroupToExpand(target.group);
           }
 
-          /**setSelectedRows([]);
-          gridRef.current?.api?.deselectAll();*/
-
-          await updateGroup(uid, newRowData as T[]);
+          await updateGroup(uid, updatedNewRowData as T[]);
           enqueueSnackbar("Saved changes", { variant: "success" });
         }
         gridRef.current!.api.clearFocusedCell();
@@ -399,11 +416,11 @@ export const DataTable = <T extends DashboardEntity>({
       potentialParent,
       setGroupToExpand,
       setPotentialParentForNode,
+      setSelectedRows,
       uid,
       updateGroup,
     ]
   );
-  // console.log("updateRowsGroup:selectedRows:", selectedRows);
 
   return (
     <>
@@ -445,7 +462,6 @@ export const DataTable = <T extends DashboardEntity>({
           </div>
         )}
       </div>
-
       <GroupingDialog<T>
         groups={uniqueGroups}
         rows={selectedRows}
@@ -461,4 +477,24 @@ export const DataTable = <T extends DashboardEntity>({
       />
     </>
   );
+};
+
+const getUnusedGroups = (data: DashboardEntity[]) => {
+  const leafGroupPaths = data
+    .filter((item) => item.rowType !== "group" && Array.isArray(item.group))
+    .map((item) => item.group.join("|"));
+
+  const groupOnlyRows = data.filter(
+    (item) => item.rowType === "group" && Array.isArray(item.group)
+  );
+
+  const unusedGroups = groupOnlyRows.filter((groupRow) => {
+    const groupPath = groupRow.group.join("|");
+    return !leafGroupPaths.some(
+      (leafPath) =>
+        leafPath.startsWith(groupPath + "|") || leafPath === groupPath
+    );
+  });
+
+  return unusedGroups;
 };
