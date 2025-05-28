@@ -109,7 +109,7 @@ export default function PolygonDrawingMap({
         }}
         defaultZoom={13}
         defaultCenter={
-          initialCoordinates
+          initialCoordinates && initialCoordinates.length > 0
             ? getPolygonCenter(initialCoordinates)
             : { lat: 47.0110011447989, lng: 28.85266615038058 }
         } // Chisinau, Moldova
