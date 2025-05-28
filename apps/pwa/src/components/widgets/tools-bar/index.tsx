@@ -4,7 +4,7 @@ import { useVineyard } from "@/context/vineyard";
 import vineyardBlankSample from "@/data/vineyard-blank-sample";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
-import { Vineyard } from "@/models/types/db";
+import { LabDataSimple, Vineyard } from "@/models/types/db";
 import {
   Add,
   DeleteOutline,
@@ -17,8 +17,14 @@ import {
 import { Box, IconButton } from "@mui/material";
 import { Search } from "lucide-react";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ButtonType, ButtonProps } from "./constants";
+import {
+  generateDummyDocs,
+  generateLabData,
+  generateNotes,
+  generateTasks,
+} from "@/utils/generators";
 
 export type ToolsBarProps = {
   buttons: Partial<Record<ButtonType, ButtonProps>>;
@@ -41,16 +47,28 @@ export default function ToolsBar({
   const [formType, setFormType] = useState<"create" | "edit">("create");
   const [openDeleteVineyardsDialog, setOpenDeleteVineyardsDialog] =
     useState<boolean>(false);
+
+  vineyardBlankSample.id = Date.now().toString();
+  vineyardBlankSample.labData = generateLabData() as LabDataSimple[];
+  vineyardBlankSample.tasks = generateTasks();
+  vineyardBlankSample.documents = generateDummyDocs(10);
+  vineyardBlankSample.notes = generateNotes();
+  vineyardBlankSample.rowType = "item";
+
   const [localVineyard, setLocalVineyard] =
+    useState<Vineyard>(vineyardBlankSample);
+
+  const [workingVineyard, setWorkingVineyard] =
     useState<Vineyard>(vineyardBlankSample);
 
   const handleCloseFormDrawer = () => {
     setOpenFormDrawer(false);
   };
 
-  const handleOpenFormDrawer = () => {
+  const handleOpenFormDrawer = useCallback(() => {
     setOpenFormDrawer(true);
-  };
+    console.log("[HANDLE OPEN FORM DRAWER]", localVineyard);
+  }, [localVineyard]);
 
   const handleEditVineyards = () => {
     setFormType("edit");
@@ -79,23 +97,28 @@ export default function ToolsBar({
   };
 
   useEffect(() => {
-    console.log("XXXXXX", selectedVineyards, vineyards);
     if (selectedVineyards.length > 0) {
       setFormType("edit");
-      setLocalVineyard(selectedVineyards[0]);
+      // setLocalVineyard(selectedVineyards[0]);
+
+      if (vineyards && vineyards.length > 0) {
+        const _vineyard: Vineyard[] = vineyards.filter(
+          (vineyard) => vineyard.id === selectedVineyards[0].id
+        );
+        console.log("LOCAL VINEYARD", _vineyard[0]);
+        setLocalVineyard(() => _vineyard[0]);
+      }
+
+      return;
     } else {
       setFormType("create");
       setLocalVineyard(vineyardBlankSample);
     }
+  }, [vineyards, selectedVineyards]);
 
-    if (localVineyard !== undefined && vineyards.length > 0) {
-      const _vineyard: Vineyard[] = vineyards.filter(
-        (vineyard) => vineyard.id === localVineyard.id
-      );
-      console.log("_vineyard", _vineyard);
-      setLocalVineyard(_vineyard[0]);
-    }
-  }, [selectedVineyards, vineyards]);
+  useEffect(() => {
+    if (localVineyard) setWorkingVineyard(localVineyard);
+  }, [localVineyard]);
 
   return (
     <>
@@ -111,19 +134,24 @@ export default function ToolsBar({
         alignItems="center"
         justifyContent="space-between"
       >
-        <VineyardFormDrawer
-          type={formType}
-          vineyard={localVineyard}
-          open={openFormDrawer}
-          onClose={handleCloseFormDrawer}
-        />
+        {workingVineyard && openFormDrawer && (
+          <VineyardFormDrawer
+            type={formType}
+            vineyard={workingVineyard}
+            open={openFormDrawer}
+            onClose={handleCloseFormDrawer}
+          />
+        )}
         <Box display="flex" gap={1}>
           {buttons[ButtonType.ADD] && (
             <IconButton
               color="default"
               aria-label="add"
               onClick={handleOpenFormDrawer}
-              disabled={!buttons[ButtonType.ADD]?.enabled}
+              disabled={
+                !buttons[ButtonType.ADD]?.enabled ||
+                selectedVineyards.length > 0
+              }
             >
               <Add className="" />
             </IconButton>

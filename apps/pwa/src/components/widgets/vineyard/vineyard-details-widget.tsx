@@ -56,6 +56,7 @@ export default function VineyardDetailsWidget({
   };
 
   useEffect(() => {
+    console.log("vineyard", vineyard);
     setLocalVineyard(vineyard);
   }, [vineyard]);
 
@@ -104,74 +105,47 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Surface"
                 value={
-                  localVineyard.info === undefined
-                    ? "N/A"
-                    : localVineyard.info.location.surface.toString() + " m2" ||
-                      "N/A"
+                  localVineyard.info?.location?.surface?.toString() + " m2" ||
+                  "N/A"
                 }
               />
               <SimpleDataDisplay
                 label="Age of Vines"
                 value={
-                  localVineyard.info === undefined
-                    ? "N/A"
-                    : localVineyard.info.vines.yearOfPlantation
-                      ? (
-                          new Date().getFullYear() -
-                          localVineyard.info.vines.yearOfPlantation
-                        ).toString()
-                      : "N/A"
+                  localVineyard.info.vines.yearOfPlantation
+                    ? (
+                        new Date().getFullYear() -
+                        localVineyard.info?.vines?.yearOfPlantation
+                      ).toString()
+                    : "N/A"
                 }
               />
               <SimpleDataDisplay
                 label="Elevation"
                 value={
-                  localVineyard.info === undefined
-                    ? "N/A"
-                    : localVineyard.info.location.elevation.toString() + " m" ||
-                      "N/A"
+                  localVineyard.info?.location?.elevation?.toString() + " m" ||
+                  "N/A"
                 }
               />
               <SimpleDataDisplay
                 label="Orientation"
-                value={
-                  localVineyard.info === undefined
-                    ? "N/A"
-                    : localVineyard.info.location.orientation.toString() ||
-                      "N/A"
-                }
+                value={localVineyard.info?.location?.orientation || "N/A"}
               />
               <SimpleDataDisplay
                 label="Sunlight Hours"
-                value={
-                  localVineyard.info === undefined
-                    ? "N/A"
-                    : localVineyard.info.vines.sunlightHours.toString() || "N/A"
-                }
+                value={localVineyard.info?.vines?.sunlightHours || "N/A"}
               />
               <SimpleDataDisplay
                 label="Soil Type"
-                value={
-                  localVineyard.info === undefined
-                    ? "N/A"
-                    : localVineyard.info.vines.soilType.toString() || "N/A"
-                }
+                value={localVineyard.info?.vines?.soilType?.toString() || "N/A"}
               />
               <SimpleDataDisplay
                 label="Cadastral Number"
-                value={
-                  localVineyard.cadastralNumber === undefined
-                    ? "N/A"
-                    : localVineyard.cadastralNumber.toString() || "N/A"
-                }
+                value={localVineyard.cadastralNumber || "N/A"}
               />
               <SimpleDataDisplay
                 label="Country"
-                value={
-                  localVineyard.info === undefined
-                    ? "N/A"
-                    : localVineyard.info.location.country.toString() || "N/A"
-                }
+                value={localVineyard.info?.location?.country || "N/A"}
               />
             </div>
           </>
@@ -191,22 +165,22 @@ export default function VineyardDetailsWidget({
                 <SimpleDataDisplay
                   label="Clonal Selection"
                   value={
-                    localVineyard.grape.clonalSelection.toString() || "N/A"
+                    localVineyard?.grape?.clonalSelection?.toString() || "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Vivc Number"
-                  value={localVineyard.grape.vivcNumber.toString() || "N/A"}
+                  value={localVineyard?.grape?.vivcNumber?.toString() || "N/A"}
                 />
                 <SimpleDataDisplay
                   label="Country of Origin"
                   value={
-                    localVineyard.grape.countryOfOrigin.toString() || "N/A"
+                    localVineyard?.grape?.countryOfOrigin?.toString() || "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Grape Color"
-                  value={localVineyard.grapeColor.toString() || "N/A"}
+                  value={localVineyard?.grapeColor?.toString() || "N/A"}
                 />
               </div>
             ) : (

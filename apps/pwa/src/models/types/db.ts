@@ -262,3 +262,24 @@ export type Grape = {
   group: string[];
   rowType?: RowType;
 };
+
+export type Must = {
+  id: string;
+  name: string;
+  group: string[];
+  rowType?: RowType;
+  grapes: string[];
+  vineyards: string[];
+  status: string;
+  quantity: number;
+  labData: LabDataSimple[];
+  createdAt: string | Date;
+  vessel: {
+    id: string;
+    name: string;
+  };
+  location: string;
+  notes: Note[];
+  tasks: TaskSummary[];
+  grapeVariety: string;
+};

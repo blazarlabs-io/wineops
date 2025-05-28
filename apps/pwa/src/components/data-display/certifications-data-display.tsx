@@ -15,7 +15,7 @@ export default function CertificationsDataDisplay({
         <Sprout
           className={cn(
             "w-4 h-4",
-            certifications.eco.active ? "opacity-100" : "opacity-50"
+            certifications.eco.active ? "opacity-100" : "opacity-30"
           )}
         />
       </button>
@@ -23,7 +23,7 @@ export default function CertificationsDataDisplay({
         <Snowflake
           className={cn(
             "w-4 h-4",
-            certifications.eco.active ? "opacity-100" : "opacity-50"
+            certifications.eco.active ? "opacity-100" : "opacity-30"
           )}
         />
       </button>
@@ -31,7 +31,7 @@ export default function CertificationsDataDisplay({
         <ShieldCheck
           className={cn(
             "w-4 h-4",
-            certifications.eco.active ? "opacity-100" : "opacity-50"
+            certifications.eco.active ? "opacity-100" : "opacity-30"
           )}
         />
       </button>

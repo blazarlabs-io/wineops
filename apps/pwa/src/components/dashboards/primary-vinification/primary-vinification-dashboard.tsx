@@ -1,6 +1,6 @@
 "use client";
 
-import PrimaryVinificationTable from "@/components/table/primary-vinification";
+// import PrimaryVinificationTable from "@/components/table/primary-vinification";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
@@ -54,13 +54,13 @@ export default function PrimaryVinificationDashboard() {
         }}
       />
 
-      <PrimaryVinificationTable
+      {/* <PrimaryVinificationTable
         onChangeData={setSelectionData}
         openGroupingDialog={openGroupingDialog}
         openUngroupingDialog={openUngroupingDialog}
         handleCloseGroupingDialog={handleCloseGroupingDialog}
         handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-      />
+      /> */}
     </Stack>
   );
 }

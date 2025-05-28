@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { DataTable } from "@/components/table/data-table";
@@ -47,7 +48,7 @@ export default function GrapesTable({
 
   return (
     <StrictMode>
-      <DataTable<Must>
+      {/* <DataTable<Must>
         isDarkMode={mode === "dark"}
         onChangeData={onChangeData}
         openGroupingDialog={openGroupingDialog}
@@ -66,7 +67,7 @@ export default function GrapesTable({
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedMusts}
-      />
+      /> */}
     </StrictMode>
   );
 }

@@ -4,7 +4,7 @@
 import PolygonDrawingMap from "@/components/widgets/maps/polygon-drawing-map";
 import { useVineyard } from "@/context/vineyard";
 import { countries } from "@/data/countries";
-import { orientations } from "@/data/system-variables";
+import { orientations, soilTypes } from "@/data/system-variables";
 import vineyardBlankSample from "@/data/vineyard-blank-sample";
 import { setNestedValue } from "@/helpers/form-helpers";
 import { useAuth } from "@/lib/firebase/auth";
@@ -21,6 +21,7 @@ import {
   generateLabData,
   generateNotes,
   generateTasks,
+  generateYearsList,
 } from "@/utils/generators";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { ExpandMore } from "@mui/icons-material";
@@ -40,8 +41,8 @@ import {
 import Select from "@mui/material/Select";
 import { Leaf, MapPin } from "lucide-react";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useEffect, useState } from "react";
+import { Form, useForm } from "react-hook-form";
 
 export type VineyardFormProps = {
   children?: React.ReactNode;
@@ -57,11 +58,12 @@ export default function VineyardForm({
 }: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+
   const { vineyards } = useVineyard();
   const {
     register,
     handleSubmit,
-    // getValues,
+    getValues,
     setValue,
     reset,
     formState: { errors },
@@ -69,16 +71,7 @@ export default function VineyardForm({
     resolver: joiResolver(vineyardSchema),
   });
 
-  // ? Generate dummy data
-  vineyardBlankSample.id = Date.now().toString();
-  vineyardBlankSample.labData = generateLabData() as LabDataSimple[];
-  vineyardBlankSample.tasks = generateTasks();
-  vineyardBlankSample.documents = generateDummyDocs(10);
-  vineyardBlankSample.notes = generateNotes();
-  vineyardBlankSample.rowType = "item";
-  // ?
-
-  const [formData, setFormData] = useState<Vineyard>(vineyardBlankSample);
+  const [formData, setFormData] = useState<Vineyard | null>(vineyard);
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
     const _path = "info.location.map";
@@ -89,88 +82,134 @@ export default function VineyardForm({
     });
   };
 
-  async function handleCreateVineyard(uid: string, data: any) {
-    if (type === "create") data.group = [data.name];
+  const handleSelectChange = useCallback(
+    (name: string, value: string | number) => {
+      const _value = value;
 
-    try {
-      // * Check if vineyard already exists
-      const getOneRes: DbResponse = await db.vineyard.getOne(uid, data.id);
-      if (
-        getOneRes.status === 200 &&
-        (getOneRes.data === null || getOneRes.data !== undefined)
-      ) {
-        const { id, name, group } = data;
-
-        const newData = {
-          ...data,
-          group: [...(group ?? []).slice(0, -1), name ?? id],
-        };
-
-        const updateRes: DbResponse = await db.vineyard.update(
-          uid,
-          id,
-          newData
-        );
-
-        if (updateRes.status === 200) {
-          enqueueSnackbar(`Updated ${name} successfully`, {
-            variant: "success",
-          });
-          if (closeDrawer) closeDrawer();
+      let _path: string = "";
+      if (name && name !== undefined) {
+        if (name.startsWith("info") || name.startsWith("grape")) {
+          _path = name;
         } else {
-          enqueueSnackbar(`Error updating vineyard`, {
-            variant: "error",
-          });
-        }
-      } else {
-        data.group = [data.name];
-
-        const createRes: DbResponse = await db.vineyard.create(uid, data);
-        if (createRes.status === 200) {
-          enqueueSnackbar(`Created ${data.name} successfully`, {
-            variant: "success",
-          });
-          if (closeDrawer) closeDrawer();
-        } else {
-          enqueueSnackbar(`Error creating vineyard`, {
-            variant: "error",
-          });
+          _path = `info.${name}`;
         }
       }
-    } catch (e) {
-      console.error("Error creating document or subcollection with data: ", e);
-      enqueueSnackbar(`Error creating vineyard`, {
-        variant: "error",
-      });
-    }
-  }
+
+      console.log("XXXXXXXXXXXXXXXXXXXXX");
+      console.log(_path, value as typeof value);
+
+      setValue(_path as string, _value as typeof value);
+
+      const path = _path.split(".");
+      const newFormData = setNestedValue(formData, path, value);
+
+      setFormData(() => newFormData);
+    },
+    [formData, setValue]
+  );
+
+  const handleCheckboxChange = (name: string, value: boolean) => {
+    const path = name;
+    setValue(path, value);
+    setFormData((prevData: any) => {
+      const _path = path.split(".");
+      return setNestedValue(prevData, _path, value);
+    });
+  };
+
+  const handleCreateVineyard = useCallback(
+    async (uid: string, data: any) => {
+      if (type === "create") data.group = [data.name];
+
+      try {
+        // * Check if vineyard already exists
+        const getOneRes: DbResponse = await db.vineyard.getOne(uid, data.id);
+        if (
+          getOneRes.status === 200 &&
+          (getOneRes.data === null || getOneRes.data !== undefined)
+        ) {
+          const { id, name, group } = data;
+
+          const newData = {
+            ...data,
+            group: [...(group ?? []).slice(0, -1), name ?? id],
+          };
+
+          const updateRes: DbResponse = await db.vineyard.update(
+            uid,
+            id,
+            newData
+          );
+
+          setFormData(() => newData);
+
+          if (updateRes.status === 200) {
+            enqueueSnackbar(`Updated ${name} successfully`, {
+              variant: "success",
+            });
+            if (closeDrawer) closeDrawer();
+          } else {
+            enqueueSnackbar(`Error updating vineyard`, {
+              variant: "error",
+            });
+          }
+        } else {
+          data.group = [data.name];
+
+          const createRes: DbResponse = await db.vineyard.create(uid, data);
+
+          setFormData(() => data);
+
+          if (createRes.status === 200) {
+            enqueueSnackbar(`Created ${data.name} successfully`, {
+              variant: "success",
+            });
+            if (closeDrawer) closeDrawer();
+          } else {
+            enqueueSnackbar(`Error creating vineyard`, {
+              variant: "error",
+            });
+          }
+        }
+      } catch (e) {
+        console.error(
+          "Error creating document or subcollection with data: ",
+          e
+        );
+        enqueueSnackbar(`Error creating vineyard`, {
+          variant: "error",
+        });
+      }
+    },
+    [closeDrawer, enqueueSnackbar, type]
+  );
 
   const onSubmit = (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
+    console.log("[VINEYARD FORM SUBMIT]", data);
     handleCreateVineyard(user?.uid || "", data);
-    setFormData(data);
   };
 
   useEffect(() => {
+    console.log("[VINEYARD FORM]", vineyard);
     if (vineyard) {
-      reset(vineyard);
-      console.log("VINEYARD FORM:", vineyard);
       if (vineyard.name.length > 0) {
+        console.log("EXISTING VINEYARD", vineyard);
         reset(vineyard);
         setFormData(vineyard);
       } else {
+        console.log("NEW VINEYARD", vineyard);
         setValue("name", `Vineyard ${vineyards?.length + 1}`);
         setFormData(vineyard);
+        reset(vineyard);
       }
     }
   }, [vineyard]);
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
+      console.log("[VINEYARD FORM ERRORS]", errors);
     }
   }, [errors]);
 
@@ -366,27 +405,37 @@ export default function VineyardForm({
                       {/* * COUNTRY */}
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 w-full">
-                          {/* <Label htmlFor="info.location.country">Country</Label> */}
                           <InputLabel className="text-sm text-muted-foreground">
                             Choose the country of your vineyard.
                           </InputLabel>
                           <FormControl>
                             <Select
+                              name="info.location.country"
                               id="info.location.country"
                               variant="outlined"
-                              defaultValue={"select-country"}
-                              {...register("info.location.country")}
+                              value={
+                                formData?.info?.location?.country as string
+                              }
+                              onChange={(e) =>
+                                handleSelectChange(
+                                  "info.location.country",
+                                  e.target.value
+                                )
+                              }
                             >
-                              <MenuItem value="select-country">
+                              {/* <MenuItem value="select-country">
                                 <em>Select Country</em>
-                              </MenuItem>
+                              </MenuItem> */}
                               {countries.length > 0 &&
                                 countries.map(
                                   (country: { name: string; code: string }) => {
                                     return (
                                       <MenuItem
                                         key={country.name}
-                                        value={country.name}
+                                        value={country.name
+                                          .toLocaleLowerCase()
+                                          .split(" ")
+                                          .join("-")}
                                       >
                                         {country.name}
                                       </MenuItem>
@@ -460,10 +509,18 @@ export default function VineyardForm({
 
                           <FormControl>
                             <Select
+                              name="info.location.orientation"
                               id="info.location.orientation"
                               variant="outlined"
-                              defaultValue={"select-orientation"}
-                              {...register("info.location.orientation")}
+                              value={
+                                formData?.info?.location?.orientation as string
+                              }
+                              onChange={(e) =>
+                                handleSelectChange(
+                                  "info.location.orientation",
+                                  e.target.value
+                                )
+                              }
                             >
                               <MenuItem value="select-orientation">
                                 <em>Select Orientation</em>
@@ -593,9 +650,12 @@ export default function VineyardForm({
                                     formData.info.vines.plantingScheme
                                       .trellisSystem
                                   }
-                                  {...register(
-                                    "info.vines.plantingScheme.trellisSystem"
-                                  )}
+                                  onChange={(e) =>
+                                    handleCheckboxChange(
+                                      "info.vines.plantingScheme.trellisSystem",
+                                      e.target.checked
+                                    )
+                                  }
                                 />
                               </FormControl>
                               <span className="text-sm text-muted-foreground">
@@ -619,42 +679,37 @@ export default function VineyardForm({
                           <span className="text-sm text-muted-foreground">
                             Enter the year of plantation of your vineyard.
                           </span>
-                          <Select
-                            id="info.vines.yearOfPlantation"
-                            // value={formData.info.location.orientation || "none"}
-                            label="Year of plantation"
-                            variant="outlined"
-                            defaultValue="none"
-                            // onChange={(event: SelectChangeEvent) => {
-                            //   console.log(event.target.value);
-                            //   // handleSelectChange('info.location.country', event.target.value);
-                            // }}
-                            {...register("info.location.country")}
-                          >
-                            <MenuItem value="none">
-                              <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={"ten"}>Ten</MenuItem>
-                            <MenuItem value={"twenty"}>Twenty</MenuItem>
-                            <MenuItem value={"thirty"}>Thirty</MenuItem>
-                          </Select>
-                          {/* <Select
-                            onValueChange={(value: string) => {
-                              handleSelectChange('info.vines.yearOfPlantation', value);
-                            }}
-                            {...register('info.vines.yearOfPlantation')}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Choose a year" />
-                            </SelectTrigger>
-                            <SelectContent className="w-full">
-                              {generateYears().map((year) => (
-                                <SelectItem className="" key={year} value={year.toString()}>
-                                  {year.toString()}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select> */}
+
+                          <FormControl>
+                            <Select
+                              name="info.vines.yearOfPlantation"
+                              id="info.vines.yearOfPlantation"
+                              variant="outlined"
+                              value={formData?.info?.vines?.yearOfPlantation}
+                              onChange={(e) =>
+                                handleSelectChange(
+                                  "info.vines.yearOfPlantation",
+                                  e.target.value
+                                )
+                              }
+                            >
+                              {/* <MenuItem value="select-country">
+                                <em>Select Country</em>
+                              </MenuItem> */}
+                              {generateYearsList().map(
+                                (year: number, index: number) => {
+                                  return (
+                                    <MenuItem
+                                      key={year + Math.random() * index}
+                                      value={year}
+                                    >
+                                      {year}
+                                    </MenuItem>
+                                  );
+                                }
+                              )}
+                            </Select>
+                          </FormControl>
 
                           {/* {errors?.info?.vines?.yearOfPlantation && (
                             <p className="text-sm text-destructive  mt-1">
@@ -696,45 +751,26 @@ export default function VineyardForm({
                           <span className="text-sm text-muted-foreground">
                             Choose the soil type of your vineyard.
                           </span>
-
-                          <Select
-                            id="info.vines.soilType"
-                            name="info.vines.soilType"
-                            value={formData.info.vines.soilType || "none"}
-                            inputProps={{}}
-                            label="Soil Type"
-                            variant="outlined"
-                            defaultValue="none"
-                            // onChange={(event: SelectChangeEvent) => {
-                            //   console.log(event.target.value);
-                            //   // handleSelectChange('info.location.country', event.target.value);
-                            // }}
-                            // {...register("info.location.country")}
-                          >
-                            <MenuItem value="none">
-                              <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={"ten"}>Ten</MenuItem>
-                            <MenuItem value={"twenty"}>Twenty</MenuItem>
-                            <MenuItem value={"thirty"}>Thirty</MenuItem>
-                          </Select>
-                          {/* <Select
-                            onValueChange={(value: string) => {
-                              handleSelectChange('info.vines.soilType', value);
-                            }}
-                            {...register('info.vines.soilType')}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Choose a soil type" />
-                            </SelectTrigger>
-                            <SelectContent className="w-full">
+                          <FormControl>
+                            <Select
+                              id="info.vines.soilType"
+                              value={formData?.info?.vines?.soilType}
+                              label="Soil Type"
+                              variant="outlined"
+                              onChange={(e) =>
+                                handleSelectChange(
+                                  "info.vines.soilType",
+                                  e.target.value
+                                )
+                              }
+                            >
                               {soilTypes.map((type) => (
-                                <SelectItem className="capitalize" key={type} value={type}>
+                                <MenuItem key={type} value={type}>
                                   {type}
-                                </SelectItem>
+                                </MenuItem>
                               ))}
-                            </SelectContent>
-                          </Select> */}
+                            </Select>
+                          </FormControl>
 
                           {/* {errors?.info?.vines?.soilType && (
                             <p className="text-sm text-destructive  mt-1">
@@ -762,15 +798,15 @@ export default function VineyardForm({
                               <Checkbox
                                 id="info.certifications.eco.active"
                                 checked={
-                                  formData.info.certifications.eco.active
+                                  formData?.info?.certifications?.eco?.active
                                 }
-                                // onCheckedChange={(checked) =>
-                                //   handleCheckboxChange(
-                                //     "info.certifications.eco.active",
-                                //     checked as boolean
-                                //   )
-                                // }
-                                {...register("info.certifications.eco.active")}
+                                onChange={(e) =>
+                                  handleCheckboxChange(
+                                    "info.certifications.eco.active",
+                                    e.target.checked
+                                  )
+                                }
+                                // {...register("info.certifications.eco.active")}
                               />
                               <span className="text-sm text-muted-foreground">
                                 Is your vineyard certified Eco/Bio?
@@ -787,9 +823,14 @@ export default function VineyardForm({
                               <Checkbox
                                 id="info.certifications.igp.active"
                                 checked={
-                                  formData.info.certifications.igp.active
+                                  formData?.info?.certifications?.igp?.active
                                 }
-                                {...register("info.certifications.igp.active")}
+                                onChange={(e) =>
+                                  handleCheckboxChange(
+                                    "info.certifications.igp.active",
+                                    e.target.checked
+                                  )
+                                }
                               />
                               <span className="text-sm text-muted-foreground">
                                 Is your vineyard certified IGP?
@@ -806,15 +847,14 @@ export default function VineyardForm({
                               <Checkbox
                                 id="info.certifications.dop.active"
                                 checked={
-                                  formData.info.certifications.dop.active
+                                  formData?.info?.certifications?.dop?.active
                                 }
-                                // onCheckedChange={(checked) =>
-                                //   handleCheckboxChange(
-                                //     "info.certifications.dop.active",
-                                //     checked as boolean
-                                //   )
-                                // }
-                                {...register("info.certifications.dop.active")}
+                                onChange={(e) =>
+                                  handleCheckboxChange(
+                                    "info.certifications.dop.active",
+                                    e.target.checked
+                                  )
+                                }
                               />
                               <span className="text-sm text-muted-foreground">
                                 Is your vineyard certified DOP?
@@ -877,24 +917,60 @@ export default function VineyardForm({
                         <span className="text-sm text-muted-foreground">
                           Enter the country of origin of your grape.
                         </span>
-                        {/* <Select
-                          // name="info.location.country"
-                          onValueChange={(value: string) => {
-                            handleSelectChange('grape.countryOfOrigin', value);
-                          }}
-                          {...register('grape.countryOfOrigin')}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Choose a country" />
-                          </SelectTrigger>
-                          <SelectContent className="w-full">
-                            {countries.map((country) => (
-                              <SelectItem key={country.code} value={country.name}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select> */}
+                        <FormControl>
+                          <Select
+                            name="grape.countryOfOrigin"
+                            id="grape.countryOfOrigin"
+                            variant="outlined"
+                            value={formData?.grape?.countryOfOrigin as string}
+                            onChange={(e) =>
+                              handleSelectChange(
+                                "grape.countryOfOrigin",
+                                e.target.value
+                              )
+                            }
+                          >
+                            {countries.length > 0 &&
+                              countries.map(
+                                (country: { name: string; code: string }) => {
+                                  return (
+                                    <MenuItem
+                                      key={country.name}
+                                      value={country.name
+                                        .toLocaleLowerCase()
+                                        .split(" ")
+                                        .join("-")}
+                                    >
+                                      {country.name}
+                                    </MenuItem>
+                                  );
+                                }
+                              )}
+                          </Select>
+                        </FormControl>
+
+                        {/* <FormControl>
+                          <Select
+                            name="grape.countryOfOrigin"
+                            id="grape.countryOfOrigin"
+                            variant="outlined"
+                            value={formData?.grape?.countryOfOrigin}
+                            onChange={handleSelectChange}
+                          >
+                            {countries.map(
+                              (country: { name: string; code: string }) => {
+                                return (
+                                  <MenuItem
+                                    key={country.code}
+                                    value={country.name}
+                                  >
+                                    {country.name}
+                                  </MenuItem>
+                                );
+                              }
+                            )}
+                          </Select>
+                        </FormControl> */}
 
                         {/* {errors?.info?.location?.country && (
                             <p className="text-sm text-destructive  mt-1">
@@ -913,7 +989,7 @@ export default function VineyardForm({
               <span className="text-sm text-muted-foreground">
                 Enter the forecasted yield of your vineyard.
               </span>
-              <Input
+              <input
                 id="forecastedYield"
                 type="number"
                 {...register("forecastedYield")}

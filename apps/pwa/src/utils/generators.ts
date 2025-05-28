@@ -151,3 +151,14 @@ export function generateRandomId(length: number = 10): string {
   }
   return result;
 }
+
+export function generateYearsList(): number[] {
+  const currentYear = new Date().getFullYear();
+  const years: number[] = [];
+
+  for (let year = currentYear; year >= 1900; year--) {
+    years.push(year);
+  }
+
+  return years;
+}
