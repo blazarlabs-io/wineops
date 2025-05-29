@@ -4,6 +4,7 @@ import MuiFab from "./components/buttons/Fab";
 import MuiButton from "./components/buttons/Button";
 import MuiStack from "./components/layout/Stack";
 import MuiPaper from "./components/surfaces/Paper";
+import MuiCard from "./components/layout/Card";
 
 export const mainTheme = createTheme({
   cssVariables: {
@@ -25,5 +26,6 @@ export const mainTheme = createTheme({
     MuiFab,
     MuiPaper,
     MuiStack,
+    MuiCard,
   },
 });

@@ -22,6 +22,7 @@ export default function DocumentsTable({ data }: DocumentsTableProps) {
         width: "100%",
         padding: 2,
         minWidth: "fit-window",
+        background: "transparent",
       }}
       className="w-full"
     >
@@ -37,16 +38,24 @@ export default function DocumentsTable({ data }: DocumentsTableProps) {
         <TableHead>
           <TableRow>
             <TableCell key="date" className="font-bold">
-              <Typography variant="body2" color="textDisabled">Date</Typography>
+              <Typography variant="body2" color="textDisabled">
+                Date
+              </Typography>
             </TableCell>
             <TableCell key="fileName">
-              <Typography variant="body2" color="textDisabled">File Name</Typography>
+              <Typography variant="body2" color="textDisabled">
+                File Name
+              </Typography>
             </TableCell>
             <TableCell key="fileId">
-              <Typography variant="body2" color="textDisabled">File ID</Typography>
+              <Typography variant="body2" color="textDisabled">
+                File ID
+              </Typography>
             </TableCell>
             <TableCell key="responsible">
-              <Typography variant="body2" color="textDisabled">Responsible</Typography>
+              <Typography variant="body2" color="textDisabled">
+                Responsible
+              </Typography>
             </TableCell>
           </TableRow>
         </TableHead>

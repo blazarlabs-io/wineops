@@ -15,3 +15,7 @@ export default function formatDate(
     ...restOptions,
   }).format(dateToFormat);
 }
+
+export function formatTimestamp(date: string | Timestamp) {
+  return date instanceof Timestamp ? date.toDate() : undefined;
+}

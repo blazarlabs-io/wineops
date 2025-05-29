@@ -5,3 +5,9 @@ export const ROW_HEIGHT_DEFAULT = 112;
 export const ROW_HEIGHT_EXPANDED = 424; //416;
 export const GROUP_COLUMN_WIDTH = 320;
 export const ROW_HEIGHT_EXPANDED_GRAPE = 484;
+
+export const MASS_UNITS = ["kg", "t"];
+
+export const DENSITY_UNITS = ["kg/L"];
+
+export const CONCENTRATION_UNITS = ["g/dm³"];

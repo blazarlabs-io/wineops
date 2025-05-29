@@ -16,7 +16,7 @@ export default function LabItem({ label, data, variant }: LabItemProps) {
   const isSmall = variant === "small";
 
   return (
-    <Stack gap={isSmall ? 0 : 1}>
+    <Stack gap={isSmall ? 0.5 : 1}>
       <Typography variant={isSmall ? "caption" : "body2"} color="textDisabled">
         <Stack gap={isSmall ? 0.5 : 1} flexDirection="row">
           {label}
