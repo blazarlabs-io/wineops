@@ -13,6 +13,7 @@ import { vineyardSchema } from "@/models/schemas/vineyard-schema";
 import {
   Coordinates,
   DbResponse,
+  FormMode,
   LabDataSimple,
   Vineyard,
 } from "@/models/types/db";
@@ -48,7 +49,7 @@ export type VineyardFormProps = {
   children?: React.ReactNode;
   vineyard: Vineyard | null;
   closeDrawer?: () => void;
-  type?: "create" | "edit";
+  type?: FormMode;
 };
 
 export default function VineyardForm({

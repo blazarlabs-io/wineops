@@ -7,7 +7,6 @@ import { vineyardHarvestActionSchema } from "@/models/schemas/actions/vineyard-h
 import { VineyardHarvestAction } from "@/models/types/actions";
 import { DbResponse, Vineyard, VineyardStatus } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import { CloudUpload } from "@mui/icons-material";
 import {
@@ -22,7 +21,7 @@ import {
   styled,
   TextField,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -173,14 +172,12 @@ export default function HarvestActionForm({
                   {/* <DemoItem label="DatePicker"> */}
                   <Box display={"flex"} flexDirection={"column"} gap={2}>
                     <div className="w-full mt-8">
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          // defaultValue={new Date()}
-                          disablePast
-                          views={["year", "month", "day"]}
-                          className="w-full"
-                        />
-                      </LocalizationProvider>
+                      <DatePicker
+                        // defaultValue={new Date()}
+                        disablePast
+                        views={["year", "month", "day"]}
+                        className="w-full"
+                      />
                     </div>
                     <FormControl fullWidth>
                       <InputLabel id="demo-simple-select-label">

@@ -120,7 +120,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                 </Stack>
               )}
             </Stack>
-            <Box>
+            <Stack justifyContent="center">
               {node?.data?.date && (
                 <Typography variant="body2">
                   {formatDate(node?.data?.date, { locale: "ro-RO" })}
@@ -128,7 +128,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
               )}
               {<GrapeLocation location={node?.data?.location} />}
               {<StatusDataDisplay status={node?.data?.status} />}
-            </Box>
+            </Stack>
           </Stack>
         )}
       </Stack>

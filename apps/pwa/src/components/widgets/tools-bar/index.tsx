@@ -1,10 +1,9 @@
-import DeleteVineyardsDialog from "@/components/dialogs/delete-vineyards-dialog";
 import VineyardFormDrawer from "@/components/drawers/vineyard-form-drawer";
 import { useVineyard } from "@/context/vineyard";
 import vineyardBlankSample from "@/data/vineyard-blank-sample";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
-import { LabDataSimple, Vineyard } from "@/models/types/db";
+import { FormMode, LabDataSimple, Vineyard } from "@/models/types/db";
 import {
   Add,
   DeleteOutline,
@@ -25,6 +24,7 @@ import {
   generateNotes,
   generateTasks,
 } from "@/utils/generators";
+import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 
 export type ToolsBarProps = {
   buttons: Partial<Record<ButtonType, ButtonProps>>;
@@ -44,7 +44,7 @@ export default function ToolsBar({
   const { enqueueSnackbar } = useSnackbar();
 
   const [openFormDrawer, setOpenFormDrawer] = useState<boolean>(false);
-  const [formType, setFormType] = useState<"create" | "edit">("create");
+  const [formType, setFormType] = useState<FormMode>("create");
   const [openDeleteVineyardsDialog, setOpenDeleteVineyardsDialog] =
     useState<boolean>(false);
 
@@ -92,6 +92,10 @@ export default function ToolsBar({
     });
   };
 
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteVineyardsDialog(false);
+  };
+
   const handleOpenDeleteDialog = () => {
     setOpenDeleteVineyardsDialog(true);
   };
@@ -122,10 +126,11 @@ export default function ToolsBar({
 
   return (
     <>
-      <DeleteVineyardsDialog
+      <DeleteEntitiesDialog
         open={openDeleteVineyardsDialog}
-        onClose={handleDeleteVineyards}
-        vineyards={selectedVineyards}
+        onClose={handleCloseDeleteDialog}
+        onDelete={handleDeleteVineyards}
+        entities={selectedVineyards}
       />
       <Box
         width={1}
@@ -147,7 +152,7 @@ export default function ToolsBar({
             <IconButton
               color="default"
               aria-label="add"
-              onClick={handleOpenFormDrawer}
+              onClick={buttons[ButtonType.ADD]?.onClick ?? handleOpenFormDrawer}
               disabled={
                 !buttons[ButtonType.ADD]?.enabled ||
                 selectedVineyards.length > 0
@@ -161,7 +166,7 @@ export default function ToolsBar({
               color="default"
               aria-label="edit"
               disabled={!buttons[ButtonType.EDIT]?.enabled}
-              onClick={handleEditVineyards}
+              onClick={buttons[ButtonType.EDIT]?.onClick ?? handleEditVineyards}
             >
               <Edit />
             </IconButton>
@@ -195,7 +200,9 @@ export default function ToolsBar({
               color="error"
               aria-label="delete"
               disabled={!buttons[ButtonType.DELETE]?.enabled}
-              onClick={handleOpenDeleteDialog}
+              onClick={
+                buttons[ButtonType.DELETE]?.onClick ?? handleOpenDeleteDialog
+              }
             >
               <DeleteOutline className="" />
             </IconButton>

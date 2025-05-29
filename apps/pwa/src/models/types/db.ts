@@ -283,3 +283,5 @@ export type Must = {
   tasks: TaskSummary[];
   grapeVariety: string;
 };
+
+export type FormMode = "create" | "edit";

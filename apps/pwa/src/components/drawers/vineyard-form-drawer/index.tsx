@@ -1,5 +1,5 @@
 import VineyardCreateEditForm from "@/components/forms/vineyard/vineyard-create-edit-form";
-import { Vineyard } from "@/models/types/db";
+import { FormMode, Vineyard } from "@/models/types/db";
 import { Close } from "@mui/icons-material";
 import { Box, Drawer, IconButton, Typography } from "@mui/material";
 
@@ -7,7 +7,7 @@ export type VineyardFormDrawerProps = {
   open: boolean;
   onClose: () => void;
   vineyard: Vineyard;
-  type: "create" | "edit";
+  type: FormMode;
 };
 
 export default function VineyardFormDrawer({
