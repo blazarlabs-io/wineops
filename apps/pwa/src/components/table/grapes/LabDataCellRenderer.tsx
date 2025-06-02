@@ -1,5 +1,5 @@
 import LabItem from "@/components/data-display/lab-item";
-import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { DEFAULT_LOCALE, ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import formatDate from "@/utils/date-format";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -22,7 +22,7 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
           <Stack>
             {value?.date && (
               <Typography variant="caption" color="textDisabled">
-                {formatDate(value?.date, { locale: "ro-RO" })}
+                {formatDate(value?.date, { locale: DEFAULT_LOCALE })}
               </Typography>
             )}
 
@@ -44,6 +44,3 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
     </Stack>
   );
 };
-{
-  /*<LabSimpleDataDisplay data={data} />*/
-}

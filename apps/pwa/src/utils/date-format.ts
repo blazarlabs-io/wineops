@@ -4,9 +4,12 @@ export default function formatDate(
   date: number | string | Date | Timestamp,
   options?: { locale?: string } & Intl.DateTimeFormatOptions
 ) {
+  if (!date) return "";
+
   const { locale = "en-US", ...restOptions } = options || {};
-  const dateToFormat =
-    date instanceof Timestamp ? date.toDate() : new Date(date);
+  const dateToFormat = parseToDate(date);
+
+  if (!dateToFormat || isNaN(dateToFormat.getTime())) return "";
 
   return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
@@ -16,6 +19,10 @@ export default function formatDate(
   }).format(dateToFormat);
 }
 
-export function formatTimestamp(date: string | Timestamp) {
-  return date instanceof Timestamp ? date.toDate() : undefined;
+export function parseToDate(
+  date: number | string | Date | Timestamp | undefined
+): Date | null {
+  if (!date) return null;
+
+  return date instanceof Timestamp ? date.toDate() : new Date(date);
 }

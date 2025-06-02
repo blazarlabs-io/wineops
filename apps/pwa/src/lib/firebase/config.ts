@@ -16,3 +16,4 @@ export const VINEYARDS_GROUPS = "vineyards_groups";
 export const GRAPES = "grapes";
 export const MUST = "must";
 export const BULKWINES = "bulkwines";
+export const VESSELS = "vessels";

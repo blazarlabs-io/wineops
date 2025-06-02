@@ -1,12 +1,25 @@
 "use client";
 
+import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
+import VineyardFormDrawer from "@/components/drawers/vineyard-form-drawer";
 import VineyardsTable from "@/components/table/vineyards";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
-import { Vineyard } from "@/models/types/db";
-import { Box, Typography } from "@mui/material";
-import { useState } from "react";
+import { FormMode, LabDataSimple, Vineyard } from "@/models/types/db";
+import { Box, Stack, Typography } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import { useVineyard } from "@/context/vineyard";
+import vineyardBlankSample from "@/data/vineyard-blank-sample";
+import { useAuth } from "@/lib/firebase/auth";
+import { db } from "@/lib/firebase/services";
+import { useSnackbar } from "notistack";
+import {
+  generateDummyDocs,
+  generateLabData,
+  generateNotes,
+  generateTasks,
+} from "@/utils/generators";
 
 export default function VineyardsDashboard() {
   const [selectionData, setSelectionData] = useState<Vineyard[]>([]);
@@ -33,20 +46,110 @@ export default function VineyardsDashboard() {
     setOpenUngroupingDialog(false);
   };
 
+  vineyardBlankSample.id = Date.now().toString();
+  vineyardBlankSample.labData = generateLabData() as LabDataSimple[];
+  vineyardBlankSample.tasks = generateTasks();
+  vineyardBlankSample.documents = generateDummyDocs(10);
+  vineyardBlankSample.notes = generateNotes();
+  vineyardBlankSample.rowType = "item";
+
+  const { selectedVineyards, vineyards } = useVineyard();
+  const [workingVineyard, setWorkingVineyard] =
+    useState<Vineyard>(vineyardBlankSample);
+  const [openFormDrawer, setOpenFormDrawer] = useState<boolean>(false);
+  const [formType, setFormType] = useState<FormMode>("create");
+  const [openDeleteVineyardsDialog, setOpenDeleteVineyardsDialog] =
+    useState<boolean>(false);
+
+  const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleCloseFormDrawer = () => {
+    setOpenFormDrawer(false);
+  };
+
+  const handleOpenFormDrawer = useCallback(() => {
+    setOpenFormDrawer(true);
+  }, []);
+
+  const handleEditVineyards = () => {
+    setFormType("edit");
+    setOpenFormDrawer(true);
+  };
+
+  const handleDeleteVineyards = () => {
+    setOpenDeleteVineyardsDialog(false);
+
+    selectedVineyards.forEach(async (vineyard) => {
+      try {
+        await db.vineyard.deleteOne(user?.uid as string, vineyard.id);
+        enqueueSnackbar(`Deleted ${vineyard.name} successfully`, {
+          variant: "success",
+        });
+      } catch (error) {
+        console.log(error);
+        enqueueSnackbar(`Error deleting ${vineyard.name}`, {
+          variant: "error",
+        });
+      }
+    });
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteVineyardsDialog(false);
+  };
+
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteVineyardsDialog(true);
+  };
+
+  useEffect(() => {
+    if (selectedVineyards.length > 0 && vineyards.length > 0) {
+      const existingVineyard = vineyards.find(
+        ({ id }) => id === selectedVineyards[0]?.id
+      );
+
+      if (!existingVineyard) return;
+
+      setFormType("edit");
+      setWorkingVineyard(existingVineyard);
+    } else {
+      setFormType("create");
+      setWorkingVineyard(vineyardBlankSample);
+    }
+  }, [vineyards, selectedVineyards]);
+
   return (
-    <Box className="flex w-full h-full">
-      <Box className="flex flex-col gap-4 w-full">
+    <Box
+      sx={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <Stack
+        spacing={2}
+        sx={{
+          width: "100%",
+          alignItems: "left",
+          justifyContent: "center",
+        }}
+      >
         <Typography variant="h4">Vineyards Management</Typography>
+
         <ToolsBar
           buttons={{
             [ButtonType.ADD]: {
-              enabled: true,
+              enabled: selectedVineyards.length === 0,
+              onClick: handleOpenFormDrawer,
             },
             [ButtonType.EDIT]: {
               enabled: enableEdit,
+              onClick: handleEditVineyards,
             },
             [ButtonType.DELETE]: {
               enabled: enableDelete,
+              onClick: handleOpenDeleteDialog,
             },
             [ButtonType.GROUP]: {
               enabled: enableGrouping,
@@ -58,6 +161,7 @@ export default function VineyardsDashboard() {
             },
           }}
         />
+
         <VineyardsTable
           onChangeData={setSelectionData}
           openGroupingDialog={openGroupingDialog}
@@ -65,7 +169,24 @@ export default function VineyardsDashboard() {
           handleCloseGroupingDialog={handleCloseGroupingDialog}
           handleCloseUngroupingDialog={handleCloseUngroupingDialog}
         />
-      </Box>
+
+        {workingVineyard && openFormDrawer && (
+          <VineyardFormDrawer
+            type={formType}
+            vineyard={workingVineyard}
+            open={openFormDrawer}
+            onClose={handleCloseFormDrawer}
+          />
+        )}
+
+        <DeleteEntitiesDialog
+          entityName="vineyard"
+          entities={selectedVineyards}
+          open={openDeleteVineyardsDialog}
+          onDelete={handleDeleteVineyards}
+          onClose={handleCloseDeleteDialog}
+        />
+      </Stack>
     </Box>
   );
 }

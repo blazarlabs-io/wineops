@@ -16,7 +16,7 @@ export interface DeleteEntitiesDialogProps {
   onClose: () => void;
   onDelete: () => void;
   entities: DashboardEntity[];
-  entityName?: string;
+  entityName: string;
 }
 
 export default function DeleteEntitiesDialog({
@@ -24,32 +24,30 @@ export default function DeleteEntitiesDialog({
   onClose,
   onDelete,
   entities,
-  entityName = "vineyard",
+  entityName,
 }: DeleteEntitiesDialogProps) {
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      aria-labelledby="delete-dialog-title"
+      aria-describedby="delete-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title" className="flex items-center gap-1">
+      <DialogTitle id="delete-dialog-title" className="flex items-center gap-1">
         <DeleteOutline color="error" />
         Delete {entityName}(s)
       </DialogTitle>
 
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id="delete-dialog-description">
           Are you sure you want to delete these {entityName}(s)?
         </DialogContentText>
 
-        <DialogContentText id="alert-dialog-description">
-          <Box display={"flex"} gap={1} flexWrap={"wrap"} paddingTop={2}>
-            {entities.map((entity) => (
-              <Chip label={entity.name} key={entity.id} />
-            ))}
-          </Box>
-        </DialogContentText>
+        <Box display={"flex"} gap={1} flexWrap={"wrap"} paddingTop={2}>
+          {entities.map((entity) => (
+            <Chip label={entity.name} key={entity.id} />
+          ))}
+        </Box>
       </DialogContent>
 
       <DialogActions>

@@ -59,7 +59,7 @@ export const NAVIGATION: Navigation = [
         icon: <Warehouse />,
       },
       {
-        segment: "vessel-management",
+        segment: "vessel",
         title: "Vessel Management",
         icon: <OilBarrel />,
       },

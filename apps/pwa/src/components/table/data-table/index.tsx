@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/firebase/auth";
 import { DashboardEntity } from "@/models/types/dashboard";
 import { DbResponse } from "@/models/types/db";
 import { nodesToEntities } from "@/utils/notes-to-entities";
-import { Typography } from "@mui/material";
+import { Typography, useColorScheme } from "@mui/material";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
@@ -54,7 +54,6 @@ ModuleRegistry.registerModules([
 
 interface DataTableProps<T extends DashboardEntity> {
   gridTheme?: string;
-  isDarkMode?: boolean;
   openGroupingDialog: boolean;
   handleCloseGroupingDialog: () => void;
   openUngroupingDialog: boolean;
@@ -71,7 +70,6 @@ interface DataTableProps<T extends DashboardEntity> {
 
 export const DataTable = <T extends DashboardEntity>({
   gridTheme = "ag-theme-quartz",
-  isDarkMode,
   onChangeData,
   openGroupingDialog,
   handleCloseGroupingDialog,
@@ -84,6 +82,9 @@ export const DataTable = <T extends DashboardEntity>({
   updateGroup,
   groupColumnDef,
 }: DataTableProps<T>) => {
+  const { mode } = useColorScheme();
+  const isDarkMode = mode === "dark";
+
   const { enqueueSnackbar } = useSnackbar();
 
   // * Main Data Grid Ref
@@ -291,9 +292,7 @@ export const DataTable = <T extends DashboardEntity>({
   }, [groupColumnDef]);
 
   useEffect(() => {
-    if (data && data.length > 0) {
-      setRowData(data);
-    }
+    setRowData(data);
   }, [data]);
 
   useEffect(() => {
