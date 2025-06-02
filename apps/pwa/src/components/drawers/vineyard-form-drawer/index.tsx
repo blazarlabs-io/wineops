@@ -1,7 +1,7 @@
 import VineyardCreateEditForm from "@/components/forms/vineyard/vineyard-create-edit-form";
 import { FormMode, Vineyard } from "@/models/types/db";
-import { Close } from "@mui/icons-material";
-import { Box, Drawer, IconButton, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import EntityFormDrawer from "../entity-form-drawer";
 
 export type VineyardFormDrawerProps = {
   open: boolean;
@@ -17,44 +17,22 @@ export default function VineyardFormDrawer({
   type,
 }: VineyardFormDrawerProps) {
   return (
-    <Drawer
-      anchor="right"
-      open={open}
-      onClose={onClose}
-      sx={{ zIndex: ({ zIndex }) => zIndex.drawer - 1 }}
-    >
-      <Box
-        sx={{
-          minWidth: "320px",
-          maxWidth: "530px",
-          background: "var(--mui-palette-background-default)",
-          minHeight: "100vh",
-          height: "100%",
-        }}
-        display={"flex"}
-        flexDirection={"column"}
-      >
-        <Box sx={{ display: "flex", justifyContent: "end" }}>
-          <IconButton size="small" onClick={onClose}>
-            <Close />
-          </IconButton>
-        </Box>
-        <Box padding={2} marginTop={4}>
-          <Typography variant="h5" fontWeight={"medium"}>
-            {type === "create" ? "New Vineyard" : "Edit Vineyard"}
-          </Typography>
-          <Typography variant="body2" className="opacity-75">
-            {type === "create"
-              ? "Add a new vineyard"
-              : "Edit existing vineyard"}
-          </Typography>
-        </Box>
-        <VineyardCreateEditForm
-          vineyard={vineyard}
-          closeDrawer={onClose}
-          type={type}
-        />
+    <EntityFormDrawer open={open} onClose={onClose}>
+      <Box padding={2} marginTop={4}>
+        <Typography variant="h5" fontWeight={"medium"}>
+          {type === "create" ? "New Vineyard" : "Edit Vineyard"}
+        </Typography>
+
+        <Typography variant="body2" className="opacity-75">
+          {type === "create" ? "Add a new vineyard" : "Edit existing vineyard"}
+        </Typography>
       </Box>
-    </Drawer>
+
+      <VineyardCreateEditForm
+        vineyard={vineyard}
+        closeDrawer={onClose}
+        type={type}
+      />
+    </EntityFormDrawer>
   );
 }

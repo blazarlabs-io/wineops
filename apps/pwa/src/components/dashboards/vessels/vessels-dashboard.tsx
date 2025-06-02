@@ -5,18 +5,17 @@ import ToolsBar from "@/components/widgets/tools-bar";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useEffect, useState } from "react";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
-import { FormMode, Grape } from "@/models/types/db";
-import GrapesTable from "@/components/table/grapes";
-import { useGrape } from "@/context/grape";
-import grapeBlankSample from "@/data/grape-blank-sample";
-import GrapeFormDrawer from "@/components/drawers/grape-form-drawer";
+import { FormMode, Vessel } from "@/models/types/db";
+import VesselTable from "@/components/table/vessel";
+import { useVessel } from "@/context/vessel";
+import VesselFormDrawer from "@/components/drawers/vessel-form-drawer";
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
 import { useSnackbar } from "notistack";
 
-export default function GrapesDashboard() {
-  const [selectionData, setSelectionData] = useState<Grape[]>([]);
+export default function VesselsDashboard() {
+  const [selectionData, setSelectionData] = useState<Vessel[]>([]);
   const { enableGrouping, enableUngrouping, enableEdit, enableDelete } =
     useSortToolsBarStates(selectionData);
 
@@ -39,12 +38,11 @@ export default function GrapesDashboard() {
     setOpenUngroupingDialog(false);
   };
 
-  const { selectedGrapes, grapes } = useGrape();
-  const [workingGrape, setWorkingGrape] = useState(grapeBlankSample);
+  const { selectedVessels, vessels, updateSelectedVessels } = useVessel();
+  const [workingVessel, setWorkingVessel] = useState<Vessel | undefined>();
   const [openFormDrawer, setOpenFormDrawer] = useState(false);
   const [formType, setFormType] = useState<FormMode>("create");
-  const [openDeleteGrapesDialog, setOpenDeleteGrapesDialog] =
-    useState<boolean>(false);
+  const [openDeleteVesselDialog, setOpenDeleteVesselDialog] = useState(false);
 
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -57,52 +55,55 @@ export default function GrapesDashboard() {
     setOpenFormDrawer(true);
   };
 
-  const handleEditGrape = () => {
+  const handleEditVessel = () => {
     setFormType("edit");
     setOpenFormDrawer(true);
   };
 
-  const handleDeleteGrapes = () => {
-    setOpenDeleteGrapesDialog(false);
+  const handleDeleteVessels = async () => {
+    setOpenDeleteVesselDialog(false);
 
-    selectedGrapes.forEach(async (grape) => {
-      try {
-        await db.grape.deleteOne(user?.uid as string, grape.id);
-        enqueueSnackbar(`Deleted ${grape.name} successfully`, {
-          variant: "success",
-        });
-      } catch (error) {
-        console.log(error);
-        enqueueSnackbar(`Error deleting ${grape.name}`, {
-          variant: "error",
-        });
-      }
-    });
+    const res = await db.vessel.deleteMany(
+      user?.uid as string,
+      selectedVessels.map(({ id }) => id)
+    );
+
+    if (res.status === 200) {
+      updateSelectedVessels([]);
+
+      enqueueSnackbar(`Vessels deleted successfully`, {
+        variant: "success",
+      });
+    } else {
+      enqueueSnackbar(`Error deleting vessels`, {
+        variant: "error",
+      });
+    }
   };
 
   const handleOpenDeleteDialog = () => {
-    setOpenDeleteGrapesDialog(true);
+    setOpenDeleteVesselDialog(true);
   };
 
   const handleCloseDeleteDialog = () => {
-    setOpenDeleteGrapesDialog(false);
+    setOpenDeleteVesselDialog(false);
   };
 
   useEffect(() => {
-    if (selectedGrapes.length > 0 && grapes.length > 0) {
-      const existingGrape = grapes.find(
-        ({ id }) => id === selectedGrapes[0]?.id
+    if (selectedVessels.length > 0 && vessels.length > 0) {
+      const existingVessel = vessels.find(
+        ({ id }) => id === selectedVessels[0]?.id
       );
 
-      if (!existingGrape) return;
+      if (!existingVessel) return;
 
       setFormType("edit");
-      setWorkingGrape(existingGrape);
+      setWorkingVessel(existingVessel);
     } else {
       setFormType("create");
-      setWorkingGrape(grapeBlankSample);
+      setWorkingVessel(undefined);
     }
-  }, [grapes, selectedGrapes]);
+  }, [vessels, selectedVessels]);
 
   return (
     <Box
@@ -120,17 +121,16 @@ export default function GrapesDashboard() {
           justifyContent: "center",
         }}
       >
-        <Typography variant="h4">Grapes Management</Typography>
-
+        <Typography variant="h4">Vessel Management</Typography>
         <ToolsBar
           buttons={{
             [ButtonType.ADD]: {
-              enabled: selectedGrapes.length === 0,
+              enabled: selectedVessels.length === 0,
               onClick: handleOpenFormDrawer,
             },
             [ButtonType.EDIT]: {
               enabled: enableEdit,
-              onClick: handleEditGrape,
+              onClick: handleEditVessel,
             },
             [ButtonType.DELETE]: {
               enabled: enableDelete,
@@ -147,7 +147,7 @@ export default function GrapesDashboard() {
           }}
         />
 
-        <GrapesTable
+        <VesselTable
           onChangeData={setSelectionData}
           openGroupingDialog={openGroupingDialog}
           openUngroupingDialog={openUngroupingDialog}
@@ -155,20 +155,20 @@ export default function GrapesDashboard() {
           handleCloseUngroupingDialog={handleCloseUngroupingDialog}
         />
 
-        {workingGrape && openFormDrawer && (
-          <GrapeFormDrawer
+        {openFormDrawer && (
+          <VesselFormDrawer
             type={formType}
-            grape={workingGrape}
+            vessel={workingVessel}
             open={openFormDrawer}
             onClose={handleCloseFormDrawer}
           />
         )}
 
         <DeleteEntitiesDialog
-          entityName="grape"
-          entities={selectedGrapes}
-          open={openDeleteGrapesDialog}
-          onDelete={handleDeleteGrapes}
+          entityName="vessel"
+          entities={selectedVessels}
+          open={openDeleteVesselDialog}
+          onDelete={handleDeleteVessels}
           onClose={handleCloseDeleteDialog}
         />
       </Stack>

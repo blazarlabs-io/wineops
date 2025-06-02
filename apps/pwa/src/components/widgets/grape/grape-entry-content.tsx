@@ -1,4 +1,5 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
+import { DEFAULT_LOCALE } from "@/data/constants";
 import { GrapeEntry } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import { formatNumberWithUnit } from "@/utils/number-format";
@@ -38,7 +39,11 @@ export default function GrapeEntryContent({ entry }: GrapeEntryProps) {
       <SimpleDataDisplay label="Weigher Name" value={weigherName ?? "N/A"} />
       <SimpleDataDisplay
         label="Grape Intake Date"
-        value={intakeDate ? formatDate(intakeDate, { locale: "ro-RO" }) : "N/A"}
+        value={
+          intakeDate
+            ? formatDate(intakeDate, { locale: DEFAULT_LOCALE })
+            : "N/A"
+        }
       />
     </div>
   );

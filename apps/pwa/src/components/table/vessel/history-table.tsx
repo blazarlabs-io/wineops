@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE } from "@/data/constants";
-import { SingleDocument } from "@/models/types/db";
-import formatDate from "@/utils/date-format";
+import { VesselHistory, VesselType } from "@/models/types/db";
+import formatDate, { parseToDate } from "@/utils/date-format";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -10,11 +10,20 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
-export type DocumentsTableProps = {
-  data: SingleDocument[];
+export type HistoryTableProps = {
+  type?: VesselType;
+  data: VesselHistory[];
 };
 
-export default function DocumentsTable({ data }: DocumentsTableProps) {
+export default function HistoryTable({ type, data }: HistoryTableProps) {
+  const sortedData = data.sort((a, b) => {
+    const dateA =
+      parseToDate(a.dateOut) ?? parseToDate(a.dateIn) ?? new Date(0);
+    const dateB =
+      parseToDate(b.dateOut) ?? parseToDate(b.dateIn) ?? new Date(0);
+    return dateB.getTime() - dateA.getTime();
+  });
+
   return (
     <TableContainer
       component={Paper}
@@ -38,52 +47,54 @@ export default function DocumentsTable({ data }: DocumentsTableProps) {
       >
         <TableHead>
           <TableRow>
-            <TableCell key="date" className="font-bold">
+            <TableCell key="barrelUsageStatus" className="font-bold">
               <Typography variant="body2" color="textDisabled">
-                Date
+                {type} Usage Status
               </Typography>
             </TableCell>
-            <TableCell key="fileName">
+            <TableCell key="batchID">
               <Typography variant="body2" color="textDisabled">
-                File Name
+                Batch ID
               </Typography>
             </TableCell>
-            <TableCell key="fileId">
+            <TableCell key="dateIn">
               <Typography variant="body2" color="textDisabled">
-                File ID
+                Date In
               </Typography>
             </TableCell>
-            <TableCell key="responsible">
+            <TableCell key="dateOut">
               <Typography variant="body2" color="textDisabled">
-                Responsible
+                Date Out
               </Typography>
             </TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
-          {!data || data.length === 0 ? (
+          {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4}>
-                <Typography>No documents available.</Typography>
+              <TableCell colSpan={4} sx={{ textAlign: "center" }}>
+                <Typography>No history available.</Typography>
               </TableCell>
             </TableRow>
           ) : (
-            data.map(({ id, name, owner, uploadDate }) => (
+            sortedData.map(({ id, usage, batchID, dateIn, dateOut }) => (
               <TableRow key={id}>
                 <TableCell>
+                  <Typography>{usage}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>{batchID}</Typography>
+                </TableCell>
+                <TableCell>
                   <Typography>
-                    {formatDate(uploadDate, { locale: DEFAULT_LOCALE })}
+                    {dateIn && formatDate(dateIn, { locale: DEFAULT_LOCALE })}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography>{name}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>{id}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>{owner.name}</Typography>
+                  <Typography>
+                    {dateOut && formatDate(dateOut, { locale: DEFAULT_LOCALE })}
+                  </Typography>
                 </TableCell>
               </TableRow>
             ))

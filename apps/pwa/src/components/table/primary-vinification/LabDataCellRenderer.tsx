@@ -1,4 +1,5 @@
 import LabItem from "@/components/data-display/lab-item";
+import { DEFAULT_LOCALE } from "@/data/constants";
 import formatDate from "@/utils/date-format";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -20,7 +21,7 @@ export const LabDataCellRenderer = ({ value }: CustomCellRendererProps) => {
           <Stack>
             {data?.date && (
               <Typography variant="caption" color="textDisabled">
-                {formatDate(data?.date, { locale: "ro-RO" })}
+                {formatDate(data?.date, { locale: DEFAULT_LOCALE })}
               </Typography>
             )}
 

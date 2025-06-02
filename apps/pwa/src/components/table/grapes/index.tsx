@@ -1,6 +1,5 @@
 "use client";
 
-import { useColorScheme } from "@mui/material";
 import { DataTable } from "@/components/table/data-table";
 import { Grape } from "@/models/types/db";
 import { StrictMode, useMemo } from "react";
@@ -26,7 +25,6 @@ export default function GrapesTable({
   openUngroupingDialog,
   handleCloseUngroupingDialog,
 }: GrapesTableProps) {
-  const { mode } = useColorScheme();
   const { grapes, updateSelectedGrapes } = useGrape();
 
   const normalizedGrapes = useMemo(
@@ -63,7 +61,6 @@ export default function GrapesTable({
   return (
     <StrictMode>
       <DataTable<Grape>
-        isDarkMode={mode === "dark"}
         onChangeData={onChangeData}
         openGroupingDialog={openGroupingDialog}
         openUngroupingDialog={openUngroupingDialog}

@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { grapeSchema } from "@/models/schemas/grape-schema";
 import { DbResponse, FormMode, Grape } from "@/models/types/db";
-import { formatTimestamp } from "@/utils/date-format";
+import { parseToDate } from "@/utils/date-format";
 import { joiResolver } from "@hookform/resolvers/joi";
 import {
   Accordion,
@@ -205,7 +205,7 @@ export default function GrapeForm({
                         label="Date"
                         value={
                           formData?.date
-                            ? dayjs(formatTimestamp(formData?.date))
+                            ? dayjs(parseToDate(formData?.date))
                             : null
                         }
                         onChange={(newValue) =>

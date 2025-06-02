@@ -5,7 +5,6 @@ import { useVineyard } from "@/context/vineyard";
 import { GROUP_COLUMN_WIDTH } from "@/data/constants";
 import { db } from "@/lib/firebase/services";
 import { Vineyard } from "@/models/types/db";
-import { useColorScheme } from "@mui/material";
 import { StrictMode, useMemo } from "react";
 import { GroupCellRenderer } from "./cell-renderers/group-cell-renderer";
 import { vineyardColumns } from "./columns";
@@ -25,7 +24,6 @@ export default function VineyardsTable({
   openUngroupingDialog,
   handleCloseUngroupingDialog,
 }: VineyardTableProps) {
-  const { mode } = useColorScheme();
   const { vineyards, updateSelectedVineyards } = useVineyard();
 
   const normalizedVineyards = useMemo(
@@ -42,7 +40,6 @@ export default function VineyardsTable({
   return (
     <StrictMode>
       <DataTable<Vineyard>
-        isDarkMode={mode === "dark"}
         onChangeData={onChangeData}
         openGroupingDialog={openGroupingDialog}
         openUngroupingDialog={openUngroupingDialog}
