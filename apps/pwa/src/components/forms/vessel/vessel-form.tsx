@@ -193,7 +193,6 @@ export default function VesselForm({
             onSubmit={handleSubmit(onSubmit)}
             style={{ height: "100%", display: "flex", flexDirection: "column" }}
           >
-            {type}|{formData?.id}|
             <Box sx={{ flex: 1, overflowY: "auto" }}>
               <Accordion defaultExpanded>
                 <AccordionDetails>
