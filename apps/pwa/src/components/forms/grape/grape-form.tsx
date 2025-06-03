@@ -35,7 +35,7 @@ import {
 
 export type GrapeFormProps = {
   children?: React.ReactNode;
-  grape: Grape | null;
+  grape?: Grape;
   closeDrawer?: () => void;
   type?: FormMode;
 };
@@ -61,7 +61,7 @@ export default function GrapeForm({
     resolver: joiResolver(grapeSchema),
   });
 
-  const [formData, setFormData] = useState<Grape | null>(grape);
+  const [formData, setFormData] = useState<Grape | undefined>(grape);
 
   const handleSelectChange = useCallback(
     (name: string, value: any) => {
@@ -94,7 +94,7 @@ export default function GrapeForm({
 
           const updateRes: DbResponse = await db.grape.update(uid, id, newData);
 
-          setFormData(() => newData);
+          setFormData(newData);
 
           if (updateRes.status === 200) {
             enqueueSnackbar(`Updated ${name} successfully`, {
@@ -112,7 +112,7 @@ export default function GrapeForm({
 
           const createRes: DbResponse = await db.grape.create(uid, data);
 
-          setFormData(() => data);
+          setFormData(data);
 
           if (createRes.status === 200) {
             enqueueSnackbar(`Created ${data.name} successfully`, {
@@ -153,15 +153,16 @@ export default function GrapeForm({
   };
 
   useEffect(() => {
-    if (!grape) return;
+    const name = `BatchID_${grapes?.length + 1}`;
 
     const formatted = {
       ...grape,
-      name:
-        grape?.name.length === 0
-          ? `BatchID_${grapes?.length + 1}`
-          : grape?.name,
-    };
+      ...(!grape && {
+        id: Date.now().toString(),
+        name,
+        group: [name],
+      }),
+    } as Grape;
 
     reset(formatted);
     setFormData(formatted);

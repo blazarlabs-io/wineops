@@ -170,7 +170,7 @@ export default function VesselForm({
       ...vessel,
       ...(!vessel && {
         id: Date.now().toString(),
-        name: `Vessel_${vessels?.length + 1}`,
+        name,
         group: [name],
       }),
     } as Vessel;
