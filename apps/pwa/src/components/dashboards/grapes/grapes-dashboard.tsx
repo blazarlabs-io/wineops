@@ -8,7 +8,6 @@ import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { FormMode, Grape } from "@/models/types/db";
 import GrapesTable from "@/components/table/grapes";
 import { useGrape } from "@/context/grape";
-import grapeBlankSample from "@/data/grape-blank-sample";
 import GrapeFormDrawer from "@/components/drawers/grape-form-drawer";
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import { db } from "@/lib/firebase/services";
@@ -39,8 +38,8 @@ export default function GrapesDashboard() {
     setOpenUngroupingDialog(false);
   };
 
-  const { selectedGrapes, grapes } = useGrape();
-  const [workingGrape, setWorkingGrape] = useState(grapeBlankSample);
+  const { selectedGrapes, grapes, updateSelectedGrapes } = useGrape();
+  const [workingGrape, setWorkingGrape] = useState<Grape | undefined>();
   const [openFormDrawer, setOpenFormDrawer] = useState(false);
   const [formType, setFormType] = useState<FormMode>("create");
   const [openDeleteGrapesDialog, setOpenDeleteGrapesDialog] =
@@ -62,22 +61,25 @@ export default function GrapesDashboard() {
     setOpenFormDrawer(true);
   };
 
-  const handleDeleteGrapes = () => {
+  const handleDeleteGrapes = async () => {
     setOpenDeleteGrapesDialog(false);
 
-    selectedGrapes.forEach(async (grape) => {
-      try {
-        await db.grape.deleteOne(user?.uid as string, grape.id);
-        enqueueSnackbar(`Deleted ${grape.name} successfully`, {
-          variant: "success",
-        });
-      } catch (error) {
-        console.log(error);
-        enqueueSnackbar(`Error deleting ${grape.name}`, {
-          variant: "error",
-        });
-      }
-    });
+    const res = await db.grape.deleteMany(
+      user?.uid as string,
+      selectedGrapes.map(({ id }) => id)
+    );
+
+    if (res.status === 200) {
+      updateSelectedGrapes([]);
+
+      enqueueSnackbar(`Grapes deleted successfully`, {
+        variant: "success",
+      });
+    } else {
+      enqueueSnackbar(`Error deleting grapes`, {
+        variant: "error",
+      });
+    }
   };
 
   const handleOpenDeleteDialog = () => {
@@ -100,7 +102,7 @@ export default function GrapesDashboard() {
       setWorkingGrape(existingGrape);
     } else {
       setFormType("create");
-      setWorkingGrape(grapeBlankSample);
+      setWorkingGrape(undefined);
     }
   }, [grapes, selectedGrapes]);
 
@@ -155,7 +157,7 @@ export default function GrapesDashboard() {
           handleCloseUngroupingDialog={handleCloseUngroupingDialog}
         />
 
-        {workingGrape && openFormDrawer && (
+        {openFormDrawer && (
           <GrapeFormDrawer
             type={formType}
             grape={workingGrape}

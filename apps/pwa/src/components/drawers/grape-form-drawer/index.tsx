@@ -6,7 +6,7 @@ import EntityFormDrawer from "../entity-form-drawer";
 export type GrapeFormDrawerProps = {
   open: boolean;
   onClose: () => void;
-  grape: Grape;
+  grape?: Grape;
   type: FormMode;
 };
 
