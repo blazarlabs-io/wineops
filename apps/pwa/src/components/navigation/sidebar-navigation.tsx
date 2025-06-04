@@ -71,9 +71,10 @@ export const NAVIGATION: Navigation = [
     icon: <ManageSearch />,
   },
   {
-    segment: "Inventory",
-    title: "Consumables",
+    segment: "expandables",
+    title: "Expandables",
     icon: <Inventory />,
+    pattern: "workspace/expandables/",
     children: [
       {
         segment: "Chemistry",
@@ -81,7 +82,7 @@ export const NAVIGATION: Navigation = [
         icon: <Science />,
       },
       {
-        segment: "Consumables",
+        segment: "consumables",
         title: "Consumables",
         icon: <Output />,
       },
@@ -121,7 +122,7 @@ export const NAVIGATION: Navigation = [
   },
   {
     segment: "Settings",
-    title: "Settingss",
+    title: "Settings",
     icon: <Settings />,
   },
 ];
