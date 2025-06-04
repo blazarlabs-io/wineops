@@ -364,3 +364,44 @@ export type Vessel = {
   sstInfo?: StainlessSteelTankInfo;
   history?: VesselHistory[];
 };
+
+export const ConsumableCategory = {
+  LABEL: "Label",
+  CORK: "Cork",
+  BOTTLE: "Bottle",
+  FILTER: "Filter",
+} as const;
+
+export type ConsumableCategory =
+  (typeof ConsumableCategory)[keyof typeof ConsumableCategory];
+
+export type ConsumableUsage = {
+  id?: string;
+  inUseToday?: number;
+  inUseThisWeek?: number;
+  location?: string;
+  person?: string;
+  process?: string;
+  createdAt?: string | Timestamp;
+};
+
+export type Consumable = {
+  id: string;
+  name: string;
+  group: string[];
+  rowType?: RowType;
+  category?: ConsumableCategory;
+  consumableID?: string;
+  qty?: number;
+  minimumStockAlert?: number;
+  manufacturer?: string;
+  certificatCalitate?: string;
+  orderDate?: string | Timestamp;
+  invoiceNo?: string;
+  specifications?: string;
+  storageHandlingNotes?: string;
+  expiryDate?: string | Timestamp;
+  organicBiodynamicStatus?: boolean;
+  compatibleEquipment?: string;
+  usage?: ConsumableUsage[];
+};

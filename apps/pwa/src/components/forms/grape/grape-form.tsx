@@ -81,11 +81,8 @@ export default function GrapeForm({
       try {
         const getOneRes: DbResponse = await db.grape.getOne(uid, data.id);
 
-        if (
-          getOneRes.status === 200 &&
-          (getOneRes.data === null || getOneRes.data !== undefined)
-        ) {
-          const { id, name, group } = data;
+        if (getOneRes.status === 200 && getOneRes.data !== null) {
+          const { id, name, group = formData?.group } = data;
 
           const newData = {
             ...data,
@@ -137,7 +134,7 @@ export default function GrapeForm({
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, type]
+    [closeDrawer, enqueueSnackbar, formData?.group, type]
   );
 
   const onSubmit = async (data: any, e: any) => {

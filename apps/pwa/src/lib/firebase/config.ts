@@ -17,3 +17,4 @@ export const GRAPES = "grapes";
 export const MUST = "must";
 export const BULKWINES = "bulkwines";
 export const VESSELS = "vessels";
+export const CONSUMABLES = "consumables";
