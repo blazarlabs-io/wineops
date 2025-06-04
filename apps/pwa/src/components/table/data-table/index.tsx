@@ -27,6 +27,7 @@ import {
   RowDragMoveEvent,
   RowGroupingModule,
   RowSelectionOptions,
+  SelectEditorModule,
   SelectionChangedEvent,
   SetFilterModule,
   StatusBarModule,
@@ -50,6 +51,8 @@ ModuleRegistry.registerModules([
   StatusBarModule,
   TreeDataModule,
   RowDragModule,
+  SelectEditorModule,
+  RichSelectModule,
 ]);
 
 interface DataTableProps<T extends DashboardEntity> {

@@ -1,8 +1,9 @@
 import { ColDef } from "ag-grid-enterprise";
 import { Grape, Must } from "@/models/types/db";
-import { QuantityCellRenderer } from "./QuantityCellRenderer";
-import { LabDataCellRenderer } from "./LabDataCellRenderer";
+import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";
+import { LabDataCellRenderer } from "./cell-renderers/lab-data-cell-renderer";
 import { NotesCellRenderer } from "./NotesCellRenderer";
+import { TasksCellRenderer } from "./cell-renderers/tasks-cell-renderer";
 // import { BatchIDCellRenderer } from "./BatchIDCellRenderer";
 // import { QuantityCellRenderer } from "./QuantityCellRenderer";
 // import { SupplierCellRenderer } from "./SupplierCellRenderer";
@@ -11,7 +12,7 @@ import { NotesCellRenderer } from "./NotesCellRenderer";
 
 export const mustColumns: ColDef[] = [
   {
-    headerName: "Vessel ID",
+    headerName: "Must ID",
     field: "vesselId",
     minWidth: 200,
     flex: 1,
@@ -19,6 +20,15 @@ export const mustColumns: ColDef[] = [
     editable: false,
     // cellRenderer: BatchIDCellRenderer,
     aggFunc: (params) => params.values,
+  },
+  {
+    headerName: "Status",
+    field: "vesselId",
+    minWidth: 200,
+    flex: 1,
+    cellStyle: { width: "100%" },
+    editable: false,
+    // cellRenderer: BatchIDCellRenderer,
   },
   {
     headerName: "Quantity",
@@ -38,6 +48,14 @@ export const mustColumns: ColDef[] = [
     cellStyle: { width: "100%" },
     cellRenderer: LabDataCellRenderer,
     aggFunc: (params) => params.values,
+  },
+  {
+    field: "tasks",
+    minWidth: 200,
+    flex: 1,
+    cellStyle: { width: "100%" },
+    cellRenderer: TasksCellRenderer,
+    // aggFunc: (params) => params.values,
   },
   {
     field: "notes",

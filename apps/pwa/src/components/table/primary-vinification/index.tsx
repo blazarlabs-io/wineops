@@ -20,7 +20,7 @@ interface GrapesTableProps {
   handleCloseUngroupingDialog: () => void;
 }
 
-export default function GrapesTable({
+export default function PrimaryVinificationTable({
   onChangeData,
   openGroupingDialog,
   handleCloseGroupingDialog,
@@ -48,7 +48,7 @@ export default function GrapesTable({
 
   return (
     <StrictMode>
-      {/* <DataTable<Must>
+      <DataTable<Must>
         isDarkMode={mode === "dark"}
         onChangeData={onChangeData}
         openGroupingDialog={openGroupingDialog}
@@ -59,7 +59,7 @@ export default function GrapesTable({
         columns={mustColumns}
         selectionCellRenderer={SelectionCellRenderer}
         groupColumnDef={{
-          headerName: "Batch Entry",
+          headerName: "Vessel ID",
           cellRendererParams: {
             innerRenderer: GroupCellRenderer,
             suppressCount: true,
@@ -67,7 +67,7 @@ export default function GrapesTable({
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedMusts}
-      /> */}
+      />
     </StrictMode>
   );
 }

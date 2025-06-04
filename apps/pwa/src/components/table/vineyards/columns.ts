@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ColDef } from "ag-grid-enterprise";
+import { ColDef, ISelectCellEditorParams } from "ag-grid-enterprise";
 import { GrapeVarietyCellRenderer } from "./cell-renderers/grape-variety-cell-renderer";
 import { LabDataCellRenderer } from "./cell-renderers/lab-data-cell-renderer";
 import { NotesCellRenderer } from "./cell-renderers/notes-cell-renderer";
 import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";
 import { StatusCellRenderer } from "./cell-renderers/status-cell-renderer";
 import { TasksCellRenderer } from "./cell-renderers/tasks-cell-renderer";
+import { StatusSelectCellRenderer } from "./cell-renderers/status-select-cell-renderer";
+import { vineyardStatus } from "@/data/system-variables";
 
 export const vineyardColumns: ColDef[] = [
   {
@@ -25,11 +27,21 @@ export const vineyardColumns: ColDef[] = [
     field: "status",
     minWidth: 148,
     flex: 1,
-    cellRenderer: StatusCellRenderer,
-    cellRendererParams: (params: any) => {
-      return params;
-    },
+    cellRenderer: StatusSelectCellRenderer,
+    cellEditor: "agRichSelectCellEditor",
+    // cellRendererParams: (params: any) => {
+    //   return params;
+    // },
     cellStyle: { width: "100%" },
+    editable: true,
+    cellEditorPopup: true,
+    cellEditorParams: {
+      values: vineyardStatus,
+      singleClickEdit: true,
+      cellRenderer: StatusSelectCellRenderer,
+      valueListMaxWidth: 200,
+      valueListGap: 10,
+    } as ISelectCellEditorParams,
   },
   {
     field: "forcastedYield",
