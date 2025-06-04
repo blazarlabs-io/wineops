@@ -19,8 +19,6 @@ export const useSortToolsBarStates = <T extends DashboardEntity>(data: T[]) => {
 
       const isDataGrouped = data.some(({ group }) => group?.length > 1);
 
-      console.log("useSortToolsBarStates:", { isDataGrouped, data });
-
       setEnableUngrouping(isDataGrouped);
     } else {
       setEnableEdit(false);

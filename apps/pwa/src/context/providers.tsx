@@ -5,6 +5,10 @@ import { SidebarProvider } from "./sidebar";
 import { VineyardProvider } from "./vineyard";
 import { WineryProvider } from "./winery";
 import { GrapeProvider } from "./grape";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { VesselProvider } from "./vessel";
+import { ConsumableProvider } from "./consumable";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -13,11 +17,19 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <WineryProvider>
           <VineyardProvider>
             <GrapeProvider>
-              <APIProvider
-                apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
-              >
-                {children}
-              </APIProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <VesselProvider>
+                  <ConsumableProvider>
+                    <APIProvider
+                      apiKey={
+                        process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+                      }
+                    >
+                      {children}
+                    </APIProvider>
+                  </ConsumableProvider>
+                </VesselProvider>
+              </LocalizationProvider>
             </GrapeProvider>
           </VineyardProvider>
         </WineryProvider>

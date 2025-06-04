@@ -16,7 +16,7 @@ export default function LabItem({ label, data, variant }: LabItemProps) {
   const isSmall = variant === "small";
 
   return (
-    <Stack gap={isSmall ? 0 : 1}>
+    <Stack gap={isSmall ? 0.5 : 1}>
       <Typography variant={isSmall ? "caption" : "body2"} color="textDisabled">
         <Stack gap={isSmall ? 0.5 : 1} flexDirection="row">
           {label}
@@ -24,11 +24,13 @@ export default function LabItem({ label, data, variant }: LabItemProps) {
         </Stack>
       </Typography>
 
-      <Typography component="span" variant={isSmall ? "caption" : "body1"}>
-        <Stack gap={isSmall ? 0 : 1} flexDirection="row">
-          <span className="text-muted-foreground">{data?.value}</span>
-          <Variation variation={data?.variation ?? 0} />
-        </Stack>
+      <Typography
+        component="span"
+        variant={isSmall ? "caption" : "body1"}
+        sx={{ display: "flex", flexDirection: "row", gap: isSmall ? 0 : 1 }}
+      >
+        <span className="text-muted-foreground">{data?.value}</span>
+        <Variation variation={data?.variation ?? 0} />
       </Typography>
     </Stack>
   );

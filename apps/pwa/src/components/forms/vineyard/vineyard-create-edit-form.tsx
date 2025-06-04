@@ -13,6 +13,7 @@ import { vineyardSchema } from "@/models/schemas/vineyard-schema";
 import {
   Coordinates,
   DbResponse,
+  FormMode,
   LabDataSimple,
   Vineyard,
 } from "@/models/types/db";
@@ -48,7 +49,7 @@ export type VineyardFormProps = {
   children?: React.ReactNode;
   vineyard: Vineyard | null;
   closeDrawer?: () => void;
-  type?: "create" | "edit";
+  type?: FormMode;
 };
 
 export default function VineyardForm({
@@ -124,11 +125,8 @@ export default function VineyardForm({
       try {
         // * Check if vineyard already exists
         const getOneRes: DbResponse = await db.vineyard.getOne(uid, data.id);
-        if (
-          getOneRes.status === 200 &&
-          (getOneRes.data === null || getOneRes.data !== undefined)
-        ) {
-          const { id, name, group } = data;
+        if (getOneRes.status === 200 && getOneRes.data !== null) {
+          const { id, name, group = formData?.group } = data;
 
           const newData = {
             ...data,
@@ -181,7 +179,7 @@ export default function VineyardForm({
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, type]
+    [closeDrawer, enqueueSnackbar, formData?.group, type]
   );
 
   const onSubmit = (data: any, e: any) => {

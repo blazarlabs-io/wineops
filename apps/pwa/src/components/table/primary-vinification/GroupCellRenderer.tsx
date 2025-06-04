@@ -4,7 +4,7 @@ import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import formatDate from "@/utils/date-format";
-import { GROUP_ITEMS_TO_SHOW } from "@/data/constants";
+import { DEFAULT_LOCALE, GROUP_ITEMS_TO_SHOW } from "@/data/constants";
 import StatusDataDisplay from "@/components/data-display/status-data-display";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
@@ -25,7 +25,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         .flat()
         .map(
           ({ date, location }) =>
-            `${date ? formatDate(date, { locale: "ro-RO" }) : ""}***${location ?? ""}`
+            `${date ? formatDate(date, { locale: DEFAULT_LOCALE }) : ""}***${location ?? ""}`
         )
     : [];
 
@@ -63,7 +63,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
           <>
             {detailedData?.date && (
               <Typography variant="body2">
-                {formatDate(detailedData?.date, { locale: "ro-RO" })}
+                {formatDate(detailedData?.date, { locale: DEFAULT_LOCALE })}
               </Typography>
             )}
             {<GrapeLocation location={detailedData?.location} />}

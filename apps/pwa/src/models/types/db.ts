@@ -133,7 +133,12 @@ export type SingleDocument = {
   media: MediaType;
 };
 
-export type RowType = "group" | "item";
+export const RowType = {
+  GROUP: "group",
+  ITEM: "item",
+} as const;
+
+export type RowType = (typeof RowType)[keyof typeof RowType];
 
 export type Vineyard = {
   id: string;
@@ -282,4 +287,121 @@ export type Must = {
   notes: Note[];
   tasks: TaskSummary[];
   grapeVariety: string;
+};
+
+export type FormMode = "create" | "edit";
+
+export const ToastLevel = {
+  LIGHT: "Light",
+  MEDIUM: "Medium",
+  MEDIUM_PLUS: "Medium-Plus",
+  HIGH_HEAVY: "High(Heavy)",
+  HYBRID_TOAST: "Hybrid Toast",
+} as const;
+
+export type ToastLevel = (typeof ToastLevel)[keyof typeof ToastLevel];
+
+export const BarrelInfoUsage = {
+  "1st_USAGE": "1st Usage",
+  "2nd_USAGE": "2nd Usage",
+  MULTI_USAGE: "Multi-usage",
+} as const;
+
+export type BarrelInfoUsage =
+  (typeof BarrelInfoUsage)[keyof typeof BarrelInfoUsage];
+
+export type BarrelInfo = {
+  usage?: BarrelInfoUsage;
+  manufacturer?: string;
+  material?: string;
+  toastLevel?: ToastLevel;
+  stavesThickness?: number;
+  oxygenTransmissionRate?: number;
+  woodGrainDensity?: number;
+};
+
+export type StainlessSteelTankInfo = {
+  usage?: string;
+  materialGrade?: string;
+  steelThickness?: number;
+  coolingJacketsCoils?: boolean;
+  insulationLayers?: boolean;
+  pressureRating?: number;
+};
+
+export const VesselType = {
+  BARREL: "Barrel",
+  STAINLESS_STEEL_TANK: "Stainless Steel Tank",
+  PUPITRE: "Pupitre",
+  GYROPALETTE: "Gyropalette",
+  OTHER: "Other",
+} as const;
+
+export type VesselType = (typeof VesselType)[keyof typeof VesselType];
+
+export type VesselHistory = {
+  id?: string;
+  usage?: string; // Vessel.barrelInfo.usage || Vessel.sstInfo.usage || usage
+  batchID?: string; // Vessel.currentUsage
+  dateIn?: string | Timestamp; // Vessel.startDate
+  dateOut?: string | Timestamp; // next usage or Vessel.lastMaintenance
+};
+
+export type Vessel = {
+  id: string;
+  name: string;
+  group: string[];
+  rowType?: RowType;
+  type: VesselType;
+  lastMaintenance?: string | Timestamp;
+  location?: string;
+  currentUsage?: string;
+  startDate?: string | Timestamp;
+  volume?: string;
+  volumeUnit?: string;
+  usage?: string;
+  barrelInfo?: BarrelInfo;
+  sstInfo?: StainlessSteelTankInfo;
+  history?: VesselHistory[];
+};
+
+export const ConsumableCategory = {
+  LABEL: "Label",
+  CORK: "Cork",
+  BOTTLE: "Bottle",
+  FILTER: "Filter",
+} as const;
+
+export type ConsumableCategory =
+  (typeof ConsumableCategory)[keyof typeof ConsumableCategory];
+
+export type ConsumableUsage = {
+  id?: string;
+  inUseToday?: number;
+  inUseThisWeek?: number;
+  location?: string;
+  person?: string;
+  process?: string;
+  createdAt?: string | Timestamp;
+};
+
+export type Consumable = {
+  id: string;
+  name: string;
+  group: string[];
+  rowType?: RowType;
+  category?: ConsumableCategory;
+  consumableID?: string;
+  qty?: number;
+  minimumStockAlert?: number;
+  manufacturer?: string;
+  certificatCalitate?: string;
+  orderDate?: string | Timestamp;
+  invoiceNo?: string;
+  specifications?: string;
+  storageHandlingNotes?: string;
+  expiryDate?: string | Timestamp;
+  organicBiodynamicStatus?: boolean;
+  compatibleEquipment?: string;
+  usage?: ConsumableUsage[];
 };

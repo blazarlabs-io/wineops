@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, IconButton, Link, Stack, Typography } from "@mui/material";
+import { IconButton, Link, Stack, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import {
   useCallback,
@@ -10,6 +10,7 @@ import {
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import formatDate from "@/utils/date-format";
 import {
+  DEFAULT_LOCALE,
   GROUP_ITEMS_TO_SHOW,
   ROW_HEIGHT_DEFAULT,
   ROW_HEIGHT_EXPANDED_GRAPE,
@@ -43,7 +44,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   const batchesDateLocation = isGroup
     ? batchId.map(
         (batch) =>
-          `${batch?.date ? formatDate(batch?.date, { locale: "ro-RO" }) : ""}***${batch?.location ?? ""}`
+          `${batch?.date ? formatDate(batch?.date, { locale: DEFAULT_LOCALE }) : ""}***${batch?.location ?? ""}`
       )
     : [];
 
@@ -120,15 +121,15 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                 </Stack>
               )}
             </Stack>
-            <Box>
+            <Stack justifyContent="center">
               {node?.data?.date && (
                 <Typography variant="body2">
-                  {formatDate(node?.data?.date, { locale: "ro-RO" })}
+                  {formatDate(node?.data?.date, { locale: DEFAULT_LOCALE })}
                 </Typography>
               )}
               {<GrapeLocation location={node?.data?.location} />}
               {<StatusDataDisplay status={node?.data?.status} />}
-            </Box>
+            </Stack>
           </Stack>
         )}
       </Stack>
