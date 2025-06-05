@@ -1,14 +1,15 @@
-import { DbResponse, Consumable } from "@/models/types/db";
+import { DbResponse, Must } from "@/models/types/db";
 import { deleteDoc, doc, getDoc, setDoc, writeBatch } from "firebase/firestore";
 import { db as fdb } from "../client";
-import { CONSUMABLES, WINERY } from "../config";
+import { MUSTS, WINERY } from "../config";
 import { cleanObject } from "@/utils/clean-object";
 
-const consumable = {
-  create: async (id: string, data: Consumable): Promise<DbResponse> => {
+const must = {
+  create: async (id: string, data: Must): Promise<DbResponse> => {
     try {
-      const docRef = doc(fdb, WINERY, id, CONSUMABLES, data.id);
+      const docRef = doc(fdb, WINERY, id, MUSTS, data.id);
       const cleanedData = cleanObject(data);
+
       const newDocRef = await setDoc(docRef, cleanedData);
 
       return {
@@ -28,18 +29,18 @@ const consumable = {
   },
   getOne: async (uid: string, id: string): Promise<DbResponse> => {
     try {
-      const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
+      const docRef = doc(fdb, WINERY, uid, MUSTS, id);
       const docSnap = await getDoc(docRef);
 
       if (!docSnap.exists()) {
         return {
           data: null,
-          error: "Consumable not found",
+          error: "Must not found",
           status: 404,
         };
       }
 
-      const data = docSnap.data() as Consumable;
+      const data = docSnap.data() as Must;
 
       return {
         data,
@@ -56,13 +57,9 @@ const consumable = {
       };
     }
   },
-  update: async (
-    uid: string,
-    id: string,
-    data: Consumable
-  ): Promise<DbResponse> => {
+  update: async (uid: string, id: string, data: Must): Promise<DbResponse> => {
     try {
-      const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
+      const docRef = doc(fdb, WINERY, uid, MUSTS, id);
 
       await setDoc(docRef, data, { merge: true });
 
@@ -81,19 +78,19 @@ const consumable = {
       };
     }
   },
-  updateGroup: async (uid: string, rows: Consumable[]) => {
+  updateGroup: async (uid: string, rows: Must[]) => {
     try {
       const batch = writeBatch(fdb);
 
       rows.forEach(({ id, group, rowType }) => {
-        const data: Partial<Consumable> = {};
+        const data: Partial<Must> = {};
 
         if (group) data.group = group;
         if (rowType === "group") data.rowType = rowType;
 
         if (Object.keys(data).length === 0) return;
 
-        const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
+        const docRef = doc(fdb, WINERY, uid, MUSTS, id);
 
         // Empty groups
         if (rowType === "group" && (!group || group.length === 0)) {
@@ -122,7 +119,7 @@ const consumable = {
   },
   deleteOne: async (uid: string, id: string): Promise<DbResponse> => {
     try {
-      const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
+      const docRef = doc(fdb, WINERY, uid, MUSTS, id);
       await deleteDoc(docRef);
 
       return {
@@ -145,7 +142,7 @@ const consumable = {
       const batch = writeBatch(fdb);
 
       rows.forEach((id) => {
-        const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
+        const docRef = doc(fdb, WINERY, uid, MUSTS, id);
 
         batch.delete(docRef);
       });
@@ -169,4 +166,4 @@ const consumable = {
   },
 };
 
-export default consumable;
+export default must;

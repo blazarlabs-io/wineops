@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
 import { Consumable } from "@/models/types/db";
-import { DefaultCellRenderer } from "./DefaultCellRenderer";
+import { DefaultCellRenderer } from "../DefaultCellRenderer";
 import { InUseWeekCellRenderer } from "./InUseWeekCellRenderer";
 import { InUseTodayCellRenderer } from "./InUseTodayCellRenderer";
 

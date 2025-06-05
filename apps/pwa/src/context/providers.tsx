@@ -9,6 +9,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { VesselProvider } from "./vessel";
 import { ConsumableProvider } from "./consumable";
+import { MustProvider } from "./must";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -20,13 +21,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <VesselProvider>
                   <ConsumableProvider>
-                    <APIProvider
-                      apiKey={
-                        process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
-                      }
-                    >
-                      {children}
-                    </APIProvider>
+                    <MustProvider>
+                      <APIProvider
+                        apiKey={
+                          process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+                        }
+                      >
+                        {children}
+                      </APIProvider>
+                    </MustProvider>
                   </ConsumableProvider>
                 </VesselProvider>
               </LocalizationProvider>

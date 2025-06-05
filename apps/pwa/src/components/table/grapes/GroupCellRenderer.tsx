@@ -7,7 +7,6 @@ import {
   useState,
   type FunctionComponent,
 } from "react";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import formatDate from "@/utils/date-format";
 import {
   DEFAULT_LOCALE,
@@ -18,6 +17,7 @@ import {
 import StatusDataDisplay from "@/components/data-display/status-data-display";
 import { ExpandMore } from "@mui/icons-material";
 import GrapeDetailsWidget from "@/components/widgets/grape/grape-details-widget";
+import EntityLocation from "../EntityLocation";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
@@ -87,7 +87,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   direction={uniqueDateLocation.length === 1 ? "column" : "row"}
                 >
                   <Typography variant="body2">{date}</Typography>
-                  <GrapeLocation location={location} />
+                  <EntityLocation location={location} />
                 </Stack>
               ) : (
                 index === GROUP_ITEMS_TO_SHOW && (
@@ -127,7 +127,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   {formatDate(node?.data?.date, { locale: DEFAULT_LOCALE })}
                 </Typography>
               )}
-              {<GrapeLocation location={node?.data?.location} />}
+              {<EntityLocation location={node?.data?.location} />}
               {<StatusDataDisplay status={node?.data?.status} />}
             </Stack>
           </Stack>
@@ -136,17 +136,3 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     </>
   );
 };
-
-const GrapeLocation = ({ location }: { location: string }) =>
-  location && (
-    <Stack direction="row" alignItems="center">
-      <LocationOnOutlinedIcon
-        sx={(theme) => ({
-          width: theme.typography.body1.fontSize,
-          height: theme.typography.body1.fontSize,
-          color: theme.palette.text.secondary,
-        })}
-      />
-      <Typography variant="body2">{location}</Typography>
-    </Stack>
-  );
