@@ -1,28 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
-import { Grape } from "@/models/types/db";
-import { BatchIDCellRenderer } from "./BatchIDCellRenderer";
+import { Must } from "@/models/types/db";
+import { VesselIDCellRenderer } from "./VesselIDCellRenderer";
 import { QuantityCellRenderer } from "../QuantityCellRenderer";
-import { SupplierCellRenderer } from "./SupplierCellRenderer";
 import { LabDataCellRenderer } from "./LabDataCellRenderer";
 import { NotesCellRenderer } from "../NotesCellRenderer";
+import { StatusCellRenderer } from "./StatusCellRenderer";
+import { TasksCellRenderer } from "../tasks-cell-renderer";
 
-type MultiCol = Record<keyof Grape, any>;
+type MultiCol = Record<keyof Must, any>;
 
-export const grapesColumns: ColDef<
-  Grape & {
-    batchId: MultiCol;
+export const mustColumns: ColDef<
+  Must & {
+    mustID: MultiCol;
+    statusData: MultiCol;
   },
   any
 >[] = [
   {
-    headerName: "Batch ID",
-    field: "batchId",
+    headerName: "Must ID",
+    field: "mustID",
     minWidth: 200,
     flex: 1,
-    cellStyle: { width: "100%" },
     editable: false,
-    cellRenderer: BatchIDCellRenderer,
+    cellRenderer: VesselIDCellRenderer,
+    aggFunc: (params) => params.values,
+  },
+  {
+    headerName: "Status",
+    field: "statusData",
+    minWidth: 100,
+    flex: 1,
+    editable: false,
+    cellRenderer: StatusCellRenderer,
+    cellRendererParams: {
+      alignItems: "center",
+    },
     aggFunc: (params) => params.values,
   },
   {
@@ -36,26 +49,27 @@ export const grapesColumns: ColDef<
     aggFunc: (params) => params.values,
   },
   {
-    field: "supplier",
-    minWidth: 150,
-    flex: 1,
-    cellStyle: { width: "100%" },
-    editable: false,
-    cellRenderer: SupplierCellRenderer,
-    aggFunc: (params) => params.values,
-  },
-  {
-    headerName: "Lab",
+    headerName: "Labs",
     field: "labData",
-    minWidth: 200,
+    minWidth: 250,
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: LabDataCellRenderer,
     aggFunc: (params) => params.values,
   },
   {
+    headerName: "Tasks",
+    field: "tasks",
+    minWidth: 150,
+    flex: 1,
+    cellStyle: { width: "100%" },
+    cellRenderer: TasksCellRenderer,
+    aggFunc: (params) => params.values,
+  },
+  {
+    headerName: "Notes",
     field: "notes",
-    minWidth: 200,
+    minWidth: 150,
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: NotesCellRenderer,

@@ -268,25 +268,61 @@ export type Grape = {
   rowType?: RowType;
 };
 
+export type MustInfo = {
+  id: string;
+  date?: Must["date"];
+  grapeVariety?: Must["grapeVariety"];
+  qty?: Must["qty"];
+  name?: Must["name"];
+  companyName?: Supplier["companyName"];
+};
+
+export type QtyInfo = {
+  id: Must["id"];
+  date?: Must["date"];
+  process?: string;
+  qty?: Must["qty"];
+  losses?: number;
+};
+
+export const MustStatus = {
+  PRESSED: "Pressed",
+  FERMENTING: "Fermenting",
+} as const;
+
+export type MustStatus = (typeof MustStatus)[keyof typeof MustStatus];
+
+export type MustLabData = {
+  date: string | Timestamp;
+  temperature: Partial<LabElement>;
+  alcohol: Partial<LabElement>;
+  sugar: Partial<LabElement>;
+  acidity: Partial<LabElement>;
+  volatileAcidity: Partial<LabElement>;
+  yeastActivityPopulation: Partial<LabElement>;
+  yeastAssimilableNitrogen: Partial<LabElement>;
+  labTechnicianName: string;
+  labCertificateID: string;
+};
+
 export type Must = {
   id: string;
   name: string;
   group: string[];
   rowType?: RowType;
-  grapes: string[];
-  vineyards: string[];
-  status: string;
-  quantity: number;
-  labData: LabDataSimple[];
-  createdAt: string | Date;
-  vessel: {
-    id: string;
-    name: string;
-  };
-  location: string;
-  notes: Note[];
-  tasks: TaskSummary[];
-  grapeVariety: string;
+  date?: string | Timestamp;
+  supplier?: Supplier;
+  grapeVariety?: string;
+  qty?: number;
+  vessels?: Vessel[];
+  safetyCertificateNo?: string;
+  invoicePurchaseNo?: string;
+  labData: MustLabData;
+  status?: MustStatus;
+  metrics?: Metrics;
+  notes?: Note[];
+  tasks?: Task[];
+  documents?: SingleDocument[];
 };
 
 export type FormMode = "create" | "edit";

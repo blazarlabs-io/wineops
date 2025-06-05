@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef, ValueFormatterParams } from "ag-grid-enterprise";
 import { Vessel } from "@/models/types/db";
-import { DefaultCellRenderer } from "./DefaultCellRenderer";
+import { DefaultCellRenderer } from "../DefaultCellRenderer";
 import formatDate from "@/utils/date-format";
 import { CurrentBatchCellRenderer } from "./CurrentBatchCellRenderer";
 import { VesselIDCellRenderer } from "./VesselIDCellRenderer";
@@ -39,7 +39,9 @@ export const vesselColumns: ColDef<
     valueFormatter: ({ value, data, node }: ValueFormatterParams) => {
       const isGroup = node?.group || data?.rowType === "group";
 
-      return value && !isGroup ? formatDate(value, { locale: DEFAULT_LOCALE }) : "";
+      return value && !isGroup
+        ? formatDate(value, { locale: DEFAULT_LOCALE })
+        : "";
     },
   },
   {

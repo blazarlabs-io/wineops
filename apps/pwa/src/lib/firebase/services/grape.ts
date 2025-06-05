@@ -60,9 +60,8 @@ const grape = {
   update: async (uid: string, id: string, data: Grape): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, GRAPES, id);
-      const cleanedData = cleanObject(data);
 
-      await setDoc(docRef, cleanedData, { merge: true });
+      await setDoc(docRef, data, { merge: true });
 
       return {
         data: null,

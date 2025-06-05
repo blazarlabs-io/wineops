@@ -1,40 +1,46 @@
 import LabItem from "@/components/data-display/lab-item";
-import { DEFAULT_LOCALE } from "@/data/constants";
+import { DEFAULT_LOCALE, ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import formatDate from "@/utils/date-format";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
-export const LabDataCellRenderer = ({ value }: CustomCellRendererProps) => {
-  const data = Array.isArray(value) ? value[0] : {};
+export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
+  const { value, node, data } = params;
+  const isGroup = node.group || data.rowType === "group";
 
   return (
     <Stack
       alignItems="flex-start"
       justifyContent="center"
-      sx={{ height: "100%" }}
+      height={ROW_HEIGHT_DEFAULT}
     >
-      {value && Array.isArray(value) && Array.isArray(value[0]) ? (
+      {isGroup ? (
         <></>
       ) : (
-        data && (
+        value && (
           <Stack>
-            {data?.date && (
+            {value?.date && (
               <Typography variant="caption" color="textDisabled">
-                {formatDate(data?.date, { locale: DEFAULT_LOCALE })}
+                {formatDate(value?.date, { locale: DEFAULT_LOCALE })}
               </Typography>
             )}
 
             <Stack gap={1} direction="row">
               <LabItem
                 variant="small"
+                label="Alcohol"
+                data={value?.alcohol ?? { value: "N/A" }}
+              />
+              <LabItem
+                variant="small"
                 label="Sugar"
-                data={data?.sugar ?? { value: "N/A" }}
+                data={value?.sugar ?? { value: "N/A" }}
               />
               <LabItem
                 variant="small"
                 label="Acidity"
-                data={data?.acidity ?? { value: "N/A" }}
+                data={value?.acidity ?? { value: "N/A" }}
               />
             </Stack>
           </Stack>
@@ -43,6 +49,3 @@ export const LabDataCellRenderer = ({ value }: CustomCellRendererProps) => {
     </Stack>
   );
 };
-{
-  /*<LabSimpleDataDisplay data={data} />*/
-}

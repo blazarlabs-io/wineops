@@ -5,7 +5,7 @@ import { LabDataCellRenderer } from "./cell-renderers/lab-data-cell-renderer";
 import { NotesCellRenderer } from "./cell-renderers/notes-cell-renderer";
 import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";
 import { StatusCellRenderer } from "./cell-renderers/status-cell-renderer";
-import { TasksCellRenderer } from "./cell-renderers/tasks-cell-renderer";
+import { TasksCellRenderer } from "../tasks-cell-renderer";
 
 export const vineyardColumns: ColDef[] = [
   {
