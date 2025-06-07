@@ -22,7 +22,7 @@ import EntityLocation from "../EntityLocation";
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
 ) => {
-  const { value, node } = params;
+  const { value, data, node } = params;
 
   const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -38,7 +38,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     setExpanded(node.expanded);
   }, [node.expanded]);
 
-  const batchId: any[] = node?.aggData?.batchId ?? [];
+  const batchId: any[] =
+    node?.aggData?.batchId ??
+    node?.allLeafChildren?.map(({ data }) => data?.batchId);
+
   const isGroup = node?.group || node?.data?.rowType === "group";
 
   const batchesDateLocation = isGroup
@@ -74,30 +77,41 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
         }}
       >
         {isGroup ? (
-          <Stack justifyItems="center">
-            <Typography variant="body1">
-              {(node?.field === "entry" ? value?.location1 : value) ?? (
-                <i>unknown {node?.field}</i>
-              )}
-            </Typography>
-            {uniqueDateLocation.map(({ date, location }: any, index: number) =>
-              index < GROUP_ITEMS_TO_SHOW ? (
-                <Stack
-                  key={`${date}-${location}`}
-                  direction={uniqueDateLocation.length === 1 ? "column" : "row"}
-                >
-                  <Typography variant="body2">{date}</Typography>
-                  <EntityLocation location={location} />
-                </Stack>
+          node?.field === "groupByDate" ? (
+            <>
+              {value ? (
+                formatDate(value, { locale: DEFAULT_LOCALE })
               ) : (
-                index === GROUP_ITEMS_TO_SHOW && (
-                  <Link href="#" key={index}>
-                    + {uniqueDateLocation.length - GROUP_ITEMS_TO_SHOW} more
-                  </Link>
-                )
-              )
-            )}
-          </Stack>
+                <i>Unknown date</i>
+              )}
+            </>
+          ) : node?.field === "groupByVariety" ? (
+            <>{value ? value : <i>Unknown variety</i>}</>
+          ) : (
+            <Stack justifyItems="center">
+              <Typography variant="body1">{value}</Typography>
+              {uniqueDateLocation.map(
+                ({ date, location }: any, index: number) =>
+                  index < GROUP_ITEMS_TO_SHOW ? (
+                    <Stack
+                      key={`${date}-${location}`}
+                      direction={
+                        uniqueDateLocation.length === 1 ? "column" : "row"
+                      }
+                    >
+                      <Typography variant="body2">{date}</Typography>
+                      <EntityLocation location={location} />
+                    </Stack>
+                  ) : (
+                    index === GROUP_ITEMS_TO_SHOW && (
+                      <Link href="#" key={index}>
+                        + {uniqueDateLocation.length - GROUP_ITEMS_TO_SHOW} more
+                      </Link>
+                    )
+                  )
+              )}
+            </Stack>
+          )
         ) : (
           <Stack direction="row">
             <Stack direction="row">

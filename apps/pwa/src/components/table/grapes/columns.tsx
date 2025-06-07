@@ -6,15 +6,42 @@ import { QuantityCellRenderer } from "../QuantityCellRenderer";
 import { SupplierCellRenderer } from "./SupplierCellRenderer";
 import { LabDataCellRenderer } from "./LabDataCellRenderer";
 import { NotesCellRenderer } from "../NotesCellRenderer";
+import formatDate from "@/utils/date-format";
 
 type MultiCol = Record<keyof Grape, any>;
 
 export const grapesColumns: ColDef<
   Grape & {
     batchId: MultiCol;
+    groupByDate: any;
+    groupByVariety: any;
   },
   any
 >[] = [
+  {
+    headerName: "Group: Date",
+    field: "groupByDate",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: (params) =>
+      params.data?.date &&
+      formatDate(params.data?.date, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }),
+    keyCreator: (params) => params?.value || "Unknown date",
+  },
+  {
+    headerName: "Group: Variety",
+    field: "groupByVariety",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: (params) => params?.data?.grapeVariety,
+    keyCreator: (params) => params?.value || "Unknown grape variety",
+  },
   {
     headerName: "Batch ID",
     field: "batchId",
@@ -23,7 +50,6 @@ export const grapesColumns: ColDef<
     cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: BatchIDCellRenderer,
-    aggFunc: (params) => params.values,
   },
   {
     headerName: "Quantity",
@@ -33,7 +59,6 @@ export const grapesColumns: ColDef<
     cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: QuantityCellRenderer,
-    aggFunc: (params) => params.values,
   },
   {
     field: "supplier",
@@ -42,7 +67,6 @@ export const grapesColumns: ColDef<
     cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: SupplierCellRenderer,
-    aggFunc: (params) => params.values,
   },
   {
     headerName: "Lab",
@@ -51,7 +75,6 @@ export const grapesColumns: ColDef<
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: LabDataCellRenderer,
-    aggFunc: (params) => params.values,
   },
   {
     field: "notes",
@@ -59,6 +82,5 @@ export const grapesColumns: ColDef<
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: NotesCellRenderer,
-    aggFunc: (params) => params.values,
   },
 ];

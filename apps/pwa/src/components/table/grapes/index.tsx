@@ -81,6 +81,10 @@ export default function GrapesTable({
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedGrapes}
+        groupByButtons={[
+          { name: "Date", columnName: "groupByDate" },
+          { name: "Variety", columnName: "groupByVariety" },
+        ]}
       />
     </StrictMode>
   );

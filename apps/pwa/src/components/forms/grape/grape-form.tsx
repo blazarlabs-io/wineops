@@ -84,9 +84,59 @@ export default function GrapeForm({
         if (getOneRes.status === 200 && getOneRes.data !== null) {
           const { id, name, group = formData?.group } = data;
 
+          const {
+            grossWeight,
+            grossUnit,
+            netWeight,
+            netUnit,
+            tareWeight,
+            tareUnit,
+          } = data?.entry;
+
+          const entry = {
+            ...data?.entry,
+            ...(grossWeight
+              ? { grossWeight, grossUnit }
+              : { grossWeight: undefined, grossUnit: undefined }),
+            ...(netWeight
+              ? { netWeight, netUnit }
+              : { netWeight: undefined, netUnit: undefined }),
+            ...(tareWeight
+              ? { tareWeight, tareUnit }
+              : { tareWeight: undefined, tareUnit: undefined }),
+          };
+
+          const { density, temperature, sugar, acidity } = data?.labData;
+
+          const labData = {
+            ...data?.labData,
+            density: {
+              ...density,
+              value: density?.value,
+              unit: density?.value != null ? density.unit : undefined,
+            },
+            temperature: {
+              ...temperature,
+              value: temperature?.value,
+              unit: temperature?.value != null ? temperature.unit : undefined,
+            },
+            sugar: {
+              ...sugar,
+              value: sugar?.value,
+              unit: sugar?.value != null ? sugar.unit : undefined,
+            },
+            acidity: {
+              ...acidity,
+              value: acidity?.value,
+              unit: acidity?.value != null ? acidity.unit : undefined,
+            },
+          };
+
           const newData = {
             ...data,
             group: [...(group ?? []).slice(0, -1), name ?? id],
+            entry,
+            labData,
           };
 
           const updateRes: DbResponse = await db.grape.update(uid, id, newData);
@@ -159,6 +209,33 @@ export default function GrapeForm({
         name,
         group: [name],
       }),
+      entry: {
+        ...grape?.entry,
+        grossUnit: grape?.entry?.grossUnit || MASS_UNITS[0] || "kg",
+        netUnit: grape?.entry?.netUnit || MASS_UNITS[0] || "kg",
+        tareUnit: grape?.entry?.tareUnit || MASS_UNITS[0] || "kg",
+      },
+      labData: {
+        ...grape?.labData,
+        density: {
+          ...grape?.labData?.density,
+          unit: grape?.labData?.density?.unit || DENSITY_UNITS[0] || "kg/L",
+        },
+        temperature: {
+          ...grape?.labData?.temperature,
+          unit: grape?.labData?.temperature?.unit || "°C",
+        },
+        sugar: {
+          ...grape?.labData?.sugar,
+          unit:
+            grape?.labData?.sugar?.unit || CONCENTRATION_UNITS[0] || "g/dm³",
+        },
+        acidity: {
+          ...grape?.labData?.acidity,
+          unit:
+            grape?.labData?.acidity?.unit || CONCENTRATION_UNITS[0] || "g/dm³",
+        },
+      },
     } as Grape;
 
     reset(formatted);
@@ -306,7 +383,7 @@ export default function GrapeForm({
                         Enter gross weight
                       </InputLabel>
 
-                      <Stack direction="row" gap={2}>
+                      <Stack direction="row" gap={2} alignItems="center">
                         <FormControl sx={{ flex: 1 }}>
                           <Input
                             id="entry.grossWeight"
@@ -314,32 +391,41 @@ export default function GrapeForm({
                             variant="outlined"
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                            {...register("entry.grossWeight")}
+                            {...register("entry.grossWeight", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
 
-                        <Autocomplete
-                          freeSolo
-                          options={MASS_UNITS}
-                          value={formData?.entry?.grossUnit ?? MASS_UNITS[0]}
-                          onChange={(event, newValue) => {
-                            handleSelectChange("entry.grossUnit", newValue);
-                          }}
-                          onInputChange={(event, newInputValue) => {
-                            handleSelectChange(
-                              "entry.grossUnit",
-                              newInputValue
-                            );
-                          }}
-                          sx={{ width: "100px" }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Gross unit"
-                              variant="outlined"
-                            />
-                          )}
-                        />
+                        {MASS_UNITS.length === 1 ? (
+                          <Box sx={{ width: "40px" }}>
+                            {formData?.entry?.grossUnit}
+                          </Box>
+                        ) : (
+                          <Autocomplete
+                            freeSolo
+                            options={MASS_UNITS}
+                            value={formData?.entry?.grossUnit || MASS_UNITS[0]}
+                            onChange={(_event, newValue) => {
+                              handleSelectChange("entry.grossUnit", newValue);
+                            }}
+                            onInputChange={(_event, newInputValue) => {
+                              handleSelectChange(
+                                "entry.grossUnit",
+                                newInputValue
+                              );
+                            }}
+                            sx={{ width: "100px" }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Gross unit"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        )}
                       </Stack>
 
                       {errors?.entry?.grossWeight && (
@@ -368,7 +454,7 @@ export default function GrapeForm({
                         Enter tare weight
                       </InputLabel>
 
-                      <Stack direction="row" gap={2}>
+                      <Stack direction="row" gap={2} alignItems="center">
                         <FormControl sx={{ flex: 1 }}>
                           <Input
                             id="entry.tareWeight"
@@ -376,29 +462,41 @@ export default function GrapeForm({
                             variant="outlined"
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                            {...register("entry.tareWeight")}
+                            {...register("entry.tareWeight", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
 
-                        <Autocomplete
-                          freeSolo
-                          options={MASS_UNITS}
-                          value={formData?.entry?.tareUnit ?? MASS_UNITS[0]}
-                          onChange={(event, newValue) => {
-                            handleSelectChange("entry.tareUnit", newValue);
-                          }}
-                          onInputChange={(event, newInputValue) => {
-                            handleSelectChange("entry.tareUnit", newInputValue);
-                          }}
-                          sx={{ width: "100px" }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Tare unit"
-                              variant="outlined"
-                            />
-                          )}
-                        />
+                        {MASS_UNITS.length === 1 ? (
+                          <Box sx={{ width: "40px" }}>
+                            {formData?.entry?.tareUnit}
+                          </Box>
+                        ) : (
+                          <Autocomplete
+                            freeSolo
+                            options={MASS_UNITS}
+                            value={formData?.entry?.tareUnit ?? MASS_UNITS[0]}
+                            onChange={(_event, newValue) => {
+                              handleSelectChange("entry.tareUnit", newValue);
+                            }}
+                            onInputChange={(_event, newInputValue) => {
+                              handleSelectChange(
+                                "entry.tareUnit",
+                                newInputValue
+                              );
+                            }}
+                            sx={{ width: "100px" }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Tare unit"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        )}
                       </Stack>
 
                       {errors?.entry?.tareWeight && (
@@ -427,7 +525,7 @@ export default function GrapeForm({
                         Enter net weight
                       </InputLabel>
 
-                      <Stack direction="row" gap={2}>
+                      <Stack direction="row" gap={2} alignItems="center">
                         <FormControl sx={{ flex: 1 }}>
                           <Input
                             id="entry.netWeight"
@@ -435,29 +533,41 @@ export default function GrapeForm({
                             variant="outlined"
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                            {...register("entry.netWeight")}
+                            {...register("entry.netWeight", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
 
-                        <Autocomplete
-                          freeSolo
-                          options={MASS_UNITS}
-                          value={formData?.entry?.netUnit ?? MASS_UNITS[0]}
-                          onChange={(event, newValue) => {
-                            handleSelectChange("entry.netUnit", newValue);
-                          }}
-                          onInputChange={(event, newInputValue) => {
-                            handleSelectChange("entry.netUnit", newInputValue);
-                          }}
-                          sx={{ width: "100px" }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Net unit"
-                              variant="outlined"
-                            />
-                          )}
-                        />
+                        {MASS_UNITS.length === 1 ? (
+                          <Box sx={{ width: "40px" }}>
+                            {formData?.entry?.netUnit}
+                          </Box>
+                        ) : (
+                          <Autocomplete
+                            freeSolo
+                            options={MASS_UNITS}
+                            value={formData?.entry?.netUnit ?? MASS_UNITS[0]}
+                            onChange={(_event, newValue) => {
+                              handleSelectChange("entry.netUnit", newValue);
+                            }}
+                            onInputChange={(_event, newInputValue) => {
+                              handleSelectChange(
+                                "entry.netUnit",
+                                newInputValue
+                              );
+                            }}
+                            sx={{ width: "100px" }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Net unit"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        )}
                       </Stack>
 
                       {errors?.entry?.netWeight && (
@@ -568,7 +678,7 @@ export default function GrapeForm({
                         Enter density
                       </InputLabel>
 
-                      <Stack direction="row" gap={2}>
+                      <Stack direction="row" gap={2} alignItems="center">
                         <FormControl sx={{ flex: 1 }}>
                           <Input
                             id="labData.density.value"
@@ -576,35 +686,47 @@ export default function GrapeForm({
                             variant="outlined"
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                            {...register("labData.density.value")}
+                            {...register("labData.density.value", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
 
-                        <Autocomplete
-                          freeSolo
-                          options={DENSITY_UNITS}
-                          value={formData?.entry?.netUnit ?? DENSITY_UNITS[0]}
-                          onChange={(event, newValue) => {
-                            handleSelectChange(
-                              "labData.density.unit",
-                              newValue
-                            );
-                          }}
-                          onInputChange={(event, newInputValue) => {
-                            handleSelectChange(
-                              "labData.density.unit",
-                              newInputValue
-                            );
-                          }}
-                          sx={{ width: "100px" }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Unit"
-                              variant="outlined"
-                            />
-                          )}
-                        />
+                        {DENSITY_UNITS.length === 1 ? (
+                          <Box sx={{ width: "40px" }}>
+                            {formData?.labData?.density?.unit}
+                          </Box>
+                        ) : (
+                          <Autocomplete
+                            freeSolo
+                            options={DENSITY_UNITS}
+                            value={
+                              formData?.labData?.density?.unit ??
+                              DENSITY_UNITS[0]
+                            }
+                            onChange={(_event, newValue) => {
+                              handleSelectChange(
+                                "labData.density.unit",
+                                newValue
+                              );
+                            }}
+                            onInputChange={(_event, newInputValue) => {
+                              handleSelectChange(
+                                "labData.density.unit",
+                                newInputValue
+                              );
+                            }}
+                            sx={{ width: "100px" }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Unit"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        )}
                       </Stack>
 
                       {errors?.labData?.density?.value && (
@@ -643,7 +765,10 @@ export default function GrapeForm({
                             slotProps={{
                               htmlInput: { min: 0, step: "any", max: 100 },
                             }}
-                            {...register("labData.temperature.value")}
+                            {...register("labData.temperature.value", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
                         <FormControl sx={{ width: "100px", display: "none" }}>
@@ -652,11 +777,14 @@ export default function GrapeForm({
                             label="Unit"
                             type="hidden"
                             variant="outlined"
-                            value={formData?.labData?.temperature?.unit ?? "°C"}
+                            value={formData?.labData?.temperature?.unit || "°C"}
                             {...register("labData.temperature.unit")}
                           />
                         </FormControl>
-                        {formData?.labData?.temperature?.unit ?? "°C"}
+
+                        <Box sx={{ width: "40px" }}>
+                          {formData?.labData?.temperature?.unit || "°C"}
+                        </Box>
                       </Stack>
 
                       {errors?.labData?.temperature?.value && (
@@ -691,7 +819,7 @@ export default function GrapeForm({
                         Enter mass concentration of sugars
                       </InputLabel>
 
-                      <Stack direction="row" gap={2}>
+                      <Stack direction="row" gap={2} alignItems="center">
                         <FormControl sx={{ flex: 1 }}>
                           <Input
                             id="labData.sugar.value"
@@ -699,35 +827,47 @@ export default function GrapeForm({
                             variant="outlined"
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                            {...register("labData.sugar.value")}
+                            {...register("labData.sugar.value", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
 
-                        <Autocomplete
-                          freeSolo
-                          options={CONCENTRATION_UNITS}
-                          value={
-                            formData?.labData?.sugar?.unit ??
-                            CONCENTRATION_UNITS[0]
-                          }
-                          onChange={(event, newValue) => {
-                            handleSelectChange("labData.sugar.unit", newValue);
-                          }}
-                          onInputChange={(event, newInputValue) => {
-                            handleSelectChange(
-                              "labData.sugar.unit",
-                              newInputValue
-                            );
-                          }}
-                          sx={{ width: "100px" }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Unit"
-                              variant="outlined"
-                            />
-                          )}
-                        />
+                        {CONCENTRATION_UNITS.length === 1 ? (
+                          <Box sx={{ width: "40px" }}>
+                            {formData?.labData?.sugar?.unit}
+                          </Box>
+                        ) : (
+                          <Autocomplete
+                            freeSolo
+                            options={CONCENTRATION_UNITS}
+                            value={
+                              formData?.labData?.sugar?.unit ??
+                              CONCENTRATION_UNITS[0]
+                            }
+                            onChange={(_event, newValue) => {
+                              handleSelectChange(
+                                "labData.sugar.unit",
+                                newValue
+                              );
+                            }}
+                            onInputChange={(_event, newInputValue) => {
+                              handleSelectChange(
+                                "labData.sugar.unit",
+                                newInputValue
+                              );
+                            }}
+                            sx={{ width: "100px" }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Unit"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        )}
                       </Stack>
 
                       {errors?.labData?.sugar?.value && (
@@ -753,6 +893,86 @@ export default function GrapeForm({
 
                     <div className="flex flex-col gap-2">
                       <InputLabel className="text-sm text-muted-foreground">
+                        Enter acidity:
+                      </InputLabel>
+
+                      <Stack direction="row" gap={2} alignItems="center">
+                        <FormControl sx={{ flex: 1 }}>
+                          <Input
+                            id="labData.acidity.value"
+                            label="Acidity"
+                            variant="outlined"
+                            type="number"
+                            slotProps={{ htmlInput: { min: 0, step: "any" } }}
+                            {...register("labData.acidity.value", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
+                          />
+                        </FormControl>
+
+                        {CONCENTRATION_UNITS.length === 1 ? (
+                          <Box sx={{ width: "40px" }}>
+                            {formData?.labData?.acidity?.unit}
+                          </Box>
+                        ) : (
+                          <Autocomplete
+                            freeSolo
+                            options={CONCENTRATION_UNITS}
+                            value={
+                              formData?.labData?.acidity?.unit ??
+                              CONCENTRATION_UNITS[0]
+                            }
+                            onChange={(_event, newValue) => {
+                              handleSelectChange(
+                                "labData.acidity.unit",
+                                newValue
+                              );
+                            }}
+                            onInputChange={(_event, newInputValue) => {
+                              handleSelectChange(
+                                "labData.acidity.unit",
+                                newInputValue
+                              );
+                            }}
+                            sx={{ width: "100px" }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Unit"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        )}
+                      </Stack>
+
+                      {errors?.labData?.acidity?.value && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.labData?.acidity?.value?.message as string}
+                        </Typography>
+                      )}
+
+                      {errors?.labData?.acidity?.unit && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.labData?.acidity?.unit?.message as string}
+                        </Typography>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <InputLabel
+                        className="text-sm text-muted-foreground"
+                        sx={{ whiteSpace: "wrap" }}
+                      >
                         Enter mass fraction of grapes affected by diseases and
                         pests
                       </InputLabel>
@@ -765,10 +985,14 @@ export default function GrapeForm({
                             variant="outlined"
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                            {...register("labData.spoiledGrapesPercentage")}
+                            {...register("labData.spoiledGrapesPercentage", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
-                        %
+
+                        <Box sx={{ width: "40px" }}>%</Box>
                       </Stack>
 
                       {errors?.labData?.spoiledGrapesPercentage && (
@@ -798,10 +1022,14 @@ export default function GrapeForm({
                             variant="outlined"
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                            {...register("labData.crushedGrapesPercentage")}
+                            {...register("labData.crushedGrapesPercentage", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
-                        %
+
+                        <Box sx={{ width: "40px" }}>%</Box>
                       </Stack>
 
                       {errors?.labData?.crushedGrapesPercentage && (
@@ -832,11 +1060,16 @@ export default function GrapeForm({
                             type="number"
                             slotProps={{ htmlInput: { min: 0, step: "any" } }}
                             {...register(
-                              "labData.addedGrapesVarietiesPercentage"
+                              "labData.addedGrapesVarietiesPercentage",
+                              {
+                                setValueAs: (value) =>
+                                  value === "" ? undefined : parseFloat(value),
+                              }
                             )}
                           />
                         </FormControl>
-                        %
+
+                        <Box sx={{ width: "40px" }}>%</Box>
                       </Stack>
 
                       {errors?.labData?.addedGrapesVarietiesPercentage && (
