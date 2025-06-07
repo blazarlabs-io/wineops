@@ -88,4 +88,12 @@ export const grapeSchema = Joi.object().keys({
   entry: entrySchema.optional(),
   transportationInfo: transportationInfoSchema,
   labData: grapeLabDataSchema,
+  notes: Joi.array().items(Joi.string().optional().allow("")),
+  processingInfo: Joi.object().allow(null).optional(),
+  tasks: Joi.array().items(Joi.string().optional().allow("")),
+  documents: Joi.array().items(Joi.string().optional().allow("")),
+  location: Joi.string().optional().allow(""),
+  metrics: Joi.object().allow(null).optional(),
+  status: Joi.string().optional().allow(""),
+  certifications: Joi.object().allow(null).optional(),
 });

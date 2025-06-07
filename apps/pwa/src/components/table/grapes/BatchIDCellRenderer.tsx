@@ -20,7 +20,8 @@ export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     >
       {isGroup ? (
         <>
-          {value?.length} {value?.length === 1 ? "Batch" : "Batches"}
+          {node?.allChildrenCount}{" "}
+          {node?.allChildrenCount === 1 ? "Batch" : "Batches"}
         </>
       ) : (
         <Stack

@@ -65,7 +65,10 @@ export default function QuantityWidget({
     .sort((a, b) => a.value - b.value);
 
   return (
-    <div className="flex flex-col gap-8 p-3 max-w-[216px]">
+    <div
+      className="flex flex-col gap-8 p-3 max-w-[216px]"
+      style={{ lineHeight: 1 }}
+    >
       <div className="relative">
         <Legend
           actual={actualValue}

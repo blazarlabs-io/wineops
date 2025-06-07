@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/firebase/auth";
 import { DashboardEntity } from "@/models/types/dashboard";
 import { DbResponse } from "@/models/types/db";
 import { nodesToEntities } from "@/utils/notes-to-entities";
-import { Typography, useColorScheme } from "@mui/material";
+import { Button, Stack, Typography, useColorScheme } from "@mui/material";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
@@ -66,6 +66,7 @@ interface DataTableProps<T extends DashboardEntity> {
   //groupCellRenderer: FunctionComponent<CustomCellRendererProps>;
   updateGroup: (uid: string, rows: Partial<T>[]) => Promise<DbResponse>;
   groupColumnDef?: ColDef<any, any>;
+  groupByButtons?: any[];
 }
 
 export const DataTable = <T extends DashboardEntity>({
@@ -81,6 +82,7 @@ export const DataTable = <T extends DashboardEntity>({
   //groupCellRenderer,
   updateGroup,
   groupColumnDef,
+  groupByButtons,
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
@@ -421,15 +423,60 @@ export const DataTable = <T extends DashboardEntity>({
     ]
   );
 
+  const treeData = gridRef.current?.api?.getGridOption("treeData");
+
+  type GroupBy = "groupByDate" | "groupByVariety";
+
+  const [groupedField, setGroupedField] = useState<GroupBy>();
+
+  const handleGroupBy = (field: GroupBy) => {
+    const api = gridRef.current?.api;
+
+    if (!api) return;
+
+    const isAlreadyGrouped = groupedField === field;
+
+    if (isAlreadyGrouped) {
+      api.setRowGroupColumns([]);
+      api.updateGridOptions({ treeData: true });
+      setGroupedField(undefined);
+    } else {
+      api.setRowGroupColumns([field]);
+      api.updateGridOptions({ treeData: false });
+      setGroupedField(field);
+    }
+  };
+
+  const filteredData = rowData?.filter(
+    ({ rowType }) => rowType === "item" || rowType !== "group"
+  );
+
   return (
     <>
+      <Stack gap={2} direction="row">
+        {groupByButtons?.map(({ name, columnName }) => (
+          <Button
+            key={columnName}
+            autoFocus
+            size="small"
+            variant={groupedField === columnName ? "contained" : "outlined"}
+            id={columnName}
+            name={columnName}
+            onClick={() => handleGroupBy(columnName)}
+          >
+            {groupedField === columnName ? `Ungroup ` : `Group by `}
+            {name}
+          </Button>
+        ))}
+      </Stack>
+
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
         {groupedData && groupedData.length > 0 ? (
           <AgGridReact
             theme={myTheme}
             ref={gridRef}
             columnDefs={colDefs}
-            rowData={rowData}
+            rowData={treeData ? rowData : filteredData}
             getDataPath={getDataPath}
             treeData
             autoGroupColumnDef={{
@@ -440,6 +487,10 @@ export const DataTable = <T extends DashboardEntity>({
                   return params.node === potentialParent;
                 },
               },
+              headerName:
+                groupByButtons?.find(
+                  ({ columnName }) => columnName === groupedField
+                )?.name || autoGroupColumnDef.headerName,
             }}
             rowSelection={rowSelection}
             onRowSelected={handleOnRowSelected}
@@ -452,6 +503,7 @@ export const DataTable = <T extends DashboardEntity>({
             getRowId={(params) => params.data.id}
             suppressRowHoverHighlight={true}
             suppressCellFocus={true}
+            suppressGroupChangesColumnVisibility={true}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
