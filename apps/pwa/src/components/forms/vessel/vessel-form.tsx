@@ -492,9 +492,9 @@ export default function VesselForm({
                                   {...field}
                                   id="barrelInfo.usage"
                                   variant="outlined"
-                                  value={field.value ?? ""}
+                                  value={field.value || ""}
                                   onChange={(e) =>
-                                    field.onChange(e.target.value)
+                                    field.onChange(e.target.value || "")
                                   }
                                 >
                                   <MenuItem value="">

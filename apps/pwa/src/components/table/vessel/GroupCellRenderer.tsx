@@ -77,7 +77,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
             </Stack>
             <Stack justifyContent="center">
               <Typography variant="body1">{data?.type}</Typography>
-              <Typography variant="body1">{data?.name}</Typography>
             </Stack>
           </Stack>
         )}

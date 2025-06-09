@@ -14,6 +14,7 @@ import {
   ColDef,
   ExcelExportModule,
   GetDataPath,
+  GetRowIdFunc,
   GridApi,
   IRowNode,
   IsGroupOpenByDefaultParams,
@@ -67,6 +68,7 @@ interface DataTableProps<T extends DashboardEntity> {
   updateGroup: (uid: string, rows: Partial<T>[]) => Promise<DbResponse>;
   groupColumnDef?: ColDef<any, any>;
   groupByButtons?: any[];
+  getRowId?: GetRowIdFunc<any> | undefined;
 }
 
 export const DataTable = <T extends DashboardEntity>({
@@ -83,6 +85,7 @@ export const DataTable = <T extends DashboardEntity>({
   updateGroup,
   groupColumnDef,
   groupByButtons,
+  getRowId,
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
@@ -425,7 +428,12 @@ export const DataTable = <T extends DashboardEntity>({
 
   const treeData = gridRef.current?.api?.getGridOption("treeData");
 
-  type GroupBy = "groupByDate" | "groupByVariety";
+  type GroupBy =
+    | "groupByDate"
+    | "groupByVariety"
+    | "groupByStatus"
+    | "groupByVesselType"
+    | "groupByLocation";
 
   const [groupedField, setGroupedField] = useState<GroupBy>();
 
@@ -445,6 +453,30 @@ export const DataTable = <T extends DashboardEntity>({
       api.updateGridOptions({ treeData: false });
       setGroupedField(field);
     }
+
+    const allCols = api.getColumns() || [];
+
+    const columnsToToggleVisibility = allCols.filter(
+      (col) => col?.getColDef()?.headerName === autoGroupColumnDef?.headerName
+    );
+
+    if (columnsToToggleVisibility.length > 0) {
+      api.setColumnsVisible(columnsToToggleVisibility, !isAlreadyGrouped);
+    }
+
+    api.setColumnsVisible(
+      ["vesselId"],
+      (isAlreadyGrouped &&
+        ["groupByVesselType", "groupByLocation"].includes(
+          groupedField || ""
+        )) ||
+        !["groupByVesselType", "groupByLocation"].includes(field)
+    );
+
+    api.setColumnsVisible(
+      ["statusData"],
+      groupedField === "groupByStatus" || field !== "groupByStatus"
+    );
   };
 
   const filteredData = rowData?.filter(
@@ -500,7 +532,7 @@ export const DataTable = <T extends DashboardEntity>({
             onRowDragMove={onRowDragMove}
             onRowDragLeave={onRowDragLeave}
             onRowDragEnd={onRowDragEnd}
-            getRowId={(params) => params.data.id}
+            getRowId={getRowId ?? (({ data }) => data.id)}
             suppressRowHoverHighlight={true}
             suppressCellFocus={true}
             suppressGroupChangesColumnVisibility={true}

@@ -19,6 +19,7 @@ import {
   Box,
   Button,
   FormControl,
+  IconButton,
   TextField as Input,
   InputLabel,
   Stack,
@@ -29,8 +30,9 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { useSnackbar } from "notistack";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { Fragment, ReactNode, useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export type MustProps = {
   children?: ReactNode;
@@ -321,61 +323,117 @@ export default function MustForm({
 
                     <div className="flex flex-col gap-2">
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter quantity:
-                      </InputLabel>
-
-                      <FormControl>
-                        <Input
-                          id="qty"
-                          label="Quantity"
-                          type="number"
-                          variant="outlined"
-                          {...register("qty")}
-                        />
-                      </FormControl>
-
-                      {errors?.qty && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.qty?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
                         Select vessels used:
                       </InputLabel>
 
                       <Autocomplete
                         multiple
-                        options={vessels.map(({ id, name }) => ({ id, name }))}
-                        value={formData?.vessels ?? []}
+                        noOptionsText="No vessels available"
+                        options={vessels.filter(
+                          (vessel) =>
+                            !formData.vessels?.some(
+                              ({ id }) => id === vessel.id
+                            )
+                        )}
+                        value={[]}
                         getOptionLabel={(option) => option.name}
                         filterSelectedOptions
                         onChange={(_event, newValue) => {
-                          handleSelectChange("vessels", newValue);
+                          const added = newValue.at(-1);
+                          if (!added) return;
+                          const updated = [
+                            ...(formData.vessels ?? []),
+                            { ...added, qty: 1 },
+                          ];
+                          handleSelectChange("vessels", updated);
                         }}
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            label="Vessels used"
                             variant="outlined"
+                            label="Add vessel"
                           />
                         )}
                       />
 
-                      {errors?.vessels && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
+                      {(formData?.vessels || []).length > 0 && (
+                        <Stack
+                          p={2}
+                          gap={1}
+                          sx={{
+                            border: "1px solid var(--mui-palette-divider)",
+                          }}
                         >
-                          {errors?.vessels?.message as string}
-                        </Typography>
+                          {formData?.vessels?.map(
+                            ({ id, name, qty = "" }, index) => (
+                              <Fragment key={id}>
+                                <Stack
+                                  gap={1}
+                                  key={id}
+                                  direction="row"
+                                  alignItems="center"
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    component="div"
+                                    sx={{ flex: 1 }}
+                                  >
+                                    {name}
+                                  </Typography>
+
+                                  <FormControl>
+                                    <Input
+                                      id="qty"
+                                      size="small"
+                                      label="Qty"
+                                      type="number"
+                                      variant="outlined"
+                                      value={qty}
+                                      slotProps={{
+                                        htmlInput: { min: 1, step: "any" },
+                                      }}
+                                      sx={{ width: "80px" }}
+                                      onChange={(e) => {
+                                        const updated = [
+                                          ...(formData.vessels || []),
+                                        ];
+                                        updated[index].qty = Number(
+                                          e.target.value
+                                        );
+                                        handleSelectChange("vessels", updated);
+                                      }}
+                                    />
+                                  </FormControl>
+
+                                  <IconButton
+                                    size="small"
+                                    disabled={false}
+                                    onClick={() => {
+                                      const updated = formData.vessels?.filter(
+                                        (vessel) => vessel.id !== id
+                                      );
+                                      handleSelectChange("vessels", updated);
+                                    }}
+                                  >
+                                    <ClearIcon fontSize="small" />
+                                  </IconButton>
+                                </Stack>
+
+                                <Typography
+                                  key={index}
+                                  variant="body2"
+                                  color="error"
+                                  className="mt-1"
+                                >
+                                  {errors?.vessels &&
+                                    Array.isArray(errors?.vessels) &&
+                                    (errors?.vessels[index]?.qty
+                                      ?.message as string)}
+                                </Typography>
+                              </Fragment>
+                            )
+                          )}
+                        </Stack>
                       )}
                     </div>
 

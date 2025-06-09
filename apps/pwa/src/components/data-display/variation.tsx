@@ -13,9 +13,9 @@ export default function Variation({ variation }: VariationProps) {
   const color = isNegative ? "text-[#FF7878]" : "text-[#63DA3F]";
 
   return (
-    <div className="flex items-start gap-[1px]">
+    <span className="flex items-start gap-[1px]">
       <Arrow className={cn("w-3 h-3", color)} />
       <span className={cn("text-[10px]", color)}>{variation}</span>
-    </div>
+    </span>
   );
 }

@@ -1,30 +1,62 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ColDef } from "ag-grid-enterprise";
-import { Must } from "@/models/types/db";
+import { ColDef, ColGroupDef } from "ag-grid-enterprise";
+import { Must, Vessel } from "@/models/types/db";
 import { VesselIDCellRenderer } from "./VesselIDCellRenderer";
 import { QuantityCellRenderer } from "../QuantityCellRenderer";
 import { LabDataCellRenderer } from "./LabDataCellRenderer";
 import { NotesCellRenderer } from "../NotesCellRenderer";
 import { StatusCellRenderer } from "./StatusCellRenderer";
 import { TasksCellRenderer } from "../tasks-cell-renderer";
+import { MustIDCellRenderer } from "./MustIDCellRenderer";
 
 type MultiCol = Record<keyof Must, any>;
+type Data = Must & {
+  statusData: MultiCol;
+  groupByStatus: Must["status"];
+  groupByDate: Must["date"];
+  groupByVesselType: Vessel["type"];
+  groupByLocation: Vessel["location"];
+  mustID: MultiCol;
+  vesselId: Vessel["id"];
+  vesselType: Vessel["type"];
+  vesselLocation: Vessel["location"];
+};
 
-export const mustColumns: ColDef<
-  Must & {
-    mustID: MultiCol;
-    statusData: MultiCol;
-  },
-  any
->[] = [
+export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
   {
-    headerName: "Must ID",
-    field: "mustID",
+    headerName: "Vessel ID",
+    field: "vesselId",
     minWidth: 200,
     flex: 1,
     editable: false,
     cellRenderer: VesselIDCellRenderer,
-    aggFunc: (params) => params.values,
+  },
+  {
+    headerName: "Must ID",
+    field: "mustID",
+    hide: true,
+    minWidth: 200,
+    flex: 1,
+    editable: false,
+    cellRenderer: MustIDCellRenderer,
+  },
+  {
+    headerName: "Group: Vessel Type",
+    field: "groupByVesselType",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: ({ data }) => data?.vesselType,
+    keyCreator: (params) => params?.value,
+  },
+  {
+    headerName: "Group: Location",
+    field: "groupByLocation",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: ({ data }) => data?.vesselLocation,
+    keyCreator: (params) => params?.value,
   },
   {
     headerName: "Status",
@@ -36,7 +68,16 @@ export const mustColumns: ColDef<
     cellRendererParams: {
       alignItems: "center",
     },
-    aggFunc: (params) => params.values,
+    enableRowGroup: true,
+  },
+  {
+    headerName: "Group: Status",
+    field: "groupByStatus",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: (params) => params.data?.statusData?.status,
+    keyCreator: (params) => params?.value,
   },
   {
     headerName: "Quantity",
@@ -46,7 +87,6 @@ export const mustColumns: ColDef<
     cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: QuantityCellRenderer,
-    aggFunc: (params) => params.values,
   },
   {
     headerName: "Labs",
@@ -55,7 +95,6 @@ export const mustColumns: ColDef<
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: LabDataCellRenderer,
-    aggFunc: (params) => params.values,
   },
   {
     headerName: "Tasks",
@@ -64,7 +103,6 @@ export const mustColumns: ColDef<
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: TasksCellRenderer,
-    aggFunc: (params) => params.values,
   },
   {
     headerName: "Notes",
@@ -73,6 +111,5 @@ export const mustColumns: ColDef<
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: NotesCellRenderer,
-    aggFunc: (params) => params.values,
   },
 ];

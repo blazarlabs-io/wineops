@@ -20,6 +20,8 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
     setValue(newValue);
   };
 
+  const qty = must?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0);
+
   return (
     <Box
       sx={{
@@ -52,7 +54,15 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <MustInfoContent data={[{ ...must, ...must?.supplier }]} />
+        <MustInfoContent
+          data={[
+            {
+              ...must,
+              ...must?.supplier,
+              qty,
+            },
+          ]}
+        />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
@@ -60,7 +70,7 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
       </TabPanel>
 
       <TabPanel value={value} index={3}>
-        <QtyContent data={[{ ...must }]} />
+        <QtyContent data={[{ ...must, qty }]} />
       </TabPanel>
 
       <TabPanel value={value} index={4}>

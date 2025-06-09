@@ -3,7 +3,7 @@
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
 import { MUSTS, WINERY } from "@/lib/firebase/config";
-import { Must, Vessel } from "@/models/types/db";
+import { Must, MustVessel, Vessel } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
@@ -87,12 +87,15 @@ export const MustProvider = ({ children }: IMustProvider) => {
       return musts.map((must) => {
         if (!must.vessels?.length) return must;
 
-        const updatedVessels = must.vessels.map((mustVessel) => {
-          const updated = allVessels.find(({ id }) => id === mustVessel.id);
+        const updatedVessels = must.vessels.map(({ id, qty }) => {
+          const updated = {
+            ...allVessels.find((vessel) => vessel.id === id),
+            qty,
+          };
           return updated;
         });
 
-        return { ...must, vessels: updatedVessels as Vessel[] };
+        return { ...must, vessels: updatedVessels as MustVessel[] };
       });
     },
     []

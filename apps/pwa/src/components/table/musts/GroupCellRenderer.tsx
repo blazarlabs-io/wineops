@@ -6,14 +6,29 @@ import {
   useState,
   type FunctionComponent,
 } from "react";
-import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED_MUST } from "@/data/constants";
+import {
+  DEFAULT_LOCALE,
+  ROW_HEIGHT_DEFAULT,
+  ROW_HEIGHT_EXPANDED_MUST,
+} from "@/data/constants";
 import { ExpandMore } from "@mui/icons-material";
 import MustDetailsWidget from "@/components/widgets/must/must-details-widget";
+import formatDate from "@/utils/date-format";
+import StatusDataDisplay from "@/components/data-display/status-data-display";
+import { Vessel } from "@/models/types/db";
+import EntityLocation from "../EntityLocation";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
 ) => {
   const { value, data, node } = params;
+
+  /**
+   * node?.group - AG Grid group
+   * node?.data?.rowType === "group" - Our custom grouping system
+   */
+  const isGroup = node?.group || node?.data?.rowType === "group";
+  const groupField = isGroup ? node?.field : node?.parent?.field;
 
   const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -28,8 +43,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   useEffect(() => {
     setExpanded(node.expanded);
   }, [node.expanded]);
-
-  const isGroup = node?.group || node?.data?.rowType === "group";
 
   return (
     <>
@@ -47,7 +60,26 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       >
         {isGroup ? (
           <Stack justifyContent="center">
-            <Typography variant="body1">{value}</Typography>
+            <Typography variant="body1">
+              {value ? (
+                groupField === "groupByVesselType" ? (
+                  <>
+                    {node?.allChildrenCount} {value}(s)
+                  </>
+                ) : groupField === "groupByLocation" ? (
+                  <>
+                    {value}{" "}
+                    <Typography component="span" variant="body2" sx={{ pl: 1 }}>
+                      {node?.allChildrenCount} vessel(s)
+                    </Typography>
+                  </>
+                ) : (
+                  value
+                )
+              ) : (
+                <i>Unknown</i>
+              )}
+            </Typography>
           </Stack>
         ) : (
           <Stack direction="row" justifyContent="center">
@@ -73,8 +105,47 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
               )}
             </Stack>
             <Stack justifyContent="center">
-              <Typography variant="body1">{data?.name}</Typography>
-              <Typography variant="body1">{data?.grapeVariety}</Typography>
+              {groupField === "groupByStatus" ? (
+                <>
+                  {data?.date && (
+                    <Typography variant="body2">
+                      {formatDate(data?.date, { locale: DEFAULT_LOCALE })}
+                    </Typography>
+                  )}
+                  {<StatusDataDisplay status={data?.status} />}
+                </>
+              ) : groupField === "groupByVesselType" ||
+                groupField === "groupByLocation" ? (
+                <Stack my={2} sx={{ height: "100%", justifyContent: "center" }}>
+                  {(data?.vesselId
+                    ? [
+                        {
+                          id: data?.vesselId,
+                          name: data?.vesselName,
+                          location: data?.vesselLocation,
+                          type: data?.vesselType,
+                        },
+                      ]
+                    : data?.vessels
+                  )?.map((vessel: Vessel) => (
+                    <Stack
+                      key={vessel?.id}
+                      direction="row"
+                      sx={{ flexWrap: "wrap", whiteSpace: "wrap" }}
+                    >
+                      <Typography key={vessel?.id} variant="body1">
+                        {vessel?.name}
+                      </Typography>
+                      <EntityLocation location={vessel?.location || ""} />
+                    </Stack>
+                  ))}
+                </Stack>
+              ) : (
+                <>
+                  <Typography variant="body1">{data?.name}</Typography>
+                  <Typography variant="body1">{data?.grapeVariety}</Typography>
+                </>
+              )}
             </Stack>
           </Stack>
         )}

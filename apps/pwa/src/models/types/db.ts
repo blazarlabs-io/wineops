@@ -272,7 +272,7 @@ export type MustInfo = {
   id: string;
   date?: Must["date"];
   grapeVariety?: Must["grapeVariety"];
-  qty?: Must["qty"];
+  qty?: number;
   name?: Must["name"];
   companyName?: Supplier["companyName"];
 };
@@ -281,7 +281,7 @@ export type QtyInfo = {
   id: Must["id"];
   date?: Must["date"];
   process?: string;
-  qty?: Must["qty"];
+  qty?: number;
   losses?: number;
 };
 
@@ -305,6 +305,14 @@ export type MustLabData = {
   labCertificateID: string;
 };
 
+export type MustVessel = {
+  id: Vessel["id"];
+  name: Vessel["name"];
+  qty: number;
+  location: Vessel["location"];
+  type: Vessel["type"];
+};
+
 export type Must = {
   id: string;
   name: string;
@@ -313,8 +321,7 @@ export type Must = {
   date?: string | Timestamp;
   supplier?: Supplier;
   grapeVariety?: string;
-  qty?: number;
-  vessels?: Vessel[];
+  vessels?: MustVessel[];
   safetyCertificateNo?: string;
   invoicePurchaseNo?: string;
   labData: MustLabData;

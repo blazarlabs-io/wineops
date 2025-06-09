@@ -29,6 +29,16 @@ const labDataSchema = Joi.object({
   labCertificateID: Joi.string().optional().allow(""),
 });
 
+const mustVesselSchema = Joi.object({
+  id: Joi.string().required(),
+  name: Joi.string().required(),
+  qty: Joi.number().min(1).required().messages({
+    "number.base": "Quantity must be a number",
+    "number.min": "Quantity must be at least 1",
+    "any.required": "Please enter a quantity for this vessel",
+  }),
+});
+
 export const mustSchema = Joi.object({
   id: Joi.string().required(),
   date: Joi.alternatives()
@@ -59,10 +69,7 @@ export const mustSchema = Joi.object({
     vineyardName: Joi.string().optional().allow(""),
   }).optional(),
   grapeVariety: Joi.string().optional().allow(""),
-  qty: Joi.number().optional().empty("").messages({
-    "number.base": "Quantity must be a number",
-  }),
-  vessels: Joi.array().items(Joi.any()).optional().allow(null),
+  vessels: Joi.array().items(mustVesselSchema).optional(),
   safetyCertificateNo: Joi.string().optional().allow(""),
   invoicePurchaseNo: Joi.string().optional().allow(""),
   labData: labDataSchema.optional(),
