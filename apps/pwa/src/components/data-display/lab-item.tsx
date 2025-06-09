@@ -17,7 +17,11 @@ export default function LabItem({ label, data, variant }: LabItemProps) {
 
   return (
     <Stack gap={isSmall ? 0.5 : 1}>
-      <Typography variant={isSmall ? "caption" : "body2"} color="textDisabled">
+      <Typography
+        component="div"
+        variant={isSmall ? "caption" : "body2"}
+        color="textDisabled"
+      >
         <Stack gap={isSmall ? 0.5 : 1} flexDirection="row">
           {label}
           <UnitDisplay unit={data?.unit ?? ""} />

@@ -28,14 +28,32 @@ export default function MustsTable({
 
   const normalizedMusts = useMemo(
     () =>
-      musts.map((must) => ({
-        ...must,
-        ...(must.rowType !== "group" && {
-          metrics: { ...must.metrics, actual: must?.qty, status: must.status },
-          mustID: { name: must?.name, grapeVariety: must?.grapeVariety },
-          statusData: { status: must?.status, date: must?.date },
-        }),
-      })),
+      musts.flatMap((must) =>
+        (must.vessels ?? []).map((vessel) => ({
+          ...must,
+          ...(must.rowType !== "group" && {
+            metrics: {
+              ...must.metrics,
+              actual: must?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0),
+              status: must.status,
+            },
+            statusData: { status: must?.status, date: must?.date },
+            mustID: {
+              name: must?.name,
+              grapeVariety: must?.grapeVariety,
+            },
+            vesselId: vessel.id,
+            vesselType: vessel.type,
+            vesselName: vessel.name,
+            vesselLocation: vessel.location,
+            qty: vessel.qty ?? 0,
+            group: [
+              ...must?.group.slice(0, -1),
+              `${must.name}-${vessel?.name}`,
+            ],
+          }),
+        }))
+      ),
     [musts]
   );
 
@@ -53,8 +71,9 @@ export default function MustsTable({
         data={normalizedMusts}
         columns={mustColumns}
         groupColumnDef={{
-          headerName: "Vessel ID",
+          headerName: "Must ID",
           rowDrag: true,
+          minWidth: 200,
           cellRendererParams: {
             innerRenderer: GroupCellRenderer,
             suppressCount: true,
@@ -64,6 +83,12 @@ export default function MustsTable({
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedMusts}
+        groupByButtons={[
+          { name: "Vessel Type", columnName: "groupByVesselType" },
+          { name: "Location", columnName: "groupByLocation" },
+          { name: "Status", columnName: "groupByStatus" },
+        ]}
+        getRowId={({ data }) => `${data.id}-${data?.vesselId}`}
       />
     </StrictMode>
   );
