@@ -52,7 +52,7 @@ export function getData(): Vineyard[] {
           },
         } as Certifications,
       },
-      labData: generateLabData(),
+      labData: [],
       documents: generateDummyDocs(10),
       grape: {
         id: "",
@@ -108,7 +108,7 @@ export function getData(): Vineyard[] {
           },
         } as Certifications,
       },
-      labData: generateLabData(),
+      labData: [],
       documents: generateDummyDocs(10),
       grape: {
         id: "",
@@ -164,7 +164,7 @@ export function getData(): Vineyard[] {
           },
         } as Certifications,
       },
-      labData: generateLabData(),
+      labData: [],
       documents: generateDummyDocs(10),
       grape: {
         id: "",
@@ -220,7 +220,7 @@ export function getData(): Vineyard[] {
           },
         } as Certifications,
       },
-      labData: generateLabData(),
+      labData: [],
       documents: generateDummyDocs(10),
       grape: {
         id: "",
@@ -276,7 +276,7 @@ export function getData(): Vineyard[] {
           },
         } as Certifications,
       },
-      labData: generateLabData(),
+      labData: [],
       documents: generateDummyDocs(10),
       grape: {
         id: "",

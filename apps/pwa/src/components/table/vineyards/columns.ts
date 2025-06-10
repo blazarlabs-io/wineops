@@ -36,6 +36,7 @@ export const vineyardColumns: ColDef[] = [
     minWidth: 240,
     flex: 1,
     cellRenderer: QuantityCellRenderer,
+
     cellStyle: { width: "100%" },
   },
   {

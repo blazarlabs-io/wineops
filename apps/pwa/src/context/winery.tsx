@@ -2,12 +2,13 @@
 
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
-import { DbResponse, Winery } from "@/models/types/db";
+import { DbResponse, ResponsibleTeamMember, Winery } from "@/models/types/db";
 // import { useSnackbar } from "notistack";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 interface WineryContextType {
   winery: Winery | null;
+  teamMembers: ResponsibleTeamMember[];
 }
 
 const WineryContext = createContext<WineryContextType | null>(null);
@@ -28,6 +29,7 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
   // const { enqueueSnackbar } = useSnackbar();
   const mountRef = useRef<boolean>(false);
   const [winery, setWinery] = useState<Winery | null>(null);
+  const [teamMembers, setTeamMembers] = useState<ResponsibleTeamMember[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -73,11 +75,17 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
           setWinery(null);
           // enqueueSnackbar("Error creating winery", { variant: "error" });
         });
+
+      // TODO we get team members once, but in the future we should use a snapshot
+      // TODO for realtime data updates
+      db.team.getMembers(user?.uid).then((res: DbResponse) => {
+        setTeamMembers(res.data);
+      });
     }
   }, [user]);
 
   return (
-    <WineryContext.Provider value={{ winery }}>
+    <WineryContext.Provider value={{ winery, teamMembers }}>
       {children}
     </WineryContext.Provider>
   );

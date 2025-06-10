@@ -1,14 +1,16 @@
 import QuickTasksDrawer from "@/components/drawers/quick-tasks-drawer";
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
+import { useVineyard } from "@/context/vineyard";
+import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
+import { ActionsEntity, VineyardActions } from "@/models/types/actions";
 import { FormatListBulleted } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { styled, useColorScheme } from "@mui/material/styles";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
-import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
-import { useRouter } from "next/navigation";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -49,9 +51,12 @@ export default function QickTasksWrapper({
   pathname: string;
 }) {
   const { mode } = useColorScheme();
+  const { actions: vineyardActions } = useVineyard();
+  const pn = usePathname();
   const router = useRouter();
   const [openQuickTasks, setOpenQuickTasks] = useState<boolean>(false);
   const [openQuickActions, setOpenQuickActions] = useState<boolean>(false);
+  const [currentDashboard, setCurrentDashboard] = useState<string>("");
 
   const handleQuickTasksDrawerOpen = (state: boolean) => {
     setOpenQuickTasks(state);
@@ -66,8 +71,20 @@ export default function QickTasksWrapper({
   useEffect(() => {
     if (pathname.startsWith("/workspace") || pathname === "/wine-production")
       return;
+
     router.push("/workspace" + pathname);
   }, [pathname]);
+
+  useEffect(() => {
+    if (pn) {
+      const splitedPathname = pn.split(
+        "/wine-production/"
+      ) as unknown as ActionsEntity[];
+      setCurrentDashboard(
+        splitedPathname[splitedPathname.length - 1] as unknown as string
+      );
+    }
+  }, [pn]);
 
   return (
     <Box
@@ -94,10 +111,15 @@ export default function QickTasksWrapper({
         />
       )}
       {openQuickActions && (
-        <QuickActionsDrawer
-          open={openQuickActions}
-          onOpenChange={handleQuickActionsDrawerOpen}
-        />
+        <>
+          {currentDashboard === "vineyards" && (
+            <QuickActionsDrawer<VineyardActions>
+              open={openQuickActions}
+              actions={vineyardActions}
+              onOpenChange={handleQuickActionsDrawerOpen}
+            />
+          )}
+        </>
       )}
 
       {!openQuickTasks && !openQuickActions && (

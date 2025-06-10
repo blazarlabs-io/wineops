@@ -10,16 +10,25 @@ import {
   useState,
   type FunctionComponent,
 } from "react";
+import { useVineyard } from "@/context/vineyard";
+import { useGetVineyardLabData } from "@/hooks/use-get-vineyard-lab-data";
+import { LabReport } from "@/models/types/db";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
+  const { labReports, vineyards } = useVineyard();
+  const { labData } = useGetVineyardLabData(
+    value,
+    node.data.labData,
+    labReports,
+    vineyards
+  );
   const [expanded, setExpanded] = useState<boolean>(false);
 
   // * master detail custom renderer
   const handleMasterDetailExpansion = useCallback(() => {
-    console.log(node);
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(node.expanded ? ROW_HEIGHT_EXPANDED : ROW_HEIGHT_DEFAULT);
@@ -92,7 +101,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
               </div>
               {expanded && (
                 <div className="fixed bottom-0 flex items-center justify-center left-0 w-full h-[300px] bg-transparent z-[9999]">
-                  <VineyardDetailsWidget vineyard={node.data} />
+                  <VineyardDetailsWidget
+                    vineyard={node.data}
+                    labReports={labData as LabReport[]}
+                  />
                 </div>
               )}
             </>

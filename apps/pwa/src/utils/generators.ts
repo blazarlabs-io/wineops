@@ -15,11 +15,11 @@ const end = new Date("2025-01-01");
 
 export const generateLabData = () => {
   const data: LabDataSimple[] = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 4; i++) {
     data.push({
       id: i.toString(),
       fileUrl: "", // url generator
-      items: generateItems(20),
+      items: generateItems(8),
       date: new Date().toISOString(),
     });
   }
@@ -131,7 +131,7 @@ const getRandomNote = (notes: string[]): string => {
 
 export const generateNotes = (): Note[] => {
   const notes: Note[] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 4; i++) {
     notes.push({
       id: new Date().toISOString(),
       title: getRandomNote(wineryNotesTitles),

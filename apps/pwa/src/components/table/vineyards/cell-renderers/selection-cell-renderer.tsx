@@ -1,4 +1,5 @@
 import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
+import { Vineyard } from "@/models/types/db";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 
@@ -16,7 +17,10 @@ export const SelectionCellRenderer: FunctionComponent<
           }}
           className="flex items-start justify-center flex-col gap-2 pl-2 absolute h-full top-0 left-0 w-full z-[999]"
         >
-          <VineyardDetailsWidget vineyard={node.data} />
+          <VineyardDetailsWidget
+            vineyard={node.data as Vineyard}
+            labReports={[]}
+          />
         </div>
       )}
     </>

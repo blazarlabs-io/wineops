@@ -70,6 +70,7 @@ export const VesselProvider = ({ children }: IVesselProvider) => {
         });
 
         setVessels(vessels);
+        console.log("vessels", vessels);
       });
     }
 

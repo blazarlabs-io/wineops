@@ -1,12 +1,13 @@
 import QuickActionsWidget from "@/components/widgets/quick-actions";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
+import { ActionsEntity } from "@/models/types/actions";
 import { Close } from "@mui/icons-material";
 import { Drawer, IconButton, styled } from "@mui/material";
-import { useState } from "react";
 
-export type QuickActionsDrawerProps = {
+export type QuickActionsDrawerProps<T extends ActionsEntity> = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  actions?: T;
 };
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -19,19 +20,17 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   overflowX: "hidden",
 }));
 
-export default function QuickActionsDrawer({
+export default function QuickActionsDrawer<T extends ActionsEntity>({
   open,
   onOpenChange,
-}: QuickActionsDrawerProps) {
-  const [, setSelectedAction] = useState<string>("");
-
+  actions,
+}: QuickActionsDrawerProps<T>) {
   const handleDrawerClose = () => {
     onOpenChange(false);
   };
 
   const handleActionClick = (action: string) => {
     console.log("ACTION CLICKED", action);
-    setSelectedAction(action);
   };
 
   return (
@@ -64,7 +63,7 @@ export default function QuickActionsDrawer({
         </IconButton>
       </DrawerHeader>
       {/* * QUICK ACTIONS */}
-      <QuickActionsWidget onClick={handleActionClick} />
+      <QuickActionsWidget onClick={handleActionClick} actions={actions} />
     </Drawer>
   );
 }
