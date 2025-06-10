@@ -345,6 +345,7 @@ export type Must = {
   name: string;
   group: string[];
   rowType?: RowType;
+<<<<<<< HEAD
   date?: string | Timestamp;
   supplier?: Supplier;
   grapeVariety?: string;
@@ -357,6 +358,19 @@ export type Must = {
   notes?: Note[];
   tasks?: Task[];
   documents?: SingleDocument[];
+=======
+  grapes: string[];
+  vineyards: string[];
+  status: string;
+  quantity: number;
+  labData: LabDataSimple[];
+  createdAt: string | Timestamp;
+  vessel: ActionRelation;
+  location: string;
+  notes: Note[];
+  tasks: TaskSummary[];
+  grapeVariety: string;
+>>>>>>> origin/feature/harvest-action
 };
 
 export type FormMode = "create" | "edit";
