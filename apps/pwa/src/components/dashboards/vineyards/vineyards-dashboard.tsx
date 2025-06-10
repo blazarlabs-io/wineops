@@ -5,21 +5,20 @@ import VineyardFormDrawer from "@/components/drawers/vineyard-form-drawer";
 import VineyardsTable from "@/components/table/vineyards";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
-import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
-import { FormMode, LabDataSimple, Vineyard } from "@/models/types/db";
-import { Box, Stack, Typography } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
 import { useVineyard } from "@/context/vineyard";
 import vineyardBlankSample from "@/data/vineyard-blank-sample";
+import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
-import { useSnackbar } from "notistack";
+import { FormMode, Vineyard } from "@/models/types/db";
 import {
   generateDummyDocs,
-  generateLabData,
   generateNotes,
   generateTasks,
 } from "@/utils/generators";
+import { Box, Stack, Typography } from "@mui/material";
+import { useSnackbar } from "notistack";
+import { useCallback, useEffect, useState } from "react";
 
 export default function VineyardsDashboard() {
   const [selectionData, setSelectionData] = useState<Vineyard[]>([]);

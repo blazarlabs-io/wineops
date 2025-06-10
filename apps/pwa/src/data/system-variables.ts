@@ -11,6 +11,17 @@ export const orientations = [
   "west",
 ];
 
+export const rowOrientations = [
+  "north",
+  "north-east",
+  "north-west",
+  "south",
+  "south-east",
+  "south-west",
+  "east",
+  "west",
+];
+
 export const soilTypes = [
   "Clay",
   "Silt",

@@ -182,8 +182,8 @@ export default function VineyardHarvestActionForm({
       vineyardHarvestActionSample.vessels = vineyards[0]
         .vessels as ActionRelation[];
       vineyardHarvestActionSample.equipment = [] as ActionRelation[];
-      vineyardHarvestActionSample.description = "description goes here";
-      vineyardHarvestActionSample.location = "Argentina";
+      vineyardHarvestActionSample.description = "";
+      vineyardHarvestActionSample.location = vineyards[0].info.location.city;
       vineyardHarvestActionSample.documents = generateDummyDocs(10);
 
       reset(vineyardHarvestActionSample);

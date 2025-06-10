@@ -13,7 +13,7 @@ export default function SimpleDataDisplay({
   return (
     <Card
       variant="outlined"
-      className="min-w-[168px] flex flex-col gap-1 w-full p-2"
+      className="min-w-[168px] flex flex-col gap-1 w-full p-2 capitalize"
     >
       <Typography variant="body2" color="textDisabled">
         {label}

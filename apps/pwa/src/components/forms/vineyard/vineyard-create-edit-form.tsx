@@ -4,7 +4,11 @@
 import PolygonDrawingMap from "@/components/widgets/maps/polygon-drawing-map";
 import { useVineyard } from "@/context/vineyard";
 import { countries } from "@/data/countries";
-import { orientations, soilTypes } from "@/data/system-variables";
+import {
+  orientations,
+  soilTypes,
+  rowOrientations,
+} from "@/data/system-variables";
 import vineyardBlankSample from "@/data/vineyard-blank-sample";
 import { setNestedValue } from "@/helpers/form-helpers";
 import { useAuth } from "@/lib/firebase/auth";
@@ -390,7 +394,8 @@ export default function VineyardForm({
                             variant="outlined"
                             label="Surface Area"
                             inputProps={{
-                              step: "any",
+                              step: "0.1",
+                              min: 0,
                             }}
                             {...register("info.location.surface")}
                             fullWidth
@@ -486,9 +491,10 @@ export default function VineyardForm({
                             id="info.location.elevation"
                             type="number"
                             variant="outlined"
-                            label="Surface Area"
+                            label="Elevation"
                             inputProps={{
-                              step: "any",
+                              step: "0.1",
+                              min: 0,
                             }}
                             {...register("info.location.elevation")}
                           />
@@ -522,8 +528,12 @@ export default function VineyardForm({
                                   e.target.value
                                 )
                               }
+                              className="capitalize"
                             >
-                              <MenuItem value="select-orientation">
+                              <MenuItem
+                                value="select-orientation"
+                                className="capitalize"
+                              >
                                 <em>Select Orientation</em>
                               </MenuItem>
                               {orientations.length > 0 &&
@@ -532,6 +542,7 @@ export default function VineyardForm({
                                     <MenuItem
                                       key={orientation}
                                       value={orientation}
+                                      className="capitalize"
                                     >
                                       {orientation}
                                     </MenuItem>
@@ -559,14 +570,13 @@ export default function VineyardForm({
                         </Typography>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4">
                         {/* * SPACING */}
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
                             {/* <Label htmlFor="info.vines.plantingScheme.spacing">Spacing</Label> */}
                             <InputLabel className="text-sm text-muted-foreground">
-                              Enter the spacing in meters for the planting
-                              scheme of your vineyard.
+                              Spacing in meters for your planting scheme.
                             </InputLabel>
                           </div>
                           <FormControl>
@@ -576,7 +586,8 @@ export default function VineyardForm({
                               variant="outlined"
                               label="Spacing"
                               inputProps={{
-                                step: "any",
+                                step: "0.1",
+                                min: 0,
                               }}
                               // step={"any"}
                               {...register("info.vines.plantingScheme.spacing")}
@@ -590,11 +601,10 @@ export default function VineyardForm({
                         </div>
 
                         {/* * ROW ORIENTATION */}
-                        <div className="flex flex-col gap-2 justify-between">
+                        {/* <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
                             <InputLabel className="text-sm text-muted-foreground">
-                              Enter the row orientation of the planting scheme
-                              of your vineyard.
+                              Row orientation for your planting scheme.
                             </InputLabel>
                           </div>
                           <FormControl>
@@ -608,19 +618,65 @@ export default function VineyardForm({
                               )}
                             />
                           </FormControl>
-                          {/* {errors?.info?.vines?.plantingScheme?.rowOrientation && (
+                          
+                        </div> */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-2 w-full">
+                            {/* <Label htmlFor="info.vines.plantingScheme.rowOrientation">Orientation</Label> */}
+                            <InputLabel className="text-sm text-muted-foreground">
+                              Row orientation for your planting scheme.
+                            </InputLabel>
+
+                            <FormControl>
+                              <Select
+                                name="info.vines.plantingScheme.rowOrientation"
+                                id="info.vines.plantingScheme.rowOrientation"
+                                variant="outlined"
+                                value={
+                                  formData?.info?.vines?.plantingScheme
+                                    ?.rowOrientation as string
+                                }
+                                onChange={(e) =>
+                                  handleSelectChange(
+                                    "info.vines.plantingScheme.rowOrientation",
+                                    e.target.value
+                                  )
+                                }
+                                className="capitalize"
+                              >
+                                <MenuItem
+                                  value="select-orientation"
+                                  className="capitalize"
+                                >
+                                  <em>Select Orientation</em>
+                                </MenuItem>
+                                {rowOrientations.length > 0 &&
+                                  rowOrientations.map((orientation: string) => {
+                                    return (
+                                      <MenuItem
+                                        key={orientation}
+                                        value={orientation}
+                                        className="capitalize"
+                                      >
+                                        {orientation}
+                                      </MenuItem>
+                                    );
+                                  })}
+                              </Select>
+                            </FormControl>
+                            {/* {errors?.info?.location?.country && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.plantingScheme?.rowOrientation}
+                              {errors?.info?.location?.country}
                             </p>
                           )} */}
+                          </div>
                         </div>
 
                         {/* * DENSITY */}
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
                             <InputLabel className="text-sm text-muted-foreground">
-                              Enter the density of the planting scheme of your
-                              vineyard.
+                              Density of your planting scheme.
                             </InputLabel>
                           </div>
                           <Input
@@ -629,9 +685,33 @@ export default function VineyardForm({
                             variant="outlined"
                             label="Density"
                             inputProps={{
-                              step: "any",
+                              step: "0.1",
+                              min: 0,
                             }}
                             {...register("info.vines.plantingScheme.density")}
+                          />
+                          {/* {errors?.info?.vines?.plantingScheme?.density && (
+                            <p className="text-sm text-destructive  mt-1">
+                              {errors?.info?.vines?.plantingScheme?.density}
+                            </p>
+                          )} */}
+                        </div>
+
+                        {/* * PLANTS PER HA */}
+                        <div className="flex flex-col gap-2 justify-between">
+                          <div className="flex flex-col gap-2">
+                            <InputLabel className="text-sm text-muted-foreground">
+                              Plants per HA
+                            </InputLabel>
+                          </div>
+                          <Input
+                            id="info.vines.plantingScheme.plantsPerHa"
+                            type="number"
+                            variant="outlined"
+                            label="Plants per HA"
+                            {...register(
+                              "info.vines.plantingScheme.plantsPerHa"
+                            )}
                           />
                           {/* {errors?.info?.vines?.plantingScheme?.density && (
                             <p className="text-sm text-destructive  mt-1">
@@ -734,7 +814,8 @@ export default function VineyardForm({
                           variant="outlined"
                           label="Sunlight hours"
                           inputProps={{
-                            step: "any",
+                            step: "0.1",
+                            min: 0,
                           }}
                           {...register("info.vines.sunlightHours")}
                         />
@@ -753,7 +834,13 @@ export default function VineyardForm({
                             Choose the soil type of your vineyard.
                           </span>
                           <FormControl>
-                            <Select
+                            <Input
+                              id="info.vines.soilType"
+                              variant="outlined"
+                              label="Soil Type"
+                              {...register("info.vines.soilType")}
+                            />
+                            {/* <Select
                               id="info.vines.soilType"
                               value={formData?.info?.vines?.soilType}
                               label="Soil Type"
@@ -770,7 +857,7 @@ export default function VineyardForm({
                                   {type}
                                 </MenuItem>
                               ))}
-                            </Select>
+                            </Select> */}
                           </FormControl>
 
                           {/* {errors?.info?.vines?.soilType && (

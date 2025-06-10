@@ -112,6 +112,7 @@ export type Vines = {
     rowOrientation: string;
     density: number;
     trellisSystem: boolean;
+    plantsPerHa?: number;
   };
   soilType: string;
   sunlightHours: number;

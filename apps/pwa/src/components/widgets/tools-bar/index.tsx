@@ -27,7 +27,7 @@ export default function ToolsBar({
       <Box
         width={1}
         display="flex"
-        gap={1}
+        gap={2}
         alignItems="center"
         justifyContent="space-between"
       >
@@ -88,12 +88,18 @@ export default function ToolsBar({
           )}
         </Box>
 
-        <Box>
+        <Box
+          display="flex"
+          gap={1}
+          alignItems="center"
+          justifyContent="flex-end"
+        >
           <IconButton
             color="inherit"
             aria-label="filter"
             onClick={() => {}}
             className="ml-auto"
+            disabled
           >
             <Tune />
           </IconButton>
@@ -102,6 +108,7 @@ export default function ToolsBar({
             aria-label="filter"
             onClick={() => {}}
             className=""
+            disabled
           >
             <SwapVert />
           </IconButton>
@@ -110,6 +117,7 @@ export default function ToolsBar({
             aria-label="filter"
             onClick={() => {}}
             className=""
+            disabled
           >
             <Search />
           </IconButton>

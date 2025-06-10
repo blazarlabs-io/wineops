@@ -115,7 +115,7 @@ export default function PolygonDrawingMap({
         } // Chisinau, Moldova
         gestureHandling={"greedy"}
         disableDefaultUI={true}
-        mapTypeId={"satellite"}
+        mapTypeId={"hybrid"}
       />
       {initialCoordinates && initialCoordinates.length > 0 && (
         <PolygonOverlay initialCoordinates={initialCoordinates} />

@@ -29,6 +29,7 @@ function TabPanel(props: TabPanelProps) {
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
+      className="w-full h-full"
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
@@ -70,7 +71,9 @@ export default function VineyardDetailsWidget({
         bgcolor: "transparent",
         display: "flex",
         alignItems: "center",
+        width: "100%",
       }}
+      className=""
     >
       <Tabs
         orientation="vertical"
@@ -78,22 +81,64 @@ export default function VineyardDetailsWidget({
         value={value}
         onChange={handleChange}
         aria-label="Vertical tabs example"
-        sx={{ borderRight: 1, borderColor: "divider" }}
+        sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
-        <Tab label="details" {...a11yProps(0)} />
-        <Tab label="grapeVariety" {...a11yProps(1)} />
-        <Tab label="Lab Results" {...a11yProps(2)} />
-        <Tab label="Tasks" {...a11yProps(3)} />
-        <Tab label="Weather" {...a11yProps(4)} />
-        <Tab label="Documents" {...a11yProps(5)} />
+        <Tab
+          label="details"
+          {...a11yProps(0)}
+          sx={{
+            padding: "8px !important",
+            minHeight: "fit-content !important",
+          }}
+        />
+        <Tab
+          label="grapeVariety"
+          {...a11yProps(1)}
+          sx={{
+            padding: "8px !important",
+            minHeight: "fit-content !important",
+          }}
+        />
+        <Tab
+          label="Lab Results"
+          {...a11yProps(2)}
+          sx={{
+            padding: "8px !important",
+            minHeight: "fit-content !important",
+          }}
+        />
+        <Tab
+          label="Tasks"
+          {...a11yProps(3)}
+          sx={{
+            padding: "8px !important",
+            minHeight: "fit-content !important",
+          }}
+        />
+        <Tab
+          label="Weather"
+          {...a11yProps(4)}
+          sx={{
+            padding: "8px !important",
+            minHeight: "fit-content !important",
+          }}
+        />
+        <Tab
+          label="Documents"
+          {...a11yProps(5)}
+          sx={{
+            padding: "8px !important",
+            minHeight: "fit-content !important",
+          }}
+        />
       </Tabs>
       <TabPanel value={value} index={0}>
         {/* * GENERAL INFO */}
         <div className="flex items-center gap-8 w-full">
           <>
-            <div className="min-w-[296px]">
+            <div className="min-w-[448px]">
               <PolygonViewerMap
-                height={"224px"}
+                height={"216px"}
                 initialCoordinates={
                   localVineyard.info &&
                   localVineyard.info.location &&
@@ -108,7 +153,7 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Surface"
                 value={
-                  localVineyard.info?.location?.surface?.toString() + " m2" ||
+                  localVineyard.info?.location?.surface?.toString() + " Ha" ||
                   "N/A"
                 }
               />
@@ -242,22 +287,28 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={2}>
         {labReports && labReports.length > 0 && (
-          <div className="flex w-full items-center gap-1">
-            <div className="w-full">
+          <div className="flex w-full items-center gap-4">
+            <div className="w-fit h-full flex flex-wrap max-w-[264px] max-h-[268px] gap-2 overflow-y-scroll pr-4">
               {labReports.map((item, index) => {
                 return (
-                  <div key={item.id + index} className="w-full">
-                    {index < 3 && (
-                      <div className="flex items-center w-full justify-between gap-8 px-4 py-2 h-full ">
-                        <LabReportSimpleDataDisplay data={item} />
-                      </div>
-                    )}
+                  <div
+                    key={item.id + index}
+                    className="w-full rounded-md"
+                    style={{
+                      border: "1px solid var(--mui-palette-divider)",
+                    }}
+                  >
+                    {/* {index < 3 && ( */}
+                    <div className="flex items-center w-full justify-between gap-8 px-4 py-3 h-full ">
+                      <LabReportSimpleDataDisplay data={item} />
+                    </div>
+                    {/* )} */}
                   </div>
                 );
               })}
             </div>
             <div
-              className="min-w-[600px] flex items-center justify-start pl-8"
+              className="min-w-[600px] w-full flex items-center justify-start"
               style={{ height: "220px" }}
             >
               <LabResultsChart
@@ -267,17 +318,10 @@ export default function VineyardDetailsWidget({
                   date: new Date().toISOString(),
                 }}
               />
-
-              {/* 
-
-  id: string;
-  items: LabReport[];
-  date: string;
-*/}
             </div>
           </div>
         )}
-        <div className="absolute -top-2 right-4 z-10">
+        <div className="absolute -top-2 right-12 z-10">
           <Link href="" className="underline">
             View All
           </Link>

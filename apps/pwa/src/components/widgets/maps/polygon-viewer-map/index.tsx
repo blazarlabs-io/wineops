@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getPolygonCenter } from '@/helpers/map-helpers';
-import { Coordinates } from '@/models/types/db';
-import { Map, useMap } from '@vis.gl/react-google-maps';
-import { useEffect, useRef, useState } from 'react';
+import { getPolygonCenter } from "@/helpers/map-helpers";
+import { Coordinates } from "@/models/types/db";
+import { Map, useMap } from "@vis.gl/react-google-maps";
+import { useEffect, useRef, useState } from "react";
 
 interface PolygonOverlayProps {
   height?: string;
@@ -19,10 +19,10 @@ const PolygonOverlay = ({ initialCoordinates }: PolygonOverlayProps) => {
 
     const polygon = new google.maps.Polygon({
       paths: initialCoordinates as any,
-      strokeColor: '#C8446A',
+      strokeColor: "#C8446A",
       strokeOpacity: 0.8,
       strokeWeight: 2,
-      fillColor: '#C8446A',
+      fillColor: "#C8446A",
       fillOpacity: 0.35,
     });
 
@@ -44,7 +44,7 @@ export type PolygonViewerMapProps = {
 };
 
 export default function PolygonViewerMap({
-  height = '320px',
+  height = "320px",
   initialCoordinates,
 }: PolygonViewerMapProps) {
   const [center, setCenter] = useState<Coordinates>({
@@ -70,12 +70,17 @@ export default function PolygonViewerMap({
 
   return (
     <Map
-      style={{ width: '100%', height: height, borderRadius: '8px', overflow: 'hidden' }}
+      style={{
+        width: "100%",
+        height: height,
+        borderRadius: "8px",
+        overflow: "hidden",
+      }}
       defaultCenter={center}
       defaultZoom={12}
       id="my-map"
       disableDefaultUI={true}
-      mapTypeId={'satellite'}
+      mapTypeId={"hybrid"}
     >
       {initialCoordinates !== undefined &&
         initialCoordinates !== null &&

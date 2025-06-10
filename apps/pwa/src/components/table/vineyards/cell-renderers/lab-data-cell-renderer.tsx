@@ -25,8 +25,8 @@ export const LabDataCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     if (
       labReports &&
       labReports.length > 0 &&
-      params.node.data.labData &&
-      params.node.data.labData.length > 0
+      params.node?.data?.labData &&
+      params.node?.data?.labData.length > 0
     ) {
       const labRes = labReports.filter(
         (r: LabReport) =>

@@ -10,7 +10,6 @@ export default function LabReportSimpleDataDisplay({
   data,
 }: LabSimpleDataDisplayProps) {
   if (!data) return;
-  console.log("XXXXXXXX", data);
   return (
     <>
       {data && data !== undefined && (

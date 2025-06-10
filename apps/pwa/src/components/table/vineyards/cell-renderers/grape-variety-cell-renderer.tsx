@@ -19,39 +19,45 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
       className=""
     >
       {uniqueValues.length > 0 ? (
-        <Box
-          display={"flex"}
-          flexDirection={"column"}
-          justifyContent={"center"}
-          alignItems={"start"}
-          gap={1}
-          sx={{
+        <div
+          style={{
             height: ROW_HEIGHT_DEFAULT,
+            gap: 1,
           }}
+          className="flex flex-col justify-center"
         >
           {uniqueValues.map((v, index) => (
-            <Box
-              key={index}
-              display={"flex"}
-              flexDirection={"column"}
-              justifyContent={"center"}
-            >
-              {index < 2 ? (
-                <p className="leading-[1] truncate">{v}</p>
-              ) : (
-                index === 2 && (
-                  <Typography
-                    variant="body2"
-                    color="primary"
-                    className="leading-[1] m-[0px] p-[0px] text-muted-foreground underline cursor-pointer"
-                  >
-                    + {uniqueValues.length - 2} more
-                  </Typography>
-                )
+            <>
+              {index <= 2 && (
+                <Box
+                  key={index}
+                  display={"flex"}
+                  flexDirection={"column"}
+                  justifyContent={"center"}
+                  maxHeight={"fit-content"}
+                  className=""
+                  sx={{
+                    visibility: index <= 2 ? "visible" : "hidden",
+                  }}
+                >
+                  {index < 2 ? (
+                    <p className="leading-[1] truncate">{v}</p>
+                  ) : (
+                    index === 2 && (
+                      <Typography
+                        variant="body2"
+                        color="primary"
+                        className="leading-[1] m-[0px] p-[0px] text-muted-foreground underline cursor-pointer"
+                      >
+                        + {uniqueValues.length - 2} more
+                      </Typography>
+                    )
+                  )}
+                </Box>
               )}
-            </Box>
+            </>
           ))}
-        </Box>
+        </div>
       ) : (
         <Box
           display={"flex"}
