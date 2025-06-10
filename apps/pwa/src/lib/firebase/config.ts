@@ -17,10 +17,7 @@ export const GRAPES = "grapes";
 export const BULKWINES = "bulkwines";
 export const VESSELS = "vessels";
 export const CONSUMABLES = "consumables";
+export const MUSTS = "musts";
 export const ACTIONS = "actions";
 export const TEAM = "teamMembers";
 export const LAB_REPORTS = "labReports";
-<<<<<<< HEAD
-export const MUSTS = "musts";
-=======
->>>>>>> origin/feature/harvest-action
