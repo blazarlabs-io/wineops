@@ -21,7 +21,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   const { labReports, vineyards } = useVineyard();
   const { labData } = useGetVineyardLabData(
     value,
-    node.data.labData,
+    node.data?.labData,
     labReports,
     vineyards
   );
