@@ -3,7 +3,7 @@ import LabSingleItemDataDisplay from "@/components/data-display/lab-single-item-
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import DocumentsSimpleTable from "@/components/table/documents-simple";
 import { convertIsoToShortDate } from "@/helpers/date-helpers";
-import { Vineyard } from "@/models/types/db";
+import { LabReport, Vineyard } from "@/models/types/db";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/base/tabs';
 import Link from "next/link";
 import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
@@ -11,6 +11,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import LabReportSimpleDataDisplay from "@/components/data-display/lab-report-simple-data-display";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,10 +44,12 @@ function a11yProps(index: number) {
 
 export type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
+  labReports: LabReport[];
 };
 
 export default function VineyardDetailsWidget({
   vineyard,
+  labReports,
 }: VineyardDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
   const [localVineyard, setLocalVineyard] = useState<Vineyard>(vineyard);
@@ -238,34 +241,15 @@ export default function VineyardDetailsWidget({
         </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        {localVineyard.labData && localVineyard.labData.length > 0 && (
+        {labReports && labReports.length > 0 && (
           <div className="flex w-full items-center gap-1">
             <div className="w-full">
-              {localVineyard.labData.map((item, index) => {
+              {labReports.map((item, index) => {
                 return (
                   <div key={item.id + index} className="w-full">
                     {index < 3 && (
                       <div className="flex items-center w-full justify-between gap-8 px-4 py-2 h-full ">
-                        <SimpleDataDisplay
-                          label="Date"
-                          value={
-                            convertIsoToShortDate(
-                              localVineyard.labData[0].date
-                            ) || "N/A"
-                          }
-                        />
-                        <LabSingleItemDataDisplay
-                          name={item.items[0].name}
-                          value={item.items[0].value.toString()}
-                          unit={item.items[0].unit}
-                          variation={item.items[0].variation.toString()}
-                        />
-                        <LabSingleItemDataDisplay
-                          name={item.items[1].name}
-                          value={item.items[1].value.toString()}
-                          unit={item.items[1].unit}
-                          variation={item.items[1].variation.toString()}
-                        />
+                        <LabReportSimpleDataDisplay data={item} />
                       </div>
                     )}
                   </div>
@@ -273,10 +257,23 @@ export default function VineyardDetailsWidget({
               })}
             </div>
             <div
-              className="min-w-[600px] flex items-start justify-start"
-              style={{ height: "96px" }}
+              className="min-w-[600px] flex items-center justify-start pl-8"
+              style={{ height: "220px" }}
             >
-              <LabResultsChart data={localVineyard.labData[0]} />
+              <LabResultsChart
+                data={{
+                  id: "1",
+                  items: labReports,
+                  date: new Date().toISOString(),
+                }}
+              />
+
+              {/* 
+
+  id: string;
+  items: LabReport[];
+  date: string;
+*/}
             </div>
           </div>
         )}

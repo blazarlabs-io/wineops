@@ -1,24 +1,46 @@
-import { VineyardHarvestAction } from "@/models/types/actions";
+import {
+  VineyardGlobalAction,
+  VineyardHarvestAction,
+} from "@/models/types/actions";
 import { LabDataSimple } from "@/models/types/db";
+import { Timestamp } from "firebase/firestore";
 
 export const vineyardHarvestActionSample: VineyardHarvestAction = {
   id: "",
-  subject: [],
-  name: "vineyard-harvest",
-  executionDate: new Date(),
+  type: "harvest",
+  subject: {
+    id: "",
+    name: "",
+  },
+  supplier: "",
+  executionDate: Timestamp.now(),
   consumables: [],
-  batchId: "",
-  quantity: {
-    actual: 0,
-    supply: 0,
-    demand: 0,
-    status: "",
+  batch: {
+    id: "",
+    quantity: 0,
   },
   invoiceNumber: "invoice",
   latestLabData: {} as LabDataSimple,
-  vessels: [],
-  equipment: [],
+  vessels: [] as { id: string; name: string }[],
+  equipment: [] as { id: string; name: string }[],
   description: "description",
   location: "location",
   documents: [],
+};
+
+export const vineyardGlobalActionSample: VineyardGlobalAction = {
+  id: "",
+  type: null,
+  executionDate: Timestamp.now(),
+  inUseVineyard: {
+    id: "",
+    name: "",
+  },
+  responsible: {
+    name: "",
+    email: "",
+  },
+  inputData: {},
+  notes: [],
+  supportingDocuments: [],
 };

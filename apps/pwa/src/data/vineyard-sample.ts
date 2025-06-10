@@ -5,9 +5,11 @@ import {
   generateNotes,
   generateTasks,
 } from "@/utils/generators";
+import { Timestamp } from "firebase/firestore";
 
 const vineyardSample: Vineyard = {
   id: Date.now().toString(),
+  createdAt: Timestamp.now(),
   name: "",
   status: VineyardStatus.MAINTENANCE,
   grapeVariety: "",
@@ -55,7 +57,7 @@ const vineyardSample: Vineyard = {
     countryOfOrigin: "",
   },
   forecastedYield: 0,
-  labData: generateLabData() as LabDataSimple[],
+  labData: [],
   tasks: generateTasks(),
   notes: generateNotes(),
   documents: generateDummyDocs(10),

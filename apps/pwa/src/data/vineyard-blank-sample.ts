@@ -1,4 +1,5 @@
 import { Vineyard, VineyardStatus } from "@/models/types/db";
+import { Timestamp } from "firebase/firestore";
 
 const vineyardBlankSample: Vineyard = {
   id: Date.now().toString(),

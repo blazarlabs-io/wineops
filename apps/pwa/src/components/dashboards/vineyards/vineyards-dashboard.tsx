@@ -47,9 +47,9 @@ export default function VineyardsDashboard() {
   };
 
   vineyardBlankSample.id = Date.now().toString();
-  vineyardBlankSample.labData = generateLabData() as LabDataSimple[];
+  vineyardBlankSample.labData = []; //generateLabData() as LabDataSimple[];
   vineyardBlankSample.tasks = generateTasks();
-  vineyardBlankSample.documents = generateDummyDocs(10);
+  vineyardBlankSample.documents = generateDummyDocs(4);
   vineyardBlankSample.notes = generateNotes();
   vineyardBlankSample.rowType = "item";
 

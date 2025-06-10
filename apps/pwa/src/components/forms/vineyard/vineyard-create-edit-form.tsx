@@ -40,6 +40,7 @@ import {
   Typography,
 } from "@mui/material";
 import Select from "@mui/material/Select";
+import { Timestamp } from "firebase/firestore";
 import { Leaf, MapPin } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
@@ -121,6 +122,8 @@ export default function VineyardForm({
   const handleCreateVineyard = useCallback(
     async (uid: string, data: any) => {
       if (type === "create") data.group = [data.name];
+
+      data.createdAt = Timestamp.now();
 
       try {
         // * Check if vineyard already exists
