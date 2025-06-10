@@ -2,7 +2,11 @@ import QuickTasksDrawer from "@/components/drawers/quick-tasks-drawer";
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { useVineyard } from "@/context/vineyard";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
-import { ActionsEntity, VineyardActions } from "@/models/types/actions";
+import {
+  ActionsEntity,
+  GrapeActions,
+  VineyardActions,
+} from "@/models/types/actions";
 import { FormatListBulleted } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -11,6 +15,8 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
+import { Grape } from "@/models/types/db";
+import { useGrape } from "@/context/grape";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -52,6 +58,7 @@ export default function QickTasksWrapper({
 }) {
   const { mode } = useColorScheme();
   const { actions: vineyardActions } = useVineyard();
+  const { actions: grapeActions } = useGrape();
   const pn = usePathname();
   const router = useRouter();
   const [openQuickTasks, setOpenQuickTasks] = useState<boolean>(false);
@@ -116,6 +123,13 @@ export default function QickTasksWrapper({
             <QuickActionsDrawer<VineyardActions>
               open={openQuickActions}
               actions={vineyardActions}
+              onOpenChange={handleQuickActionsDrawerOpen}
+            />
+          )}
+          {currentDashboard === "grapes" && (
+            <QuickActionsDrawer<GrapeActions>
+              open={openQuickActions}
+              actions={grapeActions}
               onOpenChange={handleQuickActionsDrawerOpen}
             />
           )}

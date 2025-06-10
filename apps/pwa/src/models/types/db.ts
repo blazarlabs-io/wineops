@@ -209,6 +209,7 @@ export type VineyardItemGroup = {
 
 export const GrapeStatus = {
   IN_TRANSIT: "In Transit",
+  RECEIVED: "Received",
   PROCESSED: "Processed",
   DEHYDRATED: "Dehydrated",
   STORED: "Stored",
