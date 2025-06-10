@@ -13,8 +13,8 @@ export const LabDataCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 ) => {
   const { labReports, vineyards } = useVineyard();
   const { labData } = useGetVineyardLabData(
-    params.node.data.name,
-    params.node.data.labData,
+    params.node.data?.name,
+    params.node.data?.labData,
     labReports,
     vineyards
   );
