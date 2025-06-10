@@ -25,7 +25,7 @@ export default function LabResultsChart({ data }: LabResultsChartProps) {
     <>
       {labData && (
         <LineChart
-          height={168}
+          height={188}
           series={[
             {
               data: labData.sugar,
@@ -57,15 +57,17 @@ export default function LabResultsChart({ data }: LabResultsChartProps) {
                 fill: "--mui-palette-divider",
               },
             },
-            border: "1px solid rgba(0, 0, 0, 0.1)",
+            padding: 2,
+            borderRadius: 2,
+            border: "1px solid rgba(0, 0, 0, 0.05)",
             backgroundImage:
-              "linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)",
-            backgroundSize: "16px 16px",
+              "linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px)",
+            backgroundSize: "32px 16px",
             backgroundPosition: "0px 0px, 0px 0px",
             ...theme.applyStyles("dark", {
               borderColor: "rgba(255,255,255, 0.1)",
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255, 0.1) 1px, transparent 1px)",
+              // backgroundImage:
+              //   "linear-gradient(rgba(255,255,255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255, 0.1) 1px, transparent 1px)",
             }),
           })}
         />

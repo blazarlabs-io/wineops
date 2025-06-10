@@ -18,6 +18,7 @@ export const vineyardColumns: ColDef[] = [
       const grapes = params.values.map((value: any) => {
         return value;
       });
+
       return grapes;
     },
   },
@@ -30,6 +31,12 @@ export const vineyardColumns: ColDef[] = [
       return params;
     },
     cellStyle: { width: "100%" },
+    aggFunc: (params: any) => {
+      const statuses = params.values.map((value: any) => {
+        return value;
+      });
+      return statuses;
+    },
   },
   {
     field: "forcastedYield",

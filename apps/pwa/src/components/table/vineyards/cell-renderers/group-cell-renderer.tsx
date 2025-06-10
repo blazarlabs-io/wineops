@@ -100,7 +100,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                 </IconButton>
               </div>
               {expanded && (
-                <div className="fixed bottom-0 flex items-center justify-center left-0 w-full h-[300px] bg-transparent z-[9999]">
+                <div
+                  style={{ borderColor: "var(--mui-palette-divider)" }}
+                  className="fixed bottom-0 border-t flex items-center justify-center left-0 w-full h-[300px] bg-transparent z-[9999]"
+                >
                   <VineyardDetailsWidget
                     vineyard={node.data}
                     labReports={labData as LabReport[]}

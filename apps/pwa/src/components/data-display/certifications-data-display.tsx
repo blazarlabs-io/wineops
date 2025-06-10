@@ -9,6 +9,7 @@ export type CertificationsDataDisplayProps = {
 export default function CertificationsDataDisplay({
   certifications,
 }: CertificationsDataDisplayProps) {
+  console.log("CERTIFICATIONS", certifications);
   return (
     <div className="flex items-center gap-2 max-w-fit">
       <button type="button" className="cursor-pointer">
@@ -23,7 +24,7 @@ export default function CertificationsDataDisplay({
         <Snowflake
           className={cn(
             "w-4 h-4",
-            certifications.eco.active ? "opacity-100" : "opacity-30"
+            certifications.igp.active ? "opacity-100" : "opacity-30"
           )}
         />
       </button>
@@ -31,7 +32,7 @@ export default function CertificationsDataDisplay({
         <ShieldCheck
           className={cn(
             "w-4 h-4",
-            certifications.eco.active ? "opacity-100" : "opacity-30"
+            certifications.dop.active ? "opacity-100" : "opacity-30"
           )}
         />
       </button>
