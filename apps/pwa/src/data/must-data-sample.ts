@@ -4,6 +4,7 @@ import {
   generateNotes,
   generateTasks,
 } from "@/utils/generators";
+import { Timestamp } from "firebase/firestore";
 
 export const mustDataSample: Must[] = [
   {
@@ -15,7 +16,7 @@ export const mustDataSample: Must[] = [
     status: "Status 1",
     quantity: 3000,
     labData: [], //generateItems(5),
-    createdAt: new Date(),
+    createdAt: Timestamp.now(),
     vessel: {
       id: "1",
       name: "Vessel 1",

@@ -1,9 +1,5 @@
-import { Certifications, SingleDocument, Vineyard } from "@/models/types/db";
-import {
-  generateDummyDocs,
-  generateLabData,
-  generateRandomId,
-} from "@/utils/generators";
+import { Certifications, Vineyard } from "@/models/types/db";
+import { generateDummyDocs, generateRandomId } from "@/utils/generators";
 
 export function getData(): Vineyard[] {
   return [
@@ -37,7 +33,7 @@ export function getData(): Vineyard[] {
         },
         certifications: {} as Certifications,
       },
-      labData: generateLabData(),
+      labData: [],
       documents: generateDummyDocs(10),
       grape: {
         id: "",

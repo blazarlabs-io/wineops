@@ -1,19 +1,32 @@
 "use client";
 
+import VineyardHarvestActionFormComposer from "@/components/forms/actions/vineyard/vineyard-harvest-action-form-composer";
+import VineyardIrrigationActionFormComposer from "@/components/forms/actions/vineyard/vineyard-irrigation-action-form-composer";
+import VineyardLabActionFormComposer from "@/components/forms/actions/vineyard/vineyard-lab-action-form-composer";
+import {
+  vineyardHarvestAction,
+  vineyardLabAction,
+} from "@/lib/actions/vineyard-actions";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
-import { VINEYARDS, VINEYARDS_GROUPS, WINERY } from "@/lib/firebase/config";
-import { Group, Vineyard } from "@/models/types/db";
+import {
+  LAB_REPORTS,
+  VINEYARDS,
+  VINEYARDS_GROUPS,
+  WINERY,
+} from "@/lib/firebase/config";
+import { VineyardActions } from "@/models/types/actions";
+import { Group, LabReport, Vineyard } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
-// import { useSortVineyardsGroups } from '@/hooks/use-sort-vineyards-groups';
 
 interface VineyardContextType {
   vineyards: Vineyard[];
   selectedVineyards: Vineyard[];
   updateSelectedVineyards: (vineyards: Vineyard[]) => void;
   vineyardsGroups: Group[];
-  // vineyardItemsGroups: VineyardItemGroup[];
+  actions: VineyardActions;
+  labReports: LabReport[];
 }
 
 const VineyardContext = createContext<VineyardContextType | null>(null);
@@ -39,22 +52,35 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   const [vineyards, setVineyards] = useState<Vineyard[]>([]);
   const [selectedVineyards, setSelectedVineyards] = useState<Vineyard[]>([]);
   const [vineyardsGroups, setVineyardsGroups] = useState<Group[]>([]);
-  // const [vineyardItemsGroups, setVineyardItemsGroups] = useState<VineyardItemGroup[]>([]);
-
-  // const { vineyardsGroups: vig } = useSortVineyardsGroups(vineyards, vineyardsGroups);
+  const [labReports, setLabReports] = useState<LabReport[]>([]);
+  const [actions] = useState<VineyardActions>({
+    harvest: {
+      exec: vineyardHarvestAction,
+      form: <VineyardHarvestActionFormComposer />,
+      icon: "hugeicons:grapes",
+    },
+    "lab-report": {
+      exec: vineyardLabAction,
+      form: <VineyardLabActionFormComposer />,
+      icon: "material-symbols:lab-profile-outline",
+    },
+    irrigation: {
+      exec: vineyardLabAction,
+      form: <VineyardIrrigationActionFormComposer />,
+      icon: "material-symbols:water-drop",
+    },
+  });
 
   const updateSelectedVineyards = (vineyards: Vineyard[]) => {
     setSelectedVineyards(vineyards);
   };
 
-  // useEffect(() => {
-  //   setVineyardItemsGroups(vig);
-  // }, [vig]);
-
   useEffect(() => {
     let unsubVineyards = () => {};
 
     let unsubVineyardsGroups = () => {};
+
+    let unsubLabReports = () => {};
 
     if (user && db) {
       // * Vineyards Realtime Updates
@@ -85,7 +111,6 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         console.log("Selected Vineyards:", selectedVineyards);
         console.log("====================================\n");
         setVineyards(vineyards);
-        // const updatedSelectedVineyards = vineyards.filter((vineyard) =>vineyard.id === selectedVineyards[0]?.id);
 
         // * Check if any of theselted vineyards exist in the vineyards array
         const updatedSelectedVineyards = selectedVineyards.filter((vineyard) =>
@@ -116,11 +141,34 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         });
         setVineyardsGroups(vineyardsGroups);
       });
+
+      // * Lab Reports Realtime Updates
+      const labReportsRef = collection(
+        db,
+        WINERY,
+        user?.uid as string,
+        LAB_REPORTS
+      );
+
+      unsubLabReports = onSnapshot(labReportsRef, (querySnapshot) => {
+        const labReports: LabReport[] = [];
+
+        if (querySnapshot.empty) {
+          console.log("No lab reports found");
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          labReports.push(doc.data() as LabReport);
+        });
+        setLabReports(labReports);
+      });
     }
 
     return () => {
       unsubVineyards();
       unsubVineyardsGroups();
+      unsubLabReports();
       setVineyards([]);
       setVineyardsGroups([]);
     };
@@ -133,7 +181,8 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         selectedVineyards,
         updateSelectedVineyards,
         vineyardsGroups,
-        // vineyardItemsGroups,
+        actions,
+        labReports,
       }}
     >
       {children}

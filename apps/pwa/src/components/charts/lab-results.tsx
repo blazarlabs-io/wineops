@@ -1,5 +1,5 @@
 "use client";
-import { LabDataSimple } from "@/models/types/db";
+import { LabDataChart, LabDataSimple } from "@/models/types/db";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { barElementClasses } from "@mui/x-charts/BarChart";
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
@@ -7,7 +7,7 @@ import { useSortChartData } from "@/hooks/use-sort-chart-data";
 import { useTheme } from "@mui/material/styles";
 
 export type LabResultsChartProps = {
-  data: LabDataSimple;
+  data: LabDataChart;
 };
 
 export default function LabResultsChart({ data }: LabResultsChartProps) {
@@ -25,7 +25,7 @@ export default function LabResultsChart({ data }: LabResultsChartProps) {
     <>
       {labData && (
         <LineChart
-          height={72}
+          height={168}
           series={[
             {
               data: labData.sugar,

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
+import { ActionRelation } from "./actions";
 
 export type TaskStatus =
   | "todo"
@@ -58,6 +59,20 @@ export type LabElement = {
   date: string;
 };
 
+export type LabReport = {
+  id: string;
+  supportingDocs: string[];
+  results: {
+    [key: string]: {
+      value: number;
+      variation: number;
+    };
+  };
+  units: string;
+  responsible: ResponsibleTeamMember;
+  date: Timestamp | string;
+};
+
 export type ResponsibleTeamMember = {
   name: string;
   email: string;
@@ -67,6 +82,12 @@ export type LabDataSimple = {
   id: string;
   fileUrl: string;
   items: LabElement[];
+  date: string;
+};
+
+export type LabDataChart = {
+  id: string;
+  items: LabReport[];
   date: string;
 };
 
@@ -151,11 +172,17 @@ export type Vineyard = {
   grape: VineyardGrape;
   status: VineyardStatus;
   forecastedYield: number;
-  labData: LabDataSimple[];
   tasks: TaskSummary[];
   notes: Note[];
   documents: SingleDocument[];
   group: string[];
+  createdAt?: string | Timestamp;
+  // * RELATIONS * //
+  vessels?: ActionRelation[];
+  batches?: ActionRelation[];
+  equipment?: ActionRelation[];
+  actions?: ActionRelation[];
+  labData?: ActionRelation[];
 };
 
 export type Winery = {
@@ -278,11 +305,8 @@ export type Must = {
   status: string;
   quantity: number;
   labData: LabDataSimple[];
-  createdAt: string | Date;
-  vessel: {
-    id: string;
-    name: string;
-  };
+  createdAt: string | Timestamp;
+  vessel: ActionRelation;
   location: string;
   notes: Note[];
   tasks: TaskSummary[];
