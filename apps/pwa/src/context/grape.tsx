@@ -1,8 +1,14 @@
 "use client";
 
+import GrapeIntakeActionFormComposer from "@/components/forms/actions/vineyard/grape-intake-action-form-composer";
+import {
+  grapeIntakeAction,
+  grapeProcessingAction,
+} from "@/lib/actions/grape-actions";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
 import { GRAPES, WINERY } from "@/lib/firebase/config";
+import { GrapeActions } from "@/models/types/actions";
 import { Grape } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
@@ -19,6 +25,7 @@ interface GrapeContextType {
   grapes: Grape[];
   selectedGrapes: Grape[];
   updateSelectedGrapes: (grapes: Grape[]) => void;
+  actions: GrapeActions;
 }
 
 const GrapeContext = createContext<GrapeContextType | null>(null);
@@ -42,6 +49,18 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
 
   const [grapes, setGrapes] = useState<Grape[]>([]);
   const [selectedGrapes, setSelectedGrapes] = useState<Grape[]>([]);
+  const [actions] = useState<GrapeActions>({
+    "grape-intake": {
+      exec: grapeIntakeAction,
+      form: <GrapeIntakeActionFormComposer />,
+      icon: "hugeicons:grapes",
+    },
+    "grape-processing": {
+      exec: grapeProcessingAction,
+      form: <></>,
+      icon: "material-symbols:grain",
+    },
+  });
 
   const updateSelectedGrapes = useCallback((grapes: Grape[]) => {
     setSelectedGrapes(grapes);
@@ -90,6 +109,7 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
         grapes: memoizedGrapes,
         selectedGrapes: memoizedSelectedGrapes,
         updateSelectedGrapes,
+        actions,
       }}
     >
       {children}

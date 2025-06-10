@@ -15,15 +15,6 @@ export interface Subject {
   name: string;
 }
 
-// export type VineyardActions = {
-//   harvest: (
-//     uid: string,
-//     actionData: VineyardHarvestAction,
-//     vineyard: Vineyard
-//   ) => void;
-//   "lab-report": (uid: string, actionData: any, vineyard: Vineyard) => void;
-// };
-
 export type VineyardActions = {
   harvest: {
     exec: (
@@ -51,14 +42,61 @@ export type ActionIcons = {
 };
 
 export type GrapeActions = {
-  harvest: (uid: string, actionData: any, grape: Grape) => void;
+  "grape-intake": {
+    exec: (uid: string, actionData: any, grape: Grape) => void;
+    form: any;
+    icon: string;
+  };
+  "grape-processing": {
+    exec: (uid: string, actionData: any, grape: Grape) => void;
+    form: any;
+    icon: string;
+  };
 };
 
-export type ActionType = "harvest" | "lab-report" | "irrigation" | null;
+export type VineyardActionType = "harvest" | "lab-report" | "irrigation" | null;
+export type GrapeActionType = "grape-intake" | "grape-processing" | null;
+
+export type GrapeIntakeAction = {
+  id: string;
+  type: GrapeActionType;
+  subjectGrape?: Subject;
+  executionDate: string | Timestamp;
+  supplier?: string;
+  grapeVariety?: string;
+  weigherName?: ResponsibleTeamMember;
+  mass?: {
+    gross?: number;
+    net?: number;
+    tare?: number;
+  };
+  qualityCharacteristics?: {
+    sugar?: number;
+    acidity?: number;
+    density?: number;
+    temperature?: number;
+    massFractionSpoiled?: number;
+    massFractionCrushed?: number;
+    massFractionMixed?: number;
+  };
+  labCertificateId?: string;
+  certificateDeInofensiviate?: string;
+  labTechnicianName?: string;
+  transportInfo?: {
+    vehicleId?: string;
+    companyName?: string;
+    driverId?: string;
+  };
+  invoiceNumber?: string;
+  supportingDocument?: {
+    name: string;
+    url: string;
+  };
+};
 
 export interface VineyardHarvestAction {
   id: string;
-  type: ActionType;
+  type: VineyardActionType;
   subject: Subject;
   supplier: string;
   executionDate: string | Timestamp;
@@ -78,7 +116,7 @@ export interface VineyardHarvestAction {
 
 export interface VineyardGlobalAction {
   id: string;
-  type: ActionType;
+  type: VineyardActionType;
   executionDate: string | Timestamp;
   inUseVineyard: ActionRelation;
   responsible?: ResponsibleTeamMember;
