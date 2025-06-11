@@ -19,6 +19,7 @@ import {
   Warehouse,
   WineBar,
   Workspaces,
+  Handyman,
 } from "@mui/icons-material";
 
 export const NAVIGATION: Navigation = [
@@ -53,22 +54,22 @@ export const NAVIGATION: Navigation = [
         title: "Wine Bottling",
         icon: <Liquor />,
       },
-      {
-        segment: "storage",
-        title: "Storage",
-        icon: <Warehouse />,
-      },
-      {
-        segment: "vessel",
-        title: "Vessel Management",
-        icon: <OilBarrel />,
-      },
     ],
   },
   {
-    segment: "Order Management",
+    segment: "storage",
+    title: "Storage",
+    icon: <Warehouse />,
+  },
+  {
+    segment: "order-management",
     title: "Order Management",
     icon: <ManageSearch />,
+  },
+  {
+    segment: "vessel",
+    title: "Vessel Management",
+    icon: <OilBarrel />,
   },
   {
     segment: "expandables",
@@ -77,7 +78,7 @@ export const NAVIGATION: Navigation = [
     pattern: "workspace/expandables/",
     children: [
       {
-        segment: "Chemistry",
+        segment: "chemistry",
         title: "Chemistry",
         icon: <Science />,
       },
@@ -87,42 +88,47 @@ export const NAVIGATION: Navigation = [
         icon: <Output />,
       },
       {
-        segment: "Nomenclature",
+        segment: "nomenclature",
         title: "Nomenclature",
         icon: <DriveFileRenameOutline />,
       },
     ],
   },
   {
-    segment: "Management",
-    title: "Management",
+    segment: "tools-equipment",
+    title: "Tools & Equipment",
+    icon: <Handyman />,
+  },
+  {
+    segment: "team-management",
+    title: "Team Management",
     icon: <ManageAccounts />,
     children: [
       {
-        segment: "Team",
-        title: "Team",
+        segment: "people",
+        title: "People",
         icon: <Groups />,
       },
       {
-        segment: "Tasks",
+        segment: "tasks",
         title: "Tasks",
         icon: <FormatListBulleted />,
       },
     ],
   },
   {
-    segment: "Documents",
-    title: "Documents",
-    icon: <TextSnippet />,
-  },
-  {
-    segment: "Reports",
+    segment: "reports",
     title: "Reports",
     icon: <Assessment />,
   },
   {
-    segment: "Settings",
-    title: "Settings",
+    segment: "documents",
+    title: "Documents",
+    icon: <TextSnippet />,
+  },
+  {
+    segment: "preferences",
+    title: "Preferences",
     icon: <Settings />,
   },
 ];
