@@ -370,7 +370,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
       autoSize: true,
       minHeight: 140,
       height: 150,
-      minWidth: 240,
+      minWidth: 230,
       legend: {
         position: "top",
         spacing: 20,
@@ -384,7 +384,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         baseTheme: themeClass,
         params: {
           fontFamily: "Lato, sans-serif",
-          backgroundColor: isDarkMode ? "#121212" : "#FFFFFFCC",
+          backgroundColor: "transparent",
           foregroundColor: isDarkMode ? "#FFFFFFCC" : "#361008CC",
         },
       },
