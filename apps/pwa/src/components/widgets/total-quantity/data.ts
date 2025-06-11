@@ -1,18 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EntityStatus } from "@/models/types/dashboard";
 import { MetricsOutput, MetricsOutput2, MetricsTotal } from "./types";
-import { VineyardStatus } from "@/models/types/db";
+import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { TOTAL_QUANTITY_COLORS } from "./constants";
 import { useColorScheme } from "@mui/material";
 
 const IS_PRE = (status?: EntityStatus) =>
-  status !== VineyardStatus.HARVESTING &&
-  status !== VineyardStatus.HARVEST_ENDED;
+  status === GrapeStatus.IN_TRANSIT ||
+  status === VineyardStatus.MAINTENANCE ||
+  status === VineyardStatus.READY_FOR_HARVEST ||
+  status === VineyardStatus.RIPPING ||
+  status === VineyardStatus.VEGETATION;
 
-const IS_ON = (status?: EntityStatus) => status === VineyardStatus.HARVESTING;
+const IS_ON = (status?: EntityStatus) =>
+  status === GrapeStatus.RECEIVED || status === VineyardStatus.HARVESTING;
 
 const IS_ENDED = (status?: EntityStatus) =>
-  status === VineyardStatus.HARVEST_ENDED;
+  status === VineyardStatus.HARVEST_ENDED ||
+  status === GrapeStatus.PROCESSED ||
+  status === GrapeStatus.DEHYDRATED ||
+  status === GrapeStatus.FRIDGE_STORED ||
+  status === GrapeStatus.STORED;
 
 export const useChartOptions = (metrics: MetricsTotal[]) => {
   const { mode } = useColorScheme();
