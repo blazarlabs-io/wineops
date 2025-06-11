@@ -1,14 +1,5 @@
 import { convertIsoToShortDate } from "@/helpers/date-helpers";
 import { SingleDocument } from "@/models/types/db";
-// import {
-//   Table,
-//   TableBody,
-//   TableCaption,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from '@repo/ui/components/base/table';
 import { Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -30,7 +21,9 @@ export default function DocumentsSimpleTable({
     <TableContainer
       component={Paper}
       sx={{
-        height: "100%",
+        display: "flex",
+        alignItems: "start",
+        height: "280px",
         width: "100%",
         paddingRight: 8,
         background: "transparent",
@@ -71,40 +64,38 @@ export default function DocumentsSimpleTable({
         <TableBody>
           {data &&
             data.length > 0 &&
-            data.map((item, index) => (
+            data.map((item) => (
               <>
-                {index < 4 && (
-                  <TableRow key={item.id + item.name}>
-                    <TableCell className="font-medium">
-                      <Typography color="textSecondary">{item.name}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography color="textSecondary">
-                        {item.owner.name}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography color="textSecondary">
-                        {item.owner.email}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography color="textSecondary">
-                        {convertIsoToShortDate(item.uploadDate)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography color="textSecondary">
-                        .{item.media.subtype}
-                      </Typography>
-                    </TableCell>
-                    <TableCell className="text-left">
-                      <Typography color="textSecondary">
-                        {item.media.sizeMb} MB
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
+                <TableRow key={item.id + item.name}>
+                  <TableCell className="font-medium">
+                    <Typography color="textSecondary">{item.name}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary">
+                      {item.owner.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary">
+                      {item.owner.email}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary">
+                      {convertIsoToShortDate(item.uploadDate)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary">
+                      .{item.media.subtype}
+                    </Typography>
+                  </TableCell>
+                  <TableCell className="text-left">
+                    <Typography color="textSecondary">
+                      {item.media.sizeMb} MB
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               </>
             ))}
         </TableBody>

@@ -19,12 +19,12 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
     id: "",
     quantity: 0,
   },
-  invoiceNumber: "invoice",
+  invoiceNumber: "",
   latestLabData: {} as LabDataSimple,
   vessels: [] as { id: string; name: string }[],
   equipment: [] as { id: string; name: string }[],
-  description: "description",
-  location: "location",
+  description: "",
+  location: "",
   documents: [],
 };
 

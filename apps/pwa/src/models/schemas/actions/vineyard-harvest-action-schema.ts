@@ -33,8 +33,8 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
       })
     )
     .optional(),
-  description: Joi.string().optional(),
-  location: Joi.string().optional(),
+  description: Joi.string().allow(""),
+  location: Joi.string().optional().allow(""),
   documents: Joi.array()
     .items(
       Joi.object({

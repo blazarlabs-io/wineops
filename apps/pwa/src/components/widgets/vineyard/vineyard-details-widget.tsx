@@ -208,7 +208,7 @@ export default function VineyardDetailsWidget({
             {localVineyard.grape ? (
               <div
                 style={{ border: "1px solid var(--mui-palette-divider)" }}
-                className="flex p-4 w-full gap-4 justify-between rounded-md"
+                className="flex p-1 w-full gap-4 justify-between rounded-md"
               >
                 <SimpleDataDisplay
                   label="Clonal Selection"
@@ -249,7 +249,7 @@ export default function VineyardDetailsWidget({
             {localVineyard.info && (
               <div
                 style={{ border: "1px solid var(--mui-palette-divider)" }}
-                className="flex p-4 w-full gap-4 justify-between rounded-md"
+                className="flex p-1 w-full gap-4 justify-between rounded-md"
               >
                 <SimpleDataDisplay
                   label="Spacing"
@@ -335,7 +335,7 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={5}>
         <div className="flex gap-8 px-4 relative">
-          <div className="absolute -top-6 right-4 z-10">
+          <div className="absolute -top-10 right-16 z-10">
             <Link href="" className="underline">
               View All
             </Link>
