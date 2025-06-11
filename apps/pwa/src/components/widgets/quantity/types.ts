@@ -1,5 +1,4 @@
-import { VineyardStatus } from "@/models/types/db";
-import { Metric } from "./constants";
+import { Metric, VineyardStatus } from "@/models/types/db";
 
 export interface Colors {
   unit?: string;

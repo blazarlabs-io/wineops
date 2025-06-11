@@ -1,12 +1,5 @@
+import { Metric } from "@/models/types/db";
 import { Colors } from "./types";
-
-export const Metric = {
-  ACTUAL: "actual",
-  SUPPLY: "supply",
-  DEMAND: "demand",
-} as const;
-
-export type Metric = (typeof Metric)[keyof typeof Metric];
 
 type QuantityColors = Record<Metric, Colors>;
 

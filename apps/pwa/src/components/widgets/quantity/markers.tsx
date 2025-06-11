@@ -1,6 +1,6 @@
 import { formatNumberWithUnit } from "@/utils/number-format";
-import { Metric } from "./constants";
 import { SortedValueWithColor } from "./types";
+import { Metric } from "@/models/types/db";
 
 interface MarkersProps {
   maxValue: number;
