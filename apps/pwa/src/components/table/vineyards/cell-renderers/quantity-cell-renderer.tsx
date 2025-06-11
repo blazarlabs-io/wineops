@@ -1,11 +1,12 @@
 import QuantityWidget from "@/components/widgets/quantity";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 import { useGrape } from "@/context/grape";
 import { ActionRelation } from "@/models/types/actions";
 import { Grape } from "@/models/types/db";
+import TotalQuantityWidget from "@/components/widgets/total-quantity";
 
 export const QuantityCellRenderer: FunctionComponent<
   CustomCellRendererProps
@@ -32,6 +33,11 @@ export const QuantityCellRenderer: FunctionComponent<
   const supply = 0;
   const demand = 0;
 
+  const metrics = (node?.allLeafChildren || []).map(({ data }) => ({
+    actual: data?.forecastedYield,
+    status: data?.status,
+  }));
+
   return (
     <Box
       display={"flex"}
@@ -40,7 +46,15 @@ export const QuantityCellRenderer: FunctionComponent<
       width={"100%"}
       height={ROW_HEIGHT_DEFAULT}
     >
-      {!node.group && (
+      {node.group ? (
+        <Stack
+          height="100%"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <TotalQuantityWidget metrics={metrics} />
+        </Stack>
+      ) : (
         <QuantityWidget
           actual={actual}
           supply={supply}

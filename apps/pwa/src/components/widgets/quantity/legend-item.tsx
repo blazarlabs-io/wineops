@@ -1,6 +1,7 @@
 import { formatNumber } from "@/utils/number-format";
-import { Metric, QUANTITY_COLORS } from "./constants";
+import { QUANTITY_COLORS } from "./constants";
 import { capitalize } from "@/utils/string-utils";
+import { Metric } from "@/models/types/db";
 
 interface LegendItemProps {
   name: Metric;

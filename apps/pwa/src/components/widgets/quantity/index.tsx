@@ -1,10 +1,10 @@
 import { Fragment } from "react";
 import StripedBar from "./striped-bar";
-import { Metric, QUANTITY_COLORS } from "./constants";
+import { QUANTITY_COLORS } from "./constants";
 import { SortedValueWithColor } from "./types";
 import Legend from "./legend";
 import Markers from "./markers";
-import { GrapeStatus, VineyardStatus } from "@/models/types/db";
+import { GrapeStatus, Metric, VineyardStatus } from "@/models/types/db";
 import { EntityStatus } from "@/models/types/dashboard";
 
 type Metrics = Partial<Record<Metric, number>>;
