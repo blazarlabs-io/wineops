@@ -1,21 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { vineyardGlobalActionSample } from "@/data/actions-samples";
 import {
   GrapeActions,
   GrapeIntakeAction,
-  VineyardActions,
   VineyardGlobalAction,
 } from "@/models/types/actions";
-import { Grape, Vineyard } from "@/models/types/db";
+import { Grape, LabReport } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useWinery } from "@/context/winery";
-import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
+import { setNestedValue } from "@/helpers/form-helpers";
+import { useGetGrapesNames } from "@/hooks/use-get-grapes-names";
 import { useAuth } from "@/lib/firebase/auth";
-import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
-import { generateNotes } from "@/utils/generators";
+import { grapeIntakeActionSchema } from "@/models/schemas/actions/grape-intake-action-schema";
 import { Attachment } from "@mui/icons-material";
 import {
   Box,
@@ -32,22 +30,21 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { setNestedValue } from "@/helpers/form-helpers";
-import { grapeIntakeActionSchema } from "@/models/schemas/actions/grape-intake-action-schema";
-import { useGetGrapesNames } from "@/hooks/use-get-grapes-names";
-import { set } from "zod";
 
 export type GrapeActionFormProps = {
   grapes: Grape[];
   selectedGrapes?: Grape[];
   actions?: GrapeActions;
+  labReports?: LabReport[];
 };
 
 export default function GrapeIntakeActionForm({
   grapes,
+  selectedGrapes,
   actions,
+  labReports,
 }: GrapeActionFormProps) {
   const { teamMembers } = useWinery();
   const { user } = useAuth();
@@ -64,6 +61,7 @@ export default function GrapeIntakeActionForm({
   const [formData, setFormData] = useState<GrapeIntakeAction>(
     {} as GrapeIntakeAction
   );
+  const [disableSubject, setDisableSubject] = useState<boolean>(false);
 
   const handleChange = useCallback(
     (name: string, value: any) => {
@@ -106,26 +104,71 @@ export default function GrapeIntakeActionForm({
   };
 
   useEffect(() => {
-    if (grapes && grapes.length > 0) {
-      const grapeIntakeActionSample: GrapeIntakeAction = {
-        id: Date.now().toString(),
-        type: "grape-intake",
-        subjectGrape: {
-          name: grapes[0].name,
-          id: grapes[0].id,
-        },
-        executionDate: new Date().toDateString(),
-        weigherName: {
-          name: teamMembers[0].name,
-          email: teamMembers[0].email,
-        },
-        grapeVariety: grapes[0].grapeVariety,
-      };
+    const grapeIntakeActionSample: GrapeIntakeAction = {
+      id: Date.now().toString(),
+      type: "grape-intake",
+      mass: {
+        net: 0,
+      },
+      subjectGrape: {
+        name: "",
+        id: "",
+      },
+      executionDate: new Date().toDateString(),
+      weigherName: {
+        name: teamMembers[0].name,
+        email: teamMembers[0].email,
+      },
+      grapeVariety: "",
+      qualityCharacteristics: {
+        sugar: 0,
+        acidity: 0,
+      },
+    };
 
-      reset(grapeIntakeActionSample);
-      setFormData(grapeIntakeActionSample);
+    if (
+      selectedGrapes &&
+      selectedGrapes.length === 1 &&
+      grapeIntakeActionSample.subjectGrape !== undefined &&
+      grapeIntakeActionSample.mass !== undefined
+    ) {
+      setDisableSubject(true);
+      grapeIntakeActionSample.subjectGrape.name = selectedGrapes[0].name;
+      grapeIntakeActionSample.subjectGrape.id = selectedGrapes[0].id;
+      grapeIntakeActionSample.grapeVariety = selectedGrapes[0].grapeVariety;
+      grapeIntakeActionSample.mass.net = selectedGrapes[0].metrics.actual;
+    } else if (
+      grapes &&
+      grapes.length > 0 &&
+      grapeIntakeActionSample.subjectGrape !== undefined &&
+      grapeIntakeActionSample.mass !== undefined
+    ) {
+      setDisableSubject(false);
+      grapeIntakeActionSample.subjectGrape.name = grapes[0].name;
+      grapeIntakeActionSample.subjectGrape.id = grapes[0].id;
+      grapeIntakeActionSample.grapeVariety = grapes[0].grapeVariety;
+      grapeIntakeActionSample.mass.net = grapes[0].metrics.actual;
     }
-  }, [grapes]);
+
+    if (labReports && labReports.length > 0) {
+      console.log("LAB REPORTS", labReports);
+      grapeIntakeActionSample.qualityCharacteristics = {
+        sugar: labReports[0].results.sugar.value,
+        acidity: labReports[0].results.acidity.value,
+      };
+    } else {
+      grapeIntakeActionSample.qualityCharacteristics = {
+        sugar: 0,
+        acidity: 0,
+      };
+    }
+
+    reset(grapeIntakeActionSample);
+    setFormData(grapeIntakeActionSample);
+
+    console.log("selectedGrapes", selectedGrapes);
+    console.log("grapeIntakeActionSample", grapeIntakeActionSample);
+  }, [grapes, selectedGrapes]);
 
   useEffect(() => {
     if (errors) {
@@ -164,6 +207,7 @@ export default function GrapeIntakeActionForm({
                         Subject of the Action
                       </InputLabel>
                       <Select
+                        disabled={disableSubject}
                         name="subjectGrape.name"
                         // labelId="subject-select"
                         id="subject-select"
@@ -244,7 +288,7 @@ export default function GrapeIntakeActionForm({
                         <TextField
                           type="number"
                           id="mass.gross"
-                          label="Gross Mass (Tons)"
+                          label="Gross Mass (Kg)"
                           variant="outlined"
                           inputProps={{
                             min: "0",
@@ -259,7 +303,7 @@ export default function GrapeIntakeActionForm({
                         <TextField
                           type="number"
                           id="mass.tare"
-                          label="Tare Mass (Tons)"
+                          label="Tare Mass (Kg)"
                           variant="outlined"
                           inputProps={{
                             min: "0",

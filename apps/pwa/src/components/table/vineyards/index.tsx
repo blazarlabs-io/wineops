@@ -26,10 +26,28 @@ export default function VineyardsTable({
 }: VineyardTableProps) {
   const { vineyards, updateSelectedVineyards } = useVineyard();
 
+  // const normalizedVineyards = useMemo(
+  //   () =>
+  //     vineyards.map((vineyard: Vineyard) => ({
+  //       ...vineyard,
+  //     })),
+  //   [vineyards]
+  // );
+
   const normalizedVineyards = useMemo(
     () =>
-      vineyards.map((vineyard: Vineyard) => ({
+      vineyards.map((vineyard) => ({
         ...vineyard,
+        ...(vineyard.rowType !== "group" && {}),
+        group:
+          !vineyard?.group ||
+          vineyard?.group?.length === 0 ||
+          (vineyard?.group?.length > 0 &&
+            vineyard.name &&
+            vineyard.rowType !== "group" &&
+            vineyard?.group[vineyard?.group.length - 1] !== vineyard.name)
+            ? [...vineyard?.group.slice(0, -1), vineyard?.name]
+            : vineyard?.group,
       })),
     [vineyards]
   );

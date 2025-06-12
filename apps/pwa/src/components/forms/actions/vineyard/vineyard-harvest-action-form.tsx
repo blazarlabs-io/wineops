@@ -9,7 +9,7 @@ import {
   VineyardActions,
   VineyardHarvestAction,
 } from "@/models/types/actions";
-import { Vessel, Vineyard } from "@/models/types/db";
+import { LabReport, Vessel, Vineyard } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
@@ -20,6 +20,7 @@ import {
   Button,
   Chip,
   FormControl,
+  Grid,
   TextField as Input,
   InputLabel,
   MenuItem,
@@ -37,12 +38,14 @@ import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { setNestedValue } from "@/helpers/form-helpers";
+import { useGrape } from "@/context/grape";
 
 export type HarvestActionFormProps = {
   vineyards: Vineyard[];
   selectedVineyards?: Vineyard[];
   actions?: VineyardActions;
   vessels?: Vessel[];
+  labReports?: LabReport[];
 };
 
 const ITEM_HEIGHT = 48;
@@ -62,8 +65,11 @@ export default function VineyardHarvestActionForm({
   vineyards,
   actions,
   vessels,
+  labReports,
+  selectedVineyards,
 }: HarvestActionFormProps) {
   const { user } = useAuth();
+  const { grapes } = useGrape();
   const theme = useTheme();
   const {
     register,
@@ -80,6 +86,8 @@ export default function VineyardHarvestActionForm({
   const [formData, setFormData] = useState<VineyardHarvestAction>(
     vineyardHarvestActionSample
   );
+
+  const [disableSubject, setDisableSubject] = useState<boolean>(false);
 
   const handleChange = useCallback(
     (name: string, value: any) => {
@@ -163,36 +171,81 @@ export default function VineyardHarvestActionForm({
   };
 
   useEffect(() => {
-    if (vineyards && vineyards.length > 0 && vessels && vessels.length > 0) {
-      vineyardHarvestActionSample.id = Date.now().toString();
-      vineyardHarvestActionSample.type = "harvest";
+    vineyardHarvestActionSample.id = Date.now().toString();
+    vineyardHarvestActionSample.type = "harvest";
+    vineyardHarvestActionSample.executionDate = new Date().toDateString();
+    vineyardHarvestActionSample.consumables = [];
+    vineyardHarvestActionSample.batch = {
+      id: `BatchID_${grapes?.length + 1}`,
+      quantity: 0,
+    };
+    vineyardHarvestActionSample.invoiceNumber = `invoice-${Date.now().toString()}`;
+    vineyardHarvestActionSample.equipment = [] as ActionRelation[];
+    vineyardHarvestActionSample.description = "";
+    vineyardHarvestActionSample.documents = generateDummyDocs(10);
+
+    // * If there is only one vineyard selected, else use the first vineyard is any
+    if (selectedVineyards && selectedVineyards.length === 1) {
+      setDisableSubject(true);
+      vineyardHarvestActionSample.subject = {
+        id: selectedVineyards[0].id,
+        name: selectedVineyards[0].name,
+      };
+      vineyardHarvestActionSample.supplier = selectedVineyards[0].name;
+      vineyardHarvestActionSample.vessels = selectedVineyards[0]
+        .vessels as ActionRelation[];
+      vineyardHarvestActionSample.location =
+        selectedVineyards[0].info.location.city;
+    } else if (
+      vineyards &&
+      vineyards.length > 0 &&
+      vessels &&
+      vessels.length > 0
+    ) {
+      setDisableSubject(false);
       vineyardHarvestActionSample.subject = {
         id: vineyards[0].id,
         name: vineyards[0].name,
       };
       vineyardHarvestActionSample.supplier = vineyards[0].name;
-      vineyardHarvestActionSample.executionDate = new Date().toDateString();
-      vineyardHarvestActionSample.consumables = [];
-      vineyardHarvestActionSample.batch = {
-        id: Date.now().toString(),
-        quantity: 0,
-      };
-      vineyardHarvestActionSample.invoiceNumber = `invoice-${Date.now().toString()}`;
-      vineyardHarvestActionSample.latestLabData = generateLabData()[0];
       vineyardHarvestActionSample.vessels = vineyards[0]
         .vessels as ActionRelation[];
-      vineyardHarvestActionSample.equipment = [] as ActionRelation[];
-      vineyardHarvestActionSample.description = "";
       vineyardHarvestActionSample.location = vineyards[0].info.location.city;
-      vineyardHarvestActionSample.documents = generateDummyDocs(10);
-
-      reset(vineyardHarvestActionSample);
-
-      setFormData(vineyardHarvestActionSample);
-
-      console.log("XXXXVINEYARDS", vineyards[0].vessels);
     }
-  }, [vineyards, vessels]);
+
+    if (labReports && labReports.length > 0) {
+      console.log("LAB REPORTS", labReports);
+      vineyardHarvestActionSample.latestLabData = {
+        date: (labReports[0].date as Timestamp).toDate().toDateString(),
+        sugar: {
+          value: labReports[0].results.sugar.value,
+          unit: labReports[0].units[0] as string,
+        },
+        acidity: {
+          value: labReports[0].results.acidity.value,
+          unit: labReports[0].units[0] as string,
+        },
+      };
+    } else {
+      vineyardHarvestActionSample.latestLabData = {
+        date: new Date().toDateString(),
+        sugar: {
+          value: 0,
+          unit: "N/A",
+        },
+        acidity: {
+          value: 0,
+          unit: "N/A",
+        },
+      };
+    }
+
+    reset(vineyardHarvestActionSample);
+
+    setFormData(vineyardHarvestActionSample);
+
+    console.log("XXXXVINEYARDS", vineyards[0].vessels);
+  }, [vineyards, vessels, labReports, selectedVineyards]);
 
   useEffect(() => {
     if (errors) {
@@ -232,6 +285,7 @@ export default function VineyardHarvestActionForm({
                         Subject of the Action
                       </InputLabel>
                       <Select
+                        disabled={disableSubject}
                         name="subject.name"
                         // labelId="subject-select"
                         id="subject-select"
@@ -295,6 +349,7 @@ export default function VineyardHarvestActionForm({
                         Consumables
                       </InputLabel>
                       <Select
+                        disabled
                         name="consumables"
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
@@ -308,11 +363,11 @@ export default function VineyardHarvestActionForm({
                       </Select>
                     </FormControl>
                     {/* * BATCH */}
-                    <div className="hidden">
+                    <div className="">
                       <FormControl fullWidth>
                         <TextField
                           id="outlined-basic"
-                          label="Batch ID"
+                          label="Batch Name"
                           variant="outlined"
                           {...register("batch.id")}
                         />
@@ -336,33 +391,40 @@ export default function VineyardHarvestActionForm({
                       <Typography variant="body2" color="text.secondary">
                         Latest Lab Data
                       </Typography>
-                      <Stack
-                        gap={1}
-                        padding={2}
-                        sx={{
-                          border: "2px",
-                          borderColor: "var(--mui-palette-divider)",
-                          borderStyle: "solid",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        {formData.latestLabData &&
-                          formData.latestLabData.items &&
-                          formData.latestLabData.items.length > 0 &&
-                          formData.latestLabData.items
-                            .filter((item) => parseInt(item.id) <= 1)
-                            .map((item) => (
-                              <div key={`${item.id}-${item.name}`}>
-                                <div className="flex items-center gap-2">
-                                  <Attachment
-                                    fontSize="small"
-                                    color="primary"
-                                  />
-                                  <Typography variant="body2">{`${item.name}-${item.id}-${new Date(item.date).toLocaleDateString()}.pdf`}</Typography>
-                                </div>
-                              </div>
-                            ))}
-                      </Stack>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2">
+                          <Typography variant="body2" color="text.secondary">
+                            Sugar
+                          </Typography>
+                          <TextField
+                            disabled
+                            type="number"
+                            id="outlined-basic"
+                            variant="outlined"
+                            inputProps={{
+                              min: "0",
+                              step: "0.01",
+                            }}
+                            {...register("latestLabData.sugar.value")}
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Typography variant="body2" color="text.secondary">
+                            Acidity
+                          </Typography>
+                          <TextField
+                            disabled
+                            type="number"
+                            id="outlined-basic"
+                            variant="outlined"
+                            inputProps={{
+                              min: "0",
+                              step: "0.01",
+                            }}
+                            {...register("latestLabData.acidity.value")}
+                          />
+                        </div>
+                      </div>
                     </Stack>
                     {/* * VESSELS */}
                     <FormControl fullWidth>

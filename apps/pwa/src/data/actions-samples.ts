@@ -20,7 +20,23 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
     quantity: 0,
   },
   invoiceNumber: "",
-  latestLabData: {} as LabDataSimple,
+  latestLabData: {
+    date: Timestamp.now(),
+    sugar: {
+      value: 0,
+      unit: "",
+    } as {
+      value: number;
+      unit: string;
+    },
+    acidity: {
+      value: 0,
+      unit: "",
+    } as {
+      value: number;
+      unit: string;
+    },
+  },
   vessels: [] as { id: string; name: string }[],
   equipment: [] as { id: string; name: string }[],
   description: "",

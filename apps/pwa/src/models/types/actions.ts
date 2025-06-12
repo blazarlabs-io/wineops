@@ -2,6 +2,8 @@ import { Timestamp } from "firebase/firestore";
 import {
   Grape,
   LabDataSimple,
+  LabElement,
+  LabReport,
   Note,
   ResponsibleTeamMember,
   SingleDocument,
@@ -94,6 +96,28 @@ export type GrapeIntakeAction = {
   };
 };
 
+export type GrapeProcessingAction = {
+  id: string;
+  batchId: string;
+  type: GrapeActionType;
+  quantity?: number;
+  executionDate: string | Timestamp;
+  labReport?: LabReport;
+  receivingBay?: any;
+  destemmer?: any;
+  press?: any;
+  pressPercentage?: {
+    mustId?: string;
+    inputQuantity?: number; //Litres
+    vessel?: string;
+    newPressPercentage?: number;
+  };
+  wasteQuantity?: number;
+  metrics?: {
+    actual?: number;
+  };
+};
+
 export interface VineyardHarvestAction {
   id: string;
   type: VineyardActionType;
@@ -106,7 +130,11 @@ export interface VineyardHarvestAction {
     quantity: number;
   };
   invoiceNumber: string;
-  latestLabData: LabDataSimple;
+  latestLabData: {
+    date: Timestamp | string;
+    sugar: Partial<LabElement>;
+    acidity: Partial<LabElement>;
+  };
   vessels: ActionRelation[];
   equipment: ActionRelation[];
   description: string;

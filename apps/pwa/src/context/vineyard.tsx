@@ -18,13 +18,19 @@ import {
 import { VineyardActions } from "@/models/types/actions";
 import { Group, LabReport, Vineyard } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 interface VineyardContextType {
   vineyards: Vineyard[];
   selectedVineyards: Vineyard[];
   updateSelectedVineyards: (vineyards: Vineyard[]) => void;
-  vineyardsGroups: Group[];
   actions: VineyardActions;
   labReports: LabReport[];
 }
@@ -51,7 +57,6 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
 
   const [vineyards, setVineyards] = useState<Vineyard[]>([]);
   const [selectedVineyards, setSelectedVineyards] = useState<Vineyard[]>([]);
-  const [vineyardsGroups, setVineyardsGroups] = useState<Group[]>([]);
   const [labReports, setLabReports] = useState<LabReport[]>([]);
   const [actions] = useState<VineyardActions>({
     harvest: {
@@ -71,15 +76,12 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
     },
   });
 
-  const updateSelectedVineyards = (vineyards: Vineyard[]) => {
+  const updateSelectedVineyards = useCallback((vineyards: Vineyard[]) => {
     setSelectedVineyards(vineyards);
-  };
+  }, []);
 
   useEffect(() => {
     let unsubVineyards = () => {};
-
-    let unsubVineyardsGroups = () => {};
-
     let unsubLabReports = () => {};
 
     if (user && db) {
@@ -106,40 +108,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
           vineyards.push({ ...data, id: data?.id ?? id } as Vineyard);
         });
 
-        console.log("\n====================================");
-        console.log("REALTIME SnapShot vineyards:", vineyards);
-        console.log("Selected Vineyards:", selectedVineyards);
-        console.log("====================================\n");
         setVineyards(vineyards);
-
-        // * Check if any of theselted vineyards exist in the vineyards array
-        const updatedSelectedVineyards = selectedVineyards.filter((vineyard) =>
-          vineyards.some((v) => v.id === vineyard.id)
-        );
-
-        console.log("updatedSelectedVineyards:", updatedSelectedVineyards);
-      });
-
-      // * Vineyards Groups Realtime Updates
-      const vineyardsGroupsRef = collection(
-        db,
-        WINERY,
-        user?.uid as string,
-        VINEYARDS_GROUPS
-      );
-
-      unsubVineyardsGroups = onSnapshot(vineyardsGroupsRef, (querySnapshot) => {
-        const vineyardsGroups: Group[] = [];
-
-        if (querySnapshot.empty) {
-          console.log("No vineyards groups found");
-          return;
-        }
-
-        querySnapshot.forEach((doc) => {
-          vineyardsGroups.push(doc.data() as Group);
-        });
-        setVineyardsGroups(vineyardsGroups);
       });
 
       // * Lab Reports Realtime Updates
@@ -167,20 +136,23 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
 
     return () => {
       unsubVineyards();
-      unsubVineyardsGroups();
       unsubLabReports();
       setVineyards([]);
-      setVineyardsGroups([]);
     };
-  }, [user, selectedVineyards]);
+  }, [user]);
+
+  const memoizedVineyards = useMemo(() => vineyards, [vineyards]);
+  const memoizedSelectedGrapes = useMemo(
+    () => selectedVineyards,
+    [selectedVineyards]
+  );
 
   return (
     <VineyardContext.Provider
       value={{
-        vineyards,
-        selectedVineyards,
+        vineyards: memoizedVineyards,
+        selectedVineyards: memoizedSelectedGrapes,
         updateSelectedVineyards,
-        vineyardsGroups,
         actions,
         labReports,
       }}

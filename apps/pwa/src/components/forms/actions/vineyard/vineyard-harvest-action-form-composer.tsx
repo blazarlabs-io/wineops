@@ -4,7 +4,7 @@ import { Vineyard } from "@/models/types/db";
 import VineyardHarvestActionForm from "./vineyard-harvest-action-form";
 
 export default function VineyardHarvestActionFormComposer() {
-  const { selectedVineyards, vineyards, actions } = useVineyard();
+  const { selectedVineyards, vineyards, actions, labReports } = useVineyard();
   const { vessels } = useVessel();
   return (
     <VineyardHarvestActionForm
@@ -12,6 +12,7 @@ export default function VineyardHarvestActionFormComposer() {
       actions={actions}
       vineyards={vineyards as Vineyard[]}
       selectedVineyards={selectedVineyards as Vineyard[]}
+      labReports={labReports}
     />
   );
 }

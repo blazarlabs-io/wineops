@@ -1,6 +1,7 @@
 "use client";
 
-import GrapeIntakeActionFormComposer from "@/components/forms/actions/vineyard/grape-intake-action-form-composer";
+import GrapeIntakeActionFormComposer from "@/components/forms/actions/grape/grape-intake-action-form-composer";
+import GrapeProcessingActionFormComposer from "@/components/forms/actions/grape/grape-processing-action-form-composer";
 import {
   grapeIntakeAction,
   grapeProcessingAction,
@@ -57,7 +58,7 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
     },
     "grape-processing": {
       exec: grapeProcessingAction,
-      form: <></>,
+      form: <GrapeProcessingActionFormComposer />,
       icon: "material-symbols:grain",
     },
   });

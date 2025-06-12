@@ -71,12 +71,12 @@ export default function VineyardsDashboard() {
     setOpenFormDrawer(true);
   }, []);
 
-  const handleEditVineyards = () => {
+  const handleEditVineyards = useCallback(() => {
     setFormType("edit");
     setOpenFormDrawer(true);
-  };
+  }, []);
 
-  const handleDeleteVineyards = () => {
+  const handleDeleteVineyards = useCallback(() => {
     setOpenDeleteVineyardsDialog(false);
 
     selectedVineyards.forEach(async (vineyard) => {
@@ -92,7 +92,7 @@ export default function VineyardsDashboard() {
         });
       }
     });
-  };
+  }, [enqueueSnackbar, selectedVineyards, user?.uid]);
 
   const handleCloseDeleteDialog = () => {
     setOpenDeleteVineyardsDialog(false);
