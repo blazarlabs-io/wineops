@@ -125,9 +125,13 @@ export default function VineyardLabActionForm({
     vineyardGlobalActionSample.type = "lab-report";
     vineyardGlobalActionSample.executionDate = new Date().toDateString();
     vineyardGlobalActionSample.notes = generateNotes();
-    if (vineyardGlobalActionSample.responsible !== undefined) {
+    if (
+      vineyardGlobalActionSample.responsible !== undefined &&
+      teamMembers &&
+      teamMembers.length > 0
+    ) {
       vineyardGlobalActionSample.responsible.name = teamMembers[0]?.name;
-      vineyardGlobalActionSample.responsible.email = teamMembers[0].email;
+      vineyardGlobalActionSample.responsible.email = teamMembers[0]?.email;
     }
 
     // * If there is only one vineyard selected, else use the first vineyard is any

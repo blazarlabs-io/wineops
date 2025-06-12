@@ -116,8 +116,8 @@ export default function GrapeIntakeActionForm({
       },
       executionDate: new Date().toDateString(),
       weigherName: {
-        name: teamMembers[0].name,
-        email: teamMembers[0].email,
+        name: teamMembers[0]?.name,
+        email: teamMembers[0]?.email,
       },
       grapeVariety: "",
       qualityCharacteristics: {
@@ -133,10 +133,10 @@ export default function GrapeIntakeActionForm({
       grapeIntakeActionSample.mass !== undefined
     ) {
       setDisableSubject(true);
-      grapeIntakeActionSample.subjectGrape.name = selectedGrapes[0].name;
-      grapeIntakeActionSample.subjectGrape.id = selectedGrapes[0].id;
-      grapeIntakeActionSample.grapeVariety = selectedGrapes[0].grapeVariety;
-      grapeIntakeActionSample.mass.net = selectedGrapes[0].metrics.actual;
+      grapeIntakeActionSample.subjectGrape.name = selectedGrapes[0]?.name;
+      grapeIntakeActionSample.subjectGrape.id = selectedGrapes[0]?.id;
+      grapeIntakeActionSample.grapeVariety = selectedGrapes[0]?.grapeVariety;
+      grapeIntakeActionSample.mass.net = selectedGrapes[0]?.metrics.actual;
     } else if (
       grapes &&
       grapes.length > 0 &&
@@ -144,17 +144,17 @@ export default function GrapeIntakeActionForm({
       grapeIntakeActionSample.mass !== undefined
     ) {
       setDisableSubject(false);
-      grapeIntakeActionSample.subjectGrape.name = grapes[0].name;
-      grapeIntakeActionSample.subjectGrape.id = grapes[0].id;
-      grapeIntakeActionSample.grapeVariety = grapes[0].grapeVariety;
+      grapeIntakeActionSample.subjectGrape.name = grapes[0]?.name;
+      grapeIntakeActionSample.subjectGrape.id = grapes[0]?.id;
+      grapeIntakeActionSample.grapeVariety = grapes[0]?.grapeVariety;
       grapeIntakeActionSample.mass.net = grapes[0].metrics.actual;
     }
 
     if (labReports && labReports.length > 0) {
       console.log("LAB REPORTS", labReports);
       grapeIntakeActionSample.qualityCharacteristics = {
-        sugar: labReports[0].results.sugar.value,
-        acidity: labReports[0].results.acidity.value,
+        sugar: labReports[0]?.results.sugar.value,
+        acidity: labReports[0]?.results.acidity.value,
       };
     } else {
       grapeIntakeActionSample.qualityCharacteristics = {
@@ -192,7 +192,7 @@ export default function GrapeIntakeActionForm({
                   <FormControl>
                     <Input
                       id={formData.id as VineyardGlobalAction["id"]}
-                      value={formData.id}
+                      // value={formData.id}
                       type="hidden"
                       {...register("id")}
                     />
@@ -259,7 +259,7 @@ export default function GrapeIntakeActionForm({
                         id="demo-simple-select"
                         value={
                           formData?.weigherName?.name ||
-                          teamMembers[0].name ||
+                          teamMembers[0]?.name ||
                           ""
                         }
                         label="Wheigher's Name"
