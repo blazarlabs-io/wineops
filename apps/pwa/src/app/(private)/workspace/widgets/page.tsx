@@ -2,6 +2,7 @@
 
 import QuantityWidget from "@/components/widgets/quantity";
 import TotalQuantityWidget from "@/components/widgets/total-quantity";
+import TotalQuantityPieWidget from "@/components/widgets/total-quantity/total-qty-pie";
 import TotalQuantityMui from "@/components/widgets/total-quantity/total-quantity-mui";
 import { EntityStatus } from "@/models/types/dashboard";
 import { Button } from "@mui/material";
@@ -38,6 +39,8 @@ export default function Widgets() {
         <TotalQuantityMui metrics={metrics} />
 
         <TotalQuantityWidget metrics={metrics} />
+
+        <TotalQuantityPieWidget metrics={metrics} width={200} />
 
         <Box>
           <Button onClick={() => setExcludeV(METRICS.map((v) => v.vineyard))}>
@@ -169,5 +172,12 @@ const METRICS = [
     actual: 18,
     supply: 20,
     demand: 14,
+  },
+  {
+    vineyard: "V11",
+    status: "Maintenance" as EntityStatus,
+    actual: 10,
+    supply: 0,
+    demand: 0,
   },
 ];

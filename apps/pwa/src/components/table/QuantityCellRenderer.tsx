@@ -2,7 +2,7 @@ import QuantityWidget from "@/components/widgets/quantity";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Stack from "@mui/material/Stack";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import TotalQuantityWidget from "../widgets/total-quantity";
+import TotalQuantityPieWidget from "../widgets/total-quantity/total-qty-pie";
 
 export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
   const { value, node, data } = params;
@@ -19,8 +19,8 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
       height={ROW_HEIGHT_DEFAULT}
     >
       {isGroup ? (
-        <Stack height="100%" alignItems="center" justifyContent="center">
-          <TotalQuantityWidget metrics={metrics} />
+        <Stack height="100%" alignItems="flex-start" justifyContent="center">
+          <TotalQuantityPieWidget metrics={metrics} width={80} height={80} />
         </Stack>
       ) : (
         <>
