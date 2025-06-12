@@ -130,7 +130,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                 </IconButton>
               </div>
               {expanded && (
-                <Stack className="fixed bottom-0 flex items-center justify-center left-0 w-full h-[364px] bg-transparent z-[9999]">
+                <Stack
+                  style={{ borderColor: "var(--mui-palette-divider)" }}
+                  className="fixed bottom-0 border-t flex items-center justify-center left-0 w-full h-[249px] bg-transparent z-[9999]"
+                >
                   <GrapeDetailsWidget grape={node.data} />
                 </Stack>
               )}

@@ -6,7 +6,7 @@ import { type FunctionComponent } from "react";
 import { useGrape } from "@/context/grape";
 import { ActionRelation } from "@/models/types/actions";
 import { Grape } from "@/models/types/db";
-import TotalQuantityWidget from "@/components/widgets/total-quantity";
+import TotalQuantityPieWidget from "@/components/widgets/total-quantity/total-qty-pie";
 
 export const QuantityCellRenderer: FunctionComponent<
   CustomCellRendererProps
@@ -33,10 +33,18 @@ export const QuantityCellRenderer: FunctionComponent<
   const supply = 0;
   const demand = 0;
 
-  const metrics = (node?.allLeafChildren || []).map(({ data }) => ({
-    actual: data?.forecastedYield,
-    status: data?.status,
-  }));
+  const metrics = (node?.allLeafChildren || []).flatMap(({ data }) =>
+    (data?.batches || []).map((batch: { id: string }) => {
+      const grape = grapes.find(({ id }) => id === batch.id);
+
+      return {
+        actual: grape?.metrics?.actual,
+        supply: 0,
+        demand: 0,
+        status: data?.status,
+      };
+    })
+  );
 
   return (
     <Box
@@ -47,12 +55,8 @@ export const QuantityCellRenderer: FunctionComponent<
       height={ROW_HEIGHT_DEFAULT}
     >
       {node.group ? (
-        <Stack
-          height="100%"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <TotalQuantityWidget metrics={metrics} />
+        <Stack height="100%" alignItems="flex-start" justifyContent="center">
+          <TotalQuantityPieWidget metrics={metrics} width={80} height={80} />
         </Stack>
       ) : (
         <QuantityWidget

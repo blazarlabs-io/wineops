@@ -6,9 +6,7 @@ import { SyntheticEvent, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import GrapeEntryContent from "./grape-entry-content";
-import TransportationInfoContent from "./transportation-info-content";
 import SupplierContent from "./supplier-content";
-import ProcessingInfoContent from "./processing-info-content";
 import DocumentsContent from "./documents-content";
 import LabDataContent from "./lab-data-content";
 
@@ -21,6 +19,11 @@ export default function GrapeDetailsWidget({ grape }: GrapeDetailsWidgetProps) {
 
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
+  };
+
+  const sx = {
+    padding: "8px 16px !important",
+    minHeight: "fit-content !important",
   };
 
   return (
@@ -39,44 +42,38 @@ export default function GrapeDetailsWidget({ grape }: GrapeDetailsWidgetProps) {
         value={value}
         onChange={handleChange}
         aria-label="Grape details"
-        sx={{ borderRight: 1, borderColor: "divider" }}
+        sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
-        <Tab label="Grape Entry" {...a11yProps(0)} />
-        <Tab label="Transportation Info" {...a11yProps(1)} />
-        <Tab label="Supplier" {...a11yProps(2)} />
-        <Tab label="Lab Data" {...a11yProps(3)} />
-        <Tab label="Processing Info" {...a11yProps(4)} />
-        <Tab label="Task" {...a11yProps(5)} />
-        <Tab label="Documents" {...a11yProps(6)} />
+        <Tab label="Grape&nbsp;Entry" {...a11yProps(0)} sx={sx} />
+        <Tab label="Supplier" {...a11yProps(1)} sx={sx} />
+        <Tab label="Lab Data" {...a11yProps(2)} sx={sx} />
+        <Tab label="Task" {...a11yProps(3)} sx={sx} />
+        <Tab label="Documents" {...a11yProps(4)} sx={sx} />
       </Tabs>
 
       <TabPanel value={value} index={0}>
-        <GrapeEntryContent entry={grape?.entry ?? {}} />
+        <GrapeEntryContent
+          entry={grape?.entry ?? {}}
+          processingInfo={grape.processingInfo ?? {}}
+        />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <TransportationInfoContent
+        <SupplierContent
+          supplier={grape.supplier ?? {}}
           transportationInfo={grape.transportationInfo ?? {}}
         />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <SupplierContent supplier={grape.supplier ?? {}} />
-      </TabPanel>
-
-      <TabPanel value={value} index={3}>
         <LabDataContent labData={grape.labData ?? {}} />
       </TabPanel>
 
-      <TabPanel value={value} index={4}>
-        <ProcessingInfoContent processingInfo={grape.processingInfo ?? {}} />
-      </TabPanel>
-
-      <TabPanel value={value} index={5}>
+      <TabPanel value={value} index={3}>
         <div className="flex gap-8 px-4">Task View</div>
       </TabPanel>
 
-      <TabPanel value={value} index={6}>
+      <TabPanel value={value} index={4}>
         <DocumentsContent documents={grape.documents} />
       </TabPanel>
     </Box>

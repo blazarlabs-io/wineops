@@ -21,7 +21,7 @@ export const TOTAL_QUANTITY_COLORS: Record<
     darkColor: "#FF7878",
   },
   white: {
-    color: "#FFFFFF",
-    darkColor: "#FFFFFF",
+    color: "transparent",
+    darkColor: "transparent",
   },
 };

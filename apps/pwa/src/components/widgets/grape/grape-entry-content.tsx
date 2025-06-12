@@ -1,14 +1,18 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import { DEFAULT_LOCALE } from "@/data/constants";
-import { GrapeEntry } from "@/models/types/db";
+import { GrapeEntry, ProcessingInfo } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import { formatNumberWithUnit } from "@/utils/number-format";
 
 type GrapeEntryProps = {
   entry: GrapeEntry;
+  processingInfo: ProcessingInfo;
 };
 
-export default function GrapeEntryContent({ entry }: GrapeEntryProps) {
+export default function GrapeEntryContent({
+  entry,
+  processingInfo,
+}: GrapeEntryProps) {
   const {
     grossWeight,
     grossUnit = "",
@@ -44,6 +48,23 @@ export default function GrapeEntryContent({ entry }: GrapeEntryProps) {
             ? formatDate(intakeDate, { locale: DEFAULT_LOCALE })
             : "N/A"
         }
+      />
+
+      <SimpleDataDisplay
+        label="Receiving Bay"
+        value={processingInfo.receivingBay || "N/A"}
+      />
+      <SimpleDataDisplay
+        label="Destemmer"
+        value={processingInfo.destemmer || "N/A"}
+      />
+      <SimpleDataDisplay
+        label="Press (used)"
+        value={processingInfo.pressUsed || "N/A"}
+      />
+      <SimpleDataDisplay
+        label="Vessel Used"
+        value={processingInfo.vesselUsed || "N/A"}
       />
     </div>
   );

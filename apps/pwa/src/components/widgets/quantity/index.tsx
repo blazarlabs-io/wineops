@@ -35,18 +35,23 @@ export default function QuantityWidget({
   const isPreHarvest = hasMetrics
     ? false
     : status === GrapeStatus.IN_TRANSIT ||
-      (status !== VineyardStatus.HARVESTING &&
-        status !== VineyardStatus.HARVEST_ENDED);
+      status === VineyardStatus.MAINTENANCE ||
+      status === VineyardStatus.READY_FOR_HARVEST ||
+      status === VineyardStatus.RIPPING ||
+      status === VineyardStatus.VEGETATION;
+
   const isOnHarvest = hasMetrics
     ? false
-    : status === VineyardStatus.HARVESTING ||
-      status === GrapeStatus.FRIDGE_STORED ||
-      status === GrapeStatus.STORED;
-  const isPostHarvest = hasMetrics
-    ? true
-    : status === VineyardStatus.HARVEST_ENDED ||
-      status === GrapeStatus.DEHYDRATED ||
-      status === GrapeStatus.PROCESSED;
+    : status === GrapeStatus.RECEIVED || status === VineyardStatus.HARVESTING;
+
+  const isPostHarvest =
+    hasMetrics || !status
+      ? true
+      : status === VineyardStatus.HARVEST_ENDED ||
+        status === GrapeStatus.PROCESSED ||
+        status === GrapeStatus.DEHYDRATED ||
+        status === GrapeStatus.FRIDGE_STORED ||
+        status === GrapeStatus.STORED;
 
   const sortedValuesWithColors: SortedValueWithColor[] = Object.entries(
     QUANTITY_COLORS
@@ -66,10 +71,10 @@ export default function QuantityWidget({
 
   return (
     <div
-      className="flex flex-col gap-8 p-3 max-w-[216px]"
+      className="flex flex-col gap-8 p-3 max-w-[224]"
       style={{ lineHeight: 1 }}
     >
-      <div className="relative">
+      <div className="relative1 flex flex-col items-center">
         <Legend
           actual={actualValue}
           supply={supplyValue}
@@ -110,15 +115,24 @@ export default function QuantityWidget({
 
               const backgroundColor =
                 isPreHarvest ||
-                isSupply ||
+                (isSupply &&
+                  (!isPostHarvest ||
+                    (isPostHarvest && supply > actual && supply > demand))) ||
                 (isOnHarvest && isDemand && value < supplyValue) ||
                 (isPostHarvest && isActual && supplyValue === 0)
                   ? ""
-                  : (isPostHarvest &&
-                    demandValue > 0 &&
-                    demandValue < actualValue
-                      ? secondaryDarkColor
-                      : darkColor) || color;
+                  : isPostHarvest && isSupply
+                    ? demand > actual && demand > 0 && supply > actual
+                      ? darkColor
+                      : actual > demand && demand > 0 && supply <= demand
+                        ? secondaryDarkColor
+                        : lightColor
+                    : (isPostHarvest &&
+                      demandValue > 0 &&
+                      ((demandValue < actualValue && !isActual) ||
+                        (demandValue === actualValue && isActual))
+                        ? secondaryDarkColor
+                        : darkColor) || color;
 
               const isHigherDemand =
                 (isPreHarvest &&

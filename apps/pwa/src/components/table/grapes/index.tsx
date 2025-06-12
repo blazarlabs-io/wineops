@@ -76,6 +76,9 @@ export default function GrapesTable({
           },
           cellRenderer: "agGroupCellRenderer",
           width: GROUP_COLUMN_WIDTH,
+          lockPinned: true,
+          lockPosition: true,
+          suppressMovable: true,
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedGrapes}

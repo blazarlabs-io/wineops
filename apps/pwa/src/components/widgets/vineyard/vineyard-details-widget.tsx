@@ -64,6 +64,11 @@ export default function VineyardDetailsWidget({
     setLocalVineyard(vineyard);
   }, [vineyard]);
 
+  const sx = {
+    padding: "8px 16px !important",
+    minHeight: "fit-content !important",
+  };
+
   return (
     <Box
       sx={{
@@ -83,54 +88,12 @@ export default function VineyardDetailsWidget({
         aria-label="Vertical tabs example"
         sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
-        <Tab
-          label="details"
-          {...a11yProps(0)}
-          sx={{
-            padding: "8px !important",
-            minHeight: "fit-content !important",
-          }}
-        />
-        <Tab
-          label="grapeVariety"
-          {...a11yProps(1)}
-          sx={{
-            padding: "8px !important",
-            minHeight: "fit-content !important",
-          }}
-        />
-        <Tab
-          label="Lab Results"
-          {...a11yProps(2)}
-          sx={{
-            padding: "8px !important",
-            minHeight: "fit-content !important",
-          }}
-        />
-        <Tab
-          label="Tasks"
-          {...a11yProps(3)}
-          sx={{
-            padding: "8px !important",
-            minHeight: "fit-content !important",
-          }}
-        />
-        <Tab
-          label="Weather"
-          {...a11yProps(4)}
-          sx={{
-            padding: "8px !important",
-            minHeight: "fit-content !important",
-          }}
-        />
-        <Tab
-          label="Documents"
-          {...a11yProps(5)}
-          sx={{
-            padding: "8px !important",
-            minHeight: "fit-content !important",
-          }}
-        />
+        <Tab label="details" {...a11yProps(0)} sx={sx} />
+        <Tab label="grapeVariety" {...a11yProps(1)} sx={sx} />
+        <Tab label="Lab Results" {...a11yProps(2)} sx={sx} />
+        <Tab label="Tasks" {...a11yProps(3)} sx={sx} />
+        <Tab label="Weather" {...a11yProps(4)} sx={sx} />
+        <Tab label="Documents" {...a11yProps(5)} sx={sx} />
       </Tabs>
       <TabPanel value={value} index={0}>
         {/* * GENERAL INFO */}

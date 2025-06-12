@@ -9,8 +9,11 @@ export type MetricsTotal = Partial<Record<Metric, number>> & {
 export type MetricsOutput = Partial<MetricsTotal> & {
   max: number;
   maxu: number;
-  pro: number;
+
+  sur: number;
   def: number;
+  ar: number;
+  co: number;
 
   green: number;
   red: number;
@@ -34,4 +37,9 @@ export type MetricsOutput2 = {
   stripedGreenPercent: number;
   stripedRedPercent: number;
   stripedGreyPercent: number;
+
+  sur: number;
+  def: number;
+  ar: number;
+  co: number;
 };

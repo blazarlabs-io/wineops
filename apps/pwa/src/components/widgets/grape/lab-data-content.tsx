@@ -3,6 +3,7 @@ import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import UnitDisplay from "@/components/data-display/unit-display";
 import { GrapeLabData } from "@/models/types/db";
 import { formatNumberWithUnit } from "@/utils/number-format";
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
 
@@ -32,9 +33,13 @@ export default function LabDataContent({ labData }: LabDataProps) {
       </Stack>
 
       {labData && (
-        <div className="grid grid-cols-5 w-full p-4 gap-4">
-          <LabItem label="Sugar" data={sugar ?? { value: "N/A" }} />
-          <LabItem label="Acidity" data={acidity ?? { value: "N/A" }} />
+        <div className="grid grid-cols-4 w-full py-2 items-center justify-center">
+          <Box p={1}>
+            <LabItem label="Sugar" data={sugar ?? { value: "N/A" }} />
+          </Box>
+          <Box p={1}>
+            <LabItem label="Acidity" data={acidity ?? { value: "N/A" }} />
+          </Box>
           <SimpleDataDisplay
             label="Density"
             value={
@@ -77,6 +82,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
               formatNumberWithUnit(addedGrapesVarietiesPercentage, "%") ?? "N/A"
             }
           />
+          <span></span>
           <SimpleDataDisplay
             label="Lab technician name"
             value={labTechnicianName ?? "N/A"}

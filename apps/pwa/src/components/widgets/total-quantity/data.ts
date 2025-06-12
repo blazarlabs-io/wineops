@@ -34,7 +34,8 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         status,
         max: Math.max(actual, demand, supply),
         maxu: Math.max(actual, demand, IS_ENDED(status) ? 0 : supply),
-        pro: IS_ENDED(status)
+
+        sur: IS_ENDED(status)
           ? actual > 0 && demand > 0 && actual - demand > 0
             ? actual - demand
             : 0
@@ -44,6 +45,12 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
             ? demand - actual
             : 0
           : 0,
+        ar: !IS_ENDED(status)
+          ? supply > actual
+            ? demand - supply
+            : demand - actual
+          : 0,
+        co: actual > demand && actual > 0 ? demand : 0,
         vineyard,
       };
 
@@ -106,13 +113,13 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
       return [
         ...acc,
         {
-          stripedGrey: parseFloat(stripedGrey.toFixed(4)),
-          stripedGreen: parseFloat(stripedGreen.toFixed(4)),
-          stripedRed: parseFloat(stripedRed.toFixed(4)),
-          white: parseFloat(white.toFixed(4)),
-          grey: parseFloat(grey.toFixed(4)),
-          green: parseFloat(green.toFixed(4)),
-          red: parseFloat(red.toFixed(4)),
+          stripedGrey: Number.parseFloat(stripedGrey.toFixed(4)),
+          stripedGreen: Number.parseFloat(stripedGreen.toFixed(4)),
+          stripedRed: Number.parseFloat(stripedRed.toFixed(4)),
+          white: Number.parseFloat(white.toFixed(4)),
+          grey: Number.parseFloat(grey.toFixed(4)),
+          green: Number.parseFloat(green.toFixed(4)),
+          red: Number.parseFloat(red.toFixed(4)),
           ...metric,
         },
       ];
@@ -135,53 +142,66 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         stripedGreen = 0,
         stripedRed = 0,
         stripedGrey = 0,
+        sur = 0,
+        def = 0,
+        ar = 0,
+        co = 0,
       }
     ) => {
-      const barPercent = parseFloat(
-        ((100 * (maxu || 0)) / (totu || 0)).toFixed(4)
-      );
+      const barPercent =
+        (totu || 0) > 0
+          ? Number.parseFloat(((100 * (maxu || 0)) / (totu || 0)).toFixed(4))
+          : 0;
 
       const colorsPercent =
         green + grey + red + (!IS_ENDED(status) ? white : 0);
 
       const greenPercent =
         colorsPercent > 0
-          ? parseFloat(((green * barPercent) / colorsPercent).toFixed(4))
+          ? Number.parseFloat(((green * barPercent) / colorsPercent).toFixed(4))
           : 0;
       const redPercent =
         colorsPercent > 0
-          ? parseFloat(((red * barPercent) / colorsPercent).toFixed(4))
+          ? Number.parseFloat(((red * barPercent) / colorsPercent).toFixed(4))
           : 0;
       const greyPercent =
         colorsPercent > 0
-          ? parseFloat(((grey * barPercent) / colorsPercent).toFixed(4))
+          ? Number.parseFloat(((grey * barPercent) / colorsPercent).toFixed(4))
           : 0;
 
-      const stripedGreenPercent = parseFloat(
+      const stripedGreenPercent = Number.parseFloat(
         ((stripedGreen * barPercent) / 100).toFixed(4)
       );
-      const stripedRedPercent = parseFloat(
+      const stripedRedPercent = Number.parseFloat(
         ((stripedRed * barPercent) / 100).toFixed(4)
       );
-      const stripedGreyPercent = parseFloat(
+      const stripedGreyPercent = Number.parseFloat(
         ((stripedGrey * barPercent) / 100).toFixed(4)
       );
-      const whitePercent = parseFloat(
+      const whitePercent = Number.parseFloat(
         (((!IS_ENDED(status) ? white : 0) * barPercent) / 100).toFixed(4)
       );
 
       return [
         ...acc,
         {
-          colorsPercent,
-          greenPercent,
-          redPercent,
-          greyPercent,
-          barPercent,
-          stripedGreenPercent,
-          stripedRedPercent,
-          stripedGreyPercent,
-          whitePercent,
+          colorsPercent: isNaN(colorsPercent) ? 0 : colorsPercent,
+          greenPercent: isNaN(greenPercent) ? 0 : greenPercent,
+          redPercent: isNaN(redPercent) ? 0 : redPercent,
+          greyPercent: isNaN(greyPercent) ? 0 : greyPercent,
+          barPercent: isNaN(barPercent) ? 0 : barPercent,
+          stripedGreenPercent: isNaN(stripedGreenPercent)
+            ? 0
+            : stripedGreenPercent,
+          stripedRedPercent: isNaN(stripedRedPercent) ? 0 : stripedRedPercent,
+          stripedGreyPercent: isNaN(stripedGreyPercent)
+            ? 0
+            : stripedGreyPercent,
+          whitePercent: isNaN(whitePercent) ? 0 : whitePercent,
+          sur: isNaN(sur) ? 0 : sur,
+          def: isNaN(def) ? 0 : def,
+          ar: isNaN(ar) ? 0 : ar,
+          co: isNaN(co) ? 0 : co,
         },
       ];
     },
@@ -200,31 +220,41 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         stripedGreyPercent = 0,
         whitePercent = 0,
         barPercent = 0,
+        sur = 0,
+        def = 0,
+        ar = 0,
+        co = 0,
       }
     ) => {
       return {
         barPercent,
-        greenPercent: parseFloat(
+        greenPercent: Number.parseFloat(
           ((acc?.greenPercent || 0) + greenPercent).toFixed(4)
         ),
-        redPercent: parseFloat(
+        redPercent: Number.parseFloat(
           ((acc?.redPercent || 0) + redPercent).toFixed(4)
         ),
-        greyPercent: parseFloat(
+        greyPercent: Number.parseFloat(
           ((acc?.greyPercent || 0) + greyPercent).toFixed(4)
         ),
-        stripedGreenPercent: parseFloat(
+        stripedGreenPercent: Number.parseFloat(
           ((acc?.stripedGreenPercent || 0) + stripedGreenPercent).toFixed(4)
         ),
-        stripedRedPercent: parseFloat(
+        stripedRedPercent: Number.parseFloat(
           ((acc?.stripedRedPercent || 0) + stripedRedPercent).toFixed(4)
         ),
-        stripedGreyPercent: parseFloat(
+        stripedGreyPercent: Number.parseFloat(
           ((acc?.stripedGreyPercent || 0) + stripedGreyPercent).toFixed(4)
         ),
-        whitePercent: parseFloat(
+        whitePercent: Number.parseFloat(
           ((acc?.whitePercent || 0) + whitePercent).toFixed(4)
         ),
+
+        sur: (acc?.sur || 0) + sur,
+        def: (acc?.def || 0) + def,
+        ar: (acc?.ar || 0) + (ar > 0 ? ar : 0),
+        co: (acc?.co || 0) + co,
+        totu,
       };
     },
     {} as MetricsOutput2
@@ -238,6 +268,10 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
     stripedRedPercent,
     stripedGreyPercent,
     whitePercent,
+    sur,
+    def,
+    ar,
+    co,
   } = normalized3;
 
   const dataset = [
@@ -270,6 +304,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         white: whitePercent,
       }),
       total: "",
+      totu,
     },
   ];
 
@@ -278,24 +313,6 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
   }
 
   const series = [
-    stripedGreyPercent > 0
-      ? {
-          dataKey: "stripedGrey",
-          label: "Grey.s",
-          color: `url(#StripedPattern-grey)`,
-          stack: "total",
-          valueFormatter,
-        }
-      : undefined,
-    greyPercent > 0
-      ? {
-          dataKey: "grey",
-          label: "Grey",
-          color: `${TOTAL_QUANTITY_COLORS.grey.darkColor}`,
-          stack: "total",
-          valueFormatter,
-        }
-      : undefined,
     stripedGreenPercent > 0
       ? {
           dataKey: "stripedGreen",
@@ -310,6 +327,24 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
           dataKey: "green",
           label: "Green",
           color: `${TOTAL_QUANTITY_COLORS.green.darkColor}`,
+          stack: "total",
+          valueFormatter,
+        }
+      : undefined,
+    stripedGreyPercent > 0
+      ? {
+          dataKey: "stripedGrey",
+          label: "Grey.s",
+          color: `url(#StripedPattern-grey)`,
+          stack: "total",
+          valueFormatter,
+        }
+      : undefined,
+    greyPercent > 0
+      ? {
+          dataKey: "grey",
+          label: "Grey",
+          color: `${TOTAL_QUANTITY_COLORS.grey.lightColor}`,
           stack: "total",
           valueFormatter,
         }
@@ -343,7 +378,26 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
       : undefined,
   ].filter((s) => s !== undefined);
 
+  console.log("normalized:", normalized);
+  console.log("normalized2:", normalized2);
+  console.log("normalized3:", normalized3);
+
   return {
+    relatedData: {
+      ...(sur > 0 && {
+        sur,
+      }),
+      ...(def > 0 && {
+        def,
+      }),
+      ...(ar > 0 && {
+        ar,
+      }),
+      ...(co > 0 && {
+        co,
+      }),
+    },
+    valueFormatter,
     muiDataset: dataset,
     muiSeries: series,
     agChartOptions: {
