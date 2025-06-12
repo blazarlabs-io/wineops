@@ -424,7 +424,7 @@ export default function VineyardHarvestActionForm({
                         </div>
                       </div>
                     </Stack>
-                    {/* * VESSELS */}
+                    {/* * VESSELS
                     <FormControl fullWidth>
                       <InputLabel id="vessels-select-label">Vessels</InputLabel>
                       {vessels &&
@@ -478,7 +478,7 @@ export default function VineyardHarvestActionForm({
                             ))}
                           </Select>
                         )}
-                    </FormControl>
+                    </FormControl> */}
                     {/* * EQUIPMENT */}
                     <FormControl fullWidth>
                       <InputLabel id="equipment-select-label">
