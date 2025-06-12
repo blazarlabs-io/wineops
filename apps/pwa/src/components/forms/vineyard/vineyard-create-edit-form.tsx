@@ -41,6 +41,7 @@ import {
   TextField as Input,
   InputLabel,
   MenuItem,
+  Stack,
   Typography,
 } from "@mui/material";
 import Select from "@mui/material/Select";
@@ -387,20 +388,32 @@ export default function VineyardForm({
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter the surface area of your vineyard.
                         </InputLabel>
-                        <FormControl>
-                          <Input
-                            id="info.location.surface"
-                            type="number"
-                            variant="outlined"
-                            label="Surface Area"
-                            inputProps={{
-                              step: "0.1",
-                              min: 0,
-                            }}
-                            {...register("info.location.surface")}
-                            fullWidth
-                          />
-                        </FormControl>
+
+                        <Stack
+                          direction={"row"}
+                          alignItems={"center"}
+                          gap={2}
+                          width={"100%"}
+                          className="justify-between"
+                        >
+                          <FormControl className="w-full">
+                            <Input
+                              id="info.location.elevation"
+                              type="number"
+                              variant="outlined"
+                              label="Surface Area"
+                              inputProps={{
+                                step: "0.1",
+                                min: 0,
+                              }}
+                              {...register("info.location.elevation")}
+                            />
+                          </FormControl>
+                          <Typography variant="body1" className="max-w-fit">
+                            Ha
+                          </Typography>
+                        </Stack>
+
                         {/* {errors?.info?.location?.surface && (
                           <p className="text-sm text-destructive  mt-1">
                             {errors?.info.location.surface.message as string}
@@ -481,24 +494,35 @@ export default function VineyardForm({
                       </div>
 
                       {/* * ELEVATION */}
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 w-full">
                         {/* <Label htmlFor="info.location.elevation">Elevation</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter the elevation of your vineyard.
                         </InputLabel>
-                        <FormControl>
-                          <Input
-                            id="info.location.elevation"
-                            type="number"
-                            variant="outlined"
-                            label="Elevation"
-                            inputProps={{
-                              step: "0.1",
-                              min: 0,
-                            }}
-                            {...register("info.location.elevation")}
-                          />
-                        </FormControl>
+                        <Stack
+                          direction={"row"}
+                          alignItems={"center"}
+                          gap={2}
+                          width={"100%"}
+                          className="justify-between"
+                        >
+                          <FormControl className="w-full">
+                            <Input
+                              id="info.location.elevation"
+                              type="number"
+                              variant="outlined"
+                              label="Elevation"
+                              inputProps={{
+                                step: "0.1",
+                                min: 0,
+                              }}
+                              {...register("info.location.elevation")}
+                            />
+                          </FormControl>
+                          <Typography variant="body1" className="max-w-fit">
+                            M
+                          </Typography>
+                        </Stack>
                         {/* {errors?.info?.location?.elevation && (
                           <p className="text-sm text-destructive  mt-1">
                             {errors?.info?.location?.elevation}
@@ -570,29 +594,44 @@ export default function VineyardForm({
                         </Typography>
                       </div>
 
-                      <div className="grid grid-cols-1 gap-4">
+                      <div className="flex flex-col gap-4">
                         {/* * SPACING */}
-                        <div className="flex flex-col gap-2 justify-between">
+                        <div className="flex flex-col gap-2 justify-between w-full">
                           <div className="flex flex-col gap-2">
                             {/* <Label htmlFor="info.vines.plantingScheme.spacing">Spacing</Label> */}
                             <InputLabel className="text-sm text-muted-foreground">
                               Spacing in meters for your planting scheme.
                             </InputLabel>
                           </div>
-                          <FormControl>
-                            <Input
-                              id="info.vines.plantingScheme.spacing"
-                              type="number"
-                              variant="outlined"
-                              label="Spacing"
-                              inputProps={{
-                                step: "0.1",
-                                min: 0,
-                              }}
-                              // step={"any"}
-                              {...register("info.vines.plantingScheme.spacing")}
-                            />
-                          </FormControl>
+
+                          <Stack
+                            direction={"row"}
+                            alignItems={"center"}
+                            gap={2}
+                            width={"100%"}
+                            className="justify-between"
+                          >
+                            <FormControl className="w-full">
+                              <Input
+                                className="w-full"
+                                id="info.vines.plantingScheme.spacing"
+                                type="number"
+                                variant="outlined"
+                                label="Spacing"
+                                inputProps={{
+                                  step: "0.1",
+                                  min: 0,
+                                }}
+                                // step={"any"}
+                                {...register(
+                                  "info.vines.plantingScheme.spacing"
+                                )}
+                              />
+                            </FormControl>
+                            <Typography variant="body1" className="max-w-fit">
+                              M
+                            </Typography>
+                          </Stack>
                           {/* {errors?.info?.vines?.plantingScheme?.spacing && (
                             <p className="text-sm text-destructive  mt-1">
                               {errors?.info?.vines?.plantingScheme?.spacing}
@@ -601,25 +640,7 @@ export default function VineyardForm({
                         </div>
 
                         {/* * ROW ORIENTATION */}
-                        {/* <div className="flex flex-col gap-2 justify-between">
-                          <div className="flex flex-col gap-2">
-                            <InputLabel className="text-sm text-muted-foreground">
-                              Row orientation for your planting scheme.
-                            </InputLabel>
-                          </div>
-                          <FormControl>
-                            <Input
-                              id="info.vines.plantingScheme.rowOrientation"
-                              type="text"
-                              variant="outlined"
-                              label="Row orientation"
-                              {...register(
-                                "info.vines.plantingScheme.rowOrientation"
-                              )}
-                            />
-                          </FormControl>
-                          
-                        </div> */}
+
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
                             {/* <Label htmlFor="info.vines.plantingScheme.rowOrientation">Orientation</Label> */}
@@ -679,17 +700,34 @@ export default function VineyardForm({
                               Density of your planting scheme.
                             </InputLabel>
                           </div>
-                          <Input
-                            id="info.vines.plantingScheme.density"
-                            type="number"
-                            variant="outlined"
-                            label="Density"
-                            inputProps={{
-                              step: "0.1",
-                              min: 0,
-                            }}
-                            {...register("info.vines.plantingScheme.density")}
-                          />
+
+                          <Stack
+                            direction={"row"}
+                            alignItems={"center"}
+                            gap={2}
+                            width={"100%"}
+                            className="justify-between"
+                          >
+                            <FormControl className="w-full">
+                              <Input
+                                id="info.vines.plantingScheme.density"
+                                type="number"
+                                variant="outlined"
+                                label="Density"
+                                inputProps={{
+                                  step: "0.1",
+                                  min: 0,
+                                }}
+                                {...register(
+                                  "info.vines.plantingScheme.density"
+                                )}
+                              />
+                            </FormControl>
+                            <Typography variant="body1" className="max-w-fit">
+                              M
+                            </Typography>
+                          </Stack>
+
                           {/* {errors?.info?.vines?.plantingScheme?.density && (
                             <p className="text-sm text-destructive  mt-1">
                               {errors?.info?.vines?.plantingScheme?.density}
@@ -877,7 +915,7 @@ export default function VineyardForm({
                         </Typography>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="flex flex-col">
                         {/* * ECO/BIO */}
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
