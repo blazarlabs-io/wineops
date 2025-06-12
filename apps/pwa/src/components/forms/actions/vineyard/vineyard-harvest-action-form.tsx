@@ -243,8 +243,6 @@ export default function VineyardHarvestActionForm({
     reset(vineyardHarvestActionSample);
 
     setFormData(vineyardHarvestActionSample);
-
-    console.log("XXXXVINEYARDS", vineyards[0].vessels);
   }, [vineyards, vessels, labReports, selectedVineyards]);
 
   useEffect(() => {
