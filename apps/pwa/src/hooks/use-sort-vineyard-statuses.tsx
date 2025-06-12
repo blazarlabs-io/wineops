@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { VineyardStatus } from "@/models/types/db";
 import { useEffect, useState } from "react";
 
@@ -14,9 +15,18 @@ export const useSortVineyardStatuses = (statuses: VineyardStatus[]) => {
   function countItems<T>(arr: T[]): { name: string; count: number }[] {
     const counts: Record<string, number> = {};
 
-    arr.forEach((item) => {
-      const key = String(item); // Convert to string for object keys
-      counts[key] = (counts[key] || 0) + 1;
+    arr.forEach((item: any) => {
+      console.log(typeof item);
+      let key: string;
+      if (typeof item === "string") {
+        key = String(item); // Convert to string for object keys
+        counts[key] = (counts[key] || 0) + 1;
+      } else {
+        item.forEach((subitem: any) => {
+          key = String(subitem); // Convert to string for object keys
+          counts[key] = (counts[key] || 0) + 1;
+        });
+      }
     });
 
     return Object.entries(counts).map(([name, count]) => ({
@@ -29,7 +39,6 @@ export const useSortVineyardStatuses = (statuses: VineyardStatus[]) => {
     if (!statuses || statuses.length === 0 || statuses === undefined) return;
     const results = countItems(statuses);
     setVineyardStatuses(results);
-    console.log("RESULTS", results);
   }, [statuses]);
 
   return { vineyardStatuses };

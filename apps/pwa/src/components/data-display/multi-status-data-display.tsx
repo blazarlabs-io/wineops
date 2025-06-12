@@ -1,8 +1,7 @@
 import { SortedVineyardStatus } from "@/hooks/use-sort-vineyard-statuses";
 import { EntityStatus } from "@/models/types/dashboard";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
-import { Badge, Chip } from "@mui/material";
-import { useColorScheme } from "@mui/material/styles";
+import { Badge } from "@mui/material";
 
 export type StatusDataDisplayProps = {
   status: SortedVineyardStatus[];
@@ -11,10 +10,6 @@ export type StatusDataDisplayProps = {
 export default function MultiStatusDataDisplay({
   status,
 }: StatusDataDisplayProps) {
-  const { mode } = useColorScheme();
-
-  //   const styles = getStatusStyles(status[0].name as EntityStatus, mode);
-
   return (
     <>
       {status && status.length > 0 && (
@@ -22,7 +17,6 @@ export default function MultiStatusDataDisplay({
           {status.map((s) => (
             <span
               key={s.name}
-              //   style={styles}
               className="max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-1 gap-5"
             >
               {s.name.toUpperCase()}
@@ -38,7 +32,6 @@ export default function MultiStatusDataDisplay({
                   },
                 }}
               />
-              {/* <Chip variant="outlined" label={s.count} size="small" /> */}
             </span>
           ))}
         </div>

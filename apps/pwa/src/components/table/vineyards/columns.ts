@@ -24,7 +24,7 @@ export const vineyardColumns: ColDef[] = [
   },
   {
     field: "status",
-    minWidth: 148,
+    minWidth: 184,
     flex: 1,
     cellRenderer: StatusCellRenderer,
     cellRendererParams: (params: any) => {

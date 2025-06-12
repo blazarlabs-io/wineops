@@ -16,15 +16,15 @@ export default function TasksDataDisplay({
     <div className="flex flex-col h-full items-start justify-center">
       <button className="flex items-center gap-1 cursor-pointer max-h-[24px]">
         <CalendarX className="w-4 h-4 text-[#FF7878]" />
-        <span className="underline max-h-fit">{`${todo.length} to do`}</span>
+        <span className="max-h-fit">{`${todo.length} to do`}</span>
       </button>
       <button className="flex items-center gap-1 cursor-pointer max-h-[24px]">
         <Calendar className="w-4 h-4 text-[#FFAE52]" />
-        <span className="underline max-h-fit">{`${inProgress.length} in progress`}</span>
+        <span className="max-h-fit">{`${inProgress.length} in progress`}</span>
       </button>
       <button className="flex items-center gap-1 cursor-pointer max-h-[24px]">
         <CalendarClock className="w-4 h-4 text-[#00C950]" />
-        <span className="underline max-h-fit">{`${completed.length} completed`}</span>
+        <span className="max-h-fit">{`${completed.length} completed`}</span>
       </button>
     </div>
   );
