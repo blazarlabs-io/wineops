@@ -70,7 +70,7 @@ export default function VineyardLabActionForm({
         //value = Timestamp.fromDate(value.toDate());
         setValue(
           "inUseVineyard.id" as string,
-          vineyards.filter((v) => v.name === value)[0]?.id as string
+          vineyards.filter((v) => v?.name === value)[0]?.id as string
         );
         setValue("inUseVineyard.name" as string, value as any);
       } else {
@@ -92,13 +92,13 @@ export default function VineyardLabActionForm({
       setFormData((prev) => ({
         ...(prev as VineyardGlobalAction),
         inUseVineyard: {
-          id: subjectVineyard.id,
-          name: subjectVineyard.name,
+          id: subjectVineyard?.id,
+          name: subjectVineyard?.name,
         },
       }));
       setValue("inUseVineyard", {
-        id: subjectVineyard.id,
-        name: subjectVineyard.name,
+        id: subjectVineyard?.id,
+        name: subjectVineyard?.name,
       });
     },
 
@@ -125,8 +125,8 @@ export default function VineyardLabActionForm({
     vineyardGlobalActionSample.type = "lab-report";
     vineyardGlobalActionSample.executionDate = new Date().toDateString();
     vineyardGlobalActionSample.notes = generateNotes();
-    if (vineyardGlobalActionSample.responsible) {
-      vineyardGlobalActionSample.responsible.name = teamMembers[0].name;
+    if (vineyardGlobalActionSample.responsible !== undefined) {
+      vineyardGlobalActionSample.responsible.name = teamMembers[0]?.name;
       vineyardGlobalActionSample.responsible.email = teamMembers[0].email;
     }
 
@@ -134,8 +134,8 @@ export default function VineyardLabActionForm({
     if (selectedVineyards && selectedVineyards.length === 1) {
       setDisableSubject(true);
       vineyardGlobalActionSample.inUseVineyard = {
-        id: selectedVineyards[0].id,
-        name: selectedVineyards[0].name,
+        id: selectedVineyards[0]?.id,
+        name: selectedVineyards[0]?.name,
       };
     } else if (
       vineyards &&
@@ -145,8 +145,8 @@ export default function VineyardLabActionForm({
     ) {
       setDisableSubject(false);
       vineyardGlobalActionSample.inUseVineyard = {
-        id: vineyards[0].id,
-        name: vineyards[0].name,
+        id: vineyards[0]?.id,
+        name: vineyards[0]?.name,
       };
     }
 
@@ -198,7 +198,7 @@ export default function VineyardLabActionForm({
                         name="inUseVineyard.name"
                         // labelId="subject-select"
                         id="inUseVineyard.name"
-                        value={(formData.inUseVineyard.name as string) || ""}
+                        value={(formData.inUseVineyard?.name as string) || ""}
                         label="In Use Vineyard"
                         onChange={(e) => {
                           handleInUseVineyardChange(e.target.value);
@@ -246,7 +246,7 @@ export default function VineyardLabActionForm({
                         id="demo-simple-select"
                         value={
                           formData?.responsible?.name ||
-                          teamMembers[0].name ||
+                          teamMembers[0]?.name ||
                           ""
                         }
                         label="Responsible's Name"
@@ -255,7 +255,7 @@ export default function VineyardLabActionForm({
                           handleChange(
                             "responsible.email",
                             teamMembers.filter(
-                              (member) => member.name === e.target.value
+                              (member) => member?.name === e.target.value
                             )[0].email
                           );
                         }}
@@ -263,8 +263,8 @@ export default function VineyardLabActionForm({
                         {teamMembers &&
                           teamMembers.length > 0 &&
                           teamMembers.map((member) => (
-                            <MenuItem key={member.name} value={member.name}>
-                              {member.name}
+                            <MenuItem key={member?.name} value={member?.name}>
+                              {member?.name}
                             </MenuItem>
                           ))}
                       </Select>
