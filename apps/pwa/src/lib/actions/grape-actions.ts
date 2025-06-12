@@ -1,4 +1,10 @@
-import { GrapeStatus } from "@/models/types/db";
+import {
+  Grape,
+  GrapeStatus,
+  Must,
+  MustStatus,
+  RowType,
+} from "@/models/types/db";
 import { db } from "../firebase/services";
 import { enqueueSnackbar } from "notistack";
 import { ActionRelation } from "@/models/types/actions";
@@ -42,4 +48,73 @@ export const grapeIntakeAction = async (
   }
 };
 
-export const grapeProcessingAction = () => {};
+export const grapeProcessingAction = async (
+  uid: string,
+  actionData: any,
+  grape: Grape
+) => {
+  // * 1. write new action object into DB andreference it in the grape
+  console.log(
+    "\n\nXXXXXXXXXXXXXXXXgrapeProcessingAction",
+    uid,
+    actionData,
+    grape
+  );
+
+  const actionRes = await db.action.create(uid, actionData);
+
+  if (actionRes.status === 200) {
+    enqueueSnackbar("Action created", { variant: "success" });
+  } else {
+    enqueueSnackbar("Error creating action", { variant: "error" });
+  }
+
+  // * 2. update grape object into DB
+  const grapeRes = await db.grape.update(uid, grape.id, {
+    actions: [
+      ...(grape.actions || ([] as ActionRelation[])),
+      {
+        id: actionData.id,
+        name: "grape-processing",
+      },
+    ],
+    status: GrapeStatus.PROCESSED,
+    metrics: {
+      ...grape.metrics,
+      actual: actionData.quantity,
+      supply: 0,
+      demand: 0,
+    },
+  });
+
+  if (grapeRes.status === 200) {
+    enqueueSnackbar("Grape updated", { variant: "success" });
+  } else {
+    enqueueSnackbar("Error updating grape", { variant: "error" });
+  }
+  // // * 3. create a new must
+  const newMust: Must = {
+    id: Date.now().toString(),
+    name: actionData.pressPercentage.mustId,
+    date: actionData.executionDate,
+    group: [actionData.pressPercentage.mustId],
+    rowType: RowType.ITEM,
+    // grapeVariety: grape?.grapeVariety,
+    status: MustStatus.NEW_MUST,
+    metrics: {
+      actual: actionData.pressPercentage.inputQuantity,
+      supply: 0,
+      demand: 0,
+    },
+    labData: actionData.labReport,
+  };
+
+  console.log("NEW MUST", newMust);
+  const mustRes = await db.must.create(uid, newMust);
+
+  if (mustRes.status === 200) {
+    enqueueSnackbar("Must created", { variant: "success" });
+  } else {
+    enqueueSnackbar("Error creating must", { variant: "error" });
+  }
+};

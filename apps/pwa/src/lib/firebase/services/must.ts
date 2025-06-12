@@ -10,6 +10,8 @@ const must = {
       const docRef = doc(fdb, WINERY, id, MUSTS, data.id);
       const cleanedData = cleanObject(data);
 
+      console.log("cleanedData", cleanedData);
+
       const newDocRef = await setDoc(docRef, cleanedData);
 
       return {

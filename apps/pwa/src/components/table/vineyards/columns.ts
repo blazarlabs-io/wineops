@@ -52,9 +52,6 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: LabDataCellRenderer,
     cellStyle: { width: "100%" },
-    // aggFunc: (params: any) => {
-    //   return params.values;
-    // },
   },
   {
     field: "tasks",

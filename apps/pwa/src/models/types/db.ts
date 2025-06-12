@@ -254,6 +254,7 @@ export type TransportationInfo = {
 };
 
 export type GrapeLabData = {
+  id?: string;
   date: string | Timestamp;
   sugar: Partial<LabElement>;
   acidity: Partial<LabElement>;
@@ -295,6 +296,8 @@ export type Grape = {
   documents: SingleDocument[];
   group: string[];
   rowType?: RowType;
+  musts?: ActionRelation[];
+  actions?: ActionRelation[];
 };
 
 export type MustInfo = {
@@ -315,6 +318,7 @@ export type QtyInfo = {
 };
 
 export const MustStatus = {
+  NEW_MUST: "New Must",
   PRESSED: "Pressed",
   FERMENTING: "Fermenting",
 } as const;

@@ -40,6 +40,7 @@ export type HarvestActionFormProps = {
 export default function VineyardLabActionForm({
   vineyards,
   actions,
+  selectedVineyards,
 }: HarvestActionFormProps) {
   const { teamMembers } = useWinery();
   const { user } = useAuth();
@@ -56,6 +57,7 @@ export default function VineyardLabActionForm({
   const [formData, setFormData] = useState<VineyardGlobalAction>(
     vineyardGlobalActionSample
   );
+  const [disableSubject, setDisableSubject] = useState<boolean>(false);
 
   const handleChange = useCallback(
     (name: string, value: any) => {
@@ -82,14 +84,6 @@ export default function VineyardLabActionForm({
     },
     [formData, setValue]
   );
-
-  // const handleDateChange = useCallback((name: string, value: any) => {
-  //   setFormData((prev) => ({
-  //     ...(prev as VineyardGlobalAction),
-  //     [name]: value,
-  //   }));
-  //   setValue(name, value.toTimestamp());
-  // }, []);
 
   const handleInUseVineyardChange = useCallback(
     (value: any) => {
@@ -127,35 +121,39 @@ export default function VineyardLabActionForm({
   };
 
   useEffect(() => {
-    if (
+    vineyardGlobalActionSample.id = Date.now().toString();
+    vineyardGlobalActionSample.type = "lab-report";
+    vineyardGlobalActionSample.executionDate = new Date().toDateString();
+    vineyardGlobalActionSample.notes = generateNotes();
+    if (vineyardGlobalActionSample.responsible) {
+      vineyardGlobalActionSample.responsible.name = teamMembers[0].name;
+      vineyardGlobalActionSample.responsible.email = teamMembers[0].email;
+    }
+
+    // * If there is only one vineyard selected, else use the first vineyard is any
+    if (selectedVineyards && selectedVineyards.length === 1) {
+      setDisableSubject(true);
+      vineyardGlobalActionSample.inUseVineyard = {
+        id: selectedVineyards[0].id,
+        name: selectedVineyards[0].name,
+      };
+    } else if (
       vineyards &&
       vineyards.length > 0 &&
       teamMembers &&
       teamMembers.length > 0
     ) {
-      vineyardGlobalActionSample.id = Date.now().toString();
-      vineyardGlobalActionSample.type = "lab-report";
+      setDisableSubject(false);
       vineyardGlobalActionSample.inUseVineyard = {
         id: vineyards[0].id,
         name: vineyards[0].name,
       };
-
-      vineyardGlobalActionSample.executionDate = new Date().toDateString();
-
-      vineyardGlobalActionSample.notes = generateNotes();
-
-      if (vineyardGlobalActionSample.responsible) {
-        vineyardGlobalActionSample.responsible.name = teamMembers[0].name;
-        vineyardGlobalActionSample.responsible.email = teamMembers[0].email;
-      }
-
-      reset(vineyardGlobalActionSample);
-
-      setFormData(vineyardGlobalActionSample);
-
-      console.log("vineyardGlobalActionSample", vineyardGlobalActionSample);
     }
-  }, [vineyards, teamMembers]);
+
+    reset(vineyardGlobalActionSample);
+    setFormData(vineyardGlobalActionSample);
+    console.log("vineyardGlobalActionSample", vineyardGlobalActionSample);
+  }, [vineyards, teamMembers, selectedVineyards]);
 
   useEffect(() => {
     if (errors) {
@@ -196,6 +194,7 @@ export default function VineyardLabActionForm({
                         In Use Vineyard
                       </InputLabel>
                       <Select
+                        disabled={disableSubject}
                         name="inUseVineyard.name"
                         // labelId="subject-select"
                         id="inUseVineyard.name"

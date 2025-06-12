@@ -9,6 +9,8 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
   const { value, node, data } = params;
   const isGroup = node.group || data.rowType === "group";
 
+  console.log("VALUE", isGroup, value.date, value.sugar, value.acidity);
+
   return (
     <Stack
       alignItems="flex-start"

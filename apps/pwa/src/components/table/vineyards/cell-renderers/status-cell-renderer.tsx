@@ -9,16 +9,10 @@ import VineyardMultiStatusDataDisplay from "@/components/data-display/multi-stat
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
 ) => {
-  console.log(params);
   const { vineyardStatuses } = useSortVineyardStatuses(
     params?.node?.aggData?.status
   );
 
-  useEffect(() => {
-    if (vineyardStatuses && vineyardStatuses.length > 0) {
-      console.log("vineyardStatuses", vineyardStatuses);
-    }
-  }, [vineyardStatuses]);
   return (
     <Box
       display={"flex"}

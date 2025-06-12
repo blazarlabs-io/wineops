@@ -19,5 +19,6 @@ db.consumable = consumable;
 db.action = action;
 db.team = team;
 db.labReport = labReport;
+db.must = must;
 
 export { db };

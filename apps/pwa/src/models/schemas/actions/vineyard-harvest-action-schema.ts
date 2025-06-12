@@ -1,6 +1,20 @@
 import { VineyardHarvestAction } from "@/models/types/actions";
 import Joi from "joi";
 
+/*
+ id: string;
+  supportingDocs: string[];
+  results: {
+    [key: string]: {
+      value: number;
+      variation: number;
+    };
+  };
+  units: string;
+  responsible: ResponsibleTeamMember;
+  date: Timestamp | string;
+*/
+
 export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
   id: Joi.string().required(),
   type: Joi.string().required(),
@@ -16,7 +30,17 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
     quantity: Joi.number().precision(2).optional(),
   },
   invoiceNumber: Joi.string().optional().allow(""),
-  latestLabData: Joi.object().optional(),
+  latestLabData: Joi.object({
+    date: Joi.string().optional().allow(""),
+    sugar: Joi.object({
+      value: Joi.number().precision(2).optional(),
+      unit: Joi.string().optional().allow(""),
+    }),
+    acidity: {
+      value: Joi.number().precision(2).optional(),
+      unit: Joi.string().optional().allow(""),
+    },
+  }).optional(),
   vessels: Joi.array()
     .items(
       Joi.object({
