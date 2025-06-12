@@ -130,7 +130,7 @@ const METRICS = [
   },
   {
     vineyard: "V5",
-    status: "Ready for Harvestt" as EntityStatus,
+    status: "Ready for Harvest" as EntityStatus,
     actual: 0,
     supply: 10,
     demand: 16,
