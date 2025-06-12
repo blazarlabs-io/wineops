@@ -496,7 +496,7 @@ export const DataTable = <T extends DashboardEntity>({
             name={columnName}
             onClick={() => handleGroupBy(columnName)}
           >
-            {groupedField === columnName ? `Ungroup ` : `Group by `}
+            {groupedField === columnName ? `Unpivot ` : `Pivot by `}
             {name}
           </Button>
         ))}

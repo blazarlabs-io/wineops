@@ -11,8 +11,6 @@ interface LabItemProps {
 }
 
 export default function LabItem({ label, data, variant }: LabItemProps) {
-  if (!data || !data?.value) return null;
-
   const isSmall = variant === "small";
 
   return (
@@ -33,7 +31,7 @@ export default function LabItem({ label, data, variant }: LabItemProps) {
         variant={isSmall ? "caption" : "body1"}
         sx={{ display: "flex", flexDirection: "row", gap: isSmall ? 0 : 1 }}
       >
-        <span className="text-muted-foreground">{data?.value}</span>
+        <span className="text-muted-foreground">{data?.value ?? "N/A"}</span>
         <Variation variation={data?.variation ?? 0} />
       </Typography>
     </Stack>

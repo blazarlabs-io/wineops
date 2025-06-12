@@ -6,6 +6,7 @@ import { formatNumberWithUnit } from "@/utils/number-format";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
 
+
 type LabDataProps = {
   labData: GrapeLabData;
 };
@@ -32,7 +33,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
       </Stack>
 
       {labData && (
-        <div className="grid grid-cols-5 w-full p-4 gap-4">
+        <div className="grid grid-cols-4 w-full py-2 items-center justify-center">
           <LabItem label="Sugar" data={sugar ?? { value: "N/A" }} />
           <LabItem label="Acidity" data={acidity ?? { value: "N/A" }} />
           <SimpleDataDisplay
@@ -77,6 +78,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
               formatNumberWithUnit(addedGrapesVarietiesPercentage, "%") ?? "N/A"
             }
           />
+          <span></span>
           <SimpleDataDisplay
             label="Lab technician name"
             value={labTechnicianName ?? "N/A"}

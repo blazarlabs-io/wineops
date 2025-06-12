@@ -48,7 +48,9 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         ar: !IS_ENDED(status)
           ? supply > actual
             ? demand - supply
-            : demand - actual
+            : demand - actual > 0
+              ? demand - actual
+              : 0
           : 0,
         co: actual > demand && actual > 0 ? demand : 0,
         vineyard,

@@ -80,6 +80,9 @@ export default function MustsTable({
           },
           cellRenderer: "agGroupCellRenderer",
           width: GROUP_COLUMN_WIDTH,
+          lockPinned: true,
+          lockPosition: true,
+          suppressMovable: true,
         }}
         updateGroup={updateGroup}
         updateSelectedData={updateSelectedMusts}

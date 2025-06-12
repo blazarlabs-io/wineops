@@ -1,31 +1,71 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import { Supplier } from "@/models/types/db";
+import { Supplier, TransportationInfo } from "@/models/types/db";
+import Link from "next/link";
+import Stack from "@mui/material/Stack";
 
 type SupplierProps = {
   supplier: Supplier;
+  transportationInfo: TransportationInfo;
 };
 
-export default function SupplierContent({ supplier }: SupplierProps) {
-  if (!supplier) return null;
+export default function SupplierContent({
+  supplier,
+  transportationInfo,
+}: SupplierProps) {
+  const {
+    vehicleIdNo,
+    companyName,
+    driverIdNo,
+    certificate,
+    acquisitionInvoiceNo,
+  } = transportationInfo ?? {};
 
   return (
-    <div className="grid grid-cols-5 w-full p-4 py-2">
-      <SimpleDataDisplay
-        label="Company Name"
-        value={supplier.companyName ?? "N/A"}
-      />
-      <SimpleDataDisplay
-        label="Dispatch Invoice"
-        value={supplier.dispatchInvoice ?? "N/A"}
-      />
-      <SimpleDataDisplay
-        label="Invoice No"
-        value={supplier.invoiceNo ?? "N/A"}
-      />
-      <SimpleDataDisplay
-        label="Vineyard Name"
-        value={supplier.vineyardName ?? "N/A"}
-      />
-    </div>
+    <Stack>
+      <Stack direction="row" sx={{ justifyContent: "flex-end", lineHeight: 1 }}>
+        <Link href="" className="underline">
+          Attach a document
+        </Link>
+      </Stack>
+
+      <div className="grid grid-cols-5 w-full py-2 items-center justify-center">
+        <SimpleDataDisplay
+          label="Vehicle ID Number"
+          value={vehicleIdNo ?? "N/A"}
+        />
+        <SimpleDataDisplay label="Company Name" value={companyName ?? "N/A"} />
+        <SimpleDataDisplay label="Driver ID/Name" value={driverIdNo ?? "N/A"} />
+        <SimpleDataDisplay
+          label="Certificat de Inofensivitate"
+          value={certificate ?? "N/A"}
+        />
+        <SimpleDataDisplay
+          label="Acquisition Invoice Number"
+          value={acquisitionInvoiceNo ?? "N/A"}
+        />
+
+        {transportationInfo && (
+          <>
+            <SimpleDataDisplay
+              label="Company Name"
+              value={supplier.companyName ?? "N/A"}
+            />
+            <SimpleDataDisplay
+              label="Dispatch Invoice"
+              value={supplier.dispatchInvoice ?? "N/A"}
+            />
+            <SimpleDataDisplay
+              label="Invoice No"
+              value={supplier.invoiceNo ?? "N/A"}
+            />
+            <SimpleDataDisplay
+              label="Vineyard Name"
+              value={supplier.vineyardName ?? "N/A"}
+            />
+            <span></span>
+          </>
+        )}
+      </div>
+    </Stack>
   );
 }
