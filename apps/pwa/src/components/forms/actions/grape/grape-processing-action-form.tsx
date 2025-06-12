@@ -97,7 +97,7 @@ export default function GrapeProcessingActionForm({
     console.log("SUBMIT", data);
     console.log("ERRORS:", errors);
 
-    const subjectGrape = grapes.filter((g) => g.name === data.batchId)[0];
+    const subjectGrape = grapes.filter((g) => g?.name === data?.batchId)[0];
 
     console.log("SUBJECT GRAPE", subjectGrape);
 
@@ -153,8 +153,8 @@ export default function GrapeProcessingActionForm({
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
-          name: teamMembers[0].name,
-          email: teamMembers[0].email,
+          name: teamMembers[0]?.name,
+          email: teamMembers[0]?.email,
         },
         units: selectedGrapes[0].labData.acidity.unit as string,
         results: {
@@ -170,24 +170,24 @@ export default function GrapeProcessingActionForm({
       };
       setDisableSubject(true);
     } else if (grapes && grapes.length > 0) {
-      grapeProcessingActionSample.batchId = grapes[0].name;
+      grapeProcessingActionSample.batchId = grapes[0]?.name;
 
       grapeProcessingActionSample.labReport = {
         id: "",
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
-          name: teamMembers[0].name,
-          email: teamMembers[0].email,
+          name: teamMembers[0]?.name,
+          email: teamMembers[0]?.email,
         },
-        units: grapes[0].labData.acidity.unit as string,
+        units: grapes[0]?.labData.acidity.unit as string,
         results: {
           sugar: {
-            value: grapes[0].labData.acidity.value as number,
+            value: grapes[0]?.labData.acidity.value as number,
             variation: 0,
           },
           acidity: {
-            value: grapes[0].labData.acidity.value as number,
+            value: grapes[0]?.labData.acidity.value as number,
             variation: 0,
           },
         },

@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EntityStatus } from "@/models/types/dashboard";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
+import { Select, MenuItem, Typography } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
+import { useEffect, useState } from "react";
 
 export type StatusDataDisplayProps = {
   status: EntityStatus;
@@ -8,18 +11,68 @@ export type StatusDataDisplayProps = {
 
 export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
   const { mode } = useColorScheme();
+  const [open, setOpen] = useState(false);
+  const [statuses, setStatuses] = useState<VineyardStatus[]>([]);
 
   const styles = getStatusStyles(status, mode);
+
+  const handleOpen = (e: any) => {
+    setOpen(e.target.value);
+  };
+
+  useEffect(() => {
+    console.log("VineyardStatus", Object.entries(VineyardStatus));
+  }, [VineyardStatus]);
 
   return (
     <>
       {status && (
-        <span
-          style={styles}
-          className="border max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-1"
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={"MAINTAINANCE"}
+          // label="Age"
+          onChange={handleOpen}
+          sx={{
+            ...styles,
+            border: "none",
+            // fontSize: "8px",
+            "& .MuiOutlinedInput-notchedOutline": {
+              border: "none",
+            },
+            "& .MuiOutlinedInput-input": {
+              border: "none",
+            },
+            "& .MuiOutlinedInput-root": {
+              border: "none",
+            },
+            "& .MuiSelect-select": {
+              border: "none",
+            },
+          }}
         >
-          {status.toUpperCase()}
-        </span>
+          <MenuItem value={"MAINTAINANCE"} sx={{ ...styles }}>
+            <Typography variant="caption">MAINTAINANCE</Typography>
+          </MenuItem>
+          <MenuItem
+            value={"HARVESTING"}
+            sx={{ ...getStatusStyles("Harvesting", mode) }}
+          >
+            <Typography variant="caption">HARVESTING</Typography>
+          </MenuItem>
+        </Select>
+        // <div className="flex flex-col debug-red w-[164px] h-full">
+        //   <div
+        //     style={styles}
+        //     onClick={handleOpen}
+        //     className="hover:brightness-70! transition-all duration-150 ease-in-out cursor-pointer border max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-1"
+        //   >
+        //     <p>{status.toUpperCase()}</p>
+        //   </div>
+        //   {open && (
+        //     <div className="w-full h-full bg-[#00C950] rounded-l-md z-100" />
+        //   )}
+        // </div>
       )}
     </>
   );
