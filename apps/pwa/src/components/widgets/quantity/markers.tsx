@@ -11,7 +11,7 @@ export default function Markers({ maxValue, markers }: MarkersProps) {
   const actual = markers.find(({ type }) => type === Metric.ACTUAL)?.value || 0;
 
   return (
-    <div className="w-full absolute flex -right-2 py-1 text-[10px]">
+    <div className="w-full absolute1 flex -right-2 py-1 text-[10px]">
       {markers.map(
         ({ type, value, color, textColor, secondaryDarkColor }, index) => {
           const percentage = Math.round(
