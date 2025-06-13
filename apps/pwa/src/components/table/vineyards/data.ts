@@ -63,7 +63,7 @@ export function getData(): Vineyard[] {
       status: "Maintenance",
       forecastedYield: 0,
       tasks: generateTasks(),
-      notes: generateNotes(),
+      notes: [],
     },
     {
       id: generateRandomId(),
@@ -119,7 +119,7 @@ export function getData(): Vineyard[] {
       status: "Maintenance",
       forecastedYield: 0,
       tasks: generateTasks(),
-      notes: generateNotes(),
+      notes: [],
     },
     {
       id: generateRandomId(),
@@ -175,7 +175,7 @@ export function getData(): Vineyard[] {
       status: "Maintenance",
       forecastedYield: 0,
       tasks: generateTasks(),
-      notes: generateNotes(),
+      notes: [],
     },
     {
       id: generateRandomId(),
@@ -231,7 +231,7 @@ export function getData(): Vineyard[] {
       status: "Maintenance",
       forecastedYield: 0,
       tasks: generateTasks(),
-      notes: generateNotes(),
+      notes: [],
     },
     {
       id: generateRandomId(),
@@ -287,7 +287,7 @@ export function getData(): Vineyard[] {
       status: "Maintenance",
       forecastedYield: 0,
       tasks: generateTasks(),
-      notes: generateNotes(),
+      notes: [],
     },
   ];
 }
