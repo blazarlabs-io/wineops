@@ -49,7 +49,7 @@ export default function VineyardsDashboard() {
   vineyardBlankSample.labData = []; //generateLabData() as LabDataSimple[];
   vineyardBlankSample.tasks = generateTasks();
   vineyardBlankSample.documents = generateDummyDocs(4);
-  vineyardBlankSample.notes = generateNotes();
+  vineyardBlankSample.notes = [];
   vineyardBlankSample.rowType = "item";
 
   const { selectedVineyards, vineyards } = useVineyard();

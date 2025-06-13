@@ -22,3 +22,4 @@ export const ACTIONS = "actions";
 export const TEAM = "teamMembers";
 export const LAB_REPORTS = "labReports";
 export const CHEMISTRY = "chemistry";
+export const NOTES = "notes";

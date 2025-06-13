@@ -1,60 +1,95 @@
-import { Note } from "@/models/types/db";
-import { Stack, Typography } from "@mui/material";
 import { GROUP_ITEMS_TO_SHOW } from "@/data/constants";
+import { Note } from "@/models/types/db";
+import { Avatar, Stack, Typography } from "@mui/material";
+import { useState } from "react";
+import EditNoteDialog from "../dialogs/edit-note-dialog";
 
 export type NotesDataDisplayProps = {
   notes: Note[];
+  uid: string;
 };
 
-export default function NotesDataDisplay({ notes }: NotesDataDisplayProps) {
+export default function NotesDataDisplay({
+  notes,
+  uid,
+}: NotesDataDisplayProps) {
+  const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [editNote, setEditNote] = useState<Note | null>(null);
+
   if (!notes) return;
 
+  const handleNoteOpen = (note: Note) => {
+    setEditNote(note);
+    setOpenEditDialog(true);
+  };
+
   return (
-    <Stack
-      direction="column"
-      spacing={0}
-      className="justify-center items-start gap-1"
-      height={"100%"}
-    >
-      {notes &&
-        notes.length > 0 &&
-        notes.map((note, index) => (
-          <div
-            key={note.id + index}
-            style={{
-              display: index < GROUP_ITEMS_TO_SHOW ? "flex" : "none",
-            }}
-            className="w-full min-h-fit flex items-center justify-center"
+    <>
+      <Stack
+        direction="column"
+        spacing={0}
+        className="justify-center items-start gap-1 max-w-[200px]"
+        height={"100%"}
+      >
+        {notes &&
+          notes.length > 0 &&
+          notes.map((note, index) => (
+            <div
+              onClick={() => handleNoteOpen(note)}
+              key={note.id + index}
+              style={{
+                display: index < 1 ? "flex" : "none",
+              }}
+              className="w-full min-h-fit flex items-center justify-center cursor-pointer hover:bg-white/10 transition-all duration-200 ease-in-out"
+            >
+              {index < 1 && (
+                <div className="flex relative flex-col items-start justify-start rounded-md border max-w-fit p-1 min-w-[150px] ">
+                  <div className="absolute top-0 left-0 w-[4px] h-full bg-[#00C950] rounded-l-md" />
+                  <div className="flex items-center justify-between w-full">
+                    <Typography
+                      variant="body2"
+                      className="pl-2 truncate max-w-[140px]"
+                    >
+                      {note.title}
+                    </Typography>
+                    <Avatar
+                      sx={{ width: 18, height: 18 }}
+                      className=""
+                      alt="Remy Sharp"
+                      src={note.author?.avatar}
+                    >
+                      <Typography className="" variant="caption">
+                        {note.author?.name.charAt(0)}
+                      </Typography>
+                    </Avatar>
+                  </div>
+                  <Typography
+                    variant="body2"
+                    className="pl-2 text-xs truncate max-w-[140px]"
+                    color="text.secondary"
+                  >
+                    {note.content}
+                  </Typography>
+                </div>
+              )}
+            </div>
+          ))}
+        {notes.length > 1 && (
+          <Typography
+            color="primary"
+            variant="body2"
+            className="text-xs underline"
           >
-            {index < 1 && (
-              <div className="flex relative flex-col items-start justify-start rounded-md border max-w-fit p-1 min-w-[150px] ">
-                <div className="absolute top-0 left-0 w-[4px] h-full bg-[#00C950] rounded-l-md" />
-                <Typography
-                  variant="body2"
-                  className="pl-2 truncate max-w-[140px]"
-                >
-                  {note.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  className="pl-2 text-xs truncate max-w-[140px]"
-                  color="text.secondary"
-                >
-                  {note.content}
-                </Typography>
-              </div>
-            )}
-          </div>
-        ))}
-      {notes.length > GROUP_ITEMS_TO_SHOW && (
-        <Typography
-          color="primary"
-          variant="body2"
-          className="text-xs underline"
-        >
-          + {notes.length - GROUP_ITEMS_TO_SHOW} more
-        </Typography>
-      )}
-    </Stack>
+            + {notes.length - 1} more
+          </Typography>
+        )}
+      </Stack>
+      <EditNoteDialog
+        open={openEditDialog}
+        note={editNote as Note}
+        uid={uid}
+        onClose={() => setOpenEditDialog(false)}
+      />
+    </>
   );
 }

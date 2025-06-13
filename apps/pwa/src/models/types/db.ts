@@ -39,6 +39,8 @@ export type Note = {
   id: string;
   title: string;
   content: string;
+  date?: string | Timestamp;
+  author?: TeamMember;
 };
 
 export type Task = {
@@ -195,7 +197,7 @@ export type Vineyard = Entity & {
   status: VineyardStatus;
   forecastedYield: number;
   tasks: TaskSummary[];
-  notes: Note[];
+  notes: ActionRelation[];
   documents: SingleDocument[];
   createdAt?: string | Timestamp;
   // * RELATIONS * //

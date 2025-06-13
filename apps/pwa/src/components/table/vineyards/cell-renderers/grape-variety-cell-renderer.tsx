@@ -1,13 +1,26 @@
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { Box, Typography } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import { type FunctionComponent } from "react";
+import { useEffect, useMemo, useState, type FunctionComponent } from "react";
 
 export const GrapeVarietyCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ value }) => {
-  const uniqueValues: string[] =
-    value && Array.isArray(value) ? [...new Set(value.flat(Infinity))] : [];
+  const uniqueValues = useMemo(() => {
+    return value && Array.isArray(value)
+      ? [...new Set(value.flat(Infinity))]
+      : [];
+  }, [value]);
+
+  const [tooltipText, setTooltipText] = useState<string>("");
+
+  useEffect(() => {
+    if (uniqueValues.length > 0) {
+      setTooltipText(uniqueValues.join(", "));
+    } else {
+      setTooltipText("");
+    }
+  }, [uniqueValues]);
 
   return (
     <Box
@@ -44,13 +57,15 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
                     <p className="leading-[1] truncate">{v}</p>
                   ) : (
                     index === 2 && (
-                      <Typography
-                        variant="body2"
-                        color="primary"
-                        className="leading-[1] m-[0px] p-[0px] text-muted-foreground underline cursor-pointer"
-                      >
-                        + {uniqueValues.length - 2} more
-                      </Typography>
+                      <Tooltip title={tooltipText} placement="bottom-start">
+                        <Typography
+                          variant="body2"
+                          color="primary"
+                          className="leading-[1] m-[0px] p-[0px] text-muted-foreground underline cursor-pointer"
+                        >
+                          + {uniqueValues.length - 2} more
+                        </Typography>
+                      </Tooltip>
                     )
                   )}
                 </Box>
