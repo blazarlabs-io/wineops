@@ -25,7 +25,7 @@ export default function GrapeEntryContent({
   } = entry;
 
   return (
-    <div className="grid grid-cols-5 w-full p-4 py-2">
+    <div className="grid grid-cols-5 w-full p-0 pt-5.5 py-2">
       <SimpleDataDisplay
         label="Gross weight"
         value={

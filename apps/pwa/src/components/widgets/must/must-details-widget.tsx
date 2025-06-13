@@ -22,6 +22,11 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
 
   const qty = must?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0);
 
+  const sx = {
+    padding: "8px 16px !important",
+    minHeight: "fit-content !important",
+  };
+
   return (
     <Box
       sx={{
@@ -31,7 +36,6 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        overflow: "hidden",
       }}
     >
       <Tabs
@@ -40,13 +44,13 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
         value={value}
         onChange={handleChange}
         aria-label="Must details"
-        sx={{ borderRight: 1, borderColor: "divider", height: "100%" }}
+        sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
-        <Tab label="Lab Data" {...a11yProps(0)} />
-        <Tab label="Must&nbsp;Info" {...a11yProps(1)} />
-        <Tab label="Timeline" {...a11yProps(2)} />
-        <Tab label="Quantity" {...a11yProps(3)} />
-        <Tab label="Tasks" {...a11yProps(4)} />
+        <Tab label="Lab Data" {...a11yProps(0)} sx={sx} />
+        <Tab label="Must&nbsp;Info" {...a11yProps(1)} sx={sx} />
+        <Tab label="Timeline" {...a11yProps(2)} sx={sx} />
+        <Tab label="Quantity" {...a11yProps(3)} sx={sx} />
+        <Tab label="Tasks" {...a11yProps(4)} sx={sx} />
       </Tabs>
 
       <TabPanel value={value} index={0}>

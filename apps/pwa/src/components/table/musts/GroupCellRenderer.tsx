@@ -99,7 +99,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                 </IconButton>
               </div>
               {expanded && (
-                <Stack className="fixed bottom-0 flex items-start justify-center left-0 w-full h-[300px] bg-transparent z-[9999]">
+                <Stack
+                  style={{ borderColor: "var(--mui-palette-divider)" }}
+                  className="fixed bottom-0 border-t flex items-start left-0 w-full h-[219px] bg-transparent z-[9999]"
+                >
                   <MustDetailsWidget must={node.data} />
                 </Stack>
               )}
