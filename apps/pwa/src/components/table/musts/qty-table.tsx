@@ -54,14 +54,14 @@ export default function QtyTable({ data }: QtyTableProps) {
             </TableCell>
             <TableCell key="losses">
               <Typography variant="body2" color="textDisabled">
-                {`{delta}`}= losses
+                Losses
               </Typography>
             </TableCell>
-            <TableCell key="supplier">
+            {/*<TableCell key="graph">
               <Typography variant="body2" color="textDisabled">
                 {`{graph}`}
               </Typography>
-            </TableCell>
+            </TableCell>*/}
           </TableRow>
         </TableHead>
 
@@ -94,9 +94,6 @@ export default function QtyTable({ data }: QtyTableProps) {
                 </TableCell>
                 <TableCell>
                   <Typography>{losses}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography></Typography>
                 </TableCell>
               </TableRow>
             ))

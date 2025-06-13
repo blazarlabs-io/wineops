@@ -35,7 +35,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
       </Stack>
 
       {labData && (
-        <div className="grid grid-cols-5 w-full p-4 gap-4">
+        <div className="grid grid-cols-5 w-full py-2 items-center justify-center">
           <SimpleDataDisplay
             label="Date"
             value={date ? formatDate(date, { locale: DEFAULT_LOCALE }) : "N/A"}

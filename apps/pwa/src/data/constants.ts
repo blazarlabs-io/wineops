@@ -4,7 +4,7 @@ export const RIGHT_DRAWER_WIDTH = 364;
 export const ROW_HEIGHT_DEFAULT = 112;
 export const ROW_HEIGHT_EXPANDED = 424; //416;
 export const GROUP_COLUMN_WIDTH = 320;
-export const ROW_HEIGHT_EXPANDED_GRAPE = 364;
+export const ROW_HEIGHT_EXPANDED_GRAPE = 374;
 
 export const MASS_UNITS = ["kg"];
 
@@ -16,4 +16,4 @@ export const ROW_HEIGHT_EXPANDED_VESSEL = 304;
 export const VOLUME_UNITS = ["litre(s)", "tonn(s)"];
 
 export const DEFAULT_LOCALE = "ro-RO";
-export const ROW_HEIGHT_EXPANDED_MUST = 424;
+export const ROW_HEIGHT_EXPANDED_MUST = 334;
