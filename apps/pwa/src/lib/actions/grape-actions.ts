@@ -107,6 +107,7 @@ export const grapeProcessingAction = async (
       demand: 0,
     },
     labData: actionData.labReport,
+    vessels: [actionData.pressPercentage.vessel],
   };
 
   console.log("NEW MUST", newMust);

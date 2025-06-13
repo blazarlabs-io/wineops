@@ -9,6 +9,7 @@ import { EntityStatus } from "@/models/types/dashboard";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
 import { enqueueSnackbar } from "notistack";
+import StatusDataDisplaySelect from "@/components/data-display/status-data-display-select";
 
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
@@ -40,7 +41,7 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       height={ROW_HEIGHT_DEFAULT}
     >
       {!params.node.group ? (
-        <VineyardStatusDataDisplay
+        <StatusDataDisplaySelect
           status={params.value}
           onSelect={handleOnSelect}
         />

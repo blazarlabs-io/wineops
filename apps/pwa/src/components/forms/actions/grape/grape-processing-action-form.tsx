@@ -7,7 +7,7 @@ import {
   GrapeProcessingAction,
   VineyardGlobalAction,
 } from "@/models/types/actions";
-import { Grape, LabReport } from "@/models/types/db";
+import { Grape, LabReport, Vessel } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useWinery } from "@/context/winery";
@@ -40,6 +40,7 @@ export type GrapeActionFormProps = {
   selectedGrapes?: Grape[];
   actions?: GrapeActions;
   labReports?: LabReport[];
+  vessels?: Vessel[];
 };
 
 export default function GrapeProcessingActionForm({
@@ -47,6 +48,7 @@ export default function GrapeProcessingActionForm({
   selectedGrapes,
   actions,
   labReports,
+  vessels,
 }: GrapeActionFormProps) {
   const { musts } = useMust();
   const { teamMembers } = useWinery();
@@ -72,16 +74,6 @@ export default function GrapeProcessingActionForm({
         // value = Timestamp.fromDate(value.toDate());
         value = new Date(value).toDateString();
       }
-
-      //   if (name === "subjectGrape.name") {
-      //     console.log("name", grapes, value);
-      //     const id = grapes.filter((g) => g.name === value)[0].id;
-      //     setValue("subjectGrape.id", id);
-      //     formData.subjectGrape = {
-      //       name: name,
-      //       id: id,
-      //     };
-      //   }
 
       setValue(name, value);
       const path = name.split(".");
@@ -353,9 +345,8 @@ export default function GrapeProcessingActionForm({
                       <FormControl fullWidth>
                         <InputLabel id="vessel-select">Vessel</InputLabel>
                         <Select
-                          disabled
                           name="pressPercentage.vessel"
-                          // labelId="subject-select"
+                          labelId="subject-select"
                           id="vessel-select"
                           value={
                             (formData?.pressPercentage?.vessel as string) ||
@@ -369,14 +360,11 @@ export default function GrapeProcessingActionForm({
                             );
                           }}
                         >
-                          <MenuItem value={"No vessels"}>
-                            {"No vessels"}
-                          </MenuItem>
-                          {grapesNames &&
-                            grapesNames.length > 0 &&
-                            grapesNames.map((name) => (
-                              <MenuItem key={name} value={name}>
-                                {name}
+                          {vessels &&
+                            vessels.length > 0 &&
+                            vessels.map((vessel) => (
+                              <MenuItem key={vessel.id} value={vessel.name}>
+                                {vessel.name}
                               </MenuItem>
                             ))}
                         </Select>

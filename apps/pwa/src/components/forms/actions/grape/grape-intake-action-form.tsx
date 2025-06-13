@@ -265,12 +265,6 @@ export default function GrapeIntakeActionForm({
                         label="Wheigher's Name"
                         onChange={(e) => {
                           handleChange("weigherName.name", e.target.value);
-                          handleChange(
-                            "weigherName.email",
-                            teamMembers.filter(
-                              (member) => member.name === e.target.value
-                            )[0].email
-                          );
                         }}
                       >
                         {teamMembers &&
