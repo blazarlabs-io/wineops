@@ -29,6 +29,7 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
             supply={value?.supply}
             demand={value?.demand}
             status={value?.status}
+            unit={value?.unit}
           />
         </>
       )}

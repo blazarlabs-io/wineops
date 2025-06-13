@@ -63,7 +63,7 @@ export default function Widgets() {
           margin: "auto",
         }}
       >
-        {METRICS.map(({ vineyard, status, actual, supply, demand }) => (
+        {METRICS.map(({ vineyard, status, actual, supply, demand, unit }) => (
           <Stack
             key={vineyard}
             gap={2}
@@ -77,6 +77,7 @@ export default function Widgets() {
                 actual={actual}
                 supply={supply}
                 demand={demand}
+                unit={unit}
               />
             </Box>
             <Box sx={{ flex: 1 }}>
@@ -109,6 +110,7 @@ const METRICS = [
     actual: 30,
     supply: 30,
     demand: 25,
+    unit: "T",
   },
   {
     vineyard: "V2",
@@ -116,6 +118,7 @@ const METRICS = [
     actual: 5,
     supply: 15,
     demand: 30,
+    unit: "T",
   },
   {
     vineyard: "V3",
@@ -123,6 +126,7 @@ const METRICS = [
     actual: 5,
     supply: 15,
     demand: 10,
+    unit: "T",
   },
   {
     vineyard: "V4",
@@ -130,6 +134,7 @@ const METRICS = [
     actual: 1,
     supply: 2,
     demand: 1,
+    unit: "T",
   },
   {
     vineyard: "V5",
@@ -137,6 +142,7 @@ const METRICS = [
     actual: 0,
     supply: 10,
     demand: 16,
+    unit: "T",
   },
   {
     vineyard: "V6",
@@ -144,6 +150,7 @@ const METRICS = [
     actual: 0,
     supply: 10,
     demand: 10,
+    unit: "T",
   },
   {
     vineyard: "V7",
@@ -151,6 +158,7 @@ const METRICS = [
     actual: 55,
     supply: 30,
     demand: 10,
+    unit: "T",
   },
   {
     vineyard: "V8",
@@ -158,6 +166,7 @@ const METRICS = [
     actual: 23,
     supply: 20,
     demand: 14,
+    unit: "T",
   },
   {
     vineyard: "V9",
@@ -165,6 +174,7 @@ const METRICS = [
     actual: 5,
     supply: 20,
     demand: 14,
+    unit: "T",
   },
   {
     vineyard: "V10",
@@ -172,12 +182,13 @@ const METRICS = [
     actual: 18,
     supply: 20,
     demand: 14,
+    unit: "T",
   },
   {
     vineyard: "V11",
     status: "Maintenance" as EntityStatus,
-    actual: 10,
-    supply: 0,
-    demand: 0,
+    actual: 10300,
+    supply: 13456,
+    demand: 23450,
   },
 ];

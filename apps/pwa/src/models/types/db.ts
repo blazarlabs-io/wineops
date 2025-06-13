@@ -179,10 +179,14 @@ export const RowType = {
 
 export type RowType = (typeof RowType)[keyof typeof RowType];
 
-export type Vineyard = {
+type Entity = {
   id: string;
   name: string;
+  group: string[];
   rowType?: RowType;
+};
+
+export type Vineyard = Entity & {
   grapeVariety: string;
   grapeColor: string;
   cadastralNumber: string;
@@ -193,7 +197,6 @@ export type Vineyard = {
   tasks: TaskSummary[];
   notes: Note[];
   documents: SingleDocument[];
-  group: string[];
   createdAt?: string | Timestamp;
   // * RELATIONS * //
   vessels?: ActionRelation[];
@@ -292,11 +295,9 @@ export const Metric = {
 
 export type Metric = (typeof Metric)[keyof typeof Metric];
 
-export type Metrics = Partial<Record<Metric, number>>;
+export type Metrics = Partial<Record<Metric, number>> & { unit?: string };
 
-export type Grape = {
-  id: string;
-  name: string;
+export type Grape = Entity & {
   entry: GrapeEntry;
   date: string | Timestamp;
   location: string;
@@ -311,8 +312,6 @@ export type Grape = {
   processingInfo: ProcessingInfo;
   tasks: Task[];
   documents: SingleDocument[];
-  group: string[];
-  rowType?: RowType;
   musts?: ActionRelation[];
   actions?: ActionRelation[];
 };
@@ -363,11 +362,7 @@ export type MustVessel = {
   type: Vessel["type"];
 };
 
-export type Must = {
-  id: string;
-  name: string;
-  group: string[];
-  rowType?: RowType;
+export type Must = Entity & {
   date?: string | Timestamp;
   supplier?: Supplier;
   grapeVariety?: string;
@@ -440,11 +435,7 @@ export type VesselHistory = {
   dateOut?: string | Timestamp; // next usage or Vessel.lastMaintenance
 };
 
-export type Vessel = {
-  id: string;
-  name: string;
-  group: string[];
-  rowType?: RowType;
+export type Vessel = Entity & {
   type: VesselType;
   lastMaintenance?: string | Timestamp;
   location?: string;
@@ -468,7 +459,7 @@ export const ConsumableCategory = {
 export type ConsumableCategory =
   (typeof ConsumableCategory)[keyof typeof ConsumableCategory];
 
-export type ConsumableUsage = {
+export type ExpandableUsage = {
   id?: string;
   inUseToday?: number;
   inUseThisWeek?: number;
@@ -478,11 +469,7 @@ export type ConsumableUsage = {
   createdAt?: string | Timestamp;
 };
 
-export type Consumable = {
-  id: string;
-  name: string;
-  group: string[];
-  rowType?: RowType;
+export type Consumable = Entity & {
   category?: ConsumableCategory;
   consumableID?: string;
   qty?: number;
@@ -496,5 +483,47 @@ export type Consumable = {
   expiryDate?: string | Timestamp;
   organicBiodynamicStatus?: boolean;
   compatibleEquipment?: string;
-  usage?: ConsumableUsage[];
+  usage?: ExpandableUsage[];
+};
+
+export const ChemistryType = {
+  ANTIOXIDANTS: "Antioxidants",
+  FINING_AGENTS: "Fining Agents",
+  STABILIZERS: "Stabilizers",
+  ACID_REGULATORS: "Acid Regulators",
+  ENZYMES: "Enzymes",
+  YEASTS: "Yeasts",
+  FERMENTATION_NUTRIENTS: "Fermentation Nutrients",
+};
+
+export type ChemistryType = (typeof ChemistryType)[keyof typeof ChemistryType];
+
+export const StageOfProduction = {
+  VINEYARDS_MANAGEMENT: "Vineyards Management",
+  GRAPES_MANAGEMENT: "Grapes Management",
+  PRIMARY_VINIFICATION: "Primary Vinification",
+  SECONDARY_VINIFICATION: "Secondary Vinification",
+  WINE_BOTTLING: "Wine Bottling",
+};
+
+export type StageOfProduction =
+  (typeof StageOfProduction)[keyof typeof StageOfProduction];
+
+export type Chemistry = Entity & {
+  orderDate?: string | Timestamp;
+  chemistryID?: string;
+  type?: ChemistryType;
+  qty?: number;
+  dosage?: string;
+  usage?: ExpandableUsage[];
+  stageOfProduction: StageOfProduction;
+  recommendedDosage?: number;
+  maxDosage?: number;
+  expiryDate?: string | Timestamp;
+  invoiceNo?: string;
+  manufacturer?: string;
+  certificatCalitate?: string;
+  minimumStockAlert?: number;
+  legalUseNotes?: string;
+  comments?: string;
 };

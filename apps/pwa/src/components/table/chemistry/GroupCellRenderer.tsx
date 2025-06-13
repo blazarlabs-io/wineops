@@ -11,7 +11,7 @@ import {
   ROW_HEIGHT_EXPANDED_VESSEL,
 } from "@/data/constants";
 import { ExpandMore } from "@mui/icons-material";
-import ConsumableDetailsWidget from "@/components/widgets/consumable/consumable-details-widget";
+import ChemistryDetailsWidget from "@/components/widgets/chemistry/chemistry-details-widget";
 import GroupBadge from "../group-badge";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
@@ -34,6 +34,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   }, [node.expanded]);
 
   const isGroup = node?.group || node?.data?.rowType === "group";
+  const groupField = isGroup ? node?.field : node?.parent?.field;
 
   return (
     <>
@@ -52,8 +53,20 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
         {isGroup ? (
           <Stack justifyContent="center">
             <Typography variant="body1" sx={{ whiteSpace: "normal" }}>
-              {value ? value : <i>Unknown</i>}
-              <GroupBadge content={node?.allChildrenCount} />
+              {value ? (
+                groupField === "type" ? (
+                  <>
+                    {node?.allChildrenCount} {value}(s)
+                  </>
+                ) : (
+                  <>
+                    {value}
+                    <GroupBadge content={node?.allChildrenCount} />
+                  </>
+                )
+              ) : (
+                <i>Unknown</i>
+              )}
             </Typography>
           </Stack>
         ) : (
@@ -78,12 +91,12 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   style={{ borderColor: "var(--mui-palette-divider)" }}
                   className="fixed bottom-0 border-t flex items-start justify-center left-0 w-full h-[189px] bg-transparent z-[9999]"
                 >
-                  <ConsumableDetailsWidget consumable={node.data} />
+                  <ChemistryDetailsWidget chemistryItem={node.data} />
                 </Stack>
               )}
             </Stack>
             <Stack justifyContent="center">
-              <Typography variant="body1">{data?.category}</Typography>
+              <Typography variant="body1">{data?.name}</Typography>
             </Stack>
           </Stack>
         )}

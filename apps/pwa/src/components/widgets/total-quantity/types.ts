@@ -4,6 +4,7 @@ import { Metric } from "@/models/types/db";
 export type MetricsTotal = Partial<Record<Metric, number>> & {
   status?: EntityStatus;
   vineyard?: string;
+  unit?: string;
 };
 
 export type MetricsOutput = Partial<MetricsTotal> & {

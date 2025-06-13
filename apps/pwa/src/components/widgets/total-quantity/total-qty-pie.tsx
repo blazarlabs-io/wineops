@@ -6,6 +6,14 @@ import { useChartOptions } from "./data";
 import { Stack, Typography } from "@mui/material";
 import { pieArcClasses, PieChart } from "@mui/x-charts/PieChart";
 import { formatNumberWithUnit } from "@/utils/number-format";
+import { getStripedPatterns } from "./constants";
+
+const LABELS = {
+  sur: "Surplus",
+  def: "Deficit",
+  ar: "At Risk",
+  co: "Closed Orders",
+};
 
 type QuantityWidgetTotalProps = {
   metrics?: MetricsTotal[];
@@ -66,20 +74,16 @@ export default function TotalQuantityPieWidget({
         localeText={{ noData: "" }}
         {...(height && { height })}
         {...((width || height) && { width: width || height })}
-      />
+      >
+        {getStripedPatterns(
+          data.map(({ id }) => id.replace("striped", "").toLowerCase())
+        )}
+      </PieChart>
       <Stack>
         {Object.entries(relatedData).map(([key, value]) => (
           <Typography key={key} variant="caption">
-            {key === "sur"
-              ? "Surplus"
-              : key === "def"
-                ? "Deficit"
-                : key === "ar"
-                  ? "At Risk"
-                  : key === "co"
-                    ? "Closed Orders"
-                    : key}
-            : <strong>{formatNumberWithUnit(value, "T")}</strong>
+            {LABELS[key as keyof typeof LABELS] || key}:{" "}
+            <strong>{formatNumberWithUnit(value, "T", 2)}</strong>
           </Typography>
         ))}
       </Stack>
