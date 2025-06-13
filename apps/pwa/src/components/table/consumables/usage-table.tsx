@@ -1,4 +1,4 @@
-import { ConsumableUsage } from "@/models/types/db";
+import { ExpandableUsage } from "@/models/types/db";
 import { parseToDate } from "@/utils/date-format";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -10,7 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
 export type UsageTableProps = {
-  data: ConsumableUsage[];
+  data: ExpandableUsage[];
 };
 
 export default function UsageTable({ data }: UsageTableProps) {
@@ -91,9 +91,9 @@ const Header = ({ label = "In use" }: { label?: string }) => (
           {label}
         </Typography>
       </TableCell>
-      <TableCell key="location">
+      <TableCell key="process">
         <Typography variant="body2" color="textDisabled">
-          Location
+          Process
         </Typography>
       </TableCell>
       <TableCell key="person">
@@ -101,9 +101,9 @@ const Header = ({ label = "In use" }: { label?: string }) => (
           Person
         </Typography>
       </TableCell>
-      <TableCell key="process">
+      <TableCell key="location">
         <Typography variant="body2" color="textDisabled">
-          Process
+          Location
         </Typography>
       </TableCell>
     </TableRow>
@@ -113,7 +113,7 @@ const Header = ({ label = "In use" }: { label?: string }) => (
 const Body = ({
   data,
 }: {
-  data: (Omit<ConsumableUsage, "inUseToday" | "inUseThisWeek"> & {
+  data: (Omit<ExpandableUsage, "inUseToday" | "inUseThisWeek"> & {
     value?: number;
   })[];
 }) => (
@@ -124,19 +124,19 @@ const Body = ({
           <Typography>{value}</Typography>
         </TableCell>
         <TableCell>
-          <Typography>{location}</Typography>
+          <Typography>{process}</Typography>
         </TableCell>
         <TableCell>
           <Typography>{person}</Typography>
         </TableCell>
         <TableCell>
-          <Typography>{process}</Typography>
+          <Typography>{location}</Typography>
         </TableCell>
       </TableRow>
     ))}
   </TableBody>
 );
 
-const sortByDate = (a: ConsumableUsage, b: ConsumableUsage) =>
+const sortByDate = (a: ExpandableUsage, b: ExpandableUsage) =>
   (parseToDate(a.createdAt)?.getTime() ?? 0) -
   (parseToDate(b.createdAt)?.getTime() ?? 0);

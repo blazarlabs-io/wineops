@@ -1,14 +1,14 @@
 import UsageTable from "@/components/table/consumables/usage-table";
-import { ConsumableUsage } from "@/models/types/db";
+import { ExpandableUsage } from "@/models/types/db";
 import Stack from "@mui/material/Stack";
 
 type UsageProps = {
-  usage: ConsumableUsage[];
+  usage: ExpandableUsage[];
 };
 
 export default function UsageContent({ usage }: UsageProps) {
   return (
-    <Stack sx={{ height: "100%", overflow: "auto" }}>
+    <Stack>
       <UsageTable data={usage} />
     </Stack>
   );
