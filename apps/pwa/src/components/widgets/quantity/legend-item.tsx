@@ -24,7 +24,7 @@ export default function LegendItem({
         }}
         className="h-1.5 w-1.5 rounded-full"
       />
-      {capitalize(name)} <span style={{ color }}>{formatNumber(value)}</span>
+      {capitalize(name)} <span style={{ color }}>{formatNumber(value, 1)}</span>
     </span>
   );
 }

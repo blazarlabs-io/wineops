@@ -292,7 +292,7 @@ export const Metric = {
 
 export type Metric = (typeof Metric)[keyof typeof Metric];
 
-export type Metrics = Partial<Record<Metric, number>>;
+export type Metrics = Partial<Record<Metric, number>> & { unit?: string };
 
 export type Grape = {
   id: string;

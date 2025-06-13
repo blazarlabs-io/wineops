@@ -11,7 +11,7 @@ type Metrics = Partial<Record<Metric, number>>;
 
 export type QuantityWidgetProps = Metrics & {
   status?: EntityStatus;
-  metrics?: Metrics[];
+  unit?: string;
 };
 
 export default function QuantityWidget({
@@ -19,39 +19,30 @@ export default function QuantityWidget({
   supply = 0,
   demand = 0,
   status,
-  metrics = [],
+  unit = "kg",
 }: QuantityWidgetProps) {
-  const hasMetrics = Array.isArray(metrics) && metrics.length > 0;
-  const metricsObject = hasMetrics
-    ? reduceByType(metrics)
-    : { actual, supply, demand };
-
-  const actualValue = metricsObject.actual || 0;
-  const supplyValue = metricsObject.supply || 0;
-  const demandValue = metricsObject.demand || 0;
-
+  const actualValue = unit === "kg" ? actual / 1000 : actual;
+  const supplyValue = unit === "kg" ? supply / 1000 : supply;
+  const demandValue = unit === "kg" ? demand / 1000 : demand;
   const maxValue = Math.max(actualValue, supplyValue, demandValue);
 
-  const isPreHarvest = hasMetrics
-    ? false
-    : status === GrapeStatus.IN_TRANSIT ||
-      status === VineyardStatus.MAINTENANCE ||
-      status === VineyardStatus.READY_FOR_HARVEST ||
-      status === VineyardStatus.RIPPING ||
-      status === VineyardStatus.VEGETATION;
+  const isPreHarvest =
+    status === GrapeStatus.IN_TRANSIT ||
+    status === VineyardStatus.MAINTENANCE ||
+    status === VineyardStatus.READY_FOR_HARVEST ||
+    status === VineyardStatus.RIPPING ||
+    status === VineyardStatus.VEGETATION;
 
-  const isOnHarvest = hasMetrics
-    ? false
-    : status === GrapeStatus.RECEIVED || status === VineyardStatus.HARVESTING;
+  const isOnHarvest =
+    status === GrapeStatus.RECEIVED || status === VineyardStatus.HARVESTING;
 
-  const isPostHarvest =
-    hasMetrics || !status
-      ? true
-      : status === VineyardStatus.HARVEST_ENDED ||
-        status === GrapeStatus.PROCESSED ||
-        status === GrapeStatus.DEHYDRATED ||
-        status === GrapeStatus.FRIDGE_STORED ||
-        status === GrapeStatus.STORED;
+  const isPostHarvest = !status
+    ? true
+    : status === VineyardStatus.HARVEST_ENDED ||
+      status === GrapeStatus.PROCESSED ||
+      status === GrapeStatus.DEHYDRATED ||
+      status === GrapeStatus.FRIDGE_STORED ||
+      status === GrapeStatus.STORED;
 
   const sortedValuesWithColors: SortedValueWithColor[] = Object.entries(
     QUANTITY_COLORS
@@ -117,14 +108,20 @@ export default function QuantityWidget({
                 isPreHarvest ||
                 (isSupply &&
                   (!isPostHarvest ||
-                    (isPostHarvest && supply > actual && supply > demand))) ||
+                    (isPostHarvest &&
+                      supplyValue > actualValue &&
+                      supplyValue > demandValue))) ||
                 (isOnHarvest && isDemand && value < supplyValue) ||
                 (isPostHarvest && isActual && supplyValue === 0)
                   ? ""
                   : isPostHarvest && isSupply
-                    ? demand > actual && demand > 0 && supply > actual
+                    ? demandValue > actualValue &&
+                      demandValue > 0 &&
+                      supplyValue > actualValue
                       ? darkColor
-                      : actual > demand && demand > 0 && supply <= demand
+                      : actualValue > demandValue &&
+                          demandValue > 0 &&
+                          supplyValue <= demandValue
                         ? secondaryDarkColor
                         : lightColor
                     : (isPostHarvest &&
@@ -191,13 +188,3 @@ export default function QuantityWidget({
     </div>
   );
 }
-
-const reduceByType = (items: Metrics[]): Metrics =>
-  items.reduce(
-    (acc, { actual = 0, supply = 0, demand = 0 }) => ({
-      actual: (acc.actual || 0) + actual,
-      supply: (acc.supply || 0) + supply,
-      demand: (acc.demand || 0) + demand,
-    }),
-    { actual: 0, supply: 0, demand: 0 }
-  );

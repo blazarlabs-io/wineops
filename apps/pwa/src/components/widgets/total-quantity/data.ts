@@ -4,6 +4,7 @@ import { MetricsOutput, MetricsOutput2, MetricsTotal } from "./types";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { TOTAL_QUANTITY_COLORS } from "./constants";
 import { useColorScheme } from "@mui/material";
+import { formatNumberWithUnit } from "@/utils/number-format";
 
 const IS_PRE = (status?: EntityStatus) =>
   status === GrapeStatus.IN_TRANSIT ||
@@ -28,104 +29,110 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
   const chartTheme = "ag-material";
   const themeClass = isDarkMode ? `${chartTheme}-dark` : chartTheme;
 
-  const normalized = metrics.reduce(
-    (acc, { vineyard, status, actual = 0, demand = 0, supply = 0 }) => {
-      const metric = {
-        status,
-        max: Math.max(actual, demand, supply),
-        maxu: Math.max(actual, demand, IS_ENDED(status) ? 0 : supply),
+  const normalized = metrics.reduce((acc, metricRaw) => {
+    const { vineyard, status, unit = "kg" } = metricRaw;
 
-        sur: IS_ENDED(status)
-          ? actual > 0 && demand > 0 && actual - demand > 0
-            ? actual - demand
-            : 0
-          : 0,
-        def: IS_ENDED(status)
-          ? actual > 0 && demand > 0 && demand - actual > 0
-            ? demand - actual
-            : 0
-          : 0,
-        ar: !IS_ENDED(status)
-          ? supply > actual
-            ? demand - supply
-            : demand - actual
-          : 0,
-        co: actual > demand && actual > 0 ? demand : 0,
-        vineyard,
-      };
+    const actual =
+      unit === "kg" ? (metricRaw?.actual || 0) / 1000 : metricRaw?.actual || 0;
+    const supply =
+      unit === "kg" ? (metricRaw?.supply || 0) / 1000 : metricRaw?.supply || 0;
+    const demand =
+      unit === "kg" ? (metricRaw?.demand || 0) / 1000 : metricRaw?.demand || 0;
 
-      const stripedGrey =
-        100 *
-        (metric.max > 0 && (IS_PRE(status) || IS_ON(status))
-          ? (demand > actual && actual > 0
-              ? actual
-              : actual >= demand && demand >= 0
-                ? actual - demand
-                : 0) / metric.max
-          : 0);
+    const metric = {
+      status,
+      max: Math.max(actual, demand, supply),
+      maxu: Math.max(actual, demand, IS_ENDED(status) ? 0 : supply),
 
-      const stripedGreen =
-        100 *
-        (metric.max > 0 && (IS_PRE(status) || IS_ON(status))
-          ? actual >= demand && demand >= 0
-            ? demand / metric.max
-            : 0
-          : 0);
+      sur: IS_ENDED(status)
+        ? actual > 0 && demand > 0 && actual - demand > 0
+          ? actual - demand
+          : 0
+        : 0,
+      def: IS_ENDED(status)
+        ? actual > 0 && demand > 0 && demand - actual > 0
+          ? demand - actual
+          : 0
+        : 0,
+      ar: !IS_ENDED(status)
+        ? supply > actual
+          ? demand - supply
+          : demand - actual
+        : 0,
+      co: actual > demand && actual > 0 ? demand : 0,
+      vineyard,
+    };
 
-      const stripedRed =
-        100 *
-        (metric.max > 0 && (IS_PRE(status) || IS_ON(status))
-          ? (demand > supply && supply > actual
-              ? demand - supply
-              : demand > actual && actual > supply
-                ? demand - actual
-                : 0) / metric.max
-          : 0);
-
-      const grey =
-        100 *
-        (metric.max > 0 && IS_ENDED(status)
-          ? (actual >= demand && demand >= 0
+    const stripedGrey =
+      100 *
+      (metric.max > 0 && (IS_PRE(status) || IS_ON(status))
+        ? (demand > actual && actual > 0
+            ? actual
+            : actual >= demand && demand >= 0
               ? actual - demand
-              : demand >= actual && actual >= 0
-                ? actual
-                : 0) / metric.max
-          : 0);
+              : 0) / metric.max
+        : 0);
 
-      const green =
-        100 *
-        (metric.max > 0 && IS_ENDED(status)
-          ? (actual > demand ? demand : 0) / metric.max
-          : 0);
+    const stripedGreen =
+      100 *
+      (metric.max > 0 && (IS_PRE(status) || IS_ON(status))
+        ? actual >= demand && demand >= 0
+          ? demand / metric.max
+          : 0
+        : 0);
 
-      const red =
-        100 *
-        (metric.max > 0 && IS_ENDED(status)
-          ? (demand > actual ? demand - actual : 0) / metric.max
-          : 0);
+    const stripedRed =
+      100 *
+      (metric.max > 0 && (IS_PRE(status) || IS_ON(status))
+        ? (demand > supply && supply > actual
+            ? demand - supply
+            : demand > actual && actual > supply
+              ? demand - actual
+              : 0) / metric.max
+        : 0);
 
-      const white =
-        100 -
-        (metric.max > 0 && IS_ENDED(status)
-          ? grey + green + red
-          : stripedGrey + stripedGreen + stripedRed);
+    const grey =
+      100 *
+      (metric.max > 0 && IS_ENDED(status)
+        ? (actual >= demand && demand >= 0
+            ? actual - demand
+            : demand >= actual && actual >= 0
+              ? actual
+              : 0) / metric.max
+        : 0);
 
-      return [
-        ...acc,
-        {
-          stripedGrey: Number.parseFloat(stripedGrey.toFixed(4)),
-          stripedGreen: Number.parseFloat(stripedGreen.toFixed(4)),
-          stripedRed: Number.parseFloat(stripedRed.toFixed(4)),
-          white: Number.parseFloat(white.toFixed(4)),
-          grey: Number.parseFloat(grey.toFixed(4)),
-          green: Number.parseFloat(green.toFixed(4)),
-          red: Number.parseFloat(red.toFixed(4)),
-          ...metric,
-        },
-      ];
-    },
-    [] as MetricsOutput[]
-  );
+    const green =
+      100 *
+      (metric.max > 0 && IS_ENDED(status)
+        ? (actual > demand ? demand : 0) / metric.max
+        : 0);
+
+    const red =
+      100 *
+      (metric.max > 0 && IS_ENDED(status)
+        ? (demand > actual ? demand - actual : 0) / metric.max
+        : 0);
+
+    const white =
+      100 -
+      (metric.max > 0 && IS_ENDED(status)
+        ? grey + green + red
+        : stripedGrey + stripedGreen + stripedRed);
+
+    return [
+      ...acc,
+      {
+        stripedGrey: Number.parseFloat(stripedGrey.toFixed(4)),
+        stripedGreen: Number.parseFloat(stripedGreen.toFixed(4)),
+        stripedRed: Number.parseFloat(stripedRed.toFixed(4)),
+        white: Number.parseFloat(white.toFixed(4)),
+        grey: Number.parseFloat(grey.toFixed(4)),
+        green: Number.parseFloat(green.toFixed(4)),
+        red: Number.parseFloat(red.toFixed(4)),
+        ...metric,
+      },
+    ];
+  }, [] as MetricsOutput[]);
 
   const totu = normalized.reduce((sum, { maxu = 0 }) => (sum += maxu), 0);
 
@@ -309,7 +316,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
   ];
 
   function valueFormatter(value: number | null) {
-    return `${(value || 0).toFixed(2)}% ≈ ${(((value || 0) * totu) / 100).toFixed(0)} T`;
+    return `${formatNumberWithUnit(value || 0, "%", 2)} = ${formatNumberWithUnit(((value || 0) * totu) / 100, "T", 2)}`;
   }
 
   const series = [

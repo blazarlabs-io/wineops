@@ -31,7 +31,7 @@ export default function Markers({ maxValue, markers }: MarkersProps) {
                   textColor || (isLowerDemand ? secondaryDarkColor : color),
               }}
             >
-              {formatNumberWithUnit(value, "T")}
+              {formatNumberWithUnit(value, "T", 1)}
             </div>
           );
         }
