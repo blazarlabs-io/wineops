@@ -433,7 +433,8 @@ export const DataTable = <T extends DashboardEntity>({
     | "groupByVariety"
     | "groupByStatus"
     | "groupByVesselType"
-    | "groupByLocation";
+    | "groupByLocation"
+    | "type";
 
   const [groupedField, setGroupedField] = useState<GroupBy>();
 
@@ -535,7 +536,9 @@ export const DataTable = <T extends DashboardEntity>({
             getRowId={getRowId ?? (({ data }) => data.id)}
             suppressRowHoverHighlight={true}
             suppressCellFocus={true}
-            suppressGroupChangesColumnVisibility={true}
+            suppressGroupChangesColumnVisibility={
+              groupedField?.includes("groupBy") ? true : false
+            }
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

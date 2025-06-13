@@ -10,6 +10,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { VesselProvider } from "./vessel";
 import { ConsumableProvider } from "./consumable";
 import { MustProvider } from "./must";
+import { ChemistryProvider } from "./chemistry";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -22,13 +23,16 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 <VesselProvider>
                   <ConsumableProvider>
                     <MustProvider>
-                      <APIProvider
-                        apiKey={
-                          process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
-                        }
-                      >
-                        {children}
-                      </APIProvider>
+                      <ChemistryProvider>
+                        <APIProvider
+                          apiKey={
+                            process.env
+                              .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+                          }
+                        >
+                          {children}
+                        </APIProvider>
+                      </ChemistryProvider>
                     </MustProvider>
                   </ConsumableProvider>
                 </VesselProvider>

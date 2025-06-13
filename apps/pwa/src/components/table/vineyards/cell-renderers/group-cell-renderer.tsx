@@ -2,7 +2,7 @@ import CertificationsDataDisplay from "@/components/data-display/certifications-
 import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
 import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED } from "@/data/constants";
 import { ExpandMore } from "@mui/icons-material";
-import { Badge, Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import {
   useCallback,
@@ -13,6 +13,7 @@ import {
 import { useVineyard } from "@/context/vineyard";
 import { useGetVineyardLabData } from "@/hooks/use-get-vineyard-lab-data";
 import { LabReport } from "@/models/types/db";
+import GroupBadge from "../../group-badge";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
@@ -57,22 +58,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
       }}
       className="w-full flex flex-col items-start gap-2"
     >
-      <Badge
-        overlap="circular"
-        badgeContent={node.allChildrenCount}
-        sx={{
-          position: "absolute",
-          top: "50%",
-          right: 32,
-          transform: "translateY(-50%)",
-          "& .MuiBadge-badge": {
-            border: `2px solid ${"var(--mui-palette-text-secondary)"}`,
-            color: "var(--mui-palette-text-secondary)",
-            padding: "0 4px",
-            borderWidth: "1px",
-          },
-        }}
-      />
+      <GroupBadge content={node?.allChildrenCount} />
 
       <Box
         display={"flex"}

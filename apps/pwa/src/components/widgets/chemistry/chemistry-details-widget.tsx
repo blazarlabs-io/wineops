@@ -1,4 +1,4 @@
-import { Consumable } from "@/models/types/db";
+import { Chemistry } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
@@ -6,19 +6,19 @@ import { SyntheticEvent, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import GeneralInfoContent from "./general-info-content";
-import TechnicalInfoContent from "./technical-info-content";
+import SupplyContent from "./supply-content";
 import UsageContent from "../components/usage-content";
 
-export type ConsumableDetailsWidgetProps = {
-  consumable: Consumable;
+export type ChemistryDetailsWidgetProps = {
+  chemistryItem: Chemistry;
 };
 
-export default function ConsumableDetailsWidget({
-  consumable,
-}: ConsumableDetailsWidgetProps) {
+export default function ChemistryDetailsWidget({
+  chemistryItem,
+}: ChemistryDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
 
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -43,7 +43,7 @@ export default function ConsumableDetailsWidget({
         variant="scrollable"
         value={value}
         onChange={handleChange}
-        aria-label="Consumable details"
+        aria-label="Chemistry item details"
         sx={{
           borderRight: 1,
           borderColor: "divider",
@@ -51,20 +51,20 @@ export default function ConsumableDetailsWidget({
         }}
       >
         <Tab label="General Info" {...a11yProps(0)} sx={sx} />
-        <Tab label="Technical Info" {...a11yProps(1)} sx={sx} />
+        <Tab label="Supply" {...a11yProps(1)} sx={sx} />
         <Tab label="Usage" {...a11yProps(2)} sx={sx} />
       </Tabs>
 
       <TabPanel value={value} index={0}>
-        <GeneralInfoContent data={consumable} />
+        <GeneralInfoContent data={chemistryItem} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <TechnicalInfoContent data={consumable} />
+        <SupplyContent data={chemistryItem} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <UsageContent usage={consumable?.usage || []} />
+        <UsageContent usage={chemistryItem?.usage || []} />
       </TabPanel>
     </Box>
   );
