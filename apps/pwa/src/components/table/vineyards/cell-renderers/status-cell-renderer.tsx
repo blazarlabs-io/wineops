@@ -1,15 +1,14 @@
-import type { CustomCellRendererProps } from "ag-grid-react";
-import { useEffect, type FunctionComponent } from "react";
-import { useSortVineyardStatuses } from "@/hooks/use-sort-vineyard-statuses";
-import VineyardStatusDataDisplay from "@/components/data-display/status-data-display";
-import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { Box } from "@mui/material";
 import VineyardMultiStatusDataDisplay from "@/components/data-display/multi-status-data-display";
-import { EntityStatus } from "@/models/types/dashboard";
-import { db } from "@/lib/firebase/services";
-import { useAuth } from "@/lib/firebase/auth";
-import { enqueueSnackbar } from "notistack";
 import StatusDataDisplaySelect from "@/components/data-display/status-data-display-select";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { useSortVineyardStatuses } from "@/hooks/use-sort-vineyard-statuses";
+import { useAuth } from "@/lib/firebase/auth";
+import { db } from "@/lib/firebase/services";
+import { EntityStatus } from "@/models/types/dashboard";
+import { Box } from "@mui/material";
+import type { CustomCellRendererProps } from "ag-grid-react";
+import { enqueueSnackbar } from "notistack";
+import { type FunctionComponent } from "react";
 
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params

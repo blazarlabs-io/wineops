@@ -11,12 +11,13 @@ import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
 import {
   LAB_REPORTS,
+  NOTES,
   VINEYARDS,
   VINEYARDS_GROUPS,
   WINERY,
 } from "@/lib/firebase/config";
 import { VineyardActions } from "@/models/types/actions";
-import { Group, LabReport, Vineyard } from "@/models/types/db";
+import { Group, LabReport, Note, Vineyard } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
@@ -33,6 +34,7 @@ interface VineyardContextType {
   updateSelectedVineyards: (vineyards: Vineyard[]) => void;
   actions: VineyardActions;
   labReports: LabReport[];
+  notes: Note[];
 }
 
 const VineyardContext = createContext<VineyardContextType | null>(null);
@@ -75,6 +77,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
       icon: "material-symbols:water-drop",
     },
   });
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const updateSelectedVineyards = useCallback((vineyards: Vineyard[]) => {
     setSelectedVineyards(vineyards);
@@ -83,6 +86,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   useEffect(() => {
     let unsubVineyards = () => {};
     let unsubLabReports = () => {};
+    let unsubNotes = () => {};
 
     if (user && db) {
       // * Vineyards Realtime Updates
@@ -132,11 +136,29 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         });
         setLabReports(labReports);
       });
+
+      // * Notes Realtime Updates
+      const notesRef = collection(db, WINERY, user?.uid as string, NOTES);
+
+      unsubNotes = onSnapshot(notesRef, (querySnapshot) => {
+        const notes: Note[] = [];
+
+        if (querySnapshot.empty) {
+          console.log("No notes found");
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          notes.push(doc.data() as Note);
+        });
+        setNotes(notes);
+      });
     }
 
     return () => {
       unsubVineyards();
       unsubLabReports();
+      unsubNotes();
       setVineyards([]);
     };
   }, [user]);
@@ -155,6 +177,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         updateSelectedVineyards,
         actions,
         labReports,
+        notes,
       }}
     >
       {children}

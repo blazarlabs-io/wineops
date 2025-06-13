@@ -65,7 +65,7 @@ export const vineyardColumns: ColDef[] = [
   },
   {
     field: "notes",
-    minWidth: 196,
+    minWidth: 224,
     flex: 1,
     cellRenderer: NotesCellRenderer,
     cellStyle: { width: "100%" },

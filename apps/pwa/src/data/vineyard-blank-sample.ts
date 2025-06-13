@@ -53,13 +53,7 @@ const vineyardBlankSample: Vineyard = {
   forecastedYield: 0,
   labData: [],
   tasks: [],
-  notes: [
-    {
-      id: Date.now().toString(),
-      title: "Welcome, new user!",
-      content: "This is a test note. You can add, edit, and delete notes.",
-    },
-  ],
+  notes: [],
   documents: [],
   group: [],
 };
