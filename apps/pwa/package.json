@@ -21,6 +21,7 @@
     "@iconify/react": "^6.0.0",
     "@mui/base": "5.0.0-beta.70",
     "@mui/icons-material": "^7.1.0",
+    "@mui/joy": "5.0.0-beta.52",
     "@mui/material": "^7.1.0",
     "@mui/material-nextjs": "^7.1.0",
     "@mui/x-charts": "^8.3.1",

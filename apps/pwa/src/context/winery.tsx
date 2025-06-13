@@ -1,14 +1,25 @@
 "use client";
 
 import { useAuth } from "@/lib/firebase/auth";
-import { db } from "@/lib/firebase/services";
-import { DbResponse, ResponsibleTeamMember, Winery } from "@/models/types/db";
+import { TEAM, WINERY } from "@/lib/firebase/config";
+import { db as sdb } from "@/lib/firebase/services";
+import { db } from "@/lib/firebase/client";
+
+import {
+  DbResponse,
+  ResponsibleTeamMember,
+  TeamMember,
+  Winery,
+} from "@/models/types/db";
+import { collection, onSnapshot } from "firebase/firestore";
 // import { useSnackbar } from "notistack";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 interface WineryContextType {
   winery: Winery | null;
-  teamMembers: ResponsibleTeamMember[];
+  teamMembers: TeamMember[];
+  selectedTeamMembers: TeamMember[];
+  updateSelectedTeamMembers: (teamMembers: TeamMember[]) => void;
 }
 
 const WineryContext = createContext<WineryContextType | null>(null);
@@ -29,7 +40,15 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
   // const { enqueueSnackbar } = useSnackbar();
   const mountRef = useRef<boolean>(false);
   const [winery, setWinery] = useState<Winery | null>(null);
-  const [teamMembers, setTeamMembers] = useState<ResponsibleTeamMember[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<TeamMember[]>(
+    []
+  );
+
+  const updateSelectedTeamMembers = (teamMembers: TeamMember[]) => {
+    console.log("teamMembers", teamMembers);
+    setSelectedTeamMembers(teamMembers);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -39,14 +58,14 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (!mountRef.current) {
       mountRef.current = true;
-      db.winery
+      sdb.winery
         .getOne(user.uid)
         .then((res: DbResponse) => {
           if (res.status === 200 && res.error === null) {
             setWinery(res.data);
           } else {
             // * Create new winery
-            db.winery
+            sdb.winery
               .create(user.uid)
               .then((res: DbResponse) => {
                 if (res.status === 200) {
@@ -75,17 +94,44 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
           setWinery(null);
           // enqueueSnackbar("Error creating winery", { variant: "error" });
         });
-
-      // TODO we get team members once, but in the future we should use a snapshot
-      // TODO for realtime data updates
-      db.team.getMembers(user?.uid).then((res: DbResponse) => {
-        setTeamMembers(res.data);
-      });
     }
+
+    console.log(db, WINERY, user?.uid as string, TEAM);
+
+    const teamMembersRef = collection(db, WINERY, user?.uid as string, TEAM);
+
+    let unsubTeamMembers = () => {};
+
+    unsubTeamMembers = onSnapshot(teamMembersRef, (querySnapshot) => {
+      const teamMembers: TeamMember[] = [];
+
+      if (querySnapshot.empty) {
+        console.log("No team members found");
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log(data);
+        teamMembers.push(data as TeamMember);
+      });
+      setTeamMembers(teamMembers);
+    });
+
+    return () => {
+      unsubTeamMembers();
+    };
   }, [user]);
 
   return (
-    <WineryContext.Provider value={{ winery, teamMembers }}>
+    <WineryContext.Provider
+      value={{
+        winery,
+        teamMembers,
+        selectedTeamMembers,
+        updateSelectedTeamMembers,
+      }}
+    >
       {children}
     </WineryContext.Provider>
   );

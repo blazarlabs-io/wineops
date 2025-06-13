@@ -256,12 +256,6 @@ export default function VineyardLabActionForm({
                         label="Responsible's Name"
                         onChange={(e) => {
                           handleChange("responsible.name", e.target.value);
-                          handleChange(
-                            "responsible.email",
-                            teamMembers.filter(
-                              (member) => member?.name === e.target.value
-                            )[0].email
-                          );
                         }}
                       >
                         {teamMembers &&

@@ -21,6 +21,14 @@ export const VineyardStatus = {
 export type VineyardStatus =
   (typeof VineyardStatus)[keyof typeof VineyardStatus];
 
+export const Role = {
+  OWNER: "owner",
+  ADMIN: "admin",
+  MEMBER: "member",
+} as const;
+
+export type Role = (typeof Role)[keyof typeof Role];
+
 export type MediaType = {
   type: string;
   subtype: string;
@@ -77,6 +85,15 @@ export type ResponsibleTeamMember = {
   name: string;
   email: string;
 };
+
+export interface TeamMember extends ResponsibleTeamMember {
+  id: string;
+  name: string;
+  lastName: string;
+  email: string;
+  role: string;
+  avatar?: string;
+}
 
 export type LabDataSimple = {
   id: string;
