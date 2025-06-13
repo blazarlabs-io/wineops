@@ -33,6 +33,10 @@ export const QuantityCellRenderer: FunctionComponent<
   const supply = 0;
   const demand = 0;
 
+  const unit = (result
+    .map((item) => item.metrics?.unit)
+    .filter((unit) => unit) || [])[0];
+
   const metrics = (node?.allLeafChildren || []).flatMap(({ data }) =>
     (data?.batches || []).map((batch: { id: string }) => {
       const grape = grapes.find(({ id }) => id === batch.id);
@@ -42,6 +46,7 @@ export const QuantityCellRenderer: FunctionComponent<
         supply: 0,
         demand: 0,
         status: data?.status,
+        unit: grape?.metrics?.unit,
       };
     })
   );
@@ -64,6 +69,7 @@ export const QuantityCellRenderer: FunctionComponent<
           supply={supply}
           demand={demand}
           status={node.data?.status}
+          unit={unit}
         />
       )}
     </Box>

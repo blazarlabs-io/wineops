@@ -25,3 +25,24 @@ export const TOTAL_QUANTITY_COLORS: Record<
     darkColor: "transparent",
   },
 };
+
+type PatternColor = keyof typeof TOTAL_QUANTITY_COLORS;
+
+export const getStripedPatterns = (colors: PatternColor[] = []) =>
+  Object.entries(TOTAL_QUANTITY_COLORS)
+    .filter(([name]) => colors.length === 0 || colors.includes(name))
+    .map(([name, { darkColor = "", lightColor = "" }]) => {
+      return (
+        <pattern
+          key={name}
+          id={`StripedPattern-${name}`}
+          patternUnits="userSpaceOnUse"
+          width="16"
+          height="16"
+          patternTransform="rotate(45)"
+        >
+          <rect width="8" height="16" fill={`${darkColor}`} />
+          <rect x="8" width="8" height="16" fill={`${lightColor}`} />
+        </pattern>
+      );
+    });
