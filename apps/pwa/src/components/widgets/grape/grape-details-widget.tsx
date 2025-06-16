@@ -17,7 +17,7 @@ export type GrapeDetailsWidgetProps = {
 export default function GrapeDetailsWidget({ grape }: GrapeDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
 
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -34,6 +34,7 @@ export default function GrapeDetailsWidget({ grape }: GrapeDetailsWidgetProps) {
         display: "flex",
         alignItems: "center",
         width: "100%",
+        height: "100%",
       }}
     >
       <Tabs

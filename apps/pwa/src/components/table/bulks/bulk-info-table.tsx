@@ -1,5 +1,5 @@
 import { DEFAULT_LOCALE } from "@/data/constants";
-import { QtyInfo } from "@/models/types/db";
+import { BulkInfo } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -10,11 +10,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
-export type QtyTableProps = {
-  data: QtyInfo[];
+export type BulkInfoTableProps = {
+  data: BulkInfo[];
 };
 
-export default function QtyTable({ data }: QtyTableProps) {
+export default function BulkInfoTable({ data }: BulkInfoTableProps) {
   return (
     <TableContainer
       component={Paper}
@@ -42,9 +42,9 @@ export default function QtyTable({ data }: QtyTableProps) {
                 Date, Time
               </Typography>
             </TableCell>
-            <TableCell key="process">
+            <TableCell key="components">
               <Typography variant="body2" color="textDisabled">
-                Process
+                Components
               </Typography>
             </TableCell>
             <TableCell key="qty">
@@ -52,28 +52,18 @@ export default function QtyTable({ data }: QtyTableProps) {
                 Qty
               </Typography>
             </TableCell>
-            <TableCell key="losses">
-              <Typography variant="body2" color="textDisabled">
-                Losses
-              </Typography>
-            </TableCell>
-            {/*<TableCell key="graph">
-              <Typography variant="body2" color="textDisabled">
-                {`{graph}`}
-              </Typography>
-            </TableCell>*/}
           </TableRow>
         </TableHead>
 
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} sx={{ textAlign: "center" }}>
+              <TableCell colSpan={3} sx={{ textAlign: "center" }}>
                 <Typography>No data available.</Typography>
               </TableCell>
             </TableRow>
           ) : (
-            data.map(({ id, date, process, qty, losses }) => (
+            data.map(({ id, date, grapeVariety, qty }) => (
               <TableRow key={id}>
                 <TableCell>
                   <Typography>
@@ -87,13 +77,10 @@ export default function QtyTable({ data }: QtyTableProps) {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography>{process}</Typography>
+                  <Typography>{grapeVariety}</Typography>
                 </TableCell>
                 <TableCell>
                   <Typography>{qty}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>{losses}</Typography>
                 </TableCell>
               </TableRow>
             ))

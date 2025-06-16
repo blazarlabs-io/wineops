@@ -10,6 +10,7 @@ import team from "./team";
 import labReport from "./lab-report";
 import chemistry from "./chemistry";
 import { note } from "./note";
+import bulk from "./bulk";
 
 const db: any = {};
 
@@ -24,5 +25,6 @@ db.labReport = labReport;
 db.must = must;
 db.chemistry = chemistry;
 db.note = note;
+db.bulk = bulk;
 
 export { db };

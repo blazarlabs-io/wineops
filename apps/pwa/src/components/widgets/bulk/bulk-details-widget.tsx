@@ -1,4 +1,4 @@
-import { Must } from "@/models/types/db";
+import { Bulk } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
@@ -6,21 +6,21 @@ import { SyntheticEvent, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import LabDataContent from "./lab-data-content";
-import MustInfoContent from "./must-info-content";
+import BulkInfoContent from "./bulk-info-content";
 import QtyContent from "./qty-content";
 
-export type MustDetailsWidgetProps = {
-  must: Must;
+export type BulkDetailsWidgetProps = {
+  bulk: Bulk;
 };
 
-export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
+export default function BulkDetailsWidget({ bulk }: BulkDetailsWidgetProps) {
   const [value, setValue] = useState(0);
 
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  const qty = must?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0);
+  const qty = bulk?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0);
 
   const sx = {
     padding: "8px 16px !important",
@@ -43,27 +43,27 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
         variant="scrollable"
         value={value}
         onChange={handleChange}
-        aria-label="Must details"
+        aria-label="Bulk details"
         sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
-        <Tab label="Lab Data" {...a11yProps(0)} sx={sx} />
-        <Tab label="Must&nbsp;Info" {...a11yProps(1)} sx={sx} />
+        <Tab label="Labs" {...a11yProps(0)} sx={sx} />
+        <Tab label="Wine&nbsp;Info" {...a11yProps(1)} sx={sx} />
         <Tab label="Timeline" {...a11yProps(2)} sx={sx} />
         <Tab label="Quantity" {...a11yProps(3)} sx={sx} />
         <Tab label="Tasks" {...a11yProps(4)} sx={sx} />
       </Tabs>
 
       <TabPanel value={value} index={0}>
-        <LabDataContent labData={must.labData} />
+        <LabDataContent labData={bulk.labData} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <MustInfoContent
+        <BulkInfoContent
           data={[
             {
-              ...must,
-              ...must?.supplier,
-              qty,
+              ...bulk,
+              qty: qty || bulk?.qty,
+              date: bulk?.startDate,
             },
           ]}
         />
@@ -74,7 +74,7 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
       </TabPanel>
 
       <TabPanel value={value} index={3}>
-        <QtyContent data={[{ ...must, qty }]} />
+        <QtyContent data={[{ ...bulk, qty: qty || bulk?.qty }]} />
       </TabPanel>
 
       <TabPanel value={value} index={4}>

@@ -1,4 +1,4 @@
-import { formatNumber } from "@/utils/number-format";
+import { formatNumber, formatNumberWithUnit } from "@/utils/number-format";
 import { QUANTITY_COLORS } from "./constants";
 import { capitalize } from "@/utils/string-utils";
 import { Metric } from "@/models/types/db";
@@ -8,13 +8,14 @@ interface LegendItemProps {
   value: number;
   backgroundColor?: string;
   color?: string;
+  unit?: string
 }
 
 export default function LegendItem({
   name,
   value,
   backgroundColor,
-  color = "#7A7A7A",
+  color = "#7A7A7A",unit
 }: LegendItemProps) {
   return (
     <span className="flex items-center gap-1">
@@ -24,7 +25,7 @@ export default function LegendItem({
         }}
         className="h-1.5 w-1.5 rounded-full"
       />
-      {capitalize(name)} <span style={{ color }}>{formatNumber(value, 1)}</span>
+      {capitalize(name)} <span style={{ color }}>{unit ? formatNumberWithUnit(value, unit, 1) : formatNumber(value, 1)}</span>
     </span>
   );
 }

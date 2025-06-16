@@ -2,14 +2,14 @@ import LabItem from "@/components/data-display/lab-item";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import UnitDisplay from "@/components/data-display/unit-display";
 import { DEFAULT_LOCALE } from "@/data/constants";
-import { MustLabData } from "@/models/types/db";
+import { BulkLabData } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
 
 type LabDataProps = {
-  labData: MustLabData;
+  labData: BulkLabData;
 };
 
 export default function LabDataContent({ labData }: LabDataProps) {
@@ -19,9 +19,9 @@ export default function LabDataContent({ labData }: LabDataProps) {
     acidity,
     alcohol,
     temperature,
+    totalSO2,
+    freeSO2,
     volatileAcidity,
-    yeastActivityPopulation,
-    yeastAssimilableNitrogen,
     labCertificateID,
     labTechnicianName,
   } = labData ?? {};
@@ -69,6 +69,34 @@ export default function LabDataContent({ labData }: LabDataProps) {
         </Box>
 
         <SimpleDataDisplay
+          label="Total SO₂"
+          value={
+            totalSO2?.value ? (
+              <div className="flex items-start gap-1">
+                <span className="text-muted-foreground">{totalSO2.value}</span>
+                <UnitDisplay unit={totalSO2.unit ?? ""} />
+              </div>
+            ) : (
+              "N/A"
+            )
+          }
+        />
+
+        <SimpleDataDisplay
+          label="Free SO₂"
+          value={
+            freeSO2?.value ? (
+              <div className="flex items-start gap-1">
+                <span className="text-muted-foreground">{freeSO2.value}</span>
+                <UnitDisplay unit={freeSO2.unit ?? ""} />
+              </div>
+            ) : (
+              "N/A"
+            )
+          }
+        />
+
+        <SimpleDataDisplay
           label="Volatile Acidity"
           value={
             volatileAcidity?.value ? (
@@ -77,38 +105,6 @@ export default function LabDataContent({ labData }: LabDataProps) {
                   {volatileAcidity.value}
                 </span>
                 <UnitDisplay unit={volatileAcidity.unit ?? ""} />
-              </div>
-            ) : (
-              "N/A"
-            )
-          }
-        />
-
-        <SimpleDataDisplay
-          label="Yeast Activity / Population "
-          value={
-            yeastActivityPopulation?.value ? (
-              <div className="flex items-start gap-1">
-                <span className="text-muted-foreground">
-                  {yeastActivityPopulation.value}
-                </span>
-                <UnitDisplay unit={yeastActivityPopulation.unit ?? ""} />
-              </div>
-            ) : (
-              "N/A"
-            )
-          }
-        />
-
-        <SimpleDataDisplay
-          label="Yeast Assimilable Nitrogen  "
-          value={
-            yeastAssimilableNitrogen?.value ? (
-              <div className="flex items-start gap-1">
-                <span className="text-muted-foreground">
-                  {yeastAssimilableNitrogen.value}
-                </span>
-                <UnitDisplay unit={yeastAssimilableNitrogen.unit ?? ""} />
               </div>
             ) : (
               "N/A"

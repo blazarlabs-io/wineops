@@ -21,7 +21,6 @@ export default function DocumentsTable({ data }: DocumentsTableProps) {
       sx={{
         height: "100%",
         width: "100%",
-        padding: 2,
         minWidth: "fit-window",
         background: "transparent",
       }}

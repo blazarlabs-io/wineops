@@ -20,9 +20,13 @@ export default function TabPanel({
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
-      sx={{ width: "100%", height: "100%", overflowY: "auto" }}
+      sx={{
+        width: "100%",
+        height: "100%",
+        overflowY: "auto",
+      }}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </Box>
   );
 }

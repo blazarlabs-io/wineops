@@ -40,16 +40,18 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 
   const batchId: any[] =
     node?.aggData?.batchId ??
-    node?.allLeafChildren?.map(({ data }) => data?.batchId);
+    node?.allLeafChildren?.map(({ data }) => data?.batchId) ??
+    [];
 
   const isGroup = node?.group || node?.data?.rowType === "group";
 
-  const batchesDateLocation = isGroup
-    ? batchId.map(
-        (batch) =>
-          `${batch?.date ? formatDate(batch?.date, { locale: DEFAULT_LOCALE }) : ""}***${batch?.location ?? ""}`
-      )
-    : [];
+  const batchesDateLocation =
+    isGroup && Array.isArray(batchId)
+      ? batchId.map(
+          (batch) =>
+            `${batch?.date ? formatDate(batch?.date, { locale: DEFAULT_LOCALE }) : ""}***${batch?.location ?? ""}`
+        )
+      : [];
 
   const uniqueDateLocation = [
     ...new Set(batchesDateLocation.map((item) => item)),
@@ -132,7 +134,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
               {expanded && (
                 <Stack
                   style={{ borderColor: "var(--mui-palette-divider)" }}
-                  className="fixed bottom-0 border-t flex items-center justify-center left-0 w-full h-[249px] bg-transparent z-[9999]"
+                  className="fixed bottom-0 border-t flex items-center left-0 w-full h-[259px] bg-transparent z-[9999]"
                 >
                   <GrapeDetailsWidget grape={node.data} />
                 </Stack>

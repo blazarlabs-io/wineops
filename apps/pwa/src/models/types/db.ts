@@ -529,3 +529,40 @@ export type Chemistry = Entity & {
   legalUseNotes?: string;
   comments?: string;
 };
+
+export type BulkInfo = {
+  id: string;
+  date?: Must["date"];
+  grapeVariety?: Must["grapeVariety"];
+  qty?: number;
+};
+
+export const BulkStatus = {
+  BARICARE: "Baricare",
+} as const;
+
+export type BulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
+
+export type BulkLabData = {
+  date: string | Timestamp;
+  temperature: Partial<LabElement>;
+  alcohol: Partial<LabElement>;
+  sugar: Partial<LabElement>;
+  acidity: Partial<LabElement>;
+  totalSO2: Partial<LabElement>;
+  freeSO2: Partial<LabElement>;
+  volatileAcidity: Partial<LabElement>;
+  labTechnicianName: string;
+  labCertificateID: string;
+};
+
+export type Bulk = Entity & {
+  grapeVariety?: string;
+  vessels?: MustVessel[];
+  status?: BulkStatus;
+  startDate?: string | Timestamp;
+  qty?: number;
+  notes?: Note[];
+  tasks?: Task[];
+  labData: BulkLabData;
+};

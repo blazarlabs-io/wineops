@@ -11,8 +11,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import DeselectIcon from "@mui/icons-material/Deselect";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
-import { Chip } from "@mui/material";
 import { DashboardEntity } from "@/models/types/dashboard";
+import EntityChip from "./entity-chip";
 
 type UngroupingDialogProps<T> = {
   open: boolean;
@@ -68,12 +68,10 @@ export default function UngroupingDialog<T extends DashboardEntity>({
           Are you sure you want to ungroup the following items?
         </Typography>
         <Stack px={0} gap={1} marginTop={2} direction="row" flexWrap="wrap">
-          {rows.map(({ id, name }) => (
-            <Chip
-              key={id}
-              variant="outlined"
-              label={name}
-              className="max-w-fit"
+          {rows.map((row) => (
+            <EntityChip
+              row={row}
+              key={`${row.id}-${row["vesselId" as keyof T] || ""}`}
             />
           ))}
         </Stack>
