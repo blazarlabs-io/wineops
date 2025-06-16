@@ -45,6 +45,7 @@ export default function TotalQuantityPieWidget({
       gap={1}
     >
       <PieChart
+        skipAnimation={true}
         hideLegend={true}
         series={[
           {

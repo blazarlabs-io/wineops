@@ -6,6 +6,8 @@ import Legend from "./legend";
 import Markers from "./markers";
 import { GrapeStatus, Metric, VineyardStatus } from "@/models/types/db";
 import { EntityStatus } from "@/models/types/dashboard";
+import Tooltip from "@mui/material/Tooltip";
+import LegendItem from "./legend-item";
 
 type Metrics = Partial<Record<Metric, number>>;
 
@@ -145,30 +147,84 @@ export default function QuantityWidget({
 
               return (
                 <Fragment key={index}>
-                  <div
-                    style={{
-                      width: `${percentage}%`,
-                      transition: "width 0.3s ease-in-out",
-                    }}
-                    className={`border-y border-gray-300 my-1 h-5.5 ${index === 0 ? "ml-0 pl-0.5 rounded-l-xs border-l" : ""}`}
+                  <Tooltip
+                    title={
+                      <>
+                        <LegendItem
+                          name={type}
+                          value={
+                            isActual
+                              ? actual
+                              : isDemand
+                                ? demand
+                                : isSupply
+                                  ? supply
+                                  : 0
+                          }
+                          {...(isDemand &&
+                            demand > 0 &&
+                            demand <= actual && {
+                              backgroundColor:
+                                QUANTITY_COLORS.demand.secondaryDarkColor,
+                            })}
+                          color="#DBDBDB"
+                          unit={unit}
+                        />
+                        {sortedValuesWithColors
+                          .filter(
+                            (item) => item.type !== type && item.value === value
+                          )
+                          .map(({ type }) => (
+                            <LegendItem
+                              key={type}
+                              name={type}
+                              value={
+                                isActual
+                                  ? actual
+                                  : isDemand
+                                    ? demand
+                                    : isSupply
+                                      ? supply
+                                      : 0
+                              }
+                              {...(type === Metric.DEMAND &&
+                                demand > 0 &&
+                                demand <= actual && {
+                                  backgroundColor:
+                                    QUANTITY_COLORS.demand.secondaryDarkColor,
+                                })}
+                              color="#DBDBDB"
+                              unit={unit}
+                            />
+                          ))}
+                      </>
+                    }
                   >
-                    {showStripedBar ? (
-                      <StripedBar
-                        className={`my-0.5 ${index === 0 ? "rounded-l-xs" : ""}`}
-                        lightColor={
-                          isLowerDemand ? secondaryLightColor : lightColor
-                        }
-                        darkColor={
-                          isLowerDemand ? secondaryDarkColor : darkColor
-                        }
-                      />
-                    ) : (
-                      <div
-                        style={{ backgroundColor }}
-                        className={`h-4 overflow-hidden my-0.5 ${index === 0 ? "rounded-l-xs" : ""}`}
-                      />
-                    )}
-                  </div>
+                    <div
+                      style={{
+                        width: `${percentage}%`,
+                        transition: "width 0.3s ease-in-out",
+                      }}
+                      className={`border-y border-gray-300 my-1 h-5.5 ${index === 0 ? "ml-0 pl-0.5 rounded-l-xs border-l" : ""}`}
+                    >
+                      {showStripedBar ? (
+                        <StripedBar
+                          className={`my-0.5 ${index === 0 ? "rounded-l-xs" : ""}`}
+                          lightColor={
+                            isLowerDemand ? secondaryLightColor : lightColor
+                          }
+                          darkColor={
+                            isLowerDemand ? secondaryDarkColor : darkColor
+                          }
+                        />
+                      ) : (
+                        <div
+                          style={{ backgroundColor }}
+                          className={`h-4 overflow-hidden my-0.5 ${index === 0 ? "rounded-l-xs" : ""}`}
+                        />
+                      )}
+                    </div>
+                  </Tooltip>
                   <span
                     className="h-full w-[3px] rounded"
                     style={{
