@@ -13,10 +13,9 @@ export default function EntityLocation({
   return (
     <Stack direction="row" alignItems="center">
       <LocationOnOutlinedIcon
-        sx={({ typography, palette }) => ({
+        sx={({ typography }) => ({
           width: typography.body1.fontSize,
           height: typography.body1.fontSize,
-          color: palette.text.secondary,
         })}
       />
       <Typography variant={variant}>{location}</Typography>
