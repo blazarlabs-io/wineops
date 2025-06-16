@@ -63,14 +63,17 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                 >
                   <ExpandMore
                     style={{
-                      rotate: expanded ? "0deg" : "-90deg",
+                      rotate: expanded ? "180deg" : "0deg",
                     }}
                     className="max-w-5 max-h-5 opacity-60"
                   />
                 </IconButton>
               </div>
               {expanded && (
-                <Stack className="fixed bottom-0 flex items-start justify-center left-0 w-full h-[180px] bg-transparent z-[9999]">
+                <Stack
+                  style={{ borderColor: "var(--mui-palette-divider)" }}
+                  className="fixed bottom-0 border-t flex items-start justify-center left-0 w-full h-[189px] bg-transparent z-[9999]"
+                >
                   <VesselDetailsWidget vessel={node.data} />
                 </Stack>
               )}

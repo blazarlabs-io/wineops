@@ -64,7 +64,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                 >
                   <ExpandMore
                     style={{
-                      rotate: expanded ? "0deg" : "-90deg",
+                      rotate: expanded ? "180deg" : "0deg",
                     }}
                     className="max-w-5 max-h-5 opacity-60"
                   />
