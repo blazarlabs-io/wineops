@@ -11,6 +11,7 @@ import { VesselProvider } from "./vessel";
 import { ConsumableProvider } from "./consumable";
 import { MustProvider } from "./must";
 import { ChemistryProvider } from "./chemistry";
+import { BulkProvider } from "./bulk";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -24,14 +25,16 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                   <ConsumableProvider>
                     <MustProvider>
                       <ChemistryProvider>
-                        <APIProvider
-                          apiKey={
-                            process.env
-                              .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
-                          }
-                        >
-                          {children}
-                        </APIProvider>
+                        <BulkProvider>
+                          <APIProvider
+                            apiKey={
+                              process.env
+                                .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+                            }
+                          >
+                            {children}
+                          </APIProvider>
+                        </BulkProvider>
                       </ChemistryProvider>
                     </MustProvider>
                   </ConsumableProvider>

@@ -385,10 +385,6 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
       : undefined,
   ].filter((s) => s !== undefined);
 
-  console.log("normalized:", normalized);
-  console.log("normalized2:", normalized2);
-  console.log("normalized3:", normalized3);
-
   return {
     relatedData: {
       ...(sur > 0 && {

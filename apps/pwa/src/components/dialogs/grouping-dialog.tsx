@@ -1,7 +1,7 @@
 import { DashboardEntity } from "@/models/types/dashboard";
 import { SelectAll } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Chip } from "@mui/material";
+import { Box } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -19,6 +19,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ChangeEvent, useState } from "react";
+import EntityChip from "./entity-chip";
 
 type GroupingDialogProps<T> = {
   open: boolean;
@@ -285,12 +286,10 @@ export default function GroupingDialog<T extends DashboardEntity>({
             px={0}
             gap={1}
           >
-            {rows.map(({ id, name }) => (
-              <Chip
-                key={id}
-                variant="outlined"
-                label={name}
-                className="max-w-fit"
+            {rows.map((row) => (
+              <EntityChip
+                row={row}
+                key={`${row.id}-${row["vesselId" as keyof T] || ""}`}
               />
             ))}
           </Box>

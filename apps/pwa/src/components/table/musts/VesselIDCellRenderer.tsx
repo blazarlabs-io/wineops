@@ -35,7 +35,6 @@ export const VesselIDCellRenderer = (params: CustomCellRendererProps) => {
           )?.map((vessel: Vessel) => (
             <Stack
               key={vessel?.id}
-              direction="row"
               sx={{ flexWrap: "wrap", whiteSpace: "wrap" }}
             >
               <Typography key={vessel?.id} variant="body1">

@@ -7,7 +7,7 @@ import { CONCENTRATION_UNITS } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { mustSchema } from "@/models/schemas/must-schema";
-import { DbResponse, FormMode, Must } from "@/models/types/db";
+import { DbResponse, FormMode, Must, MustStatus } from "@/models/types/db";
 import { parseToDate } from "@/utils/date-format";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { ExpandMore } from "@mui/icons-material";
@@ -79,6 +79,7 @@ export default function MustForm({
       if (type === "create") {
         data.group = [data.name];
         data.rowType = "item";
+        data.status = MustStatus.NEW_MUST;
       }
 
       try {
@@ -90,6 +91,7 @@ export default function MustForm({
           const newData = {
             ...data,
             group: [...(group ?? []).slice(0, -1), name ?? id],
+            status: data?.status || MustStatus.NEW_MUST,
           };
 
           const updateRes: DbResponse = await db.must.update(uid, id, newData);
@@ -159,6 +161,7 @@ export default function MustForm({
         id: Date.now().toString(),
         name,
       }),
+      status: must?.status || MustStatus.NEW_MUST,
     } as Must;
 
     reset(formatted);
@@ -331,6 +334,7 @@ export default function MustForm({
                         noOptionsText="No vessels available"
                         options={vessels.filter(
                           (vessel) =>
+                            vessel.rowType !== "group" &&
                             !formData.vessels?.some(
                               ({ id }) => id === vessel.id
                             )
@@ -359,6 +363,7 @@ export default function MustForm({
                       {(formData?.vessels || []).length > 0 && (
                         <Stack
                           p={2}
+                          pb={1}
                           gap={1}
                           sx={{
                             border: "1px solid var(--mui-palette-divider)",
@@ -434,6 +439,16 @@ export default function MustForm({
                             )
                           )}
                         </Stack>
+                      )}
+
+                      {errors?.vessels && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.vessels?.message as string}
+                        </Typography>
                       )}
                     </div>
 
@@ -1057,7 +1072,6 @@ export default function MustForm({
                 </AccordionDetails>
               </Accordion>
             </Box>
-
             <Box
               p={2}
               gap={2}

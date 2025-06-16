@@ -69,8 +69,11 @@ export const mustSchema = Joi.object({
     vineyardName: Joi.string().optional().allow(""),
   }).optional(),
   grapeVariety: Joi.string().optional().allow(""),
-  vessels: Joi.array().items(mustVesselSchema).optional(),
+  vessels: Joi.array().items(mustVesselSchema).required().messages({
+    "any.required": "At least one vessel must be provided.",
+  }),
   safetyCertificateNo: Joi.string().optional().allow(""),
   invoicePurchaseNo: Joi.string().optional().allow(""),
   labData: labDataSchema.optional(),
+  status: Joi.string().optional().allow(""),
 });
