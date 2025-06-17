@@ -15,7 +15,7 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
         .filter(
           ({ type, usage, barrelInfo, sstInfo }: any) =>
             ((type === VesselType.BARREL
-              ? barrelInfo?.usage
+              ? barrelInfo?.usageStatus
               : type === VesselType.STAINLESS_STEEL_TANK
                 ? sstInfo?.usage
                 : usage) ?? "") !== ""
@@ -24,7 +24,7 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
 
   const usage =
     data?.type === VesselType.BARREL
-      ? data?.barrelInfo?.usage
+      ? data?.barrelInfo?.usageStatus
       : data?.type === VesselType.STAINLESS_STEEL_TANK
         ? data?.sstInfo?.usage
         : data?.usage;
