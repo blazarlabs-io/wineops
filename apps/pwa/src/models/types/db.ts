@@ -419,6 +419,12 @@ export type StainlessSteelTankInfo = {
   pressureRating?: number;
 };
 
+export const VesselStatus = {
+  NEW_VESSEL: "New Vessel",
+} as const;
+
+export type VesselStatus = (typeof VesselStatus)[keyof typeof VesselStatus];
+
 export const VesselType = {
   BARREL: "Barrel",
   STAINLESS_STEEL_TANK: "Stainless Steel Tank",
@@ -449,6 +455,7 @@ export type Vessel = Entity & {
   barrelInfo?: BarrelInfo;
   sstInfo?: StainlessSteelTankInfo;
   history?: VesselHistory[];
+  status?: VesselStatus;
 };
 
 export const ConsumableCategory = {

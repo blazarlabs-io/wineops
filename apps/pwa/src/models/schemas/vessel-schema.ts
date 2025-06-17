@@ -8,7 +8,7 @@ import { VOLUME_UNITS } from "@/data/constants";
 const vesselBarrelInfoSchema = Joi.object({
   usage: Joi.string()
     .valid(...Object.values(BarrelInfoUsage))
-    .optional()
+    .optional().allow(null).empty("")
     .messages({
       "any.required": "The barrel usage status is required.",
       "string.base": "The barrel usage status must be a string.",
@@ -18,7 +18,7 @@ const vesselBarrelInfoSchema = Joi.object({
   material: Joi.string().optional().allow(""),
   toastLevel: Joi.string()
     .valid(...Object.values(ToastLevel))
-    .optional()
+    .optional().allow(null).empty("")
     .messages({
       "any.required": "The barrel toast level is required.",
       "string.base": "The barrel toast level must be a string.",
@@ -97,6 +97,7 @@ export const vesselSchema = Joi.object({
   usage: Joi.string().optional().allow("").messages({
     "string.base": "Usage must be a string.",
   }),
-  barrelInfo: vesselBarrelInfoSchema,
-  sstInfo: vesselSstInfoSchema,
+  barrelInfo: vesselBarrelInfoSchema.optional(),
+  sstInfo: vesselSstInfoSchema.optional(),
+  status: Joi.string().optional().allow(""),
 });
