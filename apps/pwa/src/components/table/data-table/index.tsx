@@ -216,7 +216,7 @@ export const DataTable = <T extends DashboardEntity>({
         Array.isArray(row.group) &&
         row.rowType === "group" &&
         row.group.length === group.length &&
-        row.group.every((val, i) => val === group[i])
+        row.group.every((val: any, i: any) => val === group[i])
     );
 
     if (existingGroup) return;
@@ -549,7 +549,7 @@ export const DataTable = <T extends DashboardEntity>({
         )}
       </div>
       <GroupingDialog<T>
-        groups={uniqueGroups}
+        groups={uniqueGroups as string[]}
         rows={selectedRows}
         open={openGroupingDialog}
         onClose={handleCloseGroupingDialog}

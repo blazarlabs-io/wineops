@@ -1,4 +1,5 @@
 import { DashboardEntity } from "@/models/types/dashboard";
+import { TeamMember } from "@/models/types/db";
 import { DeleteOutline } from "@mui/icons-material";
 import {
   Box,
@@ -15,7 +16,7 @@ export interface DeleteEntitiesDialogProps {
   open: boolean;
   onClose: () => void;
   onDelete: () => void;
-  entities: DashboardEntity[];
+  entities: DashboardEntity[] | TeamMember[];
   entityName: string;
 }
 

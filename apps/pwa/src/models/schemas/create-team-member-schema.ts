@@ -6,6 +6,8 @@ export const createTeamMemberSchema = Joi.object<TeamMember>({
   name: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().required(),
-  role: Joi.string().required(),
+  role: Joi.string().required().allow(""),
   avatar: Joi.string().optional().allow(""),
+  department: Joi.string().optional().allow(""),
+  contactPhone: Joi.string().optional().allow(""),
 });

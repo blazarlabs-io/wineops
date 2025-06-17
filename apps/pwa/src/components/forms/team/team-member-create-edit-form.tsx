@@ -2,10 +2,9 @@
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
-import { Role, TeamMember } from "@/models/types/db";
+import { Department, Role, TeamMember } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
-import { useAuth } from "@/lib/firebase/auth";
 import { createTeamMemberSchema } from "@/models/schemas/create-team-member-schema";
 import {
   Box,
@@ -17,22 +16,30 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ReactPhoneInput from "react-phone-input-material-ui";
 
 export type TeamMembersFormProps = {
+  type: "create" | "edit";
+  member: TeamMember;
   roles: Role[];
   onDataSubmit: (data: any) => void;
+  onClose: () => void;
 };
 
-export default function CreateTeamMemberForm({
+export default function TeamMemberCreateEditForm({
+  type,
+  member,
   roles,
   onDataSubmit,
+  onClose,
 }: TeamMembersFormProps) {
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: joiResolver(createTeamMemberSchema),
@@ -41,10 +48,12 @@ export default function CreateTeamMemberForm({
   const [formData, setFormData] = useState<TeamMember | null>(null);
 
   const handleChange = useCallback((name: string, value: any) => {
+    console.log("name", name, "value", value);
     setFormData((prev) => ({
       ...(prev as TeamMember),
       [name]: value,
     }));
+    setValue(name, value);
   }, []);
 
   const onSubmit = (data: any, e: any) => {
@@ -57,17 +66,30 @@ export default function CreateTeamMemberForm({
   };
 
   useEffect(() => {
-    const newTeamMember: TeamMember = {
-      id: Date.now().toString(),
-      name: "",
-      lastName: "",
-      email: "",
-      role: Role.MEMBER,
-      avatar: "",
-    };
-    reset(newTeamMember);
-    setFormData(newTeamMember);
-  }, []);
+    if (member && type) {
+      console.log("TYPE", type, member);
+
+      let _member: TeamMember | null = null;
+
+      if (type === "create") {
+        _member = {
+          id: Date.now().toString(),
+          name: "",
+          lastName: "",
+          email: "",
+          role: "",
+          avatar: "",
+          department: "",
+          contactPhone: "",
+        };
+      } else if (type === "edit") {
+        _member = member;
+      }
+
+      reset(_member as TeamMember);
+      setFormData(_member);
+    }
+  }, [member, type]);
 
   useEffect(() => {
     if (errors) {
@@ -78,7 +100,13 @@ export default function CreateTeamMemberForm({
   return (
     <>
       {formData && formData !== undefined && (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 w-full p-4"
+          style={{
+            backgroundColor: "var(--mui-palette-background-default)",
+          }}
+        >
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
               {/* * ID - HIDDEN */}
@@ -119,7 +147,7 @@ export default function CreateTeamMemberForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * LAST NAME */}
+                  {/* * EMAIL */}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -138,7 +166,7 @@ export default function CreateTeamMemberForm({
                       id="role"
                       value={(formData.role as string) || ""}
                       label="Role"
-                      className="capitalize"
+                      // className="capitalize"
                       onChange={(e) => handleChange("role", e.target.value)}
                     >
                       {roles &&
@@ -147,25 +175,59 @@ export default function CreateTeamMemberForm({
                           <MenuItem
                             key={role}
                             value={role}
-                            className="capitalize"
+                            // className="capitalize"
                           >
                             {role}
                           </MenuItem>
                         ))}
                     </Select>
                   </FormControl>
+                  {/* * DEPARTMENT */}
+                  <FormControl fullWidth>
+                    <InputLabel id="department-select">Department</InputLabel>
+                    <Select
+                      name="department"
+                      id="department"
+                      value={(formData.department as string) || ""}
+                      label="Department"
+                      // className="capitalize"
+                      onChange={(e) =>
+                        handleChange("department", e.target.value)
+                      }
+                    >
+                      {Department &&
+                        Object.values(Department).length > 0 &&
+                        Object.values(Department).map((department) => (
+                          <MenuItem
+                            key={department}
+                            value={department}
+                            // className="capitalize"
+                          >
+                            {department}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                  {/* * CONTACT PHONE */}
+                  <Fragment>
+                    <ReactPhoneInput
+                      value={formData.contactPhone}
+                      onChange={(phone) => handleChange("contactPhone", phone)} // passed function receives the phone value
+                      component={TextField}
+                    />
+                  </Fragment>
                 </Box>
               </div>
             </div>
           </div>
 
           <Box display={"flex"} justifyContent={"end"} gap={2} marginTop={2}>
-            <Button type="button" variant="outlined">
+            <Button type="button" variant="outlined" onClick={onClose}>
               Cancel
             </Button>
             <FormControl>
               <Button type="submit" variant="contained">
-                Register
+                {type === "create" ? "Create" : "Update"}
               </Button>
             </FormControl>
           </Box>
