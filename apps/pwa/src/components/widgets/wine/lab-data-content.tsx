@@ -2,14 +2,14 @@ import LabItem from "@/components/data-display/lab-item";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import UnitDisplay from "@/components/data-display/unit-display";
 import { DEFAULT_LOCALE } from "@/data/constants";
-import { BulkLabData } from "@/models/types/db";
+import { WineLabData } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
 
 type LabDataProps = {
-  labData: BulkLabData;
+  labData: WineLabData;
 };
 
 export default function LabDataContent({ labData }: LabDataProps) {

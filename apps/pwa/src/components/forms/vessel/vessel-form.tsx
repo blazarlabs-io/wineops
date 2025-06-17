@@ -83,7 +83,13 @@ export default function VesselForm({
       if (type === "create") {
         data.group = [data.name];
         data.rowType = "item";
-        data.barrelInfo.usageStatus = BarrelInfoUsage.NEW_VESSEL;
+
+        if (data?.type === VesselType.BARREL) {
+          data.barrelInfo = {
+            ...data.barrelInfo,
+            usageStatus: BarrelInfoUsage.NEW_VESSEL,
+          };
+        }
       }
 
       try {
@@ -95,7 +101,14 @@ export default function VesselForm({
           const newData = {
             ...data,
             group: [...(group ?? []).slice(0, -1), name ?? id],
-            status: data?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL,
+            ...(data?.type === VesselType.BARREL && {
+              barrelInfo: {
+                ...data?.barrelInfo,
+                usageStatus:
+                  data?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL,
+              },
+            }),
+
             volumeUnit:
               data?.volume && data?.volumeUnit ? data?.volumeUnit : undefined,
           };
@@ -174,7 +187,13 @@ export default function VesselForm({
         name,
         group: [name],
       }),
-      status: vessel?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL,
+      ...(vessel?.type === VesselType.BARREL && {
+        barrelInfo: {
+          ...vessel?.barrelInfo,
+          usageStatus:
+            vessel?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL,
+        },
+      }),
     } as Vessel;
 
     reset(formatted);

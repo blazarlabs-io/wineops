@@ -1,34 +1,34 @@
-import { FormMode, Bulk } from "@/models/types/db";
+import { FormMode, Wine } from "@/models/types/db";
 import { Box, Typography } from "@mui/material";
 import EntityFormDrawer from "./entity-form-drawer";
-import BulkForm from "../forms/bulk/bulk-form";
+import WineForm from "../forms/wine/wine-form";
 
-export type BulkFormDrawerProps = {
+export type WineFormDrawerProps = {
   open: boolean;
   onClose: () => void;
-  bulk?: Bulk;
+  wine?: Wine;
   type: FormMode;
 };
 
-export default function BulkFormDrawer({
+export default function WineFormDrawer({
   open,
   onClose,
-  bulk,
+  wine,
   type,
-}: BulkFormDrawerProps) {
+}: WineFormDrawerProps) {
   return (
     <EntityFormDrawer open={open} onClose={onClose}>
       <Box padding={2} marginTop={4}>
         <Typography variant="h5" fontWeight={"medium"}>
-          {type === "create" ? "New Bulk" : "Edit Bulk"}
+          Buy Wine
         </Typography>
 
         <Typography variant="body2" className="opacity-75">
-          {type === "create" ? "Add a new bulk" : "Edit existing bulk"}
+          {type === "create" ? "New wine" : "Existing wine"}
         </Typography>
       </Box>
 
-      <BulkForm bulk={bulk} closeDrawer={onClose} type={type} />
+      <WineForm wine={wine} closeDrawer={onClose} type={type} />
     </EntityFormDrawer>
   );
 }

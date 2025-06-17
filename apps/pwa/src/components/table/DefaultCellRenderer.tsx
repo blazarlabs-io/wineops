@@ -13,7 +13,7 @@ export const DefaultCellRenderer = (
 ) => {
   const { value, node, data, alignItems, shouldAggregate, aggField } = params;
   const isGroup = node.group || data.rowType === "group";
-  const groupField = (isGroup ? node?.field : node?.parent?.field) || aggField;
+  const groupField = aggField || (isGroup ? node?.field : node?.parent?.field);
 
   const groupData =
     shouldAggregate && isGroup && groupField

@@ -356,7 +356,7 @@ export type MustLabData = {
   labCertificateID: string;
 };
 
-export type MustVessel = {
+export type MustWineVessel = {
   id: Vessel["id"];
   name: Vessel["name"];
   qty: number;
@@ -368,7 +368,7 @@ export type Must = Entity & {
   date?: string | Timestamp;
   supplier?: Supplier;
   grapeVariety?: string;
-  vessels?: MustVessel[];
+  vessels?: MustWineVessel[];
   safetyCertificateNo?: string;
   invoicePurchaseNo?: string;
   labData: MustLabData;
@@ -531,20 +531,21 @@ export type Chemistry = Entity & {
   comments?: string;
 };
 
-export type BulkInfo = {
+export type WineInfo = {
   id: string;
   date?: Must["date"];
   grapeVariety?: Must["grapeVariety"];
   qty?: number;
 };
 
-export const BulkStatus = {
+export const WineStatus = {
+  NEW_WINE: "New Wine",
   BARICARE: "Baricare",
 } as const;
 
-export type BulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
+export type WineStatus = (typeof WineStatus)[keyof typeof WineStatus];
 
-export type BulkLabData = {
+export type WineLabData = {
   date: string | Timestamp;
   temperature: Partial<LabElement>;
   alcohol: Partial<LabElement>;
@@ -557,13 +558,24 @@ export type BulkLabData = {
   labCertificateID: string;
 };
 
-export type Bulk = Entity & {
+export type GrapeVariety = {
+  id: string;
+  name: string;
+  percentage: number;
+};
+
+export type Wine = Entity & {
+  date?: string | Timestamp;
+  supplier?: Supplier;
   grapeVariety?: string;
-  vessels?: MustVessel[];
-  status?: BulkStatus;
-  startDate?: string | Timestamp;
   qty?: number;
+  vessels?: MustWineVessel[];
+  grapeVarieties: GrapeVariety[];
+  safetyCertificateNo?: string;
+  invoicePurchaseNo?: string;
+  labData: WineLabData;
+  status?: WineStatus;
+  metrics?: Metrics;
   notes?: Note[];
   tasks?: Task[];
-  labData: BulkLabData;
 };

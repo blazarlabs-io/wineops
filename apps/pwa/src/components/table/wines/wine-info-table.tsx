@@ -1,5 +1,5 @@
 import { DEFAULT_LOCALE } from "@/data/constants";
-import { BulkInfo } from "@/models/types/db";
+import { WineInfo } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -10,11 +10,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
-export type BulkInfoTableProps = {
-  data: BulkInfo[];
+export type WineInfoTableProps = {
+  data: WineInfo[];
 };
 
-export default function BulkInfoTable({ data }: BulkInfoTableProps) {
+export default function WineInfoTable({ data }: WineInfoTableProps) {
   return (
     <TableContainer
       component={Paper}
