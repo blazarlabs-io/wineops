@@ -10,6 +10,7 @@ import {
 import { db as fdb } from "../client";
 import { VESSELS, WINERY } from "../config";
 import { cleanObject } from "@/utils/clean-object";
+import { cleanObjectWithDeletes } from "@/utils/clean-objects-with-delete";
 
 const vessel = {
   create: async (id: string, data: Vessel): Promise<DbResponse> => {
@@ -64,8 +65,9 @@ const vessel = {
   ): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, VESSELS, id);
+      const cleanedData = cleanObjectWithDeletes(data);
 
-      await setDoc(docRef, data, { merge: true });
+      await setDoc(docRef, cleanedData, { merge: true });
 
       return {
         data: null,

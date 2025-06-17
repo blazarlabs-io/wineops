@@ -12,6 +12,7 @@ import {
   FormMode,
   ToastLevel,
   Vessel,
+  VesselStatus,
   VesselType,
 } from "@/models/types/db";
 import { parseToDate } from "@/utils/date-format";
@@ -65,7 +66,7 @@ export default function VesselForm({
     formState: { errors },
     control,
   } = useForm<Vessel>({
-    resolver: joiResolver(vesselSchema, { stripUnknown: true }),
+    resolver: joiResolver(vesselSchema),
   });
 
   const [formData, setFormData] = useState<Vessel | undefined>(vessel);
@@ -83,6 +84,7 @@ export default function VesselForm({
       if (type === "create") {
         data.group = [data.name];
         data.rowType = "item";
+        data.status = VesselStatus.NEW_VESSEL;
       }
 
       try {
@@ -94,6 +96,9 @@ export default function VesselForm({
           const newData = {
             ...data,
             group: [...(group ?? []).slice(0, -1), name ?? id],
+            status: data?.status || VesselStatus.NEW_VESSEL,
+            volumeUnit:
+              data?.volume && data?.volumeUnit ? data?.volumeUnit : undefined,
           };
 
           const updateRes: DbResponse = await db.vessel.update(
@@ -161,7 +166,7 @@ export default function VesselForm({
   };
 
   useEffect(() => {
-    const name = `Vessel_${vessels?.length + 1}`;
+    const name = `Vessel_${vessels.filter(({ rowType }) => rowType !== "group")?.length + 1}`;
 
     const formatted = {
       ...vessel,
@@ -170,11 +175,12 @@ export default function VesselForm({
         name,
         group: [name],
       }),
+      status: vessel?.status || VesselStatus.NEW_VESSEL,
     } as Vessel;
 
     reset(formatted);
     setFormData(formatted);
-  }, [reset, vessel, vessels?.length]);
+  }, [reset, vessel, vessels]);
 
   useEffect(() => {
     if (errors) {
@@ -185,7 +191,15 @@ export default function VesselForm({
   return (
     <>
       {formData && formData !== undefined && (
-        <div style={{ background: "var(--mui-palette-background-default)" }}>
+        <div
+          style={{
+            background: "var(--mui-palette-background-default)",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
           <form
             onSubmit={handleSubmit(onSubmit)}
             style={{ height: "100%", display: "flex", flexDirection: "column" }}
@@ -255,7 +269,7 @@ export default function VesselForm({
 
                     <div className="flex flex-col gap-2">
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter a reference ID for your vessel.
+                        Enter a reference ID for your vessel
                       </InputLabel>
                       <FormControl>
                         <Input
@@ -318,12 +332,12 @@ export default function VesselForm({
                       <Autocomplete
                         freeSolo
                         options={[]}
-                        value={formData?.location ?? ""}
-                        onChange={(event, newValue) => {
-                          handleSelectChange("location", newValue);
+                        value={formData?.location || ""}
+                        onChange={(_event, newValue) => {
+                          handleSelectChange("location", newValue || "");
                         }}
-                        onInputChange={(event, newInputValue) => {
-                          handleSelectChange("location", newInputValue);
+                        onInputChange={(_event, newInputValue) => {
+                          handleSelectChange("location", newInputValue || "");
                         }}
                         renderInput={(params) => (
                           <TextField
@@ -333,7 +347,6 @@ export default function VesselForm({
                           />
                         )}
                       />
-
                       {errors?.location && (
                         <Typography
                           variant="body2"
@@ -354,11 +367,14 @@ export default function VesselForm({
                         freeSolo
                         options={[]}
                         value={formData?.currentUsage ?? ""}
-                        onChange={(event, newValue) => {
-                          handleSelectChange("currentUsage", newValue);
+                        onChange={(_event, newValue) => {
+                          handleSelectChange("currentUsage", newValue || "");
                         }}
-                        onInputChange={(event, newInputValue) => {
-                          handleSelectChange("currentUsage", newInputValue);
+                        onInputChange={(_event, newInputValue) => {
+                          handleSelectChange(
+                            "currentUsage",
+                            newInputValue || ""
+                          );
                         }}
                         renderInput={(params) => (
                           <TextField
@@ -425,7 +441,10 @@ export default function VesselForm({
                             label="Volume"
                             type="number"
                             variant="outlined"
-                            {...register("volume")}
+                            {...register("volume", {
+                              setValueAs: (value) =>
+                                value === "" ? undefined : parseFloat(value),
+                            })}
                           />
                         </FormControl>
 
@@ -436,9 +455,12 @@ export default function VesselForm({
                             id="volumeUnit"
                             label="Unit"
                             variant="outlined"
-                            value={formData?.volumeUnit ?? ""}
+                            value={formData?.volumeUnit || ""}
                             onChange={(e) =>
-                              handleSelectChange("volumeUnit", e.target.value)
+                              handleSelectChange(
+                                "volumeUnit",
+                                e.target.value || ""
+                              )
                             }
                           >
                             <MenuItem value="">
@@ -637,7 +659,10 @@ export default function VesselForm({
                               label="Thickness of staves"
                               type="number"
                               variant="outlined"
-                              {...register("barrelInfo.stavesThickness")}
+                              {...register("barrelInfo.stavesThickness", {
+                                setValueAs: (value) =>
+                                  value === "" ? undefined : parseFloat(value),
+                              })}
                             />
                           </FormControl>
 
@@ -666,7 +691,15 @@ export default function VesselForm({
                               label="Oxygen transmission rate (OTR)"
                               type="number"
                               variant="outlined"
-                              {...register("barrelInfo.oxygenTransmissionRate")}
+                              {...register(
+                                "barrelInfo.oxygenTransmissionRate",
+                                {
+                                  setValueAs: (value) =>
+                                    value === ""
+                                      ? undefined
+                                      : parseFloat(value),
+                                }
+                              )}
                             />
                           </FormControl>
 
@@ -695,7 +728,10 @@ export default function VesselForm({
                               label="Wood grain density"
                               type="number"
                               variant="outlined"
-                              {...register("barrelInfo.woodGrainDensity")}
+                              {...register("barrelInfo.woodGrainDensity", {
+                                setValueAs: (value) =>
+                                  value === "" ? undefined : parseFloat(value),
+                              })}
                             />
                           </FormControl>
 
@@ -730,8 +766,10 @@ export default function VesselForm({
                                 views={["year"]}
                                 label="Usage status"
                                 value={
-                                  field.value
-                                    ? dayjs(parseToDate(field.value))
+                                  field.value && !isNaN(parseInt(field.value))
+                                    ? dayjs()
+                                        .year(parseInt(field.value))
+                                        .startOf("year")
                                     : null
                                 }
                                 onChange={(newValue) => {
@@ -748,7 +786,6 @@ export default function VesselForm({
                               />
                             )}
                           />
-
                           {errors?.sstInfo?.usage && (
                             <Typography
                               variant="body2"
@@ -800,7 +837,10 @@ export default function VesselForm({
                               label="Thickness of the steel"
                               type="number"
                               variant="outlined"
-                              {...register("sstInfo.steelThickness")}
+                              {...register("sstInfo.steelThickness", {
+                                setValueAs: (value) =>
+                                  value === "" ? undefined : parseFloat(value),
+                              })}
                             />
                           </FormControl>
 
@@ -871,7 +911,10 @@ export default function VesselForm({
                               label="Pressure rating"
                               type="number"
                               variant="outlined"
-                              {...register("sstInfo.pressureRating")}
+                              {...register("sstInfo.pressureRating", {
+                                setValueAs: (value) =>
+                                  value === "" ? undefined : parseFloat(value),
+                              })}
                             />
                           </FormControl>
 
