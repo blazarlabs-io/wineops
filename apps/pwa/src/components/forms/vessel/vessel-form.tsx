@@ -12,7 +12,6 @@ import {
   FormMode,
   ToastLevel,
   Vessel,
-  VesselStatus,
   VesselType,
 } from "@/models/types/db";
 import { parseToDate } from "@/utils/date-format";
@@ -66,7 +65,7 @@ export default function VesselForm({
     formState: { errors },
     control,
   } = useForm<Vessel>({
-    resolver: joiResolver(vesselSchema),
+    resolver: joiResolver(vesselSchema, { stripUnknown: true }),
   });
 
   const [formData, setFormData] = useState<Vessel | undefined>(vessel);
@@ -84,7 +83,7 @@ export default function VesselForm({
       if (type === "create") {
         data.group = [data.name];
         data.rowType = "item";
-        data.status = VesselStatus.NEW_VESSEL;
+        data.barrelInfo.usageStatus = BarrelInfoUsage.NEW_VESSEL;
       }
 
       try {
@@ -96,7 +95,7 @@ export default function VesselForm({
           const newData = {
             ...data,
             group: [...(group ?? []).slice(0, -1), name ?? id],
-            status: data?.status || VesselStatus.NEW_VESSEL,
+            status: data?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL,
             volumeUnit:
               data?.volume && data?.volumeUnit ? data?.volumeUnit : undefined,
           };
@@ -175,7 +174,7 @@ export default function VesselForm({
         name,
         group: [name],
       }),
-      status: vessel?.status || VesselStatus.NEW_VESSEL,
+      status: vessel?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL,
     } as Vessel;
 
     reset(formatted);
@@ -360,77 +359,6 @@ export default function VesselForm({
 
                     <div className="flex flex-col gap-2">
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter current usage/batch
-                      </InputLabel>
-
-                      <Autocomplete
-                        freeSolo
-                        options={[]}
-                        value={formData?.currentUsage ?? ""}
-                        onChange={(_event, newValue) => {
-                          handleSelectChange("currentUsage", newValue || "");
-                        }}
-                        onInputChange={(_event, newInputValue) => {
-                          handleSelectChange(
-                            "currentUsage",
-                            newInputValue || ""
-                          );
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Current Usage/Batch"
-                            variant="outlined"
-                          />
-                        )}
-                      />
-
-                      {errors?.currentUsage && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.currentUsage?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter start date
-                      </InputLabel>
-
-                      <DatePicker
-                        label="Start date"
-                        value={
-                          formData?.startDate
-                            ? dayjs(parseToDate(formData?.startDate))
-                            : null
-                        }
-                        onChange={(newValue) =>
-                          handleSelectChange(
-                            "startDate",
-                            newValue
-                              ? Timestamp.fromDate(newValue.toDate())
-                              : null
-                          )
-                        }
-                      />
-
-                      {errors?.startDate && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.startDate?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
                         Enter volume
                       </InputLabel>
 
@@ -507,14 +435,16 @@ export default function VesselForm({
 
                           <FormControl>
                             <Controller
-                              name="barrelInfo.usage"
+                              name="barrelInfo.usageStatus"
                               control={control}
                               render={({ field }) => (
                                 <Select
                                   {...field}
-                                  id="barrelInfo.usage"
+                                  id="barrelInfo.usageStatus"
                                   variant="outlined"
-                                  value={field.value || ""}
+                                  value={
+                                    field.value || BarrelInfoUsage.NEW_VESSEL
+                                  }
                                   onChange={(e) =>
                                     field.onChange(e.target.value || "")
                                   }
@@ -536,13 +466,16 @@ export default function VesselForm({
                             />
                           </FormControl>
 
-                          {errors?.barrelInfo?.usage && (
+                          {errors?.barrelInfo?.usageStatus && (
                             <Typography
                               variant="body2"
                               color="error"
                               className="mt-1"
                             >
-                              {errors?.barrelInfo?.usage?.message as string}
+                              {
+                                errors?.barrelInfo?.usageStatus
+                                  ?.message as string
+                              }
                             </Typography>
                           )}
                         </div>

@@ -6,9 +6,11 @@ import { Timestamp } from "firebase/firestore";
 import { VOLUME_UNITS } from "@/data/constants";
 
 const vesselBarrelInfoSchema = Joi.object({
-  usage: Joi.string()
+  usageStatus: Joi.string()
     .valid(...Object.values(BarrelInfoUsage))
-    .optional().allow(null).empty("")
+    .optional()
+    .allow(null)
+    .empty("")
     .messages({
       "any.required": "The barrel usage status is required.",
       "string.base": "The barrel usage status must be a string.",
@@ -18,7 +20,9 @@ const vesselBarrelInfoSchema = Joi.object({
   material: Joi.string().optional().allow(""),
   toastLevel: Joi.string()
     .valid(...Object.values(ToastLevel))
-    .optional().allow(null).empty("")
+    .optional()
+    .allow(null)
+    .empty("")
     .messages({
       "any.required": "The barrel toast level is required.",
       "string.base": "The barrel toast level must be a string.",
@@ -81,7 +85,8 @@ export const vesselSchema = Joi.object({
     .messages({
       "alternatives.types": "Start date must be a valid date.",
     }),
-  volume: Joi.number().optional().empty("").messages({
+  volume: Joi.number().required().messages({
+    "any.required": "Volume is required.",
     "number.base": "Volume must be a number",
   }),
   volumeUnit: Joi.string()
