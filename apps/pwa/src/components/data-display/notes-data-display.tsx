@@ -36,7 +36,7 @@ export default function NotesDataDisplay({
           notes.map((note, index) => (
             <div
               onClick={() => handleNoteOpen(note)}
-              key={note.id + index}
+              key={note?.id + index}
               style={{
                 display: index < 1 ? "flex" : "none",
               }}
@@ -50,16 +50,16 @@ export default function NotesDataDisplay({
                       variant="body2"
                       className="pl-2 truncate max-w-[140px]"
                     >
-                      {note.title}
+                      {note?.title}
                     </Typography>
                     <Avatar
                       sx={{ width: 18, height: 18 }}
                       className=""
                       alt="Remy Sharp"
-                      src={note.author?.avatar}
+                      src={note?.author?.avatar}
                     >
                       <Typography className="" variant="caption">
-                        {note.author?.name.charAt(0)}
+                        {note?.author?.name.charAt(0)}
                       </Typography>
                     </Avatar>
                   </div>
@@ -68,7 +68,7 @@ export default function NotesDataDisplay({
                     className="pl-2 text-xs truncate max-w-[140px]"
                     color="text.secondary"
                   >
-                    {note.content}
+                    {note?.content}
                   </Typography>
                 </div>
               )}

@@ -1,6 +1,5 @@
 import { db } from "@/lib/firebase/services";
 import { DbResponse, Note, Vineyard } from "@/models/types/db";
-import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
 export const useGetVineyardNotes = (
@@ -11,6 +10,11 @@ export const useGetVineyardNotes = (
   const [vineyardNotes, setVineyardNotes] = useState<Note[]>([]);
 
   useEffect(() => {
+    // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    // console.log("vineyard", vineyard);
+    // console.log("notes", notes);
+    // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+
     if (
       vineyard &&
       vineyard !== undefined &&

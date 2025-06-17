@@ -19,6 +19,7 @@ export const NotesCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     params.node.data,
     notes
   );
+
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const handleMouseEnter = () => {
     setIsHovered(true);
