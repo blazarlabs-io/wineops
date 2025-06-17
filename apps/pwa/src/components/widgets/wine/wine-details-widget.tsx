@@ -1,4 +1,4 @@
-import { Bulk } from "@/models/types/db";
+import { Wine } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
@@ -6,21 +6,21 @@ import { SyntheticEvent, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import LabDataContent from "./lab-data-content";
-import BulkInfoContent from "./bulk-info-content";
+import WineInfoContent from "./wine-info-content";
 import QtyContent from "./qty-content";
 
-export type BulkDetailsWidgetProps = {
-  bulk: Bulk;
+export type WineDetailsWidgetProps = {
+  wine: Wine;
 };
 
-export default function BulkDetailsWidget({ bulk }: BulkDetailsWidgetProps) {
+export default function WineDetailsWidget({ wine }: WineDetailsWidgetProps) {
   const [value, setValue] = useState(0);
 
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  const qty = bulk?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0);
+  const qty = wine?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0);
 
   const sx = {
     padding: "8px 16px !important",
@@ -43,7 +43,7 @@ export default function BulkDetailsWidget({ bulk }: BulkDetailsWidgetProps) {
         variant="scrollable"
         value={value}
         onChange={handleChange}
-        aria-label="Bulk details"
+        aria-label="Wine details"
         sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
         <Tab label="Labs" {...a11yProps(0)} sx={sx} />
@@ -54,16 +54,15 @@ export default function BulkDetailsWidget({ bulk }: BulkDetailsWidgetProps) {
       </Tabs>
 
       <TabPanel value={value} index={0}>
-        <LabDataContent labData={bulk.labData} />
+        <LabDataContent labData={wine.labData} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <BulkInfoContent
+        <WineInfoContent
           data={[
             {
-              ...bulk,
-              qty: qty || bulk?.qty,
-              date: bulk?.startDate,
+              ...wine,
+              qty: qty || wine?.qty,
             },
           ]}
         />
@@ -74,7 +73,7 @@ export default function BulkDetailsWidget({ bulk }: BulkDetailsWidgetProps) {
       </TabPanel>
 
       <TabPanel value={value} index={3}>
-        <QtyContent data={[{ ...bulk, qty: qty || bulk?.qty }]} />
+        <QtyContent data={[{ ...wine, qty: qty || wine?.qty }]} />
       </TabPanel>
 
       <TabPanel value={value} index={4}>
