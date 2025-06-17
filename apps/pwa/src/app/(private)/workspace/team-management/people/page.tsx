@@ -1,5 +1,5 @@
-import TeamMembersPeoplePage from "@/components/pages/workspace/team-management/people";
+import TeamMembersDashboard from "@/components/dashboards/team-management/team-management-dashboard";
 
-export default function People() {
-  return <TeamMembersPeoplePage />;
+export default function TeamManagementDashboard() {
+  return <TeamMembersDashboard />;
 }

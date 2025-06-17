@@ -7,29 +7,25 @@ export const useGetVineyardNotes = (
   vineyard: Vineyard,
   notes: Note[]
 ) => {
-  const [vineyardNotes, setVineyardNotes] = useState<Note[]>([]);
+  const [vineyardNotes, setVineyardNotes] = useState<Note[] | null>(null);
 
   useEffect(() => {
-    // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    // console.log("vineyard", vineyard);
-    // console.log("notes", notes);
-    // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-
     if (
       vineyard &&
       vineyard !== undefined &&
       vineyard.notes &&
       vineyard.notes.length > 0
     ) {
+      const vineyardNoteIds = new Set(vineyard.notes?.map((vn) => vn.id));
+      const matchedNotes = notes.filter((note) => vineyardNoteIds.has(note.id));
+
       db.note
-        .getVineyardNotes(
-          uid,
-          notes.map((note) => note.id)
-        )
+        .getVineyardNotes(uid, matchedNotes)
         .then((res: DbResponse) => {
           if (res.status === 200) {
             setVineyardNotes(res.data);
             console.log("vineyardNotes", vineyardNotes);
+            setVineyardNotes(res.data.reverse());
           } else {
             console.log("Error loading notes");
           }

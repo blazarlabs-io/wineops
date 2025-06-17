@@ -24,12 +24,9 @@ export const note = {
       };
     }
   },
-  getVineyardNotes: async (
-    uid: string,
-    notesIds: string[]
-  ): Promise<DbResponse> => {
+  getVineyardNotes: async (uid: string, notes: Note[]): Promise<DbResponse> => {
     try {
-      const notesData = notesIds.map(async (id) => {
+      const notesData = notes.map(async ({ id }) => {
         const docRef = doc(fdb, WINERY, uid, NOTES, id);
         const docSnap = await getDoc(docRef);
         return docSnap.data();

@@ -8,15 +8,28 @@ import { useState } from "react";
 
 export type NotesWidgetProps = {
   subject: string;
+  onClick?: () => void;
+  onClose?: () => void;
 };
 
-export default function NotesWidget({ subject }: NotesWidgetProps) {
+export default function NotesWidget({
+  subject,
+  onClick,
+  onClose,
+}: NotesWidgetProps) {
   const { user } = useAuth();
   const { teamMembers } = useWinery();
   const [open, setOpen] = useState<boolean>(false);
 
+  console.log("SUBJECT", subject);
+  const handleOnClose = () => {
+    setOpen(false);
+    if (onClose) onClose();
+  };
+
   const handleOpen = () => {
     setOpen(true);
+    if (onClick) onClick();
   };
   return (
     <>
@@ -34,7 +47,7 @@ export default function NotesWidget({ subject }: NotesWidgetProps) {
         subject={subject}
         open={open}
         uid={user?.uid as string}
-        onClose={() => setOpen(false)}
+        onClose={handleOnClose}
         teamMembers={teamMembers}
       />
     </>

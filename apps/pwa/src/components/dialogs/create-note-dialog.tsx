@@ -31,12 +31,12 @@ export default function CreateNoteDialog({
   const { vineyards } = useVineyard();
 
   const handleCreateNewNote = async (data: any) => {
-    console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    console.log("subject", subject);
-    console.log("uid", uid);
-    console.log("data", data);
-    console.log("teamMembers", teamMembers);
-    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+    // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    // console.log("subject", subject);
+    // console.log("uid", uid);
+    // console.log("data", data);
+    // console.log("teamMembers", teamMembers);
+    // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 
     // * 1. Create note in DB
     const teamRes = await db.note.create(uid, data);
@@ -55,17 +55,7 @@ export default function CreateNoteDialog({
 
     console.log("subjectVineyard", subjectVineyard);
 
-    // console.log("subjectVineyard", subjectVineyard, subject);
-
     const vineyardRes = await db.vineyard.update(uid, subjectVineyard.id, {
-      // ...subjectVineyard,
-      actions: [
-        ...((subjectVineyard.actions as ActionRelation[]) || []),
-        {
-          id: data.id,
-          name: data.title,
-        },
-      ],
       notes: [
         ...((subjectVineyard.notes as ActionRelation[]) || []),
         {
