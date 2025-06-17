@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { VesselType } from "@/models/types/db";
+import { BarrelInfoUsage, VesselType } from "@/models/types/db";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
@@ -15,7 +15,7 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
         .filter(
           ({ type, usage, barrelInfo, sstInfo }: any) =>
             ((type === VesselType.BARREL
-              ? barrelInfo?.usageStatus
+              ? barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL
               : type === VesselType.STAINLESS_STEEL_TANK
                 ? sstInfo?.usage
                 : usage) ?? "") !== ""
@@ -24,7 +24,7 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
 
   const usage =
     data?.type === VesselType.BARREL
-      ? data?.barrelInfo?.usageStatus
+      ? data?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL
       : data?.type === VesselType.STAINLESS_STEEL_TANK
         ? data?.sstInfo?.usage
         : data?.usage;
