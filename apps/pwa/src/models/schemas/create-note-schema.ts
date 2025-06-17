@@ -22,5 +22,7 @@ export const createNoteSchema = Joi.object<Note>({
     email: Joi.string().required(),
     role: Joi.string().required(),
     avatar: Joi.string().optional().allow(""),
+    department: Joi.string().optional().allow(""),
+    contactPhone: Joi.string().optional().allow(""),
   }).required(),
 });

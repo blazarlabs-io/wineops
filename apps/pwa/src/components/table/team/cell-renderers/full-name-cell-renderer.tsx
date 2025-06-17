@@ -1,11 +1,11 @@
-import { Box, Chip } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 
-export const RoleCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
-  node,
-  value,
-}) => {
+export const FullNameCellRenderer: FunctionComponent<
+  CustomCellRendererProps
+> = ({ node, value }) => {
+  console.log("VALUE", value, node.data.lastName);
   return (
     <Box
       sx={{
@@ -15,7 +15,7 @@ export const RoleCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         height: "100%",
       }}
     >
-      <Chip label={value} />
+      <Typography>{`${value} ${node.data.lastName}`}</Typography>
     </Box>
   );
 };

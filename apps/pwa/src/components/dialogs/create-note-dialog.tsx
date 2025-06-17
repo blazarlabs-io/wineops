@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import CreateTeamMemberForm from "../forms/team/create-team-member-form";
+import CreateTeamMemberForm from "../forms/team/team-member-create-edit-form";
 import CreateNoteForm from "../forms/notes/create-note-form";
 import { useVineyard } from "@/context/vineyard";
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 //import { ENTITY_DETAILS } from "@/data/constants";
 import { DashboardEntity } from "@/models/types/dashboard";
 import { SetStateAction, useCallback, useState } from "react";
@@ -27,14 +28,14 @@ export function useGrouping<T extends DashboardEntity>(
   const uniqueGroups = [
     ...new Set(
       groups.reduce((acc, group) => {
-        const joinedGroups = group.map((_, index) =>
+        const joinedGroups = group.map((_: any, index: any) =>
           group.slice(0, index + 1).join(" > ")
         );
 
         return [...acc, ...joinedGroups];
       }, [])
     ),
-  ].sort((a, b) => a.localeCompare(b));
+  ].sort((a: unknown, b: unknown) => (a as string).localeCompare(b as string));
 
   // console.log("GROUPS", groupedData);
 
@@ -79,7 +80,7 @@ export function useGrouping<T extends DashboardEntity>(
       prev.map((row) => {
         if (!row.group || !Array.isArray(row.group)) return row;
 
-        const groupIndex = row.group.findIndex((g) =>
+        const groupIndex = row.group.findIndex((g: any) =>
           groupNamesToUngroup.includes(g)
         );
 
