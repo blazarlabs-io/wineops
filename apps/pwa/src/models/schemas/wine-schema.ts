@@ -23,13 +23,13 @@ const labDataSchema = Joi.object({
   sugar: labElementSchema.optional(),
   acidity: labElementSchema.optional(),
   volatileAcidity: labElementSchema.optional(),
-  yeastActivityPopulation: labElementSchema.optional(),
-  yeastAssimilableNitrogen: labElementSchema.optional(),
+  totalSO2: labElementSchema.optional(),
+  freeSO2: labElementSchema.optional(),
   labTechnicianName: Joi.string().optional().allow(""),
   labCertificateID: Joi.string().optional().allow(""),
 });
 
-const mustVesselSchema = Joi.object({
+const wineVesselSchema = Joi.object({
   id: Joi.string().required(),
   name: Joi.string().required(),
   qty: Joi.number().min(1).required().messages({
@@ -39,8 +39,20 @@ const mustVesselSchema = Joi.object({
   }),
 });
 
-export const mustSchema = Joi.object({
+const grapeVarietySchema = Joi.object({
   id: Joi.string().required(),
+  name: Joi.string().required(),
+  percentage: Joi.number().min(1).required().messages({
+    "number.base": "Percentage must be a number",
+    "number.min": "Percentage must be at least 1",
+    "any.required": "Please enter a percentage for this grape variety",
+  }),
+});
+
+export const wineSchema = Joi.object({
+  id: Joi.string().required(),
+  rowType: Joi.string().optional(),
+  group: Joi.array().items(Joi.string().optional().allow("")),
   date: Joi.alternatives()
     .try(
       Joi.string().isoDate().messages({
@@ -57,12 +69,10 @@ export const mustSchema = Joi.object({
       "alternatives.types": "Date must be a valid date.",
     }),
   name: Joi.string().required().messages({
-    "any.required": "The batch name is required.",
-    "string.base": "The batch name must be a string.",
-    "string.empty": "The batch name cannot be empty.",
+    "any.required": "The wine name is required.",
+    "string.base": "The wine name must be a string.",
+    "string.empty": "The wine name cannot be empty.",
   }),
-  rowType: Joi.string().optional(),
-  group: Joi.array().items(Joi.string().optional().allow("")),
   supplier: Joi.object({
     companyName: Joi.string().optional().allow(""),
     dispatchInvoice: Joi.string().optional().allow(""),
@@ -70,7 +80,14 @@ export const mustSchema = Joi.object({
     vineyardName: Joi.string().optional().allow(""),
   }).optional(),
   grapeVariety: Joi.string().optional().allow(""),
-  vessels: Joi.array().items(mustVesselSchema).required().messages({
+  grapeVarieties: Joi.array().items(grapeVarietySchema).required().messages({
+    "any.required": "At least one grape variety must be provided.",
+  }),
+  qty: Joi.number().required().messages({
+    "any.required": "Quantity is required.",
+    "number.base": "Quantity must be a number",
+  }),
+  vessels: Joi.array().items(Joi.object()).required().messages({
     "any.required": "At least one vessel must be provided.",
   }),
   safetyCertificateNo: Joi.string().optional().allow(""),

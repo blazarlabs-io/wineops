@@ -5,17 +5,17 @@ import ToolsBar from "@/components/widgets/tools-bar";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useEffect, useState } from "react";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
-import { FormMode, Bulk } from "@/models/types/db";
-import { useBulk } from "@/context/bulk";
-import BulkFormDrawer from "@/components/drawers/bulk-form-drawer";
+import { FormMode, Wine } from "@/models/types/db";
+import { useWine } from "@/context/wine";
+import WineFormDrawer from "@/components/drawers/wine-form-drawer";
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
 import { useSnackbar } from "notistack";
-import BulksTable from "@/components/table/bulks";
+import WinesTable from "@/components/table/wines";
 
 export default function SecondaryVinificationDashboard() {
-  const [selectionData, setSelectionData] = useState<Bulk[]>([]);
+  const [selectionData, setSelectionData] = useState<Wine[]>([]);
   const { enableGrouping, enableUngrouping, enableEdit, enableDelete } =
     useSortToolsBarStates(selectionData);
 
@@ -38,11 +38,11 @@ export default function SecondaryVinificationDashboard() {
     setOpenUngroupingDialog(false);
   };
 
-  const { selectedBulks, bulks, updateSelectedBulks } = useBulk();
-  const [workingBulk, setWorkingBulk] = useState<Bulk | undefined>();
+  const { selectedWines, wines, updateSelectedWines } = useWine();
+  const [workingWine, setWorkingWine] = useState<Wine | undefined>();
   const [openFormDrawer, setOpenFormDrawer] = useState(false);
   const [formType, setFormType] = useState<FormMode>("create");
-  const [openDeleteBulkDialog, setOpenDeleteBulkDialog] = useState(false);
+  const [openDeleteWineDialog, setOpenDeleteWineDialog] = useState(false);
 
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -55,53 +55,53 @@ export default function SecondaryVinificationDashboard() {
     setOpenFormDrawer(true);
   };
 
-  const handleEditBulk = () => {
+  const handleEditWine = () => {
     setFormType("edit");
     setOpenFormDrawer(true);
   };
 
-  const handleDeleteBulks = async () => {
-    setOpenDeleteBulkDialog(false);
+  const handleDeleteWines = async () => {
+    setOpenDeleteWineDialog(false);
 
-    const res = await db.bulk.deleteMany(
+    const res = await db.wine.deleteMany(
       user?.uid as string,
-      selectedBulks.map(({ id }) => id)
+      selectedWines.map(({ id }) => id)
     );
 
     if (res.status === 200) {
-      updateSelectedBulks([]);
+      updateSelectedWines([]);
 
-      enqueueSnackbar(`Bulks deleted successfully`, {
+      enqueueSnackbar(`Wines deleted successfully`, {
         variant: "success",
       });
     } else {
-      enqueueSnackbar(`Error deleting bulks`, {
+      enqueueSnackbar(`Error deleting wines`, {
         variant: "error",
       });
     }
   };
 
   const handleOpenDeleteDialog = () => {
-    setOpenDeleteBulkDialog(true);
+    setOpenDeleteWineDialog(true);
   };
 
   const handleCloseDeleteDialog = () => {
-    setOpenDeleteBulkDialog(false);
+    setOpenDeleteWineDialog(false);
   };
 
   useEffect(() => {
-    if (selectedBulks.length > 0 && bulks.length > 0) {
-      const existingBulk = bulks.find(({ id }) => id === selectedBulks[0]?.id);
+    if (selectedWines.length > 0 && wines.length > 0) {
+      const existingWine = wines.find(({ id }) => id === selectedWines[0]?.id);
 
-      if (!existingBulk) return;
+      if (!existingWine) return;
 
       setFormType("edit");
-      setWorkingBulk(existingBulk);
+      setWorkingWine(existingWine);
     } else {
       setFormType("create");
-      setWorkingBulk(undefined);
+      setWorkingWine(undefined);
     }
-  }, [bulks, selectedBulks]);
+  }, [wines, selectedWines]);
 
   return (
     <Box
@@ -123,12 +123,12 @@ export default function SecondaryVinificationDashboard() {
         <ToolsBar
           buttons={{
             [ButtonType.ADD]: {
-              enabled: selectedBulks.length === 0,
+              enabled: selectedWines.length === 0,
               onClick: handleOpenFormDrawer,
             },
             [ButtonType.EDIT]: {
               enabled: enableEdit,
-              onClick: handleEditBulk,
+              onClick: handleEditWine,
             },
             [ButtonType.DELETE]: {
               enabled: enableDelete,
@@ -145,7 +145,7 @@ export default function SecondaryVinificationDashboard() {
           }}
         />
 
-        <BulksTable
+        <WinesTable
           onChangeData={setSelectionData}
           openGroupingDialog={openGroupingDialog}
           openUngroupingDialog={openUngroupingDialog}
@@ -154,19 +154,19 @@ export default function SecondaryVinificationDashboard() {
         />
 
         {openFormDrawer && (
-          <BulkFormDrawer
+          <WineFormDrawer
             type={formType}
-            bulk={workingBulk}
+            wine={workingWine}
             open={openFormDrawer}
             onClose={handleCloseFormDrawer}
           />
         )}
 
         <DeleteEntitiesDialog
-          entityName="bulk"
-          entities={selectedBulks}
-          open={openDeleteBulkDialog}
-          onDelete={handleDeleteBulks}
+          entityName="wine"
+          entities={selectedWines}
+          open={openDeleteWineDialog}
+          onDelete={handleDeleteWines}
           onClose={handleCloseDeleteDialog}
         />
       </Stack>

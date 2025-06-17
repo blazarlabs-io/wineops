@@ -28,7 +28,7 @@ export const wineryNotes: string[] = [
   "Tighten fittings on tank #6",
   "Dispose of spent yeast properly",
   "Monitor cold stabilization progress",
-  "Send COA to bulk buyer",
+  "Send COA to wine buyer",
 ];
 
 export const wineryNotesTitles = [

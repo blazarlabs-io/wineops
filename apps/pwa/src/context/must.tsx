@@ -3,7 +3,7 @@
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
 import { MUSTS, WINERY } from "@/lib/firebase/config";
-import { Must, MustVessel, Vessel } from "@/models/types/db";
+import { Must, MustWineVessel, Vessel } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
@@ -95,7 +95,7 @@ export const MustProvider = ({ children }: IMustProvider) => {
           return updated;
         });
 
-        return { ...must, vessels: updatedVessels as MustVessel[] };
+        return { ...must, vessels: updatedVessels as MustWineVessel[] };
       });
     },
     []
