@@ -18,8 +18,13 @@ export default function VesselDetailsWidget({
 }: VesselDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
 
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
+  };
+
+  const sx = {
+    padding: "8px 16px !important",
+    minHeight: "fit-content !important",
   };
 
   return (
@@ -30,6 +35,7 @@ export default function VesselDetailsWidget({
         display: "flex",
         alignItems: "center",
         width: "100%",
+        height: "100%",
       }}
     >
       <Tabs
@@ -38,7 +44,7 @@ export default function VesselDetailsWidget({
         value={value}
         onChange={handleChange}
         aria-label="Vessel details"
-        sx={{ borderRight: 1, borderColor: "divider" }}
+        sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
         <Tab
           label={
@@ -49,9 +55,10 @@ export default function VesselDetailsWidget({
                 : "History"
           }
           {...a11yProps(0)}
+          sx={sx}
         />
-        <Tab label="Technical info" {...a11yProps(1)} />
-        <Tab label="Tasks" {...a11yProps(2)} />
+        <Tab label="Technical info" {...a11yProps(1)} sx={sx} />
+        <Tab label="Tasks" {...a11yProps(2)} sx={sx} />
       </Tabs>
 
       <TabPanel value={value} index={0}>

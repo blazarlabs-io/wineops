@@ -251,7 +251,15 @@ export default function GrapeForm({
   return (
     <>
       {formData && formData !== undefined && (
-        <div style={{ background: "var(--mui-palette-background-default)" }}>
+        <div
+          style={{
+            background: "var(--mui-palette-background-default)",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
           <form
             onSubmit={handleSubmit(onSubmit)}
             style={{ height: "100%", display: "flex", flexDirection: "column" }}

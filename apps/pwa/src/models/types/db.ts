@@ -392,6 +392,7 @@ export const ToastLevel = {
 export type ToastLevel = (typeof ToastLevel)[keyof typeof ToastLevel];
 
 export const BarrelInfoUsage = {
+  NEW_VESSEL: "New Vessel",
   "1st_USAGE": "1st Usage",
   "2nd_USAGE": "2nd Usage",
   MULTI_USAGE: "Multi-usage",
@@ -401,7 +402,7 @@ export type BarrelInfoUsage =
   (typeof BarrelInfoUsage)[keyof typeof BarrelInfoUsage];
 
 export type BarrelInfo = {
-  usage?: BarrelInfoUsage;
+  usageStatus?: BarrelInfoUsage;
   manufacturer?: string;
   material?: string;
   toastLevel?: ToastLevel;
@@ -431,7 +432,7 @@ export type VesselType = (typeof VesselType)[keyof typeof VesselType];
 
 export type VesselHistory = {
   id?: string;
-  usage?: string; // Vessel.barrelInfo.usage || Vessel.sstInfo.usage || usage
+  usage?: string; // Vessel.barrelInfo.usageStatus || Vessel.sstInfo.usage || usage
   batchID?: string; // Vessel.currentUsage
   dateIn?: string | Timestamp; // Vessel.startDate
   dateOut?: string | Timestamp; // next usage or Vessel.lastMaintenance
