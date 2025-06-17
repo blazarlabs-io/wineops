@@ -88,14 +88,54 @@ export type ResponsibleTeamMember = {
   email: string;
 };
 
+export const Department = {
+  SALES: "sales",
+  WINE_MAKING: "wine-making",
+  STORAGE: "storage",
+  LABORATORY: "laboratory",
+} as const;
+
+export type Department = (typeof Department)[keyof typeof Department];
+
+export const CoreResponsibilities = {
+  FERMENTATION_MONITORING: "Fermentation Monitoring",
+  BOTTLING_AND_PACKAGING: "Bottling and Packaging",
+  EQUIPMENT_MAINTENANCE: "Equipment Maintenance",
+};
+
+export type CoreResponsibility =
+  (typeof CoreResponsibilities)[keyof typeof CoreResponsibilities];
+
+export const Shift = {
+  MONDAY: "Mo",
+  TUESDAY: "Tu",
+  WEDNESDAY: "We",
+  THURSDAY: "Th",
+  FRIDAY: "Fr",
+  SATURDAY: "Sa",
+  SUNDAY: "Su",
+} as const;
+
+export type Shift = (typeof Shift)[keyof typeof Shift];
+
 export interface TeamMember extends ResponsibleTeamMember {
   id: string;
   name: string;
   lastName: string;
   email: string;
-  role: string;
+  role?: Role | string;
   avatar?: string;
+  department?: Department | string;
+  contactPhone?: string;
 }
+
+export type EmergencyContact = {
+  id: string;
+  name: string;
+  lastName: string;
+  email: string;
+  phone: string;
+};
 
 export type LabDataSimple = {
   id: string;

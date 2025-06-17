@@ -58,7 +58,7 @@ const vineyardSample: Vineyard = {
   },
   forecastedYield: 0,
   labData: [],
-  tasks: generateTasks(),
+  tasks: [],
   notes: [],
   documents: generateDummyDocs(10),
   group: [],

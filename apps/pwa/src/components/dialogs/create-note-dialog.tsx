@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useVineyard } from "@/context/vineyard";
 import { db } from "@/lib/firebase/services";
-import { TeamMember } from "@/models/types/db";
+import { Note, TeamMember } from "@/models/types/db";
 import { EditNote } from "@mui/icons-material";
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import CreateNoteForm from "../forms/notes/create-note-form";
+import { ActionRelation } from "@/models/types/actions";
 
 export interface CreateNoteDialogProps {
   open: boolean;
@@ -38,40 +39,49 @@ export default function CreateNoteDialog({
     console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 
     // * 1. Create note in DB
-    // const teamRes = await db.note.create(uid, data);
-    // if (teamRes.status === 200) {
-    //   enqueueSnackbar("Note created successfully", {
-    //     variant: "success",
-    //   });
-    // } else {
-    //   enqueueSnackbar("Error creating note", { variant: "error" });
-    // }
+    const teamRes = await db.note.create(uid, data);
+    if (teamRes.status === 200) {
+      enqueueSnackbar("Note created successfully", {
+        variant: "success",
+      });
+    } else {
+      enqueueSnackbar("Error creating note", { variant: "error" });
+    }
 
     // * 2. Update vineyard or group to reference new note.
     const subjectVineyard = vineyards.filter(
       (vineyard) => vineyard.name === subject
     )[0];
 
-    console.log("subjectVineyard", subjectVineyard, subject);
+    console.log("subjectVineyard", subjectVineyard);
 
-    // const vineyardRes = await db.vineyard.update(uid, subjectVineyard.id, {
-    //   ...subjectVineyard,
-    //   notes: [
-    //     ...subjectVineyard.notes,
-    //     {
-    //       id: data.id,
-    //       name: data.title,
-    //     },
-    //   ],
-    // });
+    // console.log("subjectVineyard", subjectVineyard, subject);
 
-    // if (vineyardRes.status === 200) {
-    //   enqueueSnackbar("Vineyard updated successfully", {
-    //     variant: "success",
-    //   });
-    // } else {
-    //   enqueueSnackbar("Error updating vineyard", { variant: "error" });
-    // }
+    const vineyardRes = await db.vineyard.update(uid, subjectVineyard.id, {
+      // ...subjectVineyard,
+      actions: [
+        ...((subjectVineyard.actions as ActionRelation[]) || []),
+        {
+          id: data.id,
+          name: data.title,
+        },
+      ],
+      notes: [
+        ...((subjectVineyard.notes as ActionRelation[]) || []),
+        {
+          id: data.id,
+          name: data.title,
+        },
+      ],
+    });
+
+    if (vineyardRes.status === 200) {
+      enqueueSnackbar("Vineyard updated successfully", {
+        variant: "success",
+      });
+    } else {
+      enqueueSnackbar("Error updating vineyard", { variant: "error" });
+    }
 
     onClose();
   };

@@ -1,12 +1,15 @@
 "use client";
-import CreateTeamMemberDialog from "@/components/dialogs/create-team-member-dialog";
+import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
+import TeamMemberFormDrawer from "@/components/drawers/team-member-form-drawer";
 import TeamTable from "@/components/table/team";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { useWinery } from "@/context/winery";
 import { useAuth } from "@/lib/firebase/auth";
-import { TeamMember } from "@/models/types/db";
+import { db } from "@/lib/firebase/services";
+import { FormMode, Role, TeamMember } from "@/models/types/db";
 import { Box, Stack, Typography } from "@mui/material";
+import { enqueueSnackbar } from "notistack";
 import { StrictMode, useState } from "react";
 
 export default function TeamMembersPeoplePage() {
@@ -14,15 +17,54 @@ export default function TeamMembersPeoplePage() {
   const { teamMembers, updateSelectedTeamMembers, selectedTeamMembers } =
     useWinery();
 
-  const [openCreateTeamMember, setOpenCreateTeamMember] =
+  const [openCreateEditTeamMember, setOpenCreateEditTeamMember] =
     useState<boolean>(false);
+  const [formType, setFormType] = useState<FormMode>("create");
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
 
   const handleSelectionChange = (teamMembers: TeamMember[]) => {
     updateSelectedTeamMembers(teamMembers);
   };
 
   const handleCreateTeeamMember = () => {
-    setOpenCreateTeamMember(true);
+    setFormType("create");
+    setOpenCreateEditTeamMember(true);
+  };
+
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleOpenEditTeamMember = () => {
+    setFormType("edit");
+    setOpenCreateEditTeamMember(true);
+  };
+
+  const handleCloseCreateEditTeamMember = () => {
+    setOpenCreateEditTeamMember(false);
+  };
+  const handleDeleteTeamMembers = async () => {
+    console.log("teamMembers", selectedTeamMembers);
+    const res = await db.team.deleteMany(
+      user?.uid as string,
+      selectedTeamMembers.map(({ id }) => id)
+    );
+
+    if (res.status === 200) {
+      updateSelectedTeamMembers([]);
+
+      enqueueSnackbar(`Team member(s) deleted successfully`, {
+        variant: "success",
+      });
+    } else {
+      enqueueSnackbar(`Error deleting team member(s)`, {
+        variant: "error",
+      });
+    }
   };
   return (
     <Box
@@ -50,11 +92,11 @@ export default function TeamMembersPeoplePage() {
               },
               [ButtonType.EDIT]: {
                 enabled: selectedTeamMembers.length === 1,
-                onClick: () => {},
+                onClick: handleOpenEditTeamMember,
               },
               [ButtonType.DELETE]: {
                 enabled: selectedTeamMembers.length > 0,
-                onClick: () => {},
+                onClick: handleOpenDeleteDialog,
               },
             }}
           />
@@ -68,10 +110,26 @@ export default function TeamMembersPeoplePage() {
           </Box>
         </div>
       </Stack>
-      <CreateTeamMemberDialog
-        open={openCreateTeamMember}
-        uid={user?.uid as string}
-        onClose={() => setOpenCreateTeamMember(false)}
+      {openCreateEditTeamMember && (
+        <TeamMemberFormDrawer
+          type={formType}
+          member={
+            selectedTeamMembers.length === 1
+              ? selectedTeamMembers[0]
+              : ({} as TeamMember)
+          }
+          roles={Object.values(Role)}
+          open={openCreateEditTeamMember}
+          onClose={handleCloseCreateEditTeamMember}
+        />
+      )}
+
+      <DeleteEntitiesDialog
+        entityName="team member"
+        entities={selectedTeamMembers}
+        open={openDeleteDialog}
+        onDelete={handleDeleteTeamMembers}
+        onClose={handleCloseDeleteDialog}
       />
     </Box>
   );

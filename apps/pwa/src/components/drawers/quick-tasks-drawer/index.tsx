@@ -3,6 +3,7 @@ import { Close, TaskAlt } from "@mui/icons-material";
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   Drawer,
@@ -10,6 +11,7 @@ import {
   styled,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
 
 export type QuickTasksDrawerProps = {
   open: boolean;
@@ -34,6 +36,13 @@ export default function QuickTasksDrawer({
     onOpenChange(false);
   };
 
+  const [openNewTask, setOpenNewTask] = useState<boolean>(false);
+
+  const handleNewActionClick = () => {
+    console.log("ACTION CLICKED");
+    setOpenNewTask(true);
+  };
+
   return (
     <Drawer
       sx={{
@@ -56,7 +65,7 @@ export default function QuickTasksDrawer({
       variant="persistent"
       anchor="right"
       open={open}
-      className="pointer-events-none"
+      className=""
     >
       <DrawerHeader className="pointer-events-auto m-[0px] max-h-sfit p-[0px] pt-6 mt-[38px]">
         <IconButton onClick={handleDrawerClose} className="">
@@ -71,7 +80,26 @@ export default function QuickTasksDrawer({
           <TaskAlt />
           <Typography variant="h5">Tasks</Typography>
         </Box>
-        <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}
+          gap={2}
+        >
+          {/* * NEW TASK */}
+          <Button
+            variant="outlined"
+            fullWidth
+            type="button"
+            className="cursor-pointer"
+            onClick={handleNewActionClick}
+          >
+            New Task
+          </Button>
+
+          {/* * NEW TASK FORM */}
+          {openNewTask && <></>}
+
           <Card
             sx={{
               minWidth: 0,

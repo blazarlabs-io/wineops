@@ -1,6 +1,8 @@
 import { ColDef } from "ag-grid-community";
 import { AvatarCellRenderer } from "./cell-renderers/avatar-cell-renderer";
 import { RoleCellRenderer } from "./cell-renderers/role-cell-renderer";
+import { FullNameCellRenderer } from "./cell-renderers/full-name-cell-renderer";
+import { DepartmentCellRenderer } from "./cell-renderers/department-cell-renderer";
 
 export const columns: ColDef[] = [
   {
@@ -12,33 +14,12 @@ export const columns: ColDef[] = [
     cellRenderer: AvatarCellRenderer,
   },
   {
-    headerName: "ID",
-    field: "id",
-    minWidth: 80,
-    flex: 1,
-    cellStyle: { width: "100%" },
-    //   cellRenderer: CompanyLogoRenderer,
-  },
-  {
-    headerName: "First Name",
+    headerName: "Full Name",
     field: "name",
     minWidth: 125,
     flex: 1,
     cellStyle: { width: "100%" },
-  },
-  {
-    headerName: "Last Name",
-    field: "lastName",
-    flex: 1,
-    cellStyle: { width: "100%" },
-    //   valueFormatter: dateFormatter,
-  },
-  {
-    headerName: "Email",
-    field: "email",
-    minWidth: 80,
-    flex: 1,
-    cellStyle: { width: "100%" },
+    cellRenderer: FullNameCellRenderer,
   },
   {
     headerName: "Role",
@@ -47,5 +28,26 @@ export const columns: ColDef[] = [
     flex: 1,
     cellStyle: { width: "100%" },
     cellRenderer: RoleCellRenderer,
+  },
+  {
+    headerName: "Department",
+    field: "department",
+    flex: 1,
+    cellStyle: { width: "100%" },
+    cellRenderer: DepartmentCellRenderer,
+  },
+  {
+    headerName: "Contact Phone",
+    field: "contactPhone",
+    minWidth: 80,
+    flex: 1,
+    cellStyle: { width: "100%" },
+  },
+  {
+    headerName: "Email",
+    field: "email",
+    minWidth: 80,
+    flex: 1,
+    cellStyle: { width: "100%" },
   },
 ];

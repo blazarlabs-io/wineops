@@ -6,7 +6,6 @@ export const RoleCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  console.log("VALUE", value);
   return (
     <Box
       sx={{

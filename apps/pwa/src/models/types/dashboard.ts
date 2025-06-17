@@ -1,6 +1,13 @@
 import { IFile } from "@/components/table/base-table/fileUtils";
-import { Grape, GrapeStatus, Vessel, Vineyard, VineyardStatus } from "./db";
+import {
+  Grape,
+  GrapeStatus,
+  TeamMember,
+  Vessel,
+  Vineyard,
+  VineyardStatus,
+} from "./db";
 
-export type DashboardEntity = Vineyard | Grape | IFile | Vessel;
+export type DashboardEntity = Vineyard | Grape | IFile | Vessel | TeamMember;
 
 export type EntityStatus = VineyardStatus | GrapeStatus;
