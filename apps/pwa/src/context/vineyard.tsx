@@ -12,12 +12,13 @@ import { db } from "@/lib/firebase/client";
 import {
   LAB_REPORTS,
   NOTES,
+  TASKS,
   VINEYARDS,
   VINEYARDS_GROUPS,
   WINERY,
 } from "@/lib/firebase/config";
 import { VineyardActions } from "@/models/types/actions";
-import { Group, LabReport, Note, Vineyard } from "@/models/types/db";
+import { Group, LabReport, Note, Task, Vineyard } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
@@ -35,6 +36,7 @@ interface VineyardContextType {
   actions: VineyardActions;
   labReports: LabReport[];
   notes: Note[];
+  tasks: Task[];
 }
 
 const VineyardContext = createContext<VineyardContextType | null>(null);
@@ -78,6 +80,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
     },
   });
   const [notes, setNotes] = useState<Note[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const updateSelectedVineyards = useCallback((vineyards: Vineyard[]) => {
     setSelectedVineyards(vineyards);
@@ -87,6 +90,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
     let unsubVineyards = () => {};
     let unsubLabReports = () => {};
     let unsubNotes = () => {};
+    let unsubTasks = () => {};
 
     if (user && db) {
       // * Vineyards Realtime Updates
@@ -153,12 +157,31 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         });
         setNotes(notes);
       });
+
+      // * Tasks Realtime Updates
+      const tasksRef = collection(db, WINERY, user?.uid as string, TASKS);
+
+      unsubTasks = onSnapshot(tasksRef, (querySnapshot) => {
+        const tasks: Task[] = [];
+
+        if (querySnapshot.empty) {
+          console.log("No tasks found");
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          tasks.push(doc.data() as Task);
+        });
+        console.log("TASKS", tasks);
+        setTasks(tasks);
+      });
     }
 
     return () => {
       unsubVineyards();
       unsubLabReports();
       unsubNotes();
+      unsubTasks();
       setVineyards([]);
     };
   }, [user]);
@@ -178,6 +201,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         actions,
         labReports,
         notes,
+        tasks,
       }}
     >
       {children}

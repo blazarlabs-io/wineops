@@ -24,3 +24,4 @@ export const LAB_REPORTS = "labReports";
 export const CHEMISTRY = "chemistry";
 export const NOTES = "notes";
 export const WINES = "wines";
+export const TASKS = "tasks";

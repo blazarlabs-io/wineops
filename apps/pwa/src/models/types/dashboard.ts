@@ -3,6 +3,7 @@ import {
   Consumable,
   Grape,
   GrapeStatus,
+  Priority,
   Vessel,
   Vineyard,
   VineyardStatus,
@@ -15,4 +16,4 @@ export type DashboardEntity =
   | Chemistry
   | Consumable;
 
-export type EntityStatus = VineyardStatus | GrapeStatus;
+export type EntityStatus = VineyardStatus | GrapeStatus | Priority;

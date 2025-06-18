@@ -7,7 +7,6 @@ import {
 } from "@/models/types/db";
 import { getRandomDate } from "./date-utils";
 import { SingleDocument } from "@/models/types/db";
-import { taskStatuses } from "@/data/system-variables";
 import { wineryNotes, wineryNotesTitles } from "@/data/notes-sample-data";
 
 const start = new Date("2024-01-01");
@@ -119,7 +118,7 @@ export const generateTasks = (): TaskSummary[] => {
 };
 
 const getRandomTaskStatus = (): TaskStatus => {
-  const options = taskStatuses;
+  const options = Object.values(TaskStatus);
   const randomIndex = Math.floor(Math.random() * options.length);
   return options[randomIndex];
 };

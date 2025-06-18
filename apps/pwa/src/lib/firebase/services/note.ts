@@ -3,7 +3,7 @@ import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { db as fdb } from "../client";
 import { NOTES, WINERY } from "../config";
 
-export const note = {
+const note = {
   create: async (uid: string, data: TeamMember) => {
     try {
       const docRef = doc(fdb, WINERY, uid, NOTES, data.id);
@@ -91,3 +91,5 @@ export const note = {
     }
   },
 };
+
+export default note;

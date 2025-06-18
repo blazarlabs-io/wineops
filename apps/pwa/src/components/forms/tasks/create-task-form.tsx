@@ -2,11 +2,11 @@
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
-import { Note, Priority, Role, Task, TeamMember } from "@/models/types/db";
+import { Priority, Task, TaskStatus, TeamMember } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
-import { useAuth } from "@/lib/firebase/auth";
-import { createTeamMemberSchema } from "@/models/schemas/create-team-member-schema";
+import { createTaskSchema } from "@/models/schemas/create-task-schema";
+import { parseToDate } from "@/utils/date-format";
 import {
   Box,
   Button,
@@ -19,14 +19,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { createNoteSchema } from "@/models/schemas/create-note-schema";
 import { DatePicker } from "@mui/x-date-pickers";
-import { parseToDate } from "@/utils/date-format";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { createTaskSchema } from "@/models/schemas/create-task-schema";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 export type CreateTaskFormProps = {
   teamMembers: TeamMember[];
@@ -45,6 +42,7 @@ export default function CreateTaskForm({
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: joiResolver(createTaskSchema),
@@ -52,36 +50,45 @@ export default function CreateTaskForm({
 
   const [formData, setFormData] = useState<Task | null>(null);
 
-  const handleChange = useCallback((name: string, value: any) => {
-    setFormData((prev) => ({
-      ...(prev as Task),
-      [name]: value,
-    }));
-  }, []);
+  const handleChange = useCallback(
+    (name: string, value: any) => {
+      setFormData((prev) => ({
+        ...(prev as Task),
+        [name]: value,
+      }));
+      setValue(name, value);
+    },
+    [setValue]
+  );
 
   const onSubmit = (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
     console.log("ERRORS:", errors);
-    // onDataSubmit(data);
+    onDataSubmit(data);
     setFormData(data);
   };
 
   useEffect(() => {
-    const member = teamMembers.filter((v) => v.id === uid)[0];
-    console.log("MEMBER", member, uid);
-    const newTask: Task = {
-      id: Date.now().toString(),
-      title: "",
-      description: "",
-      startDate: new Date().toISOString(),
-      dueDate: new Date().toISOString(),
-      assignedTo: member,
-    };
-    reset(newTask);
-    setFormData(newTask);
-  }, []);
+    if (teamMembers) {
+      const member = teamMembers.filter((v) => v.id === uid)[0];
+      console.log("MEMBER", member, uid);
+      const newTask: Task = {
+        id: Date.now().toString(),
+        title: "",
+        description: "",
+        startDate: new Date().toISOString(),
+        dueDate: new Date().toISOString(),
+        assignedTo: member,
+        createdBy: member,
+        status: TaskStatus.NEW,
+        duration: 0,
+      };
+      reset(newTask);
+      setFormData(newTask);
+    }
+  }, [teamMembers]);
 
   useEffect(() => {
     if (errors) {
@@ -139,21 +146,33 @@ export default function CreateTaskForm({
                   {/* * ASSIGNED TO   */}
                   <div className="">
                     <FormControl fullWidth>
-                      <InputLabel id="assignedTo">Assigned To</InputLabel>
+                      <InputLabel id="assignedTo.name">Assigned To</InputLabel>
                       <Select
-                        id="assignedTo"
-                        name="assignedTo"
-                        labelId="assignedTo"
+                        id="assignedTo.name"
+                        name="assignedTo.name"
+                        defaultValue=""
+                        labelId="assignedTo.name"
                         label="Assigned To"
                         variant="outlined"
-                        value={formData?.assignedTo?.name || ""}
+                        value={(formData?.assignedTo?.name as string) || ""}
                         // {...register("assignedTo")}
                         onChange={(e) => {
+                          const member = teamMembers.filter(
+                            (v) => v.id === e.target.value
+                          )[0];
+
+                          handleChange("assignedTo.name", member.name);
+                          handleChange("assignedTo.lastName", member.lastName);
+                          handleChange("assignedTo.email", member.email);
+                          handleChange("assignedTo.role", member.role);
+                          handleChange("assignedTo.avatar", member.avatar);
                           handleChange(
-                            "assignedTo",
-                            teamMembers.filter(
-                              (v) => v.id === e.target.value
-                            )[0]
+                            "assignedTo.department",
+                            member.department
+                          );
+                          handleChange(
+                            "assignedTo.contactPhone",
+                            member.contactPhone
                           );
                         }}
                       >
