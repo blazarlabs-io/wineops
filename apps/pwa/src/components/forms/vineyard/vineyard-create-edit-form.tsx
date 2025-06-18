@@ -4,30 +4,13 @@
 import PolygonDrawingMap from "@/components/widgets/maps/polygon-drawing-map";
 import { useVineyard } from "@/context/vineyard";
 import { countries } from "@/data/countries";
-import {
-  orientations,
-  soilTypes,
-  rowOrientations,
-} from "@/data/system-variables";
-import vineyardBlankSample from "@/data/vineyard-blank-sample";
+import { orientations, rowOrientations } from "@/data/system-variables";
 import { setNestedValue } from "@/helpers/form-helpers";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { vineyardSchema } from "@/models/schemas/vineyard-schema";
-import {
-  Coordinates,
-  DbResponse,
-  FormMode,
-  LabDataSimple,
-  Vineyard,
-} from "@/models/types/db";
-import {
-  generateDummyDocs,
-  generateLabData,
-  generateNotes,
-  generateTasks,
-  generateYearsList,
-} from "@/utils/generators";
+import { Coordinates, DbResponse, FormMode, Vineyard } from "@/models/types/db";
+import { generateYearsList } from "@/utils/generators";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { ExpandMore } from "@mui/icons-material";
 import {
@@ -49,7 +32,7 @@ import { Timestamp } from "firebase/firestore";
 import { Leaf, MapPin } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 export type VineyardFormProps = {
   children?: React.ReactNode;

@@ -250,19 +250,19 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={2}>
         {labReports && labReports.length > 0 && (
-          <div className="flex w-full items-center gap-4">
-            <div className="min-w-fit h-full flex flex-wrap max-w-[264px] max-h-[268px] gap-2 overflow-y-scroll pr-4">
+          <div className="flex items-center gap-4 w-full overflow-x-auto">
+            <div className="min-w-fit h-full flex flex-col max-w-[200px] max-h-[268px] gap-2 overflow-y-scroll pr-4">
               {labReports.map((item, index) => {
                 return (
                   <div
                     key={item.id + index}
-                    className="w-full min-w-fit rounded-md"
+                    className="min-w-fit rounded-md w-full"
                     style={{
                       border: "1px solid var(--mui-palette-divider)",
                     }}
                   >
                     {/* {index < 3 && ( */}
-                    <div className="flex items-center min-w-fit w-full justify-between gap-8 px-4 py-3 h-full ">
+                    <div className="flex items-center min-w-fit max-w-fit gap-8 px-4 py-3 h-full ">
                       <LabReportSimpleDataDisplay data={item} />
                     </div>
                     {/* )} */}

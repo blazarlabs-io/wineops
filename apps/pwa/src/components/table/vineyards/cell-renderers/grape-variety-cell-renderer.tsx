@@ -1,5 +1,6 @@
+import GrapeVarietyDialog from "@/components/dialogs/grape-variety-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { Box, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Tooltip, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useEffect, useMemo, useState, type FunctionComponent } from "react";
 
@@ -13,6 +14,16 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
   }, [value]);
 
   const [tooltipText, setTooltipText] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
+
+  const handleClose = () => {
+    setTooltipText("");
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   useEffect(() => {
     if (uniqueValues.length > 0) {
@@ -31,6 +42,11 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
       }}
       className=""
     >
+      <GrapeVarietyDialog
+        open={open}
+        data={uniqueValues}
+        onClose={handleClose}
+      />
       {uniqueValues.length > 0 ? (
         <div
           style={{
@@ -57,15 +73,24 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
                     <p className="leading-[1] truncate">{v}</p>
                   ) : (
                     index === 2 && (
-                      <Tooltip title={tooltipText} placement="bottom-start">
+                      <Button
+                        variant="text"
+                        size="small"
+                        sx={{
+                          padding: 0,
+                          maxWidth: "fit-content",
+                          marginTop: "2px",
+                        }}
+                        onClick={handleOpen}
+                      >
                         <Typography
                           variant="body2"
                           color="primary"
-                          className="leading-[1] m-[0px] p-[0px] text-muted-foreground underline cursor-pointer"
+                          className="leading-[1] lowercase m-[0px] p-[0px] text-muted-foreground underline cursor-pointer"
                         >
                           + {uniqueValues.length - 2} more
                         </Typography>
-                      </Tooltip>
+                      </Button>
                     )
                   )}
                 </Box>

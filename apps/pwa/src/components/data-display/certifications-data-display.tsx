@@ -9,7 +9,6 @@ export type CertificationsDataDisplayProps = {
 export default function CertificationsDataDisplay({
   certifications,
 }: CertificationsDataDisplayProps) {
-  console.log("CERTIFICATIONS", certifications);
   return (
     <div className="flex items-center gap-2 max-w-fit">
       <button type="button" className="cursor-pointer">
