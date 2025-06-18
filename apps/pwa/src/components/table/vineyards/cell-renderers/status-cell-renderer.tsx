@@ -1,5 +1,6 @@
 import VineyardMultiStatusDataDisplay from "@/components/data-display/multi-status-data-display";
 import StatusDataDisplaySelect from "@/components/data-display/status-data-display-select";
+import StatusDialog from "@/components/dialogs/status-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useSortVineyardStatuses } from "@/hooks/use-sort-vineyard-statuses";
 import { useAuth } from "@/lib/firebase/auth";
@@ -8,7 +9,7 @@ import { EntityStatus } from "@/models/types/dashboard";
 import { Box } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { enqueueSnackbar } from "notistack";
-import { type FunctionComponent } from "react";
+import { useCallback, useState, type FunctionComponent } from "react";
 
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
@@ -18,6 +19,16 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   );
 
   const { user } = useAuth();
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const handleClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const handleOpen = useCallback(() => {
+    setOpen(true);
+  }, []);
 
   const handleOnSelect = async (status: EntityStatus) => {
     const res = await db.vineyard.update(user?.uid, params.node.data.id, {
@@ -46,8 +57,16 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
         />
       ) : (
         <>
+          <StatusDialog
+            open={open}
+            onClose={handleClose}
+            data={vineyardStatuses}
+          />
           {vineyardStatuses && vineyardStatuses.length > 0 && (
-            <VineyardMultiStatusDataDisplay status={vineyardStatuses} />
+            <VineyardMultiStatusDataDisplay
+              status={vineyardStatuses}
+              onOpen={handleOpen}
+            />
           )}
         </>
       )}

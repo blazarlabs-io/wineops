@@ -1,12 +1,14 @@
 import { SortedVineyardStatus } from "@/hooks/use-sort-vineyard-statuses";
-import { Badge, Box, Tooltip, Typography } from "@mui/material";
+import { Badge, Box, Button, Tooltip, Typography } from "@mui/material";
 
 export type StatusDataDisplayProps = {
   status: SortedVineyardStatus[];
+  onOpen?: () => void;
 };
 
 export default function MultiStatusDataDisplay({
   status,
+  onOpen,
 }: StatusDataDisplayProps) {
   return (
     <>
@@ -14,7 +16,7 @@ export default function MultiStatusDataDisplay({
         <div>
           {status.map((s, index) => (
             <>
-              {index < 3 ? (
+              {index < 2 ? (
                 <span
                   key={s.name}
                   className="max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-[2px] gap-5"
@@ -43,16 +45,24 @@ export default function MultiStatusDataDisplay({
                   className="flex items-start justify-start gap-1"
                 >
                   {index === status.length - 1 && (
-                    <Tooltip title={status.map((s) => s.name).join(", ")} arrow>
+                    <Button
+                      variant="text"
+                      size="small"
+                      sx={{
+                        padding: 0,
+                        maxWidth: "fit-content",
+                        marginTop: "2px",
+                      }}
+                      onClick={onOpen}
+                    >
                       <Typography
-                        key={s.name}
                         variant="body2"
                         color="primary"
-                        className="underline cursor-pointer"
+                        className="underline cursor-pointer lowercase p-[0px]"
                       >
-                        {`+ ${status.length - 3} more`}
+                        {`+ ${status.length - 2} more`}
                       </Typography>
-                    </Tooltip>
+                    </Button>
                   )}
                 </Box>
               )}

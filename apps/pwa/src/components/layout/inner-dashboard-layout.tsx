@@ -1,5 +1,6 @@
 import QuickTasksDrawer from "@/components/drawers/quick-tasks-drawer";
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
+import { useGrape } from "@/context/grape";
 import { useVineyard } from "@/context/vineyard";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import {
@@ -15,8 +16,6 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
-import { Grape } from "@/models/types/db";
-import { useGrape } from "@/context/grape";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
