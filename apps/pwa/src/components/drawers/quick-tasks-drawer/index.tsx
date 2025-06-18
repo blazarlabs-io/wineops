@@ -1,15 +1,7 @@
+import QuickTasksWidget from "@/components/widgets/tasks/quick-tasks-widget";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { Close, TaskAlt } from "@mui/icons-material";
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  Drawer,
-  IconButton,
-  styled,
-  Typography,
-} from "@mui/material";
+import { Box, Drawer, IconButton, styled, Typography } from "@mui/material";
 
 export type QuickTasksDrawerProps = {
   open: boolean;
@@ -56,141 +48,20 @@ export default function QuickTasksDrawer({
       variant="persistent"
       anchor="right"
       open={open}
-      className="pointer-events-none"
+      className=""
     >
       <DrawerHeader className="pointer-events-auto m-[0px] max-h-sfit p-[0px] pt-6 mt-[38px]">
         <IconButton onClick={handleDrawerClose} className="">
           <Close className="w-4 h-4" />
         </IconButton>
       </DrawerHeader>
-
       {/* * QUICK TASKS */}
-
       <Box px={2} display={"flex"} flexDirection={"column"} gap={2}>
         <Box display={"flex"} alignItems={"center"} gap={1}>
           <TaskAlt />
           <Typography variant="h5">Tasks</Typography>
         </Box>
-        <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}>
-          <Card
-            sx={{
-              minWidth: 0,
-              maxWidth: RIGHT_DRAWER_WIDTH - 32,
-              borderRadius: 3,
-              position: "relative",
-              paddingLeft: "12px",
-            }}
-          >
-            <CardContent
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-              }}
-            >
-              <Box
-                className="w-3 h-full"
-                sx={{
-                  backgroundColor: "primary.main",
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                }}
-              />
-              <Box display={"flex"} flexDirection={"column"} gap={2}>
-                <Box display={"flex"} justifyContent={"space-between"}>
-                  <Box display={"flex"} flexDirection={"column"} gap={0}>
-                    <Typography
-                      gutterBottom
-                      sx={{ color: "text.primary", fontSize: 14 }}
-                    >
-                      Task 1
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary" }}
-                      className="truncate max-w-30"
-                    >
-                      Description goes here
-                    </Typography>
-                  </Box>
-                  <Box
-                    display={"flex"}
-                    flexDirection={"column"}
-                    alignItems={"flex-end"}
-                    gap={0}
-                    justifyContent={"center"}
-                  >
-                    <Typography
-                      gutterBottom
-                      sx={{ color: "text.primary", fontSize: 14 }}
-                    >
-                      Assignee
-                    </Typography>
-                    <Box display={"flex"} alignItems={"center"} gap={1}>
-                      <Avatar
-                        sx={{
-                          bgcolor: "primary.main",
-                          width: 24,
-                          height: 24,
-                        }}
-                      >
-                        <Typography variant="body2">A</Typography>
-                      </Avatar>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                        className="truncate"
-                      >
-                        John Doe
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-                <Box display={"flex"} justifyContent={"space-between"}>
-                  <Box display={"flex"} flexDirection={"column"} gap={0}>
-                    <Typography
-                      gutterBottom
-                      sx={{ color: "text.primary", fontSize: 14 }}
-                    >
-                      Start Date
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary" }}
-                      className="truncate"
-                    >
-                      2025-01-01
-                    </Typography>
-                  </Box>
-                  <Box
-                    display={"flex"}
-                    flexDirection={"column"}
-                    gap={0}
-                    alignItems={"flex-end"}
-                  >
-                    <Typography
-                      gutterBottom
-                      sx={{ color: "text.primary", fontSize: 14 }}
-                    >
-                      Due Date
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary" }}
-                      className="truncate"
-                    >
-                      2025-01-01
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </CardContent>
-            {/* <CardActions>
-            <Button size="small">Learn More</Button>
-          </CardActions> */}
-          </Card>
-        </Box>
+        <QuickTasksWidget />
       </Box>
     </Drawer>
   );
