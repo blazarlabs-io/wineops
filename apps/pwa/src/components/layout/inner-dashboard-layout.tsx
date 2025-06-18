@@ -16,6 +16,8 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
+import { useQuickDrawer } from "@/context/quick-drawer";
+import { QuickDrawerType } from "@/models/types/db";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -56,22 +58,16 @@ export default function QickTasksWrapper({
   pathname: string;
 }) {
   const { mode } = useColorScheme();
+  const { open, type, updateOpen, updateType } = useQuickDrawer();
   const { actions: vineyardActions } = useVineyard();
   const { actions: grapeActions } = useGrape();
   const pn = usePathname();
   const router = useRouter();
-  const [openQuickTasks, setOpenQuickTasks] = useState<boolean>(false);
-  const [openQuickActions, setOpenQuickActions] = useState<boolean>(false);
   const [currentDashboard, setCurrentDashboard] = useState<string>("");
 
-  const handleQuickTasksDrawerOpen = (state: boolean) => {
-    setOpenQuickTasks(state);
-    setOpenQuickActions(false);
-  };
-
-  const handleQuickActionsDrawerOpen = (state: boolean) => {
-    setOpenQuickActions(state);
-    setOpenQuickTasks(false);
+  const handleOpenChange = (type: string) => {
+    updateOpen(false);
+    updateType(type as QuickDrawerType);
   };
 
   useEffect(() => {
@@ -104,42 +100,40 @@ export default function QickTasksWrapper({
     >
       <Main
         sx={{ width: "100%", paddingLeft: "16px", paddingTop: "16px" }}
-        open={openQuickTasks || openQuickActions}
+        open={open}
         className=""
       >
         {children}
       </Main>
 
-      {openQuickTasks && (
+      {open && type === "tasks" && (
         <QuickTasksDrawer
-          open={openQuickTasks}
-          onOpenChange={handleQuickTasksDrawerOpen}
+          open={open && type === "tasks"}
+          onOpenChange={() => handleOpenChange("tasks")}
         />
       )}
-      {openQuickActions && (
+      {open && type === "actions" && (
         <>
           {currentDashboard === "vineyards" && (
             <QuickActionsDrawer<VineyardActions>
-              open={openQuickActions}
+              open={open && type === "actions"}
               actions={vineyardActions}
-              onOpenChange={handleQuickActionsDrawerOpen}
+              onOpenChange={() => handleOpenChange("actions")}
             />
           )}
           {currentDashboard === "grapes" && (
             <QuickActionsDrawer<GrapeActions>
-              open={openQuickActions}
+              open={open && type === "actions"}
               actions={grapeActions}
-              onOpenChange={handleQuickActionsDrawerOpen}
+              onOpenChange={() => handleOpenChange("actions")}
             />
           )}
         </>
       )}
 
-      {!openQuickTasks && !openQuickActions && (
-        <div style={{ width: RIGHT_DRAWER_WIDTH }}></div>
-      )}
+      {!open && <div style={{ width: RIGHT_DRAWER_WIDTH }}></div>}
 
-      <Box
+      {/* <Box
         sx={{ paddingTop: "74px" }}
         flexDirection={"column"}
         display={"flex"}
@@ -153,7 +147,7 @@ export default function QickTasksWrapper({
           aria-label="open drawer"
           // edge="end"
           onClick={() => handleQuickTasksDrawerOpen(true)}
-          sx={[openQuickTasks && { display: "none" }]}
+          sx={[open && type === "tasks" && { display: "none" }]}
           className=""
         >
           <FormatListBulleted />
@@ -163,12 +157,12 @@ export default function QickTasksWrapper({
           aria-label="open drawer"
           // edge="end"
           onClick={() => handleQuickActionsDrawerOpen(true)}
-          sx={[openQuickActions && { display: "none" }]}
+          sx={[open && type === "actions" && { display: "none" }]}
           style={{ backgroundColor: mode === "dark" ? "transparent" : "#333" }}
         >
           <QuickActionsIcon />
         </IconButton>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

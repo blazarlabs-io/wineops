@@ -2,6 +2,14 @@
 import { Timestamp } from "firebase/firestore";
 import { ActionRelation } from "./actions";
 
+export const QuickDrawerType = {
+  ACTIONS: "actions",
+  TASKS: "tasks",
+} as const;
+
+export type QuickDrawerType =
+  (typeof QuickDrawerType)[keyof typeof QuickDrawerType];
+
 export const TaskStatus = {
   NEW: "new",
   PENDING: "pending",

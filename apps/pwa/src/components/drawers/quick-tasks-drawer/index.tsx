@@ -5,7 +5,7 @@ import { Box, Drawer, IconButton, styled, Typography } from "@mui/material";
 
 export type QuickTasksDrawerProps = {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -23,16 +23,16 @@ export default function QuickTasksDrawer({
   onOpenChange,
 }: QuickTasksDrawerProps) {
   const handleDrawerClose = () => {
-    onOpenChange(false);
+    if (onOpenChange) onOpenChange(false);
   };
 
   return (
     <Drawer
       sx={{
-        width: RIGHT_DRAWER_WIDTH,
+        width: RIGHT_DRAWER_WIDTH + 8,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          // width: RIGHT_DRAWER_WIDTH,
+          minWidth: RIGHT_DRAWER_WIDTH,
           overflowX: "hidden",
         },
         zIndex: (theme) => {
