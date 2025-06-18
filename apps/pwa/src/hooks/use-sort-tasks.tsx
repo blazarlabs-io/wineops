@@ -9,9 +9,9 @@ export const useSortTasks = (data: TaskSummary[]) => {
   useEffect(() => {
     if (!Array.isArray(data)) return;
 
-    setTodoTasks(data.filter((task) => task?.status === "todo"));
+    setTodoTasks(data.filter((task) => task?.status === "new"));
     setInProgressTasks(data.filter((task) => task?.status === "in-progress"));
-    setCompletedTasks(data.filter((task) => task?.status === "completed"));
+    setCompletedTasks(data.filter((task) => task?.status === "done"));
   }, [data]);
 
   return {

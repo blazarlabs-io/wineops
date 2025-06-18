@@ -66,11 +66,3 @@ export const quickActions = [
   { name: "Watering", icon: "game-icons:plant-watering" },
   { name: "Laboratory results", icon: "material-symbols:lab-profile-outline" },
 ];
-
-export const taskStatuses: TaskStatus[] = [
-  "todo",
-  "in-progress",
-  "completed",
-  "cancelled",
-  "overdue",
-];
