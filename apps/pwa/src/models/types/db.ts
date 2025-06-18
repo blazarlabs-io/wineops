@@ -43,14 +43,30 @@ export type Note = {
   author?: TeamMember;
 };
 
+export const Priority = {
+  LOW: "low",
+  MEDIUM: "medium",
+  HIGH: "high",
+  URGENT: "urgent",
+} as const;
+
+export type Priority = (typeof Priority)[keyof typeof Priority];
+
 export type Task = {
   id: string;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  startDate: string;
-  dueDate: string;
-  assignee: string;
+  title?: string;
+  description?: string;
+  assignedTo?: TeamMember;
+  duration?: number;
+  subjectOfAction?: {
+    dashboard?: any;
+    object?: any;
+  };
+  status?: TaskStatus;
+  startDate?: string;
+  dueDate?: string;
+  notes?: Note[];
+  priority?: Priority;
 };
 
 export type TaskSummary = {
