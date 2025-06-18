@@ -3,8 +3,11 @@ import CreateTaskForm from "@/components/forms/tasks/create-task-form";
 import { useWinery } from "@/context/winery";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
+import { db } from "@/lib/firebase/services";
+import { Task } from "@/models/types/db";
 import { Add } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
+import { enqueueSnackbar } from "notistack";
 import { useCallback, useState } from "react";
 
 export default function QuickTasksWidget() {
@@ -16,9 +19,24 @@ export default function QuickTasksWidget() {
     setOpen(!open);
   }, [open]);
 
+  const handleCreateNewTask = useCallback(async (data: Task) => {
+    setOpen(false);
+
+    // * 1. Create task
+    const taskRes = await db.task.create(user?.uid as string, data);
+
+    if (taskRes.status === 200) {
+      enqueueSnackbar("Task created successfully", { variant: "success" });
+    } else {
+      enqueueSnackbar("Error creating task", { variant: "error" });
+    }
+
+    // TODO 2. update dashboard and object here
+  }, []);
+
   return (
     <>
-      <Box>
+      <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowY: "hidden" }}>
         <Button
           variant="outlined"
           className="w-full"
@@ -39,15 +57,15 @@ export default function QuickTasksWidget() {
             <CreateTaskForm
               teamMembers={teamMembers}
               uid={user?.uid as string}
-              onDataSubmit={() => setOpen(false)}
+              onDataSubmit={handleCreateNewTask}
               onClose={() => setOpen(false)}
             />
           </Box>
         )}
       </Box>
-      <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}>
+      {/* <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}>
         <TaskCard />
-      </Box>
+      </Box> */}
     </>
   );
 }

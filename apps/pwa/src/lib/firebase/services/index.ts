@@ -9,8 +9,9 @@ import action from "./action";
 import team from "./team";
 import labReport from "./lab-report";
 import chemistry from "./chemistry";
-import { note } from "./note";
+import note from "./note";
 import wine from "./wine";
+import task from "./task";
 
 const db: any = {};
 
@@ -26,5 +27,6 @@ db.must = must;
 db.chemistry = chemistry;
 db.note = note;
 db.wine = wine;
+db.task = task;
 
 export { db };

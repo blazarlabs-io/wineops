@@ -2,12 +2,16 @@
 import { Timestamp } from "firebase/firestore";
 import { ActionRelation } from "./actions";
 
-export type TaskStatus =
-  | "todo"
-  | "in-progress"
-  | "overdue"
-  | "cancelled"
-  | "completed";
+export const TaskStatus = {
+  NEW: "new",
+  PENDING: "pending",
+  "IN-PROGRESS": "in-progress",
+  DONE: "done",
+  OVERDUE: "overdue",
+  BLOCKED: "blocked",
+} as const;
+
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
 export const VineyardStatus = {
   MAINTENANCE: "Maintenance",
@@ -67,6 +71,7 @@ export type Task = {
   dueDate?: string;
   notes?: Note[];
   priority?: Priority;
+  createdBy?: TeamMember;
 };
 
 export type TaskSummary = {
