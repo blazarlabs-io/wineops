@@ -27,7 +27,9 @@ import {
   Box,
   Button,
   Checkbox,
+  Chip,
   FormControl,
+  FormControlLabel,
   TextField as Input,
   InputLabel,
   MenuItem,
@@ -40,7 +42,7 @@ import { Timestamp } from "firebase/firestore";
 import { Leaf, MapPin } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 export type VineyardFormProps = {
   children?: React.ReactNode;
@@ -62,6 +64,7 @@ export default function VineyardForm({
     register,
     handleSubmit,
     getValues,
+    control,
     setValue,
     reset,
     formState: { errors },
@@ -70,6 +73,7 @@ export default function VineyardForm({
   });
 
   const [formData, setFormData] = useState<Vineyard | null>(vineyard);
+  const [cadastral, setCadastral] = useState<string>("");
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
     const _path = "info.location.map";
@@ -77,6 +81,45 @@ export default function VineyardForm({
     setFormData((prevData: any) => {
       const path = _path.split(".");
       return setNestedValue(prevData, path, data);
+    });
+  };
+
+  const handleArrayChange = (name: string, value: string) => {
+    const path = name;
+    const data: string[] = (formData?.cadastralNumber as string[]) || [];
+    data.push(value);
+    setValue(path, data);
+    setFormData((prevData: Vineyard | null) => {
+      if (!prevData) {
+        return null;
+      }
+      const result = {
+        ...prevData,
+        cadastralNumber: data,
+      };
+      console.log("result", result);
+      return result;
+    });
+  };
+
+  const handleDeleteCadastral = (name: string, value: any) => {
+    const path = name;
+    const data: string[] = (formData?.cadastralNumber as string[]) || [];
+    const index = data.indexOf(value);
+    if (index > -1) {
+      data.splice(index, 1);
+    }
+    setValue(path, data);
+    setFormData((prevData: Vineyard | null) => {
+      if (!prevData) {
+        return null;
+      }
+      const result = {
+        ...prevData,
+        cadastralNumber: data,
+      };
+      console.log("result", result);
+      return result;
     });
   };
 
@@ -253,7 +296,7 @@ export default function VineyardForm({
                     <div className="flex flex-col gap-2">
                       {/* <Label htmlFor="name">Vineyard Name</Label> */}
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter a name for your vineyard
+                        Enter a name for the vineyard
                       </InputLabel>
                       <FormControl>
                         <Input
@@ -355,13 +398,74 @@ export default function VineyardForm({
                         Enter the cadastral number(s)
                       </InputLabel>
                       <FormControl>
-                        <Input
-                          id="cadastralNumber"
-                          type="text"
-                          label="Cadastral Number"
-                          variant="outlined"
-                          {...register("cadastralNumber")}
+                        <Controller
+                          name="cadastralNumber"
+                          control={control}
+                          render={({ field }) => {
+                            console.log(field);
+                            if (
+                              field.value !== undefined &&
+                              field.value.length > 0
+                            ) {
+                              return (
+                                <Stack
+                                  direction={"row"}
+                                  marginBottom={2}
+                                  flexWrap={"wrap"}
+                                  gap={1}
+                                >
+                                  {field.value.map(
+                                    (cadastral: string, index: number) => (
+                                      <Chip
+                                        key={cadastral + index}
+                                        label={cadastral}
+                                        onDelete={() => {
+                                          handleDeleteCadastral(
+                                            "cadastralNumber",
+                                            field.value[field.value.length - 1]
+                                          );
+                                        }}
+                                      />
+                                    )
+                                  )}
+                                </Stack>
+                              );
+                            } else {
+                              return (
+                                <Typography variant="body2">
+                                  No items to display
+                                </Typography>
+                              );
+                            }
+                          }}
                         />
+                        <Stack
+                          spacing={2}
+                          direction="column"
+                          alignItems="center"
+                          width={"100%"}
+                        >
+                          <Input
+                            id="cadastralNumber"
+                            type="text"
+                            label="Cadastral Number"
+                            variant="outlined"
+                            fullWidth
+                            value={cadastral}
+                            onChange={(e) => setCadastral(e.target.value)}
+                          />
+                          <Button
+                            type="button"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            onClick={() => {
+                              handleArrayChange("cadastralNumber", cadastral);
+                            }}
+                          >
+                            Add
+                          </Button>
+                        </Stack>
                       </FormControl>
 
                       {errors?.cadastralNumber && (

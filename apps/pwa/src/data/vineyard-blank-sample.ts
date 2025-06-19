@@ -7,7 +7,7 @@ const vineyardBlankSample: Vineyard = {
   status: VineyardStatus.MAINTENANCE,
   grapeVariety: "",
   grapeColor: "",
-  cadastralNumber: "",
+  cadastralNumber: [],
   rowType: "item",
   info: {
     location: {
