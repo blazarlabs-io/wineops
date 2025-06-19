@@ -44,6 +44,7 @@ const initialFormData: MustDecantAction = {
 };
 
 export default function MustDecantActionForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const {
     register,
@@ -176,12 +177,17 @@ export default function MustDecantActionForm() {
 
     console.log("SUBJECT MUST", subjectMust);
 
-    actions?.["must-decant"].exec(
-      user?.uid as string,
-      data,
-      subjectMust,
-      subjectVessel
-    );
+    setIsSubmitting(true);
+    try {
+      actions?.["must-decant"].exec(
+        user?.uid as string,
+        data,
+        subjectMust,
+        subjectVessel
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setFormData(data);
   };
@@ -696,7 +702,12 @@ export default function MustDecantActionForm() {
 
           <Box py={2} display="flex" justifyContent="end">
             <FormControl>
-              <Button type="submit" variant="contained" className="mt-8">
+              <Button
+                disabled={isSubmitting}
+                type="submit"
+                variant="contained"
+                className="mt-8"
+              >
                 Execute
               </Button>
             </FormControl>
