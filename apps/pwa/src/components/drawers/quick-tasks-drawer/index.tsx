@@ -35,15 +35,7 @@ export default function QuickTasksDrawer({
           minWidth: RIGHT_DRAWER_WIDTH,
           overflowX: "hidden",
         },
-        zIndex: (theme) => {
-          let z = 0;
-          if (open) {
-            z = theme.zIndex.drawer;
-          } else {
-            z = theme.zIndex.drawer - 100;
-          }
-          return z;
-        },
+        zIndex: ({ zIndex }) => zIndex.drawer - (open ? 0 : 100),
       }}
       variant="persistent"
       anchor="right"

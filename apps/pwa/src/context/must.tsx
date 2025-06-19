@@ -3,7 +3,12 @@
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
 import { MUSTS, WINERY } from "@/lib/firebase/config";
-import { Must, MustWineVessel, Vessel } from "@/models/types/db";
+import {
+  Must,
+  MustWineVessel,
+  MustWithVessel,
+  Vessel,
+} from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
@@ -15,11 +20,15 @@ import {
   useMemo,
 } from "react";
 import { useVessel } from "./vessel";
+import { MustActions } from "@/models/types/actions";
+import { mustDecantAction } from "@/lib/actions/must-actions";
+import MustDecantActionForm from "@/components/forms/actions/must/must-decant-action-form";
 
 interface MustContextType {
   musts: Must[];
-  selectedMusts: Must[];
+  selectedMusts: MustWithVessel[];
   updateSelectedMusts: (musts: Must[]) => void;
+  actions: MustActions;
 }
 
 const MustContext = createContext<MustContextType | null>(null);
@@ -42,9 +51,16 @@ export const MustProvider = ({ children }: IMustProvider) => {
   const { user } = useAuth();
 
   const [musts, setMusts] = useState<Must[]>([]);
-  const [selectedMusts, setSelectedMusts] = useState<Must[]>([]);
+  const [selectedMusts, setSelectedMusts] = useState<MustWithVessel[]>([]);
+  const [actions] = useState<MustActions>({
+    "must-decant": {
+      exec: mustDecantAction,
+      form: <MustDecantActionForm />,
+      icon: "material-symbols:science-outline",
+    },
+  });
 
-  const updateSelectedMusts = useCallback((musts: Must[]) => {
+  const updateSelectedMusts = useCallback((musts: MustWithVessel[]) => {
     setSelectedMusts(musts);
   }, []);
 
@@ -114,6 +130,7 @@ export const MustProvider = ({ children }: IMustProvider) => {
         musts: hydratedMusts,
         selectedMusts: memoizedSelectedMusts,
         updateSelectedMusts,
+        actions,
       }}
     >
       {children}

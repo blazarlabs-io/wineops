@@ -1064,17 +1064,13 @@ export default function WineForm({
                             label="Unit"
                             type="hidden"
                             variant="outlined"
-                            value={
-                              formData?.labData?.totalSO2?.unit ||
-                              "ppm"
-                            }
+                            value={formData?.labData?.totalSO2?.unit || "ppm"}
                             {...register("labData.totalSO2.unit")}
                           />
                         </FormControl>
 
                         <Box sx={{ width: "60px" }}>
-                          {formData?.labData?.totalSO2?.unit ||
-                            "ppm"}
+                          {formData?.labData?.totalSO2?.unit || "ppm"}
                         </Box>
                       </Stack>
 
