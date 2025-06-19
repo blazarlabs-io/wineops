@@ -30,6 +30,7 @@ const locationSchema = Joi.object<Location>({
       "number.min": "Surface must be between 0.01 and 100000",
       "number.max": "Surface must be between 0.01 and 100000",
     })
+    .error(new Error("Surface must be between 0.01 and 100000"))
     .optional(),
   city: Joi.string().optional().allow(""),
   country: Joi.string().optional().allow(""),
@@ -160,9 +161,11 @@ export const vineyardSchema = Joi.object<Vineyard>().keys({
     "string.empty": `Grape color cannot be empty`,
     "string.max": `Grape color cannot be longer than 50 characters`,
   }),
-  cadastralNumber: Joi.string().max(50).optional().allow("").messages({
-    "string.max": `Cadastral number cannot be longer than 50 characters`,
-  }),
+  cadastralNumber: Joi.array().items(
+    Joi.string().max(50).optional().allow("").messages({
+      "string.max": `Cadastral number cannot be longer than 50 characters`,
+    })
+  ),
   rowType: Joi.string().optional(),
   info: vineyardInfoSchema,
   grape: vineyardGrapeSchema.optional(),

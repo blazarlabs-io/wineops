@@ -2,7 +2,7 @@ import CertificationsDataDisplay from "@/components/data-display/certifications-
 import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
 import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED } from "@/data/constants";
 import { ExpandMore } from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import {
   useCallback,
@@ -14,6 +14,7 @@ import { useVineyard } from "@/context/vineyard";
 import { useGetVineyardLabData } from "@/hooks/use-get-vineyard-lab-data";
 import { LabReport } from "@/models/types/db";
 import GroupBadge from "../../group-badge";
+import CadastralDialog from "@/components/dialogs/cadastral-dialog";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
@@ -27,6 +28,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
     vineyards
   );
   const [expanded, setExpanded] = useState<boolean>(false);
+  const [openCadastrals, setOpenCadastrals] = useState<boolean>(false);
 
   // * master detail custom renderer
   const handleMasterDetailExpansion = useCallback(() => {
@@ -40,6 +42,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   }, [node.expanded]);
 
   const isGroup = node?.group || node?.data?.rowType === "group";
+
+  console.log("XXXX", value, node);
 
   return (
     <Box
@@ -130,12 +134,51 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
             </div>
           )}
           {!isGroup && (
-            <p className="max-h-fit min-h-fit leading-4">
-              {node.data.cadastralNumber}
-            </p>
+            <div className="flex flex-col gap-0">
+              {node.data.cadastralNumber !== undefined &&
+                Array.isArray(node.data.cadastralNumber) &&
+                node.data.cadastralNumber.length > 0 &&
+                node.data.cadastralNumber?.map(
+                  (cadastralNumber: string, index: number) => (
+                    <>
+                      {index < 1 ? (
+                        <Typography variant="caption" key={index}>
+                          {cadastralNumber}
+                          {index < node.data.cadastralNumber.length - 1}
+                        </Typography>
+                      ) : (
+                        index === node.data.cadastralNumber.length - 1 && (
+                          <Button
+                            type="button"
+                            key={index}
+                            variant="text"
+                            size="small"
+                            color="primary"
+                            className="lowercase! underline!"
+                            sx={{ maxWidth: "fit-content", padding: 0 }}
+                            onClick={() => setOpenCadastrals(true)}
+                          >
+                            + {node.data.cadastralNumber.length - 1} more
+                          </Button>
+                        )
+                      )}
+                    </>
+                  )
+                )}
+            </div>
           )}
         </Box>
       </Box>
+      {node.data &&
+        node.data !== undefined &&
+        Array.isArray(node.data.cadastralNumber) &&
+        node.data.cadastralNumber.length > 0 && (
+          <CadastralDialog
+            open={openCadastrals}
+            onClose={() => setOpenCadastrals(false)}
+            data={node.data.cadastralNumber}
+          />
+        )}
     </Box>
   );
 };

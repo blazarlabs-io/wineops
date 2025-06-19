@@ -14,7 +14,7 @@ const vineyardSample: Vineyard = {
   status: VineyardStatus.MAINTENANCE,
   grapeVariety: "",
   grapeColor: "",
-  cadastralNumber: "",
+  cadastralNumber: [],
   info: {
     location: {
       map: [],

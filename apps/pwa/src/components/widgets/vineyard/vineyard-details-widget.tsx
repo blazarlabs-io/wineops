@@ -116,8 +116,9 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Surface"
                 value={
-                  localVineyard.info?.location?.surface?.toString() + " Ha" ||
-                  "N/A"
+                  localVineyard.info?.location?.surface !== undefined
+                    ? localVineyard.info?.location?.surface?.toString() + " Ha"
+                    : "N/A"
                 }
               />
               <SimpleDataDisplay

@@ -267,7 +267,7 @@ type Entity = {
 export type Vineyard = Entity & {
   grapeVariety: string;
   grapeColor: string;
-  cadastralNumber: string;
+  cadastralNumber: string[];
   info: VineyardInfo;
   grape: VineyardGrape;
   status: VineyardStatus;
