@@ -117,7 +117,7 @@ export const mustDecantAction = async (
           },
         ],
       }),
-      notes,
+      ...(actionData.notes && { notes }),
       ...(actionData?.consumables && { consumables: actionData.consumables }),
     };
 
@@ -148,7 +148,7 @@ export const mustDecantAction = async (
       },
       ...newEntityVessels,
       ...(must?.grapeVariety && { grapeVariety: must.grapeVariety }),
-      notes,
+      ...(actionData.notes && { notes }),
       ...(actionData?.consumables && { consumables: actionData.consumables }),
     };
 
