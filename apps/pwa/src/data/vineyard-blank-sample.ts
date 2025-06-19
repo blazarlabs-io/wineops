@@ -12,7 +12,7 @@ const vineyardBlankSample: Vineyard = {
   info: {
     location: {
       map: [],
-      surface: 0,
+      surface: "",
       country: "",
       city: "",
       elevation: 0,
