@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 
 interface LabItemProps {
   label: string;
-  data: Partial<LabElement>;
+  data?: Partial<LabElement>;
   variant?: "small";
 }
 

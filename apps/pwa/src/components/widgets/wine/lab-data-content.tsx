@@ -9,7 +9,7 @@ import Stack from "@mui/material/Stack";
 import Link from "next/link";
 
 type LabDataProps = {
-  labData: WineLabData;
+  labData?: WineLabData;
 };
 
 export default function LabDataContent({ labData }: LabDataProps) {
@@ -57,15 +57,15 @@ export default function LabDataContent({ labData }: LabDataProps) {
         />
 
         <Box p={1.5}>
-          <LabItem label="Alcohol" data={alcohol ?? { value: "N/A" }} />
+          <LabItem label="Alcohol" data={alcohol} />
         </Box>
 
         <Box p={1.5}>
-          <LabItem label="Sugar" data={sugar ?? { value: "N/A" }} />
+          <LabItem label="Sugar" data={sugar} />
         </Box>
 
         <Box p={1.5}>
-          <LabItem label="Acidity" data={acidity ?? { value: "N/A" }} />
+          <LabItem label="Acidity" data={acidity} />
         </Box>
 
         <SimpleDataDisplay

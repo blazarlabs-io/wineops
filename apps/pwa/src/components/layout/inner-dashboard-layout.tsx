@@ -6,6 +6,7 @@ import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import {
   ActionsEntity,
   GrapeActions,
+  MustActions,
   VineyardActions,
 } from "@/models/types/actions";
 import { FormatListBulleted } from "@mui/icons-material";
@@ -18,6 +19,7 @@ import { useEffect, useState } from "react";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { QuickDrawerType } from "@/models/types/db";
+import { useMust } from "@/context/must";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -61,6 +63,7 @@ export default function QickTasksWrapper({
   const { open, type, updateOpen, updateType } = useQuickDrawer();
   const { actions: vineyardActions } = useVineyard();
   const { actions: grapeActions } = useGrape();
+  const { actions: mustActions } = useMust();
   const pn = usePathname();
   const router = useRouter();
   const [currentDashboard, setCurrentDashboard] = useState<string>("");
@@ -125,6 +128,13 @@ export default function QickTasksWrapper({
             <QuickActionsDrawer<GrapeActions>
               open={open && type === "actions"}
               actions={grapeActions}
+              onOpenChange={() => handleOpenChange("actions")}
+            />
+          )}
+          {currentDashboard === "primary-vinification" && (
+            <QuickActionsDrawer<MustActions>
+              open={open && type === "actions"}
+              actions={mustActions}
               onOpenChange={() => handleOpenChange("actions")}
             />
           )}
