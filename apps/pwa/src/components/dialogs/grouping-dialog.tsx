@@ -279,20 +279,14 @@ export default function GroupingDialog<T extends DashboardEntity>({
               </>
             )}
           </Typography>
-          <Box
-            display={"flex"}
-            flexWrap={"wrap"}
-            alignItems={"center"}
-            px={0}
-            gap={1}
-          >
+          <Stack px={0} gap={1} marginTop={2} direction="row" flexWrap="wrap">
             {rows.map((row) => (
               <EntityChip
                 row={row}
                 key={`${row.id}-${row["vesselId" as keyof T] || ""}`}
               />
             ))}
-          </Box>
+          </Stack>
         </Stack>
       </DialogContent>
 
