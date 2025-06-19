@@ -1,8 +1,9 @@
 import { GROUP_ITEMS_TO_SHOW } from "@/data/constants";
 import { Note } from "@/models/types/db";
-import { Avatar, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import EditNoteDialog from "../dialogs/edit-note-dialog";
+import NotesDialog from "../dialogs/notes-dialog";
 
 export type NotesDataDisplayProps = {
   notes: Note[];
@@ -14,6 +15,7 @@ export default function NotesDataDisplay({
   uid,
 }: NotesDataDisplayProps) {
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [openNotesDialog, setOpenNotesDialog] = useState<boolean>(false);
   const [editNote, setEditNote] = useState<Note | null>(null);
 
   if (!notes) return;
@@ -21,6 +23,10 @@ export default function NotesDataDisplay({
   const handleNoteOpen = (note: Note) => {
     setEditNote(note);
     setOpenEditDialog(true);
+  };
+
+  const handleOpenNotesDialog = () => {
+    setOpenNotesDialog(true);
   };
 
   return (
@@ -75,13 +81,15 @@ export default function NotesDataDisplay({
             </div>
           ))}
         {notes.length > 1 && (
-          <Typography
-            color="primary"
-            variant="body2"
-            className="text-xs underline"
-          >
-            + {notes.length - 1} more
-          </Typography>
+          <Button size="small" variant="text" onClick={handleOpenNotesDialog}>
+            <Typography
+              color="primary"
+              variant="body2"
+              className="text-xs underline lowercase"
+            >
+              + {notes.length - 1} more
+            </Typography>
+          </Button>
         )}
       </Stack>
       <EditNoteDialog
@@ -89,6 +97,12 @@ export default function NotesDataDisplay({
         note={editNote as Note}
         uid={uid}
         onClose={() => setOpenEditDialog(false)}
+      />
+      <NotesDialog
+        open={openNotesDialog}
+        notes={notes as Note[]}
+        uid={uid}
+        onClose={() => setOpenNotesDialog(false)}
       />
     </>
   );

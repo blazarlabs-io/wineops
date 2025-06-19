@@ -9,7 +9,13 @@ import { setNestedValue } from "@/helpers/form-helpers";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { vineyardSchema } from "@/models/schemas/vineyard-schema";
-import { Coordinates, DbResponse, FormMode, Vineyard } from "@/models/types/db";
+import {
+  Coordinates,
+  DbResponse,
+  FormMode,
+  Vineyard,
+  WineColor,
+} from "@/models/types/db";
 import { generateYearsList } from "@/utils/generators";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { ExpandMore } from "@mui/icons-material";
@@ -17,6 +23,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -25,6 +32,7 @@ import {
   InputLabel,
   MenuItem,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import Select from "@mui/material/Select";
@@ -214,7 +222,12 @@ export default function VineyardForm({
             className="space-y-4 space-x-4"
           >
             <div>
-              <Accordion defaultExpanded>
+              <Accordion
+                defaultExpanded
+                style={{
+                  backgroundColor: "var(--mui-palette-background-paper)",
+                }}
+              >
                 <AccordionSummary
                   expandIcon={<ExpandMore />}
                   aria-controls="panel1-content"
@@ -223,7 +236,7 @@ export default function VineyardForm({
                   <Typography component="span">General</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <div className="p-4 flex flex-col gap-4 border-l">
+                  <div className="flex flex-col gap-4">
                     {/* * ID - HIDDEN */}
                     <div className="hidden">
                       {/* <Label htmlFor="id">Id</Label> */}
@@ -240,12 +253,12 @@ export default function VineyardForm({
                     <div className="flex flex-col gap-2">
                       {/* <Label htmlFor="name">Vineyard Name</Label> */}
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter a reference name for your vineyard.
+                        Enter a name for your vineyard
                       </InputLabel>
                       <FormControl>
                         <Input
                           id="name"
-                          label="Name"
+                          label="Vineyard Name"
                           type="text"
                           variant="outlined"
                           {...register("name")}
@@ -265,7 +278,7 @@ export default function VineyardForm({
                     <div className="flex flex-col gap-2">
                       {/* <Label htmlFor="grapeVariety">Grape Variety</Label> */}
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter the grape variety of your vineyard.
+                        Enter a grape variety for the vineyard
                       </InputLabel>
                       <FormControl>
                         <Input
@@ -276,7 +289,6 @@ export default function VineyardForm({
                           {...register("grapeVariety")}
                         />
                       </FormControl>
-
                       {errors?.grapeVariety && (
                         <Typography
                           variant="body2"
@@ -291,17 +303,39 @@ export default function VineyardForm({
                     {/* * GRAPE COLOR - MANDATORY */}
                     <div className="flex flex-col gap-2">
                       {/* <Label htmlFor="grapeColor">Grape Color</Label> */}
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Your grape&apos;s color
-                      </InputLabel>
+                      <Typography
+                        color="textSecondary"
+                        className="text-sm text-muted-foreground"
+                      >
+                        Select the grape variety color
+                      </Typography>
+
                       <FormControl>
-                        <Input
+                        <InputLabel
                           id="grapeColor"
-                          type="text"
-                          label="Grape's Color"
-                          variant="outlined"
-                          {...register("grapeColor")}
-                        />
+                          className="text-sm text-muted-foreground"
+                        >
+                          Grape Color
+                        </InputLabel>
+                        <Select
+                          label="Grape Color"
+                          id="grapeColor"
+                          value={(formData.grapeColor as string) || ""}
+                          onChange={(e) => {
+                            handleSelectChange("grapeColor", e.target.value);
+                          }}
+                          className="capitalize"
+                        >
+                          {Object.values(WineColor).map((grapeColor) => (
+                            <MenuItem
+                              key={grapeColor}
+                              value={grapeColor}
+                              className="capitalize"
+                            >
+                              {grapeColor}
+                            </MenuItem>
+                          ))}
+                        </Select>
                       </FormControl>
                       {errors?.grapeColor && (
                         <Typography
@@ -318,22 +352,26 @@ export default function VineyardForm({
                     <div className="flex flex-col gap-2">
                       {/* <Label htmlFor="cadastralNumber">Cadastral Number</Label> */}
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter the cadastral number of your vineyard.
+                        Enter the cadastral number(s)
                       </InputLabel>
                       <FormControl>
                         <Input
                           id="cadastralNumber"
                           type="text"
-                          label="Cadastral Reference"
+                          label="Cadastral Number"
                           variant="outlined"
                           {...register("cadastralNumber")}
                         />
                       </FormControl>
 
                       {errors?.cadastralNumber && (
-                        <p className="text-sm text-destructive  mt-1">
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
                           {errors?.cadastralNumber?.message as string}
-                        </p>
+                        </Typography>
                       )}
                     </div>
                   </div>
@@ -348,7 +386,7 @@ export default function VineyardForm({
                   <Typography component="span">Vineyard Details</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <div className="p-4 flex flex-col gap-4">
+                  <div className="p-0 flex flex-col gap-4">
                     <div className="flex items-center gap-2">
                       <MapPin className="text-muted-foreground w-4 h-4" />
                       <h2 className="font-medium text-base">Location</h2>
@@ -357,7 +395,7 @@ export default function VineyardForm({
                       {/* ? LOCATION */}
 
                       {/* * MAP */}
-                      <p className="text-sm font-semibold">Map</p>
+                      {/* <p className="text-sm font-semibold">Map</p> */}
                       <div className="w-full bg-muted rounded-md min-h-[320px] relative">
                         <PolygonDrawingMap
                           initialCoordinates={formData.info.location.map}
@@ -369,7 +407,7 @@ export default function VineyardForm({
                       <div className="flex flex-col gap-2">
                         {/* <Label htmlFor="info.location.surface">Surface Area</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
-                          Enter the surface area of your vineyard.
+                          Enter the surface area of the vineyard (Ha)
                         </InputLabel>
 
                         <Stack
@@ -381,20 +419,18 @@ export default function VineyardForm({
                         >
                           <FormControl className="w-full">
                             <Input
-                              id="info.location.elevation"
+                              id="info.location.surface"
                               type="number"
                               variant="outlined"
-                              label="Surface Area"
+                              label="Surface (Ha)"
                               inputProps={{
-                                step: "0.1",
+                                step: "0.01",
                                 min: 0,
+                                max: 100000,
                               }}
-                              {...register("info.location.elevation")}
+                              {...register("info.location.surface")}
                             />
                           </FormControl>
-                          <Typography variant="body1" className="max-w-fit">
-                            Ha
-                          </Typography>
                         </Stack>
 
                         {/* {errors?.info?.location?.surface && (
@@ -407,14 +443,36 @@ export default function VineyardForm({
                       {/* * COUNTRY */}
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 w-full">
-                          <InputLabel className="text-sm text-muted-foreground">
-                            Choose the country of your vineyard.
-                          </InputLabel>
-                          <FormControl>
+                          <Typography
+                            color="textSecondary"
+                            className="text-sm text-muted-foreground"
+                          >
+                            Select the country of the vineyard
+                          </Typography>
+                          <Autocomplete
+                            id="country"
+                            options={countries.map((country) => country.name)}
+                            filterSelectedOptions
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Select a country"
+                                // placeholder="Select a country"
+                              />
+                            )}
+                          />
+                          {/* <FormControl>
+                            <InputLabel
+                              id="info.location.country"
+                              className="text-sm text-muted-foreground"
+                            >
+                              Select a country
+                            </InputLabel>
                             <Select
                               name="info.location.country"
                               id="info.location.country"
                               variant="outlined"
+                              label="Select a country"
                               value={
                                 formData?.info?.location?.country as string
                               }
@@ -425,9 +483,6 @@ export default function VineyardForm({
                                 )
                               }
                             >
-                              {/* <MenuItem value="select-country">
-                                <em>Select Country</em>
-                              </MenuItem> */}
                               {countries.length > 0 &&
                                 countries.map(
                                   (country: { name: string; code: string }) => {
@@ -445,7 +500,7 @@ export default function VineyardForm({
                                   }
                                 )}
                             </Select>
-                          </FormControl>
+                          </FormControl> */}
 
                           {/* {errors?.info?.location?.country && (
                             <p className="text-sm text-destructive  mt-1">
@@ -987,7 +1042,7 @@ export default function VineyardForm({
                   <Typography component="span">GrapeDetails</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <div className="p-4 flex flex-col gap-4 border-l ">
+                  <div className="p-4 flex flex-col gap-4">
                     <div className="flex flex-col gap-2 justify-between">
                       <div className="flex flex-col gap-2">
                         {/* <Label htmlFor="grape.clonalSelection">Clonal Selection</Label> */}

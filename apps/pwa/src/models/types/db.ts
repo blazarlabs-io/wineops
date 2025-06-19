@@ -2,6 +2,21 @@
 import { Timestamp } from "firebase/firestore";
 import { ActionRelation } from "./actions";
 
+export const WineColor = {
+  RED: "red",
+  WHITE: "white",
+} as const;
+
+export type WineColor = (typeof WineColor)[keyof typeof WineColor];
+
+export const QuickDrawerType = {
+  ACTIONS: "actions",
+  TASKS: "tasks",
+} as const;
+
+export type QuickDrawerType =
+  (typeof QuickDrawerType)[keyof typeof QuickDrawerType];
+
 export const TaskStatus = {
   NEW: "new",
   PENDING: "pending",
@@ -178,7 +193,7 @@ export type Coordinates = {
 
 export type Location = {
   map: Coordinates[];
-  surface: number;
+  surface: number | string;
   country: string;
   city: string;
   elevation: number;

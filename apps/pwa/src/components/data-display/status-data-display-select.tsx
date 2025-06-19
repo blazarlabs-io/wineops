@@ -39,13 +39,17 @@ export default function StatusDataDisplaySelect({
           variant="outlined"
           onChange={handleChange}
           sx={{
-            ...getStatusStyles(selected, mode),
+            // ...getStatusStyles(selected, mode),
             minWidth: "fit-content",
             borderRadius: "6px",
           }}
         >
           {statuses.map((s) => (
-            <MenuItem key={s} value={s} sx={{ ...getStatusStyles(s, mode) }}>
+            <MenuItem
+              key={s}
+              value={s}
+              // sx={{ ...getStatusStyles(s, mode) }}
+            >
               <Typography variant="caption">{s.toUpperCase()}</Typography>
             </MenuItem>
           ))}

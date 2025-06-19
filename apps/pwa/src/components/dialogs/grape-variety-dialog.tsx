@@ -48,7 +48,7 @@ export default function GrapeVarietyDialog({
         <div
           className="border p-4 rounded-sm"
           style={{
-            backgroundColor: "#12121222",
+            backgroundColor: "#12121201",
             overflow: "auto",
             borderColor: "var(--mui-palette-divider)",
           }}
