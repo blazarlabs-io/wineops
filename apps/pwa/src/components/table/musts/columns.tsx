@@ -84,7 +84,6 @@ export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
     field: "metrics",
     minWidth: 240,
     flex: 1,
-    cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: QuantityCellRenderer,
   },
@@ -93,7 +92,6 @@ export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
     field: "labData",
     minWidth: 250,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: LabDataCellRenderer,
   },
   {
@@ -101,7 +99,6 @@ export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
     field: "tasks",
     minWidth: 150,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: TasksCellRenderer,
   },
   {
@@ -109,7 +106,6 @@ export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
     field: "notes",
     minWidth: 150,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: NotesCellRenderer,
   },
 ];

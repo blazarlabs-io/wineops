@@ -415,6 +415,7 @@ export const MustStatus = {
   NEW_MUST: "New Must",
   PRESSED: "Pressed",
   FERMENTING: "Fermenting",
+  DECANTED: "Decanted",
 } as const;
 
 export type MustStatus = (typeof MustStatus)[keyof typeof MustStatus];
@@ -440,6 +441,10 @@ export type MustWineVessel = {
   type: Vessel["type"];
 };
 
+export type EntityConsumable = Pick<Consumable, "id" | "name"> & {
+  qty?: number;
+};
+
 export type Must = Entity & {
   date?: string | Timestamp;
   supplier?: Supplier;
@@ -447,12 +452,21 @@ export type Must = Entity & {
   vessels?: MustWineVessel[];
   safetyCertificateNo?: string;
   invoicePurchaseNo?: string;
-  labData: MustLabData;
+  labData?: MustLabData;
   status?: MustStatus;
   metrics?: Metrics;
   notes?: Note[];
   tasks?: Task[];
   documents?: SingleDocument[];
+  actions?: ActionRelation[];
+  consumables?: EntityConsumable[];
+};
+
+export type MustWithVessel = Must & {
+  vesselId?: Vessel["id"];
+  vesselType?: Vessel["type"];
+  vesselName?: Vessel["name"];
+  vesselLocation?: Vessel["location"];
 };
 
 export type FormMode = "create" | "edit";
@@ -646,12 +660,13 @@ export type Wine = Entity & {
   grapeVariety?: string;
   qty?: number;
   vessels?: MustWineVessel[];
-  grapeVarieties: GrapeVariety[];
+  grapeVarieties?: GrapeVariety[];
   safetyCertificateNo?: string;
   invoicePurchaseNo?: string;
-  labData: WineLabData;
+  labData?: WineLabData;
   status?: WineStatus;
   metrics?: Metrics;
   notes?: Note[];
   tasks?: Task[];
+  consumables?: EntityConsumable[];
 };

@@ -29,7 +29,7 @@ export default function QuickActionsWidget({
 
   const handleActionClick = (action: string) => {
     onClick(action);
-    setSelectedAction(action);
+    setSelectedAction((prevAction) => (prevAction === action ? "" : action));
   };
 
   useEffect(() => {
@@ -40,6 +40,10 @@ export default function QuickActionsWidget({
         keys[index] = key.split("-").join(" ");
       });
       setActionsList(keys);
+
+      if (keys.length === 1) {
+        setSelectedAction(keys[0]);
+      }
     }
   }, [actions]);
 
@@ -124,18 +128,14 @@ export default function QuickActionsWidget({
                     />
                   </Stack>
                 </ListItemButton>
+
                 {action === selectedAction && (
-                  <Box
-                    padding={2}
-                    display={"flex"}
-                    flexDirection={"column"}
-                    gap={2}
-                  >
+                  <Stack gap={2} py={2}>
                     {/* <Form /> */}
                     <React.Fragment>
                       {actions[action.split(" ").join("-")].form}
                     </React.Fragment>
-                  </Box>
+                  </Stack>
                 )}
               </div>
             ))}
