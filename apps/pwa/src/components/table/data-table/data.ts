@@ -8,7 +8,7 @@ export function getData(): Vineyard[] {
       group: ["Northern Lands"],
       // typse: "group",
       name: "Vineyard 1",
-      cadastralNumber: "123",
+      cadastralNumber: [],
       grapeVariety: "Grape 1",
       grapeColor: "Red",
       info: {

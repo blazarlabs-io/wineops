@@ -1,8 +1,6 @@
 import { Certifications, Vineyard } from "@/models/types/db";
 import {
   generateDummyDocs,
-  generateLabData,
-  generateNotes,
   generateRandomId,
   generateTasks,
 } from "@/utils/generators";
@@ -14,7 +12,7 @@ export function getData(): Vineyard[] {
       group: ["Northern Lands"],
       name: "Northern Lands",
       rowType: "group",
-      cadastralNumber: "LP-123-456-789",
+      cadastralNumber: [],
       grapeVariety: "Point Noir",
       grapeColor: "Red",
       info: {
@@ -70,7 +68,7 @@ export function getData(): Vineyard[] {
       group: ["Southern Lands", "Vineyard 4"],
       name: "Vineyard 4",
       rowType: "group",
-      cadastralNumber: "LP-123-456-789",
+      cadastralNumber: [],
       grapeVariety: "Point Noir",
       grapeColor: "Red",
       info: {
@@ -126,7 +124,7 @@ export function getData(): Vineyard[] {
       group: ["Northern Lands", "Vineyard 1"],
       rowType: "item",
       name: "Vineyard 1",
-      cadastralNumber: "LP-123-456-789",
+      cadastralNumber: [],
       grapeVariety: "Point Noir",
       grapeColor: "Red",
       info: {
@@ -182,7 +180,7 @@ export function getData(): Vineyard[] {
       group: ["Northern Lands", "Vineyard 2"],
       rowType: "item",
       name: "Vineyard 2",
-      cadastralNumber: "MW-123-456-789",
+      cadastralNumber: [],
       grapeVariety: "Merlot",
       grapeColor: "Red",
       info: {
@@ -238,7 +236,7 @@ export function getData(): Vineyard[] {
       group: ["Northern Lands", "Vineyard 3"],
       rowType: "item",
       name: "Vineyard 3",
-      cadastralNumber: "XF-123-456-789",
+      cadastralNumber: [],
       grapeVariety: "Cabernet Sauvignon",
       grapeColor: "Red",
       info: {
