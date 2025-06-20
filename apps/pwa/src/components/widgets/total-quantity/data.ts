@@ -29,7 +29,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
   const chartTheme = "ag-material";
   const themeClass = isDarkMode ? `${chartTheme}-dark` : chartTheme;
 
-  const normalized = metrics.reduce((acc, metricRaw) => {
+  const normalized = metrics.reduce((acc, metricRaw = {}) => {
     const { vineyard, status, unit = "kg" } = metricRaw;
 
     const actual =
