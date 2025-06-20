@@ -20,11 +20,7 @@ export default function GrapeFormDrawer({
     <EntityFormDrawer open={open} onClose={onClose}>
       <Box padding={2} marginTop={4}>
         <Typography variant="h5" fontWeight={"medium"}>
-          Buy Grapes
-        </Typography>
-
-        <Typography variant="body2" className="opacity-75">
-          {type === "create" ? "New batch" : "Existing batch"}
+          Register a grape batch
         </Typography>
       </Box>
 
