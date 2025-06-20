@@ -695,7 +695,7 @@ export default function VineyardForm({
                                   e.target.value
                                 )
                               }
-                              className="uppercase"
+                              className="capitalize"
                             >
                               {orientations.length > 0 &&
                                 orientations.map(
@@ -704,9 +704,9 @@ export default function VineyardForm({
                                       <MenuItem
                                         key={orientation + index}
                                         value={orientation}
-                                        className="uppercase"
+                                        className="capitalize"
                                       >
-                                        {orientation}
+                                        {orientation.split("-").join(" ")}
                                       </MenuItem>
                                     );
                                   }

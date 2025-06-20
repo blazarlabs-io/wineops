@@ -1,6 +1,13 @@
-import { TaskStatus } from "@/models/types/db";
-
-export const orientations = ["n", "ne", "nw", "s", "se", "sw", "e", "w"];
+export const orientations = [
+  "nort",
+  "north-east",
+  "north-west",
+  "south",
+  "south-east",
+  "south-west",
+  "east",
+  "west",
+];
 
 export const rowOrientations = [
   "north-south",

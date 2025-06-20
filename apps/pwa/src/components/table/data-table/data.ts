@@ -26,7 +26,7 @@ export function getData(): Vineyard[] {
             spacing: 0,
             rowOrientation: "",
             density: 0,
-            trellisSystem: false,
+            trellisSystem: "",
           },
           soilType: "",
           sunlightHours: 0,
