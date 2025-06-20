@@ -243,8 +243,8 @@ export const DataTable = <T extends DashboardEntity>({
       group:
         group.length > 0
           ? row.rowType === "group"
-            ? [...(newGroup?.group ?? group), ...row.group]
-            : [...(newGroup?.group ?? group), ...row.group, row.name]
+            ? (newGroup?.group ?? group)
+            : [...(newGroup?.group ?? group), row.name]
           : row.rowType === "group"
             ? [...row.group.slice(0, -2), row.group[row.group.length - 1]]
             : [...row.group.slice(0, -2), row.name],
