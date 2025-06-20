@@ -8,6 +8,7 @@ export type QuickActionsDrawerProps<T extends ActionsEntity> = {
   open: boolean;
   onOpenChange?: (open: boolean) => void;
   actions?: T;
+  dashboard?: string;
 };
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -24,6 +25,7 @@ export default function QuickActionsDrawer<T extends ActionsEntity>({
   open,
   onOpenChange,
   actions,
+  dashboard,
 }: QuickActionsDrawerProps<T>) {
   const handleDrawerClose = () => {
     if (onOpenChange) onOpenChange(false);
@@ -35,35 +37,33 @@ export default function QuickActionsDrawer<T extends ActionsEntity>({
 
   return (
     <Drawer
+      anchor="right"
+      open={open}
+      onClose={handleDrawerClose}
+      slotProps={{ backdrop: { invisible: true } }}
       sx={{
-        width: RIGHT_DRAWER_WIDTH + 8,
-        flexShrink: 0,
         "& .MuiDrawer-paper": {
           minWidth: RIGHT_DRAWER_WIDTH,
           overflowX: "hidden",
-        },
-        zIndex: (theme) => {
-          let z = 0;
-          if (open) {
-            z = theme.zIndex.drawer;
-          } else {
-            z = theme.zIndex.drawer - 100;
-          }
-          return z;
+          boxShadow: "-2px 0px 4px rgba(0, 0, 0, 0.075)",
         },
       }}
-      variant="persistent"
-      anchor="right"
-      open={open}
-      className="pointer-events-none"
+      className=""
     >
-      <DrawerHeader className="pointer-events-auto m-[0px] max-h-sfit p-[0px] pt-6 mt-[38px]">
+      <DrawerHeader
+        style={{ backgroundColor: "var(--mui-palette-background-default)" }}
+        className="pointer-events-auto m-[0px] max-h-sfit p-[0px] pt-6 mt-[38px]"
+      >
         <IconButton onClick={handleDrawerClose} className="">
           <Close className="w-4 h-4" />
         </IconButton>
       </DrawerHeader>
-      {/* * QUICK ACTIONS */}
-      <QuickActionsWidget onClick={handleActionClick} actions={actions} />
+      {/* * QUICK ACTIONS WIDGET */}
+      <QuickActionsWidget
+        onClick={handleActionClick}
+        actions={actions}
+        dashboard={dashboard}
+      />
     </Drawer>
   );
 }

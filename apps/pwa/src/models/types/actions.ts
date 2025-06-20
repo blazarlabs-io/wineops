@@ -20,43 +20,31 @@ export interface Subject {
   name: string;
 }
 
+export type VineyardSingleAction = {
+  exec: (uid: string, actionData: any, vineyard: Vineyard) => void;
+  form: any;
+  icon: string;
+};
+
 export type VineyardActions = {
-  harvest: {
-    exec: (
-      uid: string,
-      actionData: VineyardHarvestAction,
-      vineyard: Vineyard
-    ) => void;
-    form: any;
-    icon: string;
-  };
-  "lab-report": {
-    exec: (uid: string, actionData: any, vineyard: Vineyard) => void;
-    form: any;
-    icon: string;
-  };
-  irrigation: {
-    exec: (uid: string, actionData: any, vineyard: Vineyard) => void;
-    form: any;
-    icon: string;
-  };
+  harvest: VineyardSingleAction;
+  "lab-report": VineyardSingleAction;
+  irrigation: VineyardSingleAction;
 };
 
 export type ActionIcons = {
   [key: string]: string;
 };
 
+export type GrapeSingleAction = {
+  exec: (uid: string, actionData: any, grape: Grape) => void;
+  form: any;
+  icon: string;
+};
+
 export type GrapeActions = {
-  "grape-intake": {
-    exec: (uid: string, actionData: any, grape: Grape) => void;
-    form: any;
-    icon: string;
-  };
-  "grape-processing": {
-    exec: (uid: string, actionData: any, grape: Grape) => void;
-    form: any;
-    icon: string;
-  };
+  "grape-intake": GrapeSingleAction;
+  "grape-processing": GrapeSingleAction;
 };
 
 export type VineyardActionType = "harvest" | "lab-report" | "irrigation" | null;
@@ -201,3 +189,5 @@ export type ActionRelation = {
 };
 
 export type ActionsEntity = VineyardActions | GrapeActions | MustActions;
+
+export type SingleActionEntity = VineyardSingleAction | GrapeSingleAction;

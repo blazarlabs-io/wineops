@@ -257,14 +257,14 @@ export default function VineyardForm({
     <>
       {formData && formData !== undefined && (
         <div
-          className="px-4"
+          className="pl-4 pr-2 w-full"
           style={{ background: "var(--mui-palette-background-default)" }}
         >
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-4 space-x-4"
+            className="space-y-4 space-x-4 w-full"
           >
-            <div>
+            <div className="w-full">
               <Accordion
                 defaultExpanded
                 style={{
@@ -461,6 +461,7 @@ export default function VineyardForm({
                             fullWidth
                             onClick={() => {
                               handleArrayChange("cadastralNumber", cadastral);
+                              setCadastral("");
                             }}
                           >
                             Add
@@ -661,9 +662,6 @@ export default function VineyardForm({
                               {...register("info.location.elevation")}
                             />
                           </FormControl>
-                          <Typography variant="body1" className="max-w-fit">
-                            M
-                          </Typography>
                         </Stack>
                         {/* {errors?.info?.location?.elevation && (
                           <p className="text-sm text-destructive  mt-1">
@@ -770,9 +768,6 @@ export default function VineyardForm({
                                 )}
                               />
                             </FormControl>
-                            <Typography variant="body1" className="max-w-fit">
-                              M
-                            </Typography>
                           </Stack>
                           {/* {errors?.info?.vines?.plantingScheme?.spacing && (
                             <p className="text-sm text-destructive  mt-1">
@@ -865,9 +860,6 @@ export default function VineyardForm({
                                 )}
                               />
                             </FormControl>
-                            <Typography variant="body1" className="max-w-fit">
-                              M
-                            </Typography>
                           </Stack>
 
                           {/* {errors?.info?.vines?.plantingScheme?.density && (
@@ -1267,7 +1259,7 @@ export default function VineyardForm({
                 )} */}
             </div>
 
-            <Box display={"flex"} justifyContent={"end"} gap={2} px={2}>
+            <Box display={"flex"} justifyContent={"end"} gap={2} px={2} pb={4}>
               <FormControl>
                 <Button type="submit" variant="contained" className="mt-8">
                   Save

@@ -1,146 +1,100 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
-import { Icon } from "@iconify/react";
-import { GridView, Search } from "@mui/icons-material";
 import {
-  Box,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React from "react";
-import { useEffect, useState } from "react";
+  GrapeActions,
+  VineyardActions,
+  VineyardSingleAction,
+} from "@/models/types/actions";
+import { useCallback, useEffect, useState } from "react";
+import QuickActionsWidgetStepOne from "./step-one";
+import QuickActionsWidgetStepTwo from "./step-two";
+import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 
 export interface QuickActionsWidgetProps {
   actions?: any;
   onClick: (action: string) => void;
+  dashboard?: string;
 }
 
 export default function QuickActionsWidget({
   actions,
   onClick,
+  dashboard,
 }: QuickActionsWidgetProps) {
-  const [selectedAction, setSelectedAction] = useState<string>("");
-  const [actionsList, setActionsList] = useState<any>([]);
+  const [step, setStep] = useState(1);
+  const [selectedAction, setSelectedAction] = useState<any>(null);
+  const [formTitle, setFormTitle] = useState<string>("");
 
-  const handleActionClick = (action: string) => {
-    onClick(action);
-    setSelectedAction((prevAction) => (prevAction === action ? "" : action));
-  };
+  const handleActionClick = useCallback(
+    (action: string) => {
+      console.log("ACTION CLICKED", action);
+      onClick(action);
+      setSelectedAction(() => actions[action.split(" ").join("-")]);
+      setFormTitle(`${action} action`);
+      setStep(2);
+    },
+    [actions, onClick]
+  );
 
-  useEffect(() => {
-    if (actions) {
-      console.log("actions", actions);
-      const keys = Object.keys(actions);
-      keys.map((key, index) => {
-        keys[index] = key.split("-").join(" ");
-      });
-      setActionsList(keys);
-
-      if (keys.length === 1) {
-        setSelectedAction(keys[0]);
-      }
-    }
-  }, [actions]);
+  const handleBackClick = useCallback(() => {
+    setStep(1);
+  }, []);
 
   return (
-    <Box
-      px={2}
-      display={"flex"}
-      flexDirection={"column"}
-      gap={2}
-      className="pointer-events-auto"
+    <div
+      className="w-full h-full overflow-y-hidden"
+      style={{
+        minWidth: RIGHT_DRAWER_WIDTH,
+        maxWidth: RIGHT_DRAWER_WIDTH,
+        backgroundColor: "var(--mui-palette-background-default)",
+      }}
     >
-      <Box display={"flex"} alignItems={"center"} gap={1}>
-        <GridView />
-        <Typography variant="h5">Actions</Typography>
-      </Box>
-      <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}>
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="Search actions"
-          InputProps={{
-            startAdornment: (
-              <Box paddingRight={1}>
-                <Search />
-              </Box>
-            ),
-          }}
-        />
-        <List
-          sx={{
-            width: "100%",
-            bgcolor: "background.paper",
-            gap: 1,
-          }}
-          component="nav"
-          aria-labelledby="nested-list-subheader"
-        >
-          {actionsList &&
-            actionsList.length > 0 &&
-            actionsList.map((action: any) => (
-              <div key={action} className="w-full my-2">
-                <ListItemButton
-                  onClick={() => handleActionClick(action)}
-                  sx={{
-                    borderRadius: 2,
-                    border: 1,
-                    borderColor: "divider",
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    gap={1}
-                    alignItems={"center"}
-                    width={"100%"}
-                  >
-                    {actions && (
-                      <ListItemIcon
-                        sx={{ minWidth: "unset" }}
-                        className="border rounded-full p-1"
-                        style={{
-                          minWidth: "unset",
-                          backgroundColor: "var(--mui-palette-text-primary)",
-                        }}
-                      >
-                        <Icon
-                          icon={
-                            actions[action.split(" ").join("-").toLowerCase()]
-                              .icon as string
-                          }
-                          width={18}
-                          height={18}
-                          style={{
-                            color: "var(--mui-palette-background-default)",
-                          }}
-                        />
-                      </ListItemIcon>
-                    )}
-                    <ListItemText
-                      className="font-normal capitalize"
-                      primary={action}
-                    />
-                  </Stack>
-                </ListItemButton>
-
-                {action === selectedAction && (
-                  <Stack gap={2} py={2}>
-                    {/* <Form /> */}
-                    <React.Fragment>
-                      {actions[action.split(" ").join("-")].form}
-                    </React.Fragment>
-                  </Stack>
-                )}
-              </div>
-            ))}
-        </List>
-      </Box>
-    </Box>
+      {step === 1 && (
+        <>
+          {dashboard === "vineyards" && (
+            <QuickActionsWidgetStepOne<VineyardActions>
+              actions={actions}
+              onClick={handleActionClick}
+            />
+          )}
+          {dashboard === "grapes" && (
+            <QuickActionsWidgetStepOne<GrapeActions>
+              actions={actions}
+              onClick={handleActionClick}
+            />
+          )}
+          {dashboard === "primary-vinification" && (
+            <QuickActionsWidgetStepOne<VineyardActions>
+              actions={actions}
+              onClick={handleActionClick}
+            />
+          )}
+        </>
+      )}
+      {step === 2 && (
+        <>
+          {dashboard === "vineyards" && (
+            <QuickActionsWidgetStepTwo<VineyardSingleAction>
+              title={formTitle}
+              selectedAction={selectedAction}
+              onBackClick={handleBackClick}
+            />
+          )}
+          {dashboard === "grapes" && (
+            <QuickActionsWidgetStepTwo<VineyardSingleAction>
+              title={formTitle}
+              selectedAction={selectedAction}
+              onBackClick={handleBackClick}
+            />
+          )}
+          {dashboard === "primary-vinification" && (
+            <QuickActionsWidgetStepTwo<VineyardSingleAction>
+              title={formTitle}
+              selectedAction={selectedAction}
+              onBackClick={handleBackClick}
+            />
+          )}
+        </>
+      )}
+    </div>
   );
 }

@@ -5,16 +5,32 @@
   --background: var(--mui-palette-background-default);
   --foreground: #171717;
 }
-
+*/
 @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--mui-palette-background-default);
     --foreground: #ededed;
+    body {
+      scrollbar-color: var(--mui-palette-divider)
+        var(--mui-palette-background-dark);
+      scrollbar-width: thin;
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--mui-palette-background-dark);
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: var(--mui-palette-divider);
+        border-radius: 20px;
+      }
+    }
   }
-} */
+}
 
 @theme {
   --color-background: var(--mui-palette-background-default);
+  --color-background-dark: var(--mui-palette-background-paper);
   --color-foreground: var(--muy-palette-text-primary);
   --color-status-error: var(--mui-palette-error-main);
   --color-status-error-dark: var(--mui-palette-error-light);

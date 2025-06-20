@@ -177,12 +177,12 @@ export default function VineyardIrrigationActionForm({
     <>
       {formData && formData !== undefined && (
         <div
-          className="pl-4 w-full border-l"
+          className="w-full pr-4"
           style={{ borderColor: "var(--mui-palette-divider)" }}
         >
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
             <div className="w-full">
-              <div className="pl-4 flex flex-col gap-4 w-full">
+              <div className="flex flex-col gap-4 w-full">
                 {/* * ID - HIDDEN */}
                 <div className="hidden">
                   {/* <Label htmlFor="id">Id</Label> */}
