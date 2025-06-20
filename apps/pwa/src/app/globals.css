@@ -29,8 +29,8 @@
 }
 
 @theme {
-  --color-background: var(--mui-palette-background-default);
-  --color-background-dark: var(--mui-palette-background-paper);
+  --color-background: #ffffff;
+  --color-background-dark: #121212;
   --color-foreground: var(--muy-palette-text-primary);
   --color-status-error: var(--mui-palette-error-main);
   --color-status-error-dark: var(--mui-palette-error-light);

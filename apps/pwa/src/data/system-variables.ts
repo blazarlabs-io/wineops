@@ -1,7 +1,5 @@
-import { TaskStatus } from "@/models/types/db";
-
 export const orientations = [
-  "north",
+  "nort",
   "north-east",
   "north-west",
   "south",
@@ -12,14 +10,10 @@ export const orientations = [
 ];
 
 export const rowOrientations = [
-  "north",
-  "north-east",
-  "north-west",
-  "south",
-  "south-east",
-  "south-west",
-  "east",
-  "west",
+  "north-south",
+  "east-west",
+  "along-the-slope",
+  "contour-planting",
 ];
 
 export const soilTypes = [

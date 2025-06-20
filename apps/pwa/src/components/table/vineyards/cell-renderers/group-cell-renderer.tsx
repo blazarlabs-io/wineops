@@ -125,8 +125,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
               <CertificationsDataDisplay
                 certifications={{
                   eco: { active: false, fileUrl: "" },
+                  bio: { active: false, fileUrl: "" },
                   igp: { active: false, fileUrl: "" },
                   dop: { active: false, fileUrl: "" },
+                  ice: { active: false, fileUrl: "" },
                 }}
               />
             </div>

@@ -30,7 +30,7 @@ const vineyardSample: Vineyard = {
         spacing: 0,
         rowOrientation: "",
         density: 0,
-        trellisSystem: false,
+        trellisSystem: "",
       },
       soilType: "",
       sunlightHours: 0,
@@ -40,11 +40,19 @@ const vineyardSample: Vineyard = {
         active: false,
         fileUrl: "",
       },
+      bio: {
+        active: false,
+        fileUrl: "",
+      },
       igp: {
         active: false,
         fileUrl: "",
       },
       dop: {
+        active: false,
+        fileUrl: "",
+      },
+      ice: {
         active: false,
         fileUrl: "",
       },

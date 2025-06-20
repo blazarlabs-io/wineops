@@ -59,7 +59,7 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
             <>
               {index <= 2 && (
                 <Box
-                  key={index}
+                  key={index + v}
                   display={"flex"}
                   flexDirection={"column"}
                   justifyContent={"center"}

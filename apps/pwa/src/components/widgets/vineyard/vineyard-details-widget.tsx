@@ -128,7 +128,7 @@ export default function VineyardDetailsWidget({
                     ? (
                         new Date().getFullYear() -
                         localVineyard.info?.vines?.yearOfPlantation
-                      ).toString()
+                      ).toString() + " years"
                     : "N/A"
                 }
               />
@@ -141,11 +141,17 @@ export default function VineyardDetailsWidget({
               />
               <SimpleDataDisplay
                 label="Orientation"
-                value={localVineyard.info?.location?.orientation || "N/A"}
+                value={
+                  localVineyard.info?.location?.orientation
+                    .split("-")
+                    .join(" ") || "N/A"
+                }
               />
               <SimpleDataDisplay
                 label="Sunlight Hours"
-                value={localVineyard.info?.vines?.sunlightHours || "N/A"}
+                value={
+                  localVineyard.info?.vines?.sunlightHours + " hours" || "N/A"
+                }
               />
               <SimpleDataDisplay
                 label="Soil Type"
@@ -218,30 +224,31 @@ export default function VineyardDetailsWidget({
                 <SimpleDataDisplay
                   label="Spacing"
                   value={
-                    localVineyard.info.vines.plantingScheme.spacing.toString() ||
-                    "N/A"
+                    localVineyard.info?.vines?.plantingScheme?.spacing?.toString() +
+                      " m" || "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Row Orientation"
                   value={
-                    localVineyard.info.vines.plantingScheme.rowOrientation.toString() ||
-                    "N/A"
+                    localVineyard.info?.vines?.plantingScheme?.rowOrientation
+                      ?.toString()
+                      .split("-")
+                      .join(" ") || "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Density"
                   value={
-                    localVineyard.info.vines.plantingScheme.density.toString() ||
+                    localVineyard.info?.vines?.plantingScheme?.density?.toString() ||
                     "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Trellis System"
                   value={
-                    localVineyard.info.vines?.plantingScheme?.trellisSystem
-                      ? "Yes"
-                      : "No"
+                    localVineyard.info?.vines?.plantingScheme?.trellisSystem?.toString() ||
+                    "N/A"
                   }
                 />
               </div>

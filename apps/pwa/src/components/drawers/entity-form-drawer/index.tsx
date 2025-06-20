@@ -28,6 +28,7 @@ export default function EntityFormDrawer({
           background: "var(--mui-palette-background-default)",
           minHeight: "100vh",
           height: "100%",
+          overflow: "hidden",
         }}
       >
         <Box sx={{ display: "flex", justifyContent: "end" }}>

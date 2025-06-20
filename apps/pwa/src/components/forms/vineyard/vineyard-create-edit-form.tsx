@@ -18,7 +18,7 @@ import {
 } from "@/models/types/db";
 import { generateYearsList } from "@/utils/generators";
 import { joiResolver } from "@hookform/resolvers/joi";
-import { ExpandMore } from "@mui/icons-material";
+import { Add, ExpandMore, ReceiptLong } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -29,19 +29,19 @@ import {
   Checkbox,
   Chip,
   FormControl,
-  FormControlLabel,
   TextField as Input,
   InputLabel,
   MenuItem,
   Stack,
   TextField,
   Typography,
+  useColorScheme,
 } from "@mui/material";
 import Select from "@mui/material/Select";
 import { Timestamp } from "firebase/firestore";
 import { Leaf, MapPin } from "lucide-react";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export type VineyardFormProps = {
@@ -49,21 +49,24 @@ export type VineyardFormProps = {
   vineyard: Vineyard | null;
   closeDrawer?: () => void;
   type?: FormMode;
+  onSave?: (data: Vineyard) => void;
+  clicked?: boolean;
 };
 
 export default function VineyardForm({
   vineyard,
   closeDrawer,
   type = "create",
+  onSave,
+  clicked,
 }: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-
+  const { mode } = useColorScheme();
   const { vineyards } = useVineyard();
   const {
     register,
     handleSubmit,
-    getValues,
     control,
     setValue,
     reset,
@@ -74,6 +77,7 @@ export default function VineyardForm({
 
   const [formData, setFormData] = useState<Vineyard | null>(vineyard);
   const [cadastral, setCadastral] = useState<string>("");
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
     const _path = "info.location.map";
@@ -136,9 +140,6 @@ export default function VineyardForm({
         }
       }
 
-      console.log("XXXXXXXXXXXXXXXXXXXXX");
-      console.log(_path, value as typeof value);
-
       setValue(_path as string, _value as typeof value);
 
       const path = _path.split(".");
@@ -160,6 +161,8 @@ export default function VineyardForm({
 
   const handleCreateVineyard = useCallback(
     async (uid: string, data: any) => {
+      console.log("DATA", type, data);
+
       if (type === "create") data.group = [data.name];
 
       data.createdAt = Timestamp.now();
@@ -167,7 +170,12 @@ export default function VineyardForm({
       try {
         // * Check if vineyard already exists
         const getOneRes: DbResponse = await db.vineyard.getOne(uid, data.id);
-        if (getOneRes.status === 200 && getOneRes.data !== null) {
+
+        if (
+          getOneRes.status === 200 &&
+          getOneRes.data !== null &&
+          getOneRes.data !== undefined
+        ) {
           const { id, name, group = formData?.group } = data;
 
           const newData = {
@@ -225,21 +233,23 @@ export default function VineyardForm({
   );
 
   const onSubmit = (data: any, e: any) => {
+    console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    console.log("[VINEYARD FORM SUBMIT]", data);
+    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
     e.stopPropagation();
     e.preventDefault();
-    console.log("[VINEYARD FORM SUBMIT]", data);
     handleCreateVineyard(user?.uid || "", data);
   };
 
   useEffect(() => {
-    console.log("[VINEYARD FORM]", vineyard);
     if (vineyard) {
+      vineyard.cadastralNumber = vineyard.cadastralNumber || [];
       if (vineyard.name.length > 0) {
-        console.log("EXISTING VINEYARD", vineyard);
+        // console.log("EXISTING VINEYARD", vineyard);
         reset(vineyard);
         setFormData(vineyard);
       } else {
-        console.log("NEW VINEYARD", vineyard);
+        // console.log("NEW VINEYARD", vineyard);
         setValue("name", `Vineyard ${vineyards?.length + 1}`);
         setFormData(vineyard);
         reset(vineyard);
@@ -253,23 +263,39 @@ export default function VineyardForm({
     }
   }, [errors]);
 
+  useEffect(() => {
+    if (clicked && btnRef.current) {
+      btnRef.current.click();
+      onSave?.(formData || ({} as Vineyard));
+    }
+  }, [clicked, formData, onSave]);
+
+  useEffect(() => {
+    if (mode) {
+      console.log("MODE", mode);
+    }
+  }, [mode]);
+
   return (
     <>
       {formData && formData !== undefined && (
         <div
-          className="pl-4 pr-2 w-full"
+          className="pl-0 pr-0 w-full"
           style={{ background: "var(--mui-palette-background-default)" }}
         >
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-4 space-x-4 w-full"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
             <div className="w-full">
               <Accordion
                 defaultExpanded
-                style={{
-                  backgroundColor: "var(--mui-palette-background-paper)",
+                sx={{
+                  background:
+                    mode === "dark"
+                      ? "#121212 !important"
+                      : "#ffffff !important",
+                  borderBottom:
+                    "1px solid var(--mui-palette-divider) !important",
                 }}
+                disableGutters
               >
                 <AccordionSummary
                   expandIcon={<ExpandMore />}
@@ -369,9 +395,9 @@ export default function VineyardForm({
                           }}
                           className="capitalize"
                         >
-                          {Object.values(WineColor).map((grapeColor) => (
+                          {Object.values(WineColor).map((grapeColor, index) => (
                             <MenuItem
-                              key={grapeColor}
+                              key={grapeColor + index}
                               value={grapeColor}
                               className="capitalize"
                             >
@@ -402,7 +428,6 @@ export default function VineyardForm({
                           name="cadastralNumber"
                           control={control}
                           render={({ field }) => {
-                            console.log(field);
                             if (
                               field.value !== undefined &&
                               field.value.length > 0
@@ -431,11 +456,7 @@ export default function VineyardForm({
                                 </Stack>
                               );
                             } else {
-                              return (
-                                <Typography variant="body2">
-                                  No items to display
-                                </Typography>
-                              );
+                              return <></>;
                             }
                           }}
                         />
@@ -456,13 +477,14 @@ export default function VineyardForm({
                           />
                           <Button
                             type="button"
-                            variant="contained"
+                            variant="outlined"
                             color="primary"
                             fullWidth
                             onClick={() => {
                               handleArrayChange("cadastralNumber", cadastral);
                               setCadastral("");
                             }}
+                            startIcon={<Add />}
                           >
                             Add
                           </Button>
@@ -482,7 +504,17 @@ export default function VineyardForm({
                   </div>
                 </AccordionDetails>
               </Accordion>
-              <Accordion>
+              <Accordion
+                sx={{
+                  background:
+                    mode === "dark"
+                      ? "#121212 !important"
+                      : "#ffffff !important",
+                  borderBottom:
+                    "1px solid var(--mui-palette-divider) !important",
+                }}
+                disableGutters
+              >
                 <AccordionSummary
                   expandIcon={<ExpandMore />}
                   aria-controls="panel2-content"
@@ -500,7 +532,6 @@ export default function VineyardForm({
                       {/* ? LOCATION */}
 
                       {/* * MAP */}
-                      {/* <p className="text-sm font-semibold">Map</p> */}
                       <div className="w-full bg-muted rounded-md min-h-[320px] relative">
                         <PolygonDrawingMap
                           initialCoordinates={formData.info.location.map}
@@ -510,7 +541,6 @@ export default function VineyardForm({
 
                       {/* * SURFACE */}
                       <div className="flex flex-col gap-2">
-                        {/* <Label htmlFor="info.location.surface">Surface Area</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter the surface area of the vineyard (Ha)
                         </InputLabel>
@@ -538,11 +568,14 @@ export default function VineyardForm({
                           </FormControl>
                         </Stack>
 
-                        {/* {errors?.info?.location?.surface && (
+                        {(errors?.info as any)?.location?.surface && (
                           <p className="text-sm text-destructive  mt-1">
-                            {errors?.info.location.surface.message as string}
+                            {
+                              (errors?.info as any)?.location.surface
+                                .message as string
+                            }
                           </p>
-                        )} */}
+                        )}
                       </div>
 
                       {/* * COUNTRY */}
@@ -555,92 +588,53 @@ export default function VineyardForm({
                             Select the country of the vineyard
                           </Typography>
                           <Autocomplete
-                            id="country"
+                            id="info.location.country"
                             options={countries.map((country) => country.name)}
                             filterSelectedOptions
                             renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Select a country"
-                                // placeholder="Select a country"
-                              />
+                              <TextField {...params} label="Select a country" />
                             )}
+                            value={formData?.info?.location.country as string}
+                            onChange={(e, value) => {
+                              handleSelectChange(
+                                "info.location.country",
+                                value as string
+                              );
+                            }}
                           />
-                          {/* <FormControl>
-                            <InputLabel
-                              id="info.location.country"
-                              className="text-sm text-muted-foreground"
-                            >
-                              Select a country
-                            </InputLabel>
-                            <Select
-                              name="info.location.country"
-                              id="info.location.country"
-                              variant="outlined"
-                              label="Select a country"
-                              value={
-                                formData?.info?.location?.country as string
-                              }
-                              onChange={(e) =>
-                                handleSelectChange(
-                                  "info.location.country",
-                                  e.target.value
-                                )
-                              }
-                            >
-                              {countries.length > 0 &&
-                                countries.map(
-                                  (country: { name: string; code: string }) => {
-                                    return (
-                                      <MenuItem
-                                        key={country.name}
-                                        value={country.name
-                                          .toLocaleLowerCase()
-                                          .split(" ")
-                                          .join("-")}
-                                      >
-                                        {country.name}
-                                      </MenuItem>
-                                    );
-                                  }
-                                )}
-                            </Select>
-                          </FormControl> */}
-
-                          {/* {errors?.info?.location?.country && (
+                          {(errors?.info as any)?.location?.country && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.location?.country}
+                              {(errors?.info as any)?.location?.country}
                             </p>
-                          )} */}
+                          )}
                         </div>
                       </div>
 
                       {/* * CITY */}
                       <div className="flex flex-col gap-2">
                         <InputLabel className="text-sm text-muted-foreground">
-                          Enter the city of your vineyard.
+                          Enter the City/Region of the vineyard
                         </InputLabel>
                         <FormControl>
                           <Input
                             id="info.location.city"
                             type="text"
                             variant="outlined"
-                            label="City"
+                            label="City/Region"
                             {...register("info.location.city")}
                           />
                         </FormControl>
-                        {/* {errors?.info?.location?.city && (
+                        {(errors?.info as any)?.location?.city && (
                           <p className="text-sm text-destructive  mt-1">
-                            {errors?.info?.location?.city}
+                            {(errors?.info as any)?.location?.city}
                           </p>
-                        )} */}
+                        )}
                       </div>
 
                       {/* * ELEVATION */}
                       <div className="flex flex-col gap-2 w-full">
-                        {/* <Label htmlFor="info.location.elevation">Elevation</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
-                          Enter the elevation of your vineyard.
+                          Enter the elevation of the vineyard (m)
                         </InputLabel>
                         <Stack
                           direction={"row"}
@@ -654,7 +648,7 @@ export default function VineyardForm({
                               id="info.location.elevation"
                               type="number"
                               variant="outlined"
-                              label="Elevation"
+                              label="Elevation (m)"
                               inputProps={{
                                 step: "0.1",
                                 min: 0,
@@ -663,26 +657,35 @@ export default function VineyardForm({
                             />
                           </FormControl>
                         </Stack>
-                        {/* {errors?.info?.location?.elevation && (
+                        {(errors?.info as any)?.location?.elevation && (
                           <p className="text-sm text-destructive  mt-1">
-                            {errors?.info?.location?.elevation}
+                            {(errors?.info as any)?.location?.elevation}
                           </p>
-                        )} */}
+                        )}
                       </div>
 
                       {/* * ORIENTATION */}
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 w-full">
-                          {/* <Label htmlFor="info.location.orientation">Orientation</Label> */}
-                          <InputLabel className="text-sm text-muted-foreground">
-                            Select the orientation of your vineyard.
-                          </InputLabel>
+                          <Typography
+                            color="textSecondary"
+                            className="text-sm text-muted-foreground"
+                          >
+                            Select the exposure of the vineyard
+                          </Typography>
 
                           <FormControl>
+                            <InputLabel
+                              id="orientation-select"
+                              className="text-muted-foreground"
+                            >
+                              Select exposure
+                            </InputLabel>
                             <Select
                               name="info.location.orientation"
-                              id="info.location.orientation"
+                              labelId="orientation-select"
                               variant="outlined"
+                              label="Select exposure"
                               value={
                                 formData?.info?.location?.orientation as string
                               }
@@ -694,31 +697,27 @@ export default function VineyardForm({
                               }
                               className="capitalize"
                             >
-                              <MenuItem
-                                value="select-orientation"
-                                className="capitalize"
-                              >
-                                <em>Select Orientation</em>
-                              </MenuItem>
                               {orientations.length > 0 &&
-                                orientations.map((orientation: string) => {
-                                  return (
-                                    <MenuItem
-                                      key={orientation}
-                                      value={orientation}
-                                      className="capitalize"
-                                    >
-                                      {orientation}
-                                    </MenuItem>
-                                  );
-                                })}
+                                orientations.map(
+                                  (orientation: string, index: number) => {
+                                    return (
+                                      <MenuItem
+                                        key={orientation + index}
+                                        value={orientation}
+                                        className="capitalize"
+                                      >
+                                        {orientation.split("-").join(" ")}
+                                      </MenuItem>
+                                    );
+                                  }
+                                )}
                             </Select>
                           </FormControl>
-                          {/* {errors?.info?.location?.country && (
+                          {(errors?.info as any)?.location?.orientation && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.location?.country}
+                              {(errors?.info as any)?.location?.orientation}
                             </p>
-                          )} */}
+                          )}
                         </div>
                       </div>
 
@@ -733,14 +732,12 @@ export default function VineyardForm({
                           Planting Scheme
                         </Typography>
                       </div>
-
+                      {/* * SPACING */}
                       <div className="flex flex-col gap-4">
-                        {/* * SPACING */}
                         <div className="flex flex-col gap-2 justify-between w-full">
                           <div className="flex flex-col gap-2">
-                            {/* <Label htmlFor="info.vines.plantingScheme.spacing">Spacing</Label> */}
                             <InputLabel className="text-sm text-muted-foreground">
-                              Spacing in meters for your planting scheme.
+                              Enter the spacing between rows (m)
                             </InputLabel>
                           </div>
 
@@ -757,39 +754,48 @@ export default function VineyardForm({
                                 id="info.vines.plantingScheme.spacing"
                                 type="number"
                                 variant="outlined"
-                                label="Spacing"
+                                label="Spacing (m)"
                                 inputProps={{
                                   step: "0.1",
                                   min: 0,
                                 }}
-                                // step={"any"}
                                 {...register(
                                   "info.vines.plantingScheme.spacing"
                                 )}
                               />
                             </FormControl>
                           </Stack>
-                          {/* {errors?.info?.vines?.plantingScheme?.spacing && (
+                          {(errors?.info as any)?.vines?.plantingScheme
+                            ?.spacing && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.plantingScheme?.spacing}
+                              {
+                                (errors?.info as any)?.vines?.plantingScheme
+                                  ?.spacing
+                              }
                             </p>
-                          )} */}
+                          )}
                         </div>
 
                         {/* * ROW ORIENTATION */}
 
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
-                            {/* <Label htmlFor="info.vines.plantingScheme.rowOrientation">Orientation</Label> */}
-                            <InputLabel className="text-sm text-muted-foreground">
-                              Row orientation for your planting scheme.
-                            </InputLabel>
+                            <Typography
+                              color="textSecondary"
+                              className="text-sm text-muted-foreground"
+                            >
+                              Select the row orientation
+                            </Typography>
 
                             <FormControl>
+                              <InputLabel id="row-orientation-select">
+                                Select orientation
+                              </InputLabel>
                               <Select
                                 name="info.vines.plantingScheme.rowOrientation"
                                 id="info.vines.plantingScheme.rowOrientation"
                                 variant="outlined"
+                                label="Select orientation"
                                 value={
                                   formData?.info?.vines?.plantingScheme
                                     ?.rowOrientation as string
@@ -802,31 +808,27 @@ export default function VineyardForm({
                                 }
                                 className="capitalize"
                               >
-                                <MenuItem
-                                  value="select-orientation"
-                                  className="capitalize"
-                                >
-                                  <em>Select Orientation</em>
-                                </MenuItem>
                                 {rowOrientations.length > 0 &&
-                                  rowOrientations.map((orientation: string) => {
-                                    return (
-                                      <MenuItem
-                                        key={orientation}
-                                        value={orientation}
-                                        className="capitalize"
-                                      >
-                                        {orientation}
-                                      </MenuItem>
-                                    );
-                                  })}
+                                  rowOrientations.map(
+                                    (orientation: string, index: number) => {
+                                      return (
+                                        <MenuItem
+                                          key={index + orientation}
+                                          value={orientation}
+                                          className="capitalize"
+                                        >
+                                          {orientation}
+                                        </MenuItem>
+                                      );
+                                    }
+                                  )}
                               </Select>
                             </FormControl>
-                            {/* {errors?.info?.location?.country && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.location?.country}
-                            </p>
-                          )} */}
+                            {(errors?.info as any)?.location?.country && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {(errors?.info as any)?.location?.country}
+                              </p>
+                            )}
                           </div>
                         </div>
 
@@ -834,7 +836,7 @@ export default function VineyardForm({
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
                             <InputLabel className="text-sm text-muted-foreground">
-                              Density of your planting scheme.
+                              Enter distance between vines on the same row (m)
                             </InputLabel>
                           </div>
 
@@ -850,10 +852,11 @@ export default function VineyardForm({
                                 id="info.vines.plantingScheme.density"
                                 type="number"
                                 variant="outlined"
-                                label="Density"
+                                label="Distance (m)"
                                 inputProps={{
-                                  step: "0.1",
+                                  step: "0.01",
                                   min: 0,
+                                  max: 100,
                                 }}
                                 {...register(
                                   "info.vines.plantingScheme.density"
@@ -862,116 +865,120 @@ export default function VineyardForm({
                             </FormControl>
                           </Stack>
 
-                          {/* {errors?.info?.vines?.plantingScheme?.density && (
+                          {(errors?.info as any)?.vines?.plantingScheme
+                            ?.density && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.plantingScheme?.density}
+                              {
+                                (errors?.info as any)?.vines?.plantingScheme
+                                  ?.density
+                              }
                             </p>
-                          )} */}
+                          )}
                         </div>
 
                         {/* * PLANTS PER HA */}
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
                             <InputLabel className="text-sm text-muted-foreground">
-                              Plants per HA
+                              Enter the plants per Ha
                             </InputLabel>
                           </div>
                           <Input
                             id="info.vines.plantingScheme.plantsPerHa"
                             type="number"
                             variant="outlined"
-                            label="Plants per HA"
+                            label="Plants per Ha"
+                            inputProps={{
+                              step: "1",
+                              min: 0,
+                              max: 100000,
+                            }}
                             {...register(
                               "info.vines.plantingScheme.plantsPerHa"
                             )}
                           />
-                          {/* {errors?.info?.vines?.plantingScheme?.density && (
+                          {(errors?.info as any)?.vines?.plantingScheme
+                            ?.density && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.plantingScheme?.density}
+                              {
+                                (errors?.info as any)?.vines?.plantingScheme
+                                  ?.density
+                              }
                             </p>
-                          )} */}
+                          )}
                         </div>
 
                         {/* * TRELLIS SYSTEM  */}
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-2">
-                              <FormControl>
-                                <Checkbox
-                                  id="info.vines.plantingScheme.trellisSystem"
-                                  checked={
-                                    formData.info.vines.plantingScheme
-                                      .trellisSystem
-                                  }
-                                  onChange={(e) =>
-                                    handleCheckboxChange(
-                                      "info.vines.plantingScheme.trellisSystem",
-                                      e.target.checked
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                              <span className="text-sm text-muted-foreground">
-                                Does your vineyard have a trellis system?
-                              </span>
-                            </div>
+                            <InputLabel className="text-sm text-muted-foreground">
+                              Enter the vineyard trellis system
+                            </InputLabel>
                           </div>
-
-                          {/* {errors?.info?.vines?.plantingScheme?.trellisSystem && (
+                          <Input
+                            id="info.vines.plantingScheme.trellisSystem"
+                            variant="outlined"
+                            label="Trellis system type"
+                            {...register(
+                              "info.vines.plantingScheme.trellisSystem"
+                            )}
+                          />
+                          {(errors?.info as any)?.vines?.plantingScheme
+                            ?.trellisSystem && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.plantingScheme?.trellisSystem}
+                              {
+                                (errors?.info as any)?.vines?.plantingScheme
+                                  ?.trellisSystem
+                              }
                             </p>
-                          )} */}
+                          )}
                         </div>
                       </div>
-
                       {/* * YEAR OF PLANTATION */}
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 w-full">
-                          {/* <Label htmlFor="info.vines.yearOfPlantation">Year of plantation</Label> */}
-                          <span className="text-sm text-muted-foreground">
-                            Enter the year of plantation of your vineyard.
-                          </span>
-
-                          <FormControl>
-                            <Select
-                              name="info.vines.yearOfPlantation"
-                              id="info.vines.yearOfPlantation"
-                              variant="outlined"
-                              value={formData?.info?.vines?.yearOfPlantation}
-                              onChange={(e) =>
-                                handleSelectChange(
-                                  "info.vines.yearOfPlantation",
-                                  e.target.value
-                                )
-                              }
+                          <Stack
+                            direction={"row"}
+                            alignItems={"center"}
+                            justifyContent={"space-between"}
+                          >
+                            <Typography
+                              color="textSecondary"
+                              className="text-sm text-muted-foreground"
                             >
-                              {/* <MenuItem value="select-country">
-                                <em>Select Country</em>
-                              </MenuItem> */}
-                              {generateYearsList().map(
-                                (year: number, index: number) => {
-                                  return (
-                                    <MenuItem
-                                      key={year + Math.random() * index}
-                                      value={year}
-                                    >
-                                      {year}
-                                    </MenuItem>
-                                  );
-                                }
-                              )}
-                            </Select>
-                          </FormControl>
+                              Select the year of plantation of the vineyard
+                            </Typography>
+                            {formData?.info?.vines?.yearOfPlantation && (
+                              <Typography color="primary" variant="body2">
+                                {new Date().getFullYear() -
+                                  formData?.info?.vines?.yearOfPlantation}{" "}
+                                years
+                              </Typography>
+                            )}
+                          </Stack>
+                          <Autocomplete
+                            id="info.vines.yearOfPlantation"
+                            options={generateYearsList()}
+                            value={formData?.info?.vines?.yearOfPlantation}
+                            filterSelectedOptions
+                            renderInput={(params) => (
+                              <TextField {...params} label="Plantation year" />
+                            )}
+                            onChange={(e, value) => {
+                              handleSelectChange(
+                                "info.vines.yearOfPlantation",
+                                value as number
+                              );
+                            }}
+                          />
 
-                          {/* {errors?.info?.vines?.yearOfPlantation && (
+                          {(errors?.info as any)?.vines?.yearOfPlantation && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.yearOfPlantation}
+                              {(errors?.info as any)?.vines?.yearOfPlantation}
                             </p>
-                          )} */}
+                          )}
                         </div>
                       </div>
-
                       {/* * SUNLIGHT HOURS */}
                       <div className="flex flex-col gap-2 justify-between">
                         <div className="flex flex-col gap-2">
@@ -991,11 +998,15 @@ export default function VineyardForm({
                           }}
                           {...register("info.vines.sunlightHours")}
                         />
-                        {/* {errors?.info?.vines?.plantingScheme?.rowOrientation && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.plantingScheme?.rowOrientation}
-                            </p>
-                          )} */}
+                        {(errors?.info as any)?.vines?.plantingScheme
+                          ?.rowOrientation && (
+                          <p className="text-sm text-destructive  mt-1">
+                            {
+                              (errors?.info as any)?.vines?.plantingScheme
+                                ?.rowOrientation
+                            }
+                          </p>
+                        )}
                       </div>
 
                       {/* * SOIL TYPE */}
@@ -1012,112 +1023,144 @@ export default function VineyardForm({
                               label="Soil Type"
                               {...register("info.vines.soilType")}
                             />
-                            {/* <Select
-                              id="info.vines.soilType"
-                              value={formData?.info?.vines?.soilType}
-                              label="Soil Type"
-                              variant="outlined"
-                              onChange={(e) =>
-                                handleSelectChange(
-                                  "info.vines.soilType",
-                                  e.target.value
-                                )
-                              }
-                            >
-                              {soilTypes.map((type) => (
-                                <MenuItem key={type} value={type}>
-                                  {type}
-                                </MenuItem>
-                              ))}
-                            </Select> */}
                           </FormControl>
 
-                          {/* {errors?.info?.vines?.soilType && (
+                          {(errors?.info as any)?.vines?.soilType && (
                             <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.vines?.soilType}
+                              {(errors?.info as any)?.vines?.soilType}
                             </p>
-                          )} */}
+                          )}
                         </div>
                       </div>
 
                       {/* ? END OF VINES */}
                       {/* ? CERTIFICATIONS */}
                       <div className="flex items-center gap-2 mt-2">
-                        <Leaf className="text-muted-foreground w-4 h-4" />
+                        <ReceiptLong className="text-muted-foreground w-4 h-4" />
                         <Typography className="font-medium text-base">
-                          Certifications
+                          Vineyard Classification / Dessignation
                         </Typography>
                       </div>
 
-                      <div className="flex flex-col">
-                        {/* * ECO/BIO */}
-                        <div className="flex flex-col gap-2 justify-between">
-                          <div className="flex flex-col gap-2">
-                            {/* <Label htmlFor="info.certifications.eco.active">Eco/Bio</Label> */}
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="info.certifications.eco.active"
-                                checked={
-                                  formData?.info?.certifications?.eco?.active
-                                }
-                                onChange={(e) =>
-                                  handleCheckboxChange(
-                                    "info.certifications.eco.active",
-                                    e.target.checked
-                                  )
-                                }
-                                // {...register("info.certifications.eco.active")}
-                              />
-                              <span className="text-sm text-muted-foreground">
-                                Is your vineyard certified Eco/Bio?
-                              </span>
+                      <div>
+                        <div className="grid grid-cols-2">
+                          {/* * ECO */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              {/* <Label htmlFor="info.certifications.eco.active">Eco/Bio</Label> */}
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id="info.certifications.eco.active"
+                                  checked={
+                                    formData?.info?.certifications?.eco?.active
+                                  }
+                                  onChange={(e) =>
+                                    handleCheckboxChange(
+                                      "info.certifications.eco.active",
+                                      e.target.checked
+                                    )
+                                  }
+                                  // {...register("info.certifications.eco.active")}
+                                />
+                                <span className="text-sm text-muted-foreground">
+                                  ECO certified
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* * BIO */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              {/* <Label htmlFor="info.certifications.bio.active">Eco/Bio</Label> */}
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id="info.certifications.bio"
+                                  checked={
+                                    formData?.info?.certifications?.bio?.active
+                                  }
+                                  onChange={(e) =>
+                                    handleCheckboxChange(
+                                      "info.certifications.bio.active",
+                                      e.target.checked
+                                    )
+                                  }
+                                  // {...register("info.certifications.bio.active")}
+                                />
+                                <span className="text-sm text-muted-foreground">
+                                  BIO certified
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* * IGP */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              {/* <Label htmlFor="info.certifications.igp.active">IGP</Label> */}
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id="info.certifications.igp.active"
+                                  checked={
+                                    formData?.info?.certifications?.igp?.active
+                                  }
+                                  onChange={(e) =>
+                                    handleCheckboxChange(
+                                      "info.certifications.igp.active",
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                <span className="text-sm text-muted-foreground">
+                                  IGP certified
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* * DOP */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id="info.certifications.dop.active"
+                                  checked={
+                                    formData?.info?.certifications?.dop?.active
+                                  }
+                                  onChange={(e) =>
+                                    handleCheckboxChange(
+                                      "info.certifications.dop.active",
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                <span className="text-sm text-muted-foreground">
+                                  DOP certified
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
-
-                        {/* * IGP */}
-                        <div className="flex flex-col gap-2 justify-between">
-                          <div className="flex flex-col gap-2">
-                            {/* <Label htmlFor="info.certifications.igp.active">IGP</Label> */}
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="info.certifications.igp.active"
-                                checked={
-                                  formData?.info?.certifications?.igp?.active
-                                }
-                                onChange={(e) =>
-                                  handleCheckboxChange(
-                                    "info.certifications.igp.active",
-                                    e.target.checked
-                                  )
-                                }
-                              />
-                              <span className="text-sm text-muted-foreground">
-                                Is your vineyard certified IGP?
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* * DOP */}
+                        {/* * ICO */}
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
                             {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
                             <div className="flex items-center gap-2">
                               <Checkbox
-                                id="info.certifications.dop.active"
+                                id="info.certifications.ice.active"
                                 checked={
-                                  formData?.info?.certifications?.dop?.active
+                                  formData?.info?.certifications?.ice?.active
                                 }
                                 onChange={(e) =>
                                   handleCheckboxChange(
-                                    "info.certifications.dop.active",
+                                    "info.certifications.ice.active",
                                     e.target.checked
                                   )
                                 }
                               />
                               <span className="text-sm text-muted-foreground">
-                                Is your vineyard certified DOP?
+                                Designated for ice wine
                               </span>
                             </div>
                           </div>
@@ -1129,123 +1172,94 @@ export default function VineyardForm({
                   </div>
                 </AccordionDetails>
               </Accordion>
-              <Accordion>
+              <Accordion
+                sx={{
+                  background:
+                    mode === "dark"
+                      ? "#121212 !important"
+                      : "#ffffff !important",
+                  borderBottom:
+                    "1px solid var(--mui-palette-divider) !important",
+                }}
+                disableGutters
+              >
                 <AccordionSummary
                   expandIcon={<ExpandMore />}
                   aria-controls="panel3-content"
                   id="panel3-header"
                 >
-                  <Typography component="span">GrapeDetails</Typography>
+                  <Typography component="span">Grape Details</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <div className="p-4 flex flex-col gap-4">
+                    {/* * CLONAL SELECTION */}
                     <div className="flex flex-col gap-2 justify-between">
                       <div className="flex flex-col gap-2">
-                        {/* <Label htmlFor="grape.clonalSelection">Clonal Selection</Label> */}
-                        <span className="text-sm text-muted-foreground">
-                          Enter the clonal selection of your vineyard.
-                        </span>
+                        <Typography className="text-sm text-muted-foreground">
+                          Enter the clonal selection of the grape
+                        </Typography>
                       </div>
                       <Input
                         id="grape.clonalSelection"
                         type="text"
+                        label="Clonal Selection"
                         {...register("grape.clonalSelection")}
                       />
                     </div>
 
-                    {/* * VIVC NUMBER */}
+                    {/* * COUNTRY OF ORIGIN */}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 w-full">
+                        <Typography
+                          color="textSecondary"
+                          className="text-sm text-muted-foreground"
+                        >
+                          Select the country of origin of the grape
+                        </Typography>
+                        <Autocomplete
+                          id="grape.countryOfOrigin"
+                          options={countries.map((country) => country.name)}
+                          filterSelectedOptions
+                          renderInput={(params) => (
+                            <TextField {...params} label="Select a country" />
+                          )}
+                          value={formData?.grape?.countryOfOrigin || ""}
+                          onChange={(e, value) => {
+                            handleSelectChange(
+                              "grape.countryOfOrigin",
+                              value as string
+                            );
+                          }}
+                        />
+                        {(errors?.info as any)?.location?.country && (
+                          <p className="text-sm text-destructive  mt-1">
+                            {(errors?.info as any)?.location?.country}
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
+                    {/* * VIVC NUMBER */}
                     <div className="flex flex-col gap-2 justify-between">
                       <div className="flex flex-col gap-2">
-                        {/* <Label htmlFor="grape.vivcNumber">Vivc Number</Label> */}
                         <span className="text-sm text-muted-foreground">
-                          Enter the vivc number of your vineyard.
+                          Enter the vivc number of the grape
                         </span>
                       </div>
                       <Input
                         id="grape.vivcNumber"
                         type="text"
+                        label="Vivc Number"
                         {...register("grape.vivcNumber")}
                       />
-                    </div>
-
-                    {/* * COUNTRY OF ORIGIN */}
-
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col gap-2 w-full">
-                        {/* <Label htmlFor="grape.countryOfOrigin">Country of Origin</Label> */}
-                        <span className="text-sm text-muted-foreground">
-                          Enter the country of origin of your grape.
-                        </span>
-                        <FormControl>
-                          <Select
-                            name="grape.countryOfOrigin"
-                            id="grape.countryOfOrigin"
-                            variant="outlined"
-                            value={formData?.grape?.countryOfOrigin as string}
-                            onChange={(e) =>
-                              handleSelectChange(
-                                "grape.countryOfOrigin",
-                                e.target.value
-                              )
-                            }
-                          >
-                            {countries.length > 0 &&
-                              countries.map(
-                                (country: { name: string; code: string }) => {
-                                  return (
-                                    <MenuItem
-                                      key={country.name}
-                                      value={country.name
-                                        .toLocaleLowerCase()
-                                        .split(" ")
-                                        .join("-")}
-                                    >
-                                      {country.name}
-                                    </MenuItem>
-                                  );
-                                }
-                              )}
-                          </Select>
-                        </FormControl>
-
-                        {/* <FormControl>
-                          <Select
-                            name="grape.countryOfOrigin"
-                            id="grape.countryOfOrigin"
-                            variant="outlined"
-                            value={formData?.grape?.countryOfOrigin}
-                            onChange={handleSelectChange}
-                          >
-                            {countries.map(
-                              (country: { name: string; code: string }) => {
-                                return (
-                                  <MenuItem
-                                    key={country.code}
-                                    value={country.name}
-                                  >
-                                    {country.name}
-                                  </MenuItem>
-                                );
-                              }
-                            )}
-                          </Select>
-                        </FormControl> */}
-
-                        {/* {errors?.info?.location?.country && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {errors?.info?.location?.country}
-                            </p>
-                          )} */}
-                      </div>
                     </div>
                   </div>
                 </AccordionDetails>
               </Accordion>
             </div>
+
             {/* * FORECASTED YIELD - HIDDEN */}
             <div className="hidden flex-col gap-2">
-              {/* <Label htmlFor="forecastedYield">Yield/Forecast</Label> */}
               <span className="text-sm text-muted-foreground">
                 Enter the forecasted yield of your vineyard.
               </span>
@@ -1254,14 +1268,10 @@ export default function VineyardForm({
                 type="number"
                 {...register("forecastedYield")}
               />
-              {/* {errors?.forecastedYield && (
-                  <p className="text-sm text-destructive  mt-1">{errors?.forecastedYield}</p>
-                )} */}
             </div>
-
-            <Box display={"flex"} justifyContent={"end"} gap={2} px={2} pb={4}>
+            <Box display={"flex"} justifyContent={"end"} visibility={"hidden"}>
               <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
+                <Button ref={btnRef} type="submit" variant="contained">
                   Save
                 </Button>
               </FormControl>
