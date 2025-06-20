@@ -1,10 +1,12 @@
+import { Stack, useColorScheme } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
+import Image from "next/image";
 import ToolBarActions from "./tool-bar-actions";
 
 export default function Topbar() {
+  const { mode } = useColorScheme();
   return (
     <AppBar
       suppressHydrationWarning
@@ -17,24 +19,20 @@ export default function Topbar() {
         sx={{ display: "flex", justifyContent: "space-between" }}
       >
         <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              //   fontFamily: "monospace",
-              fontWeight: 700,
-              //   letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            WineOps
-          </Typography>
-          {/* TODO: An other items or links go here */}
+          <Stack direction="row" alignItems="center" spacing={1}>
+            {/* <Hub fontSize="medium" color="primary" />
+        <Typography variant="h6">WineOps</Typography> */}
+            <Image
+              src={
+                mode === "dark"
+                  ? "/images/logo-dark.png"
+                  : "/images/logo-light.png"
+              }
+              alt="WineOps"
+              height={48}
+              width={150}
+            />
+          </Stack>
         </Toolbar>
         <ToolBarActions props={{}} />
       </Container>
