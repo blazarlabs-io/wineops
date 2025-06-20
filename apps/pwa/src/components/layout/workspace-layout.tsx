@@ -27,6 +27,7 @@ import QuickActionsDrawer from "../drawers/quick-actions-drawer";
 import { usePathname, useRouter } from "next/navigation";
 import { useGrape } from "@/context/grape";
 import { useMust } from "@/context/must";
+import QuickTasksDrawer from "../drawers/quick-tasks-drawer";
 
 interface MainProps {
   window?: () => Window;
@@ -145,30 +146,41 @@ export default function WorkspaceLayout(props: MainProps) {
             {props.children}
           </Box>
         </DashboardLayout>
+        {/* * QUICK TASKS DRAWER */}
+        {open && type === "tasks" && (
+          <QuickTasksDrawer
+            open={open && type === "tasks"}
+            onOpenChange={() => handleOpenChange("tasks", false)}
+          />
+        )}
         {/* * Quick Actions DRAWER */}
-        {currentDashboard === "vineyards" && (
-          <QuickActionsDrawer<VineyardActions>
-            open={open && type === "actions"}
-            actions={vineyardActions}
-            onOpenChange={() => handleOpenChange("actions", false)}
-            dashboard={currentDashboard}
-          />
-        )}
-        {currentDashboard === "grapes" && (
-          <QuickActionsDrawer<GrapeActions>
-            open={open && type === "actions"}
-            actions={grapeActions}
-            onOpenChange={() => handleOpenChange("actions", false)}
-            dashboard={currentDashboard}
-          />
-        )}
-        {currentDashboard === "primary-vinification" && (
-          <QuickActionsDrawer<MustActions>
-            open={open && type === "actions"}
-            actions={mustActions}
-            onOpenChange={() => handleOpenChange("actions", false)}
-            dashboard={currentDashboard}
-          />
+        {open && type === "actions" && (
+          <>
+            {currentDashboard === "vineyards" && (
+              <QuickActionsDrawer<VineyardActions>
+                open={open && type === "actions"}
+                actions={vineyardActions}
+                onOpenChange={() => handleOpenChange("actions", false)}
+                dashboard={currentDashboard}
+              />
+            )}
+            {currentDashboard === "grapes" && (
+              <QuickActionsDrawer<GrapeActions>
+                open={open && type === "actions"}
+                actions={grapeActions}
+                onOpenChange={() => handleOpenChange("actions", false)}
+                dashboard={currentDashboard}
+              />
+            )}
+            {currentDashboard === "primary-vinification" && (
+              <QuickActionsDrawer<MustActions>
+                open={open && type === "actions"}
+                actions={mustActions}
+                onOpenChange={() => handleOpenChange("actions", false)}
+                dashboard={currentDashboard}
+              />
+            )}
+          </>
         )}
       </AppProvider>
     </DemoProvider>

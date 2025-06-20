@@ -37,6 +37,8 @@ interface VineyardContextType {
   labReports: LabReport[];
   notes: Note[];
   tasks: Task[];
+  selectedTasks: Task[];
+  updateSelectedTasks: (tasks: Task[]) => void;
 }
 
 const VineyardContext = createContext<VineyardContextType | null>(null);
@@ -81,9 +83,14 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   });
   const [notes, setNotes] = useState<Note[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
 
   const updateSelectedVineyards = useCallback((vineyards: Vineyard[]) => {
     setSelectedVineyards(vineyards);
+  }, []);
+
+  const updateSelectedTasks = useCallback((ts: Task[]) => {
+    setSelectedTasks(ts);
   }, []);
 
   useEffect(() => {
@@ -202,6 +209,8 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         labReports,
         notes,
         tasks,
+        selectedTasks,
+        updateSelectedTasks,
       }}
     >
       {children}

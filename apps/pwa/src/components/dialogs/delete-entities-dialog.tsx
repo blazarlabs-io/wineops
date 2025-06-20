@@ -1,5 +1,5 @@
 import { DashboardEntity } from "@/models/types/dashboard";
-import { TeamMember } from "@/models/types/db";
+import { Task, TeamMember } from "@/models/types/db";
 import { DeleteOutline } from "@mui/icons-material";
 import {
   Box,
@@ -16,7 +16,7 @@ export interface DeleteEntitiesDialogProps {
   open: boolean;
   onClose: () => void;
   onDelete: () => void;
-  entities: DashboardEntity[] | TeamMember[];
+  entities: DashboardEntity[] | TeamMember[] | Task[];
   entityName: string;
 }
 
@@ -27,6 +27,16 @@ export default function DeleteEntitiesDialog({
   entities,
   entityName,
 }: DeleteEntitiesDialogProps) {
+  console.log(entities);
+
+  function getEntityNameAndId(entity: DashboardEntity | TeamMember | Task) {
+    if ("name" in entity) {
+      return { name: entity.name, id: entity.id };
+    } else {
+      return { name: entity.title, id: entity.id };
+    }
+  }
+
   return (
     <Dialog
       open={open}
@@ -45,9 +55,10 @@ export default function DeleteEntitiesDialog({
         </DialogContentText>
 
         <Box display={"flex"} gap={1} flexWrap={"wrap"} paddingTop={2}>
-          {entities.map((entity) => (
-            <Chip label={entity.name} key={entity.id} />
-          ))}
+          {entities.map((entity) => {
+            const { name, id } = getEntityNameAndId(entity);
+            return <Chip label={name} key={id} />;
+          })}
         </Box>
       </DialogContent>
 

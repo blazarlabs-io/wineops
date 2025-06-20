@@ -1,5 +1,5 @@
 import { DbResponse, Note, Task, TeamMember } from "@/models/types/db";
-import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc, writeBatch } from "firebase/firestore";
 import { db as fdb } from "../client";
 import { NOTES, TASKS, WINERY } from "../config";
 
@@ -16,6 +16,32 @@ const task = {
       };
     } catch (error) {
       console.log("error", error);
+
+      return {
+        data: null,
+        error,
+        status: 500,
+      };
+    }
+  },
+  deleteMany: async (uid: string, rows: string[]) => {
+    try {
+      const batch = writeBatch(fdb);
+
+      rows.forEach((id) => {
+        const docRef = doc(fdb, WINERY, uid, TASKS, id);
+        batch.delete(docRef);
+      });
+
+      await batch.commit();
+
+      return {
+        data: null,
+        error: null,
+        status: 200,
+      };
+    } catch (error) {
+      console.error("Error deleting many:", error);
 
       return {
         data: null,

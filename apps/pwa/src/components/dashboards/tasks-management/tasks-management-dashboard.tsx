@@ -1,38 +1,33 @@
 "use client";
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
-import TeamMemberFormDrawer from "@/components/drawers/team-member-form-drawer";
 import TasksTable from "@/components/table/tasks";
-import TeamTable from "@/components/table/team";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { useVineyard } from "@/context/vineyard";
-import { useWinery } from "@/context/winery";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
-import { FormMode, Role, Task, TeamMember } from "@/models/types/db";
+import { Task } from "@/models/types/db";
 import { Box, Stack, Typography } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { StrictMode, useCallback, useState } from "react";
 
 export default function TasksManagementDashboard() {
   const { user } = useAuth();
-  const { updateSelectedTeamMembers, selectedTeamMembers } = useWinery();
-  const { tasks } = useVineyard();
-  const [openCreateEditTeamMember, setOpenCreateEditTeamMember] =
-    useState<boolean>(false);
-  const [formType, setFormType] = useState<FormMode>("create");
+  const { tasks, selectedTasks, updateSelectedTasks } = useVineyard();
+
+  // const [formType, setFormType] = useState<FormMode>("create");
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
 
   const handleSelectionChange = useCallback(
-    (teamMembers: TeamMember[]) => {
-      updateSelectedTeamMembers(teamMembers);
+    (ts: Task[]) => {
+      updateSelectedTasks(ts);
     },
-    [updateSelectedTeamMembers]
+    [updateSelectedTasks]
   );
 
-  const handleCreateTeeamMember = useCallback(() => {
-    setFormType("create");
-    setOpenCreateEditTeamMember(true);
+  const handleCreateTask = useCallback(() => {
+    // setFormType("create");
+    // setOpenCreateEditTeamMember(true);
   }, []);
 
   const handleOpenDeleteDialog = useCallback(() => {
@@ -43,23 +38,14 @@ export default function TasksManagementDashboard() {
     setOpenDeleteDialog(false);
   }, []);
 
-  const handleOpenEditTeamMember = useCallback(() => {
-    setFormType("edit");
-    setOpenCreateEditTeamMember(true);
-  }, []);
-
-  const handleCloseCreateEditTeamMember = useCallback(() => {
-    setOpenCreateEditTeamMember(false);
-  }, []);
-
-  const handleDeleteTeamMembers = useCallback(async () => {
-    const res = await db.team.deleteMany(
+  const handleDeleteTasks = useCallback(async () => {
+    const res = await db.task.deleteMany(
       user?.uid as string,
-      selectedTeamMembers.map(({ id }) => id)
+      selectedTasks.map(({ id }) => id)
     );
 
     if (res.status === 200) {
-      updateSelectedTeamMembers([]);
+      updateSelectedTasks([]);
 
       enqueueSnackbar(`Team member(s) deleted successfully`, {
         variant: "success",
@@ -70,12 +56,7 @@ export default function TasksManagementDashboard() {
       });
     }
     handleCloseDeleteDialog();
-  }, [
-    handleCloseDeleteDialog,
-    selectedTeamMembers,
-    updateSelectedTeamMembers,
-    user?.uid,
-  ]);
+  }, [handleCloseDeleteDialog, selectedTasks, updateSelectedTasks, user?.uid]);
 
   return (
     <Box
@@ -98,15 +79,15 @@ export default function TasksManagementDashboard() {
           <ToolsBar
             buttons={{
               [ButtonType.ADD]: {
-                enabled: selectedTeamMembers.length === 0,
-                onClick: handleCreateTeeamMember,
+                enabled: selectedTasks.length === 0,
+                onClick: handleCreateTask,
               },
               [ButtonType.EDIT]: {
-                enabled: selectedTeamMembers.length === 1,
-                onClick: handleOpenEditTeamMember,
+                enabled: selectedTasks.length === 1,
+                onClick: () => {},
               },
               [ButtonType.DELETE]: {
-                enabled: selectedTeamMembers.length > 0,
+                enabled: selectedTasks.length > 0,
                 onClick: handleOpenDeleteDialog,
               },
             }}
@@ -121,7 +102,7 @@ export default function TasksManagementDashboard() {
           </Box>
         </div>
       </Stack>
-      {openCreateEditTeamMember && (
+      {/* {openCreateEditTeamMember && (
         <TeamMemberFormDrawer
           type={formType}
           member={
@@ -133,13 +114,13 @@ export default function TasksManagementDashboard() {
           open={openCreateEditTeamMember}
           onClose={handleCloseCreateEditTeamMember}
         />
-      )}
+      )} */}
 
       <DeleteEntitiesDialog
-        entityName="team member"
-        entities={selectedTeamMembers}
+        entityName="task"
+        entities={selectedTasks}
         open={openDeleteDialog}
-        onDelete={handleDeleteTeamMembers}
+        onDelete={handleDeleteTasks}
         onClose={handleCloseDeleteDialog}
       />
     </Box>
