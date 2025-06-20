@@ -535,14 +535,14 @@ export default function GrapeForm({
 
                   <div className="flex flex-col gap-2">
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter tare weight
+                      Enter tare weight (Kg)
                     </InputLabel>
 
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
                           id="entry.tareWeight"
-                          label="Tare weight"
+                          label="Tare weight (Kg)"
                           variant="outlined"
                           type="number"
                           slotProps={{
@@ -605,14 +605,14 @@ export default function GrapeForm({
 
                   <div className="flex flex-col gap-2">
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter net weight
+                      Enter net weight (Kg)
                     </InputLabel>
 
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
                           id="entry.netWeight"
-                          label="Net weight"
+                          label="Net weight (Kg)"
                           variant="outlined"
                           type="number"
                           slotProps={{
