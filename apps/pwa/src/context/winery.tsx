@@ -96,8 +96,6 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
         });
     }
 
-    console.log(db, WINERY, user?.uid as string, TEAM);
-
     const teamMembersRef = collection(db, WINERY, user?.uid as string, TEAM);
 
     let unsubTeamMembers = () => {};

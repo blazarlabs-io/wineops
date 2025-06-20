@@ -43,8 +43,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
 
   const isGroup = node?.group || node?.data?.rowType === "group";
 
-  console.log("XXXX", value, node);
-
   return (
     <Box
       display={"flex"}

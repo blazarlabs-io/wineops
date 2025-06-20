@@ -21,7 +21,6 @@ export default function NotesWidget({
   const { teamMembers } = useWinery();
   const [open, setOpen] = useState<boolean>(false);
 
-  console.log("SUBJECT", subject);
   const handleOnClose = () => {
     setOpen(false);
     if (onClose) onClose();
