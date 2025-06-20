@@ -22,10 +22,12 @@ export const useSortVineyardStatuses = (statuses: VineyardStatus[]) => {
         key = String(item); // Convert to string for object keys
         counts[key] = (counts[key] || 0) + 1;
       } else {
-        item.forEach((subitem: any) => {
-          key = String(subitem); // Convert to string for object keys
-          counts[key] = (counts[key] || 0) + 1;
-        });
+        if (item && Array.isArray(item)) {
+          item.forEach((subitem: any) => {
+            key = String(subitem); // Convert to string for object keys
+            counts[key] = (counts[key] || 0) + 1;
+          });
+        }
       }
     });
 
