@@ -1,25 +1,12 @@
 import { TaskStatus } from "@/models/types/db";
 
-export const orientations = [
-  "north",
-  "north-east",
-  "north-west",
-  "south",
-  "south-east",
-  "south-west",
-  "east",
-  "west",
-];
+export const orientations = ["n", "ne", "nw", "s", "se", "sw", "e", "w"];
 
 export const rowOrientations = [
-  "north",
-  "north-east",
-  "north-west",
-  "south",
-  "south-east",
-  "south-west",
-  "east",
-  "west",
+  "north-south",
+  "east-west",
+  "along-the-slope",
+  "contour-planting",
 ];
 
 export const soilTypes = [

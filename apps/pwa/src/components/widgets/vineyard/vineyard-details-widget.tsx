@@ -218,30 +218,29 @@ export default function VineyardDetailsWidget({
                 <SimpleDataDisplay
                   label="Spacing"
                   value={
-                    localVineyard.info.vines.plantingScheme.spacing.toString() ||
+                    localVineyard.info?.vines?.plantingScheme?.spacing?.toString() ||
                     "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Row Orientation"
                   value={
-                    localVineyard.info.vines.plantingScheme.rowOrientation.toString() ||
+                    localVineyard.info?.vines?.plantingScheme?.rowOrientation?.toString() ||
                     "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Density"
                   value={
-                    localVineyard.info.vines.plantingScheme.density.toString() ||
+                    localVineyard.info?.vines?.plantingScheme?.density?.toString() ||
                     "N/A"
                   }
                 />
                 <SimpleDataDisplay
                   label="Trellis System"
                   value={
-                    localVineyard.info.vines?.plantingScheme?.trellisSystem
-                      ? "Yes"
-                      : "No"
+                    localVineyard.info?.vines?.plantingScheme?.trellisSystem?.toString() ||
+                    "N/A"
                   }
                 />
               </div>

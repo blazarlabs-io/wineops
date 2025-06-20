@@ -15,22 +15,26 @@ const vineyardBlankSample: Vineyard = {
       surface: "",
       country: "",
       city: "",
-      elevation: 0,
+      elevation: "",
       orientation: "",
     },
     vines: {
       yearOfPlantation: 0,
       plantingScheme: {
-        spacing: 0,
+        spacing: "",
         rowOrientation: "",
-        density: 0,
-        trellisSystem: false,
+        density: "",
+        trellisSystem: "",
       },
       soilType: "",
-      sunlightHours: 0,
+      sunlightHours: "",
     },
     certifications: {
       eco: {
+        active: false,
+        fileUrl: "",
+      },
+      bio: {
         active: false,
         fileUrl: "",
       },
@@ -39,6 +43,10 @@ const vineyardBlankSample: Vineyard = {
         fileUrl: "",
       },
       dop: {
+        active: false,
+        fileUrl: "",
+      },
+      ice: {
         active: false,
         fileUrl: "",
       },

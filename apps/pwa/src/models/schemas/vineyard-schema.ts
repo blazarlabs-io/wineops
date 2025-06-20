@@ -11,7 +11,6 @@ import {
 } from "@/models/types/db";
 import { Timestamp } from "firebase/firestore";
 import Joi from "joi";
-import { ActionRelation } from "../types/actions";
 
 const locationSchema = Joi.object<Location>({
   map: Joi.array()
@@ -32,27 +31,50 @@ const locationSchema = Joi.object<Location>({
     })
     .error(new Error("Surface must be between 0.01 and 100000"))
     .optional(),
-  city: Joi.string().optional().allow(""),
+  city: Joi.string().optional().max(50).allow("").messages({
+    "string.max": "City must be less than or equal to 50 characters long",
+  }),
   country: Joi.string().optional().allow(""),
-  elevation: Joi.number().empty("").default(1),
+  elevation: Joi.number().empty("").min(0.01).max(10000).optional().messages({
+    "number.min": "Elevation must be between 0.01 and 10000",
+    "number.max": "Elevation must be between 0.01 and 10000",
+  }),
   orientation: Joi.string().optional().allow(""),
 });
 
 const vinesSchema = Joi.object<Vines>({
   yearOfPlantation: Joi.number().empty("").default(1900),
   plantingScheme: Joi.object({
-    spacing: Joi.number().empty("").default(1),
+    spacing: Joi.number().empty("").min(0.01).max(100).messages({
+      "string.min": "Row orientation must be between 0.01 and 100",
+      "string.max": "Row orientation must be between 0.01 and 100",
+    }),
     rowOrientation: Joi.string().optional().allow(""),
-    density: Joi.number().empty("").default(1),
-    trellisSystem: Joi.boolean().optional(),
-    plantsPerHa: Joi.number().empty("").default(1).optional(),
+    density: Joi.number().empty("").min(0.01).max(100).messages({
+      "string.min": "Density must be between 0.01 and 100",
+      "string.max": "Density must be between 0.01 and 100",
+    }),
+    trellisSystem: Joi.string().optional().allow(""),
+    plantsPerHa: Joi.number().empty("").min(1).max(100000).messages({
+      "string.min": "Plants per ha must be between 1 and 100000",
+      "string.max": "Plants per ha must be between 1 and 100000",
+    }),
   }),
-  soilType: Joi.string().optional().allow(""),
-  sunlightHours: Joi.number().empty("").default(1),
+  soilType: Joi.string().optional().allow("").max(50).messages({
+    "string.max": "Soil type must be less than or equal to 50 characters long",
+  }),
+  sunlightHours: Joi.number().empty("").min(1).max(10000).messages({
+    "string.min": "Sunlight hours must be between 1 and 10000",
+    "string.max": "Sunlight hours must be between 1 and 10000",
+  }),
 });
 
 const vineyardCertificationsSchema = Joi.object({
   eco: Joi.object({
+    active: Joi.boolean().optional(),
+    fileUrl: Joi.string().optional().allow(""),
+  }),
+  bio: Joi.object({
     active: Joi.boolean().optional(),
     fileUrl: Joi.string().optional().allow(""),
   }),
@@ -64,7 +86,11 @@ const vineyardCertificationsSchema = Joi.object({
     active: Joi.boolean().optional(),
     fileUrl: Joi.string().optional().allow(""),
   }),
-});
+  ice: Joi.object({
+    active: Joi.boolean().optional(),
+    fileUrl: Joi.string().optional().allow(""),
+  }),
+}).optional();
 
 const vineyardInfoSchema = Joi.object<VineyardInfo>({
   location: locationSchema,
@@ -74,10 +100,13 @@ const vineyardInfoSchema = Joi.object<VineyardInfo>({
 
 const vineyardGrapeSchema = Joi.object({
   id: Joi.string().optional().allow(""),
-  clonalSelection: Joi.string().optional().allow(""),
+  clonalSelection: Joi.string().optional().allow("").max(50).messages({
+    "string.max":
+      "Clonal selection must be less than or equal to 50 characters long",
+  }),
   vivcNumber: Joi.string().optional().allow(""),
   countryOfOrigin: Joi.string().optional().allow(""),
-});
+}).optional();
 
 const labDataSchema = Joi.object({
   id: Joi.string().optional().allow(""),

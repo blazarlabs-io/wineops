@@ -196,25 +196,29 @@ export type Location = {
   surface: number | string;
   country: string;
   city: string;
-  elevation: number;
+  elevation: number | string;
   orientation: string;
 };
 
 export type Vines = {
   yearOfPlantation: number;
   plantingScheme: {
-    spacing: number;
+    spacing: number | string;
     rowOrientation: string;
-    density: number;
-    trellisSystem: boolean;
-    plantsPerHa?: number;
+    density: number | string;
+    trellisSystem: string;
+    plantsPerHa?: number | string;
   };
   soilType: string;
-  sunlightHours: number;
+  sunlightHours: number | string;
 };
 
 export type Certifications = {
   eco: {
+    active: boolean;
+    fileUrl: string;
+  };
+  bio: {
     active: boolean;
     fileUrl: string;
   };
@@ -223,6 +227,10 @@ export type Certifications = {
     fileUrl: string;
   };
   dop: {
+    active: boolean;
+    fileUrl: string;
+  };
+  ice: {
     active: boolean;
     fileUrl: string;
   };
