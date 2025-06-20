@@ -195,7 +195,7 @@ export default function VineyardHarvestActionForm({
       vineyardHarvestActionSample.vessels = selectedVineyards[0]
         .vessels as ActionRelation[];
       vineyardHarvestActionSample.location =
-        selectedVineyards[0].info.location.city;
+        selectedVineyards[0].info?.location?.city;
     } else if (
       vineyards &&
       vineyards.length > 0 &&
@@ -210,7 +210,7 @@ export default function VineyardHarvestActionForm({
       vineyardHarvestActionSample.supplier = vineyards[0].name;
       vineyardHarvestActionSample.vessels = vineyards[0]
         .vessels as ActionRelation[];
-      vineyardHarvestActionSample.location = vineyards[0].info.location.city;
+      vineyardHarvestActionSample.location = vineyards[0].info?.location?.city;
     }
 
     if (labReports && labReports.length > 0) {
