@@ -55,11 +55,11 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
           }}
           className="flex flex-col justify-center"
         >
-          {uniqueValues.map((v, index) => (
-            <>
-              {index <= 2 && (
+          {uniqueValues.map(
+            (v, index) =>
+              index <= 2 && (
                 <Box
-                  key={index + v}
+                  key={`${index}${v}`}
                   display={"flex"}
                   flexDirection={"column"}
                   justifyContent={"center"}
@@ -94,9 +94,8 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
                     )
                   )}
                 </Box>
-              )}
-            </>
-          ))}
+              )
+          )}
         </div>
       ) : (
         <Box
