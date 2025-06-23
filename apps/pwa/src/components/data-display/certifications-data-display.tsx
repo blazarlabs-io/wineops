@@ -17,7 +17,7 @@ export default function CertificationsDataDisplay({
           <Sprout
             className={cn(
               "w-4 h-4",
-              certifications.eco.active ? "opacity-100" : "opacity-30"
+              certifications?.eco?.active ? "opacity-100" : "opacity-30"
             )}
           />
         </button>
@@ -27,7 +27,7 @@ export default function CertificationsDataDisplay({
           <Leaf
             className={cn(
               "w-4 h-4",
-              certifications.bio.active ? "opacity-100" : "opacity-30"
+              certifications?.bio?.active ? "opacity-100" : "opacity-30"
             )}
           />
         </button>
@@ -37,7 +37,7 @@ export default function CertificationsDataDisplay({
           <MapPinned
             className={cn(
               "w-4 h-4",
-              certifications.igp.active ? "opacity-100" : "opacity-30"
+              certifications?.igp?.active ? "opacity-100" : "opacity-30"
             )}
           />
         </button>
@@ -47,7 +47,7 @@ export default function CertificationsDataDisplay({
           <ShieldCheck
             className={cn(
               "w-4 h-4",
-              certifications.dop.active ? "opacity-100" : "opacity-30"
+              certifications?.dop?.active ? "opacity-100" : "opacity-30"
             )}
           />
         </button>
@@ -57,7 +57,7 @@ export default function CertificationsDataDisplay({
           <Snowflake
             className={cn(
               "w-4 h-4",
-              certifications.ice.active ? "opacity-100" : "opacity-30"
+              certifications?.ice?.active ? "opacity-100" : "opacity-30"
             )}
           />
         </button>

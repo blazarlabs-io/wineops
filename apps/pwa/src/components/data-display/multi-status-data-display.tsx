@@ -1,5 +1,6 @@
 import { SortedVineyardStatus } from "@/hooks/use-sort-vineyard-statuses";
 import { Badge, Box, Button, Tooltip, Typography } from "@mui/material";
+import { Fragment } from "react";
 
 export type StatusDataDisplayProps = {
   status: SortedVineyardStatus[];
@@ -15,12 +16,9 @@ export default function MultiStatusDataDisplay({
       {status && status.length > 0 && (
         <div>
           {status.map((s, index) => (
-            <>
+            <Fragment key={s.name}>
               {index < 2 ? (
-                <span
-                  key={s.name}
-                  className="max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-[2px] gap-5"
-                >
+                <span className="max-h-fit max-w-fit flex items-center justify-center text-xs font-semibold rounded-full px-2 py-[2px] gap-5">
                   {s.name.toUpperCase()}
                   <Badge
                     overlap="circular"
@@ -66,7 +64,7 @@ export default function MultiStatusDataDisplay({
                   )}
                 </Box>
               )}
-            </>
+            </Fragment>
           ))}
         </div>
       )}
