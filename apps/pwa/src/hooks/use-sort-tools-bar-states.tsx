@@ -1,34 +1,28 @@
-import { DashboardEntity } from "@/models/types/dashboard";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { useEffect, useState } from "react";
 
-export const useSortToolsBarStates = <T extends DashboardEntity>(data: T[]) => {
+export const useSortToolsBarStates = () => {
+  const [enableAdd, setEnableAdd] = useState<boolean>(false);
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
   const [enableGrouping, setEnableGrouping] = useState<boolean>(false);
   const [enableDelete, setEnableDelete] = useState<boolean>(false);
   const [enableUngrouping, setEnableUngrouping] = useState<boolean>(false);
 
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
   useEffect(() => {
-    if (data && data !== undefined && data.length > 0) {
-      if (data.length === 1) {
-        setEnableEdit(true);
-      } else {
-        setEnableEdit(false);
-      }
-      setEnableGrouping(true);
-      setEnableDelete(true);
+    setEnableAdd(selected?.length === 0);
+    setEnableEdit(selected?.length === 1);
+    setEnableGrouping(selected?.length > 0);
+    setEnableDelete(selected?.length > 0);
 
-      const isDataGrouped = data.some(({ group }) => group?.length > 1);
+    const isDataGrouped = selected?.some(({ group }) => group?.length > 1);
 
-      setEnableUngrouping(isDataGrouped);
-    } else {
-      setEnableEdit(false);
-      setEnableGrouping(false);
-      setEnableDelete(false);
-      setEnableUngrouping(false);
-    }
-  }, [data]);
+    setEnableUngrouping(isDataGrouped);
+  }, [selected]);
 
   return {
+    enableAdd,
     enableEdit,
     enableGrouping,
     enableDelete,

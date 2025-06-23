@@ -7,7 +7,6 @@ import { Chemistry } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -17,8 +16,6 @@ import {
 
 interface ChemistryContextType {
   chemistry: Chemistry[];
-  selectedChemistry: Chemistry[];
-  updateSelectedChemistry: (chemistry: Chemistry[]) => void;
 }
 
 const ChemistryContext = createContext<ChemistryContextType | null>(null);
@@ -41,11 +38,7 @@ export const ChemistryProvider = ({ children }: IChemistryProvider) => {
   const { user } = useAuth();
 
   const [chemistry, setChemistry] = useState<Chemistry[]>([]);
-  const [selectedChemistry, setSelectedChemistry] = useState<Chemistry[]>([]);
 
-  const updateSelectedChemistry = useCallback((chemistry: Chemistry[]) => {
-    setSelectedChemistry(chemistry);
-  }, []);
 
   useEffect(() => {
     let unsubChemistry = () => {};
@@ -85,17 +78,11 @@ export const ChemistryProvider = ({ children }: IChemistryProvider) => {
   }, [user]);
 
   const memoizedChemistry = useMemo(() => chemistry, [chemistry]);
-  const memoizedSelectedChemistry = useMemo(
-    () => selectedChemistry,
-    [selectedChemistry]
-  );
 
   return (
     <ChemistryContext
       value={{
-        chemistry: memoizedChemistry,
-        selectedChemistry: memoizedSelectedChemistry,
-        updateSelectedChemistry,
+        chemistry: memoizedChemistry
       }}
     >
       {children}

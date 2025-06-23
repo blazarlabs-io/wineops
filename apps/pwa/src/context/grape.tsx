@@ -14,7 +14,6 @@ import { Grape } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -24,8 +23,6 @@ import {
 
 interface GrapeContextType {
   grapes: Grape[];
-  selectedGrapes: Grape[];
-  updateSelectedGrapes: (grapes: Grape[]) => void;
   actions: GrapeActions;
 }
 
@@ -49,7 +46,6 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
   const { user } = useAuth();
 
   const [grapes, setGrapes] = useState<Grape[]>([]);
-  const [selectedGrapes, setSelectedGrapes] = useState<Grape[]>([]);
   const [actions] = useState<GrapeActions>({
     "grape-intake": {
       exec: grapeIntakeAction,
@@ -63,10 +59,6 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
     },
   });
 
-  const updateSelectedGrapes = useCallback((grapes: Grape[]) => {
-    setSelectedGrapes(grapes);
-  }, []);
-
   useEffect(() => {
     let unsubGrapes = () => {};
 
@@ -78,6 +70,7 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
 
         if (querySnapshot.empty) {
           console.log("No grapes found");
+          setGrapes([]);
           return;
         }
 
@@ -99,17 +92,11 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
   }, [user]);
 
   const memoizedGrapes = useMemo(() => grapes, [grapes]);
-  const memoizedSelectedGrapes = useMemo(
-    () => selectedGrapes,
-    [selectedGrapes]
-  );
 
   return (
     <GrapeContext
       value={{
         grapes: memoizedGrapes,
-        selectedGrapes: memoizedSelectedGrapes,
-        updateSelectedGrapes,
         actions,
       }}
     >

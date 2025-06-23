@@ -2,29 +2,14 @@
 
 import { DataTable } from "@/components/table/data-table";
 import { Chemistry } from "@/models/types/db";
-import { StrictMode, useMemo } from "react";
+import { useMemo } from "react";
 import { GroupCellRenderer } from "./GroupCellRenderer";
 import { useChemistry } from "@/context/chemistry";
-import { db } from "@/lib/firebase/services";
 import { GROUP_COLUMN_WIDTH } from "@/data/constants";
 import { chemistryColumns } from "./columns";
 
-interface ChemistryTableProps {
-  onChangeData?: (data: Chemistry[]) => void;
-  openGroupingDialog: boolean;
-  handleCloseGroupingDialog: () => void;
-  openUngroupingDialog: boolean;
-  handleCloseUngroupingDialog: () => void;
-}
-
-export default function ChemistryTable({
-  onChangeData,
-  openGroupingDialog,
-  handleCloseGroupingDialog,
-  openUngroupingDialog,
-  handleCloseUngroupingDialog,
-}: ChemistryTableProps) {
-  const { chemistry, updateSelectedChemistry } = useChemistry();
+export default function ChemistryTable() {
+  const { chemistry } = useChemistry();
 
   const normalizedChemistry = useMemo(
     () =>
@@ -57,36 +42,25 @@ export default function ChemistryTable({
     [chemistry]
   );
 
-  const updateGroup = async (uid: string, rows: Partial<Chemistry>[]) =>
-    await db.chemistry.updateGroup(uid, rows);
-
   return (
-    <StrictMode>
-      <DataTable<Chemistry>
-        onChangeData={onChangeData}
-        openGroupingDialog={openGroupingDialog}
-        openUngroupingDialog={openUngroupingDialog}
-        handleCloseGroupingDialog={handleCloseGroupingDialog}
-        handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-        data={normalizedChemistry}
-        columns={chemistryColumns}
-        groupColumnDef={{
-          headerName: "Common Chemistry Name",
-          rowDrag: true,
-          cellRendererParams: {
-            innerRenderer: GroupCellRenderer,
-            suppressCount: true,
-          },
-          cellRenderer: "agGroupCellRenderer",
-          width: GROUP_COLUMN_WIDTH,
-          lockPinned: true,
-          lockPosition: true,
-          suppressMovable: true,
-        }}
-        updateGroup={updateGroup}
-        updateSelectedData={updateSelectedChemistry}
-        groupByButtons={[{ name: "Type", columnName: "type" }]}
-      />
-    </StrictMode>
+    <DataTable<Chemistry>
+      data={normalizedChemistry}
+      columns={chemistryColumns}
+      groupColumnDef={{
+        headerName: "Common Chemistry Name",
+        rowDrag: true,
+        cellRendererParams: {
+          innerRenderer: GroupCellRenderer,
+          suppressCount: true,
+        },
+        cellRenderer: "agGroupCellRenderer",
+        width: GROUP_COLUMN_WIDTH,
+        lockPinned: true,
+        lockPosition: true,
+        suppressMovable: true,
+      }}
+      groupByButtons={[{ name: "Type", columnName: "type" }]}
+      entityName="chemistry"
+    />
   );
 }

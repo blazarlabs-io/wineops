@@ -2,29 +2,14 @@
 
 import { DataTable } from "@/components/table/data-table";
 import { Wine } from "@/models/types/db";
-import { StrictMode, useMemo } from "react";
+import { useMemo } from "react";
 import { GroupCellRenderer } from "./GroupCellRenderer";
 import { useWine } from "@/context/wine";
-import { db } from "@/lib/firebase/services";
 import { GROUP_COLUMN_WIDTH } from "@/data/constants";
 import { wineColumns } from "./columns";
 
-interface WineTableProps {
-  onChangeData?: (data: Wine[]) => void;
-  openGroupingDialog: boolean;
-  handleCloseGroupingDialog: () => void;
-  openUngroupingDialog: boolean;
-  handleCloseUngroupingDialog: () => void;
-}
-
-export default function WinesTable({
-  onChangeData,
-  openGroupingDialog,
-  handleCloseGroupingDialog,
-  openUngroupingDialog,
-  handleCloseUngroupingDialog,
-}: WineTableProps) {
-  const { wines, updateSelectedWines } = useWine();
+export default function WinesTable() {
+  const { wines } = useWine();
 
   const normalizedWines = useMemo(
     () =>
@@ -57,42 +42,31 @@ export default function WinesTable({
     [wines]
   );
 
-  const updateGroup = async (uid: string, rows: Partial<Wine>[]) =>
-    await db.wine.updateGroup(uid, rows);
-
   return (
-    <StrictMode>
-      <DataTable<Wine>
-        onChangeData={onChangeData}
-        openGroupingDialog={openGroupingDialog}
-        openUngroupingDialog={openUngroupingDialog}
-        handleCloseGroupingDialog={handleCloseGroupingDialog}
-        handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-        data={normalizedWines}
-        columns={wineColumns}
-        groupColumnDef={{
-          headerName: "Wine Name",
-          rowDrag: true,
-          minWidth: 200,
-          cellRendererParams: {
-            innerRenderer: GroupCellRenderer,
-            suppressCount: true,
-          },
-          cellRenderer: "agGroupCellRenderer",
-          width: GROUP_COLUMN_WIDTH,
-          lockPinned: true,
-          lockPosition: true,
-          suppressMovable: true,
-        }}
-        updateGroup={updateGroup}
-        updateSelectedData={updateSelectedWines}
-        groupByButtons={[
-          { name: "Vessel Type", columnName: "groupByVesselType" },
-          { name: "Location", columnName: "groupByLocation" },
-          { name: "Status", columnName: "groupByStatus" },
-        ]}
-        getRowId={({ data }) => `${data.id}-${data?.vesselId}`}
-      />
-    </StrictMode>
+    <DataTable<Wine>
+      data={normalizedWines}
+      columns={wineColumns}
+      groupColumnDef={{
+        headerName: "Wine Name",
+        rowDrag: true,
+        minWidth: 200,
+        cellRendererParams: {
+          innerRenderer: GroupCellRenderer,
+          suppressCount: true,
+        },
+        cellRenderer: "agGroupCellRenderer",
+        width: GROUP_COLUMN_WIDTH,
+        lockPinned: true,
+        lockPosition: true,
+        suppressMovable: true,
+      }}
+      groupByButtons={[
+        { name: "Vessel Type", columnName: "groupByVesselType" },
+        { name: "Location", columnName: "groupByLocation" },
+        { name: "Status", columnName: "groupByStatus" },
+      ]}
+      getRowId={({ data }) => `${data.id}-${data?.vesselId}`}
+      entityName="wine"
+    />
   );
 }

@@ -12,10 +12,11 @@ import {
 } from "ag-grid-community";
 // Core CSS
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { TeamMember } from "@/models/types/db";
 import { useColorScheme } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
 import { columns } from "./columns";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { useWinery } from "@/context/winery";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -24,12 +25,7 @@ const rowSelection: RowSelectionOptions = {
   headerCheckbox: false,
 };
 
-export type TeamTableProps = {
-  data: TeamMember[];
-  onSelectionChange?: (selectedRows: any[]) => void;
-};
-
-const TeamTable = ({ data, onSelectionChange }: TeamTableProps) => {
+const TeamTable = () => {
   const { mode } = useColorScheme();
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT / 1.5);
 
@@ -77,11 +73,14 @@ const TeamTable = ({ data, onSelectionChange }: TeamTableProps) => {
     };
   }, []);
 
+  const { teamMembers } = useWinery();
+  const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+
   const handleRowSelection = useCallback(
     (data: any) => {
-      onSelectionChange?.(data.api.getSelectedRows());
+      setSelected(data.api.getSelectedRows(), "team");
     },
-    [onSelectionChange]
+    [setSelected]
   );
 
   // * Change GRID Theme Mode on Mount
@@ -97,7 +96,7 @@ const TeamTable = ({ data, onSelectionChange }: TeamTableProps) => {
     <div className={`${themeClass} w-full h-[calc(100vh-212px)]`}>
       <AgGridReact
         theme={myTheme}
-        rowData={data}
+        rowData={teamMembers}
         columnDefs={colDefs}
         defaultColDef={defaultColDef}
         pagination={true}

@@ -2,6 +2,31 @@
 import { Timestamp } from "firebase/firestore";
 import { ActionRelation } from "./actions";
 
+export type EntityName =
+  | "UNKNOWN"
+  | "vineyard"
+  | "consumable"
+  | "chemistry"
+  | "grape"
+  | "must"
+  | "wine"
+  | "vessel"
+  | "task"
+  | "team";
+
+export const EntitiesNames: Record<EntityName, string[]> = {
+  UNKNOWN: ["UNKNOWN", "UNKNOWNS"],
+  vineyard: ["vineyard", "vineyards"],
+  consumable: ["consumable", "consumables"],
+  chemistry: ["chemistry item", "chemistry items"],
+  grape: ["grape", "grapes"],
+  must: ["must", "musts"],
+  wine: ["wine", "wines"],
+  vessel: ["vessel", "vessels"],
+  task: ["task", "tasks"],
+  team: ["team member", "team members"],
+} as const;
+
 export const WineColor = {
   RED: "red",
   WHITE: "white",

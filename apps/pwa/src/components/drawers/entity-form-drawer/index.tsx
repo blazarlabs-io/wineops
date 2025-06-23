@@ -1,17 +1,26 @@
+import { EntitiesNames, EntityName, FormMode } from "@/models/types/db";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { Close } from "@mui/icons-material";
-import { Box, Drawer, IconButton } from "@mui/material";
+import { Box, Drawer, IconButton, Typography } from "@mui/material";
 
 export type EntityFormDrawerProps = {
-  open: boolean;
-  onClose: () => void;
+  entityName: EntityName;
   children?: React.ReactNode;
 };
 
 export default function EntityFormDrawer({
-  open,
-  onClose,
+  entityName,
   children,
 }: EntityFormDrawerProps) {
+  const { dialogs, closeDialog } = useDialogDrawerStore((state) => state);
+  const open = dialogs["form-drawer"];
+  const onClose = () => closeDialog("form-drawer");
+
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const formType: FormMode = selected.length > 0 ? "edit" : "create";
+
   return (
     <Drawer
       anchor="right"
@@ -35,6 +44,21 @@ export default function EntityFormDrawer({
           <IconButton size="small" onClick={onClose}>
             <Close />
           </IconButton>
+        </Box>
+
+        <Box padding={2} marginTop={4}>
+          <Typography variant="h5" fontWeight={"medium"}>
+            {entityName === "grape" ? (
+              "Register a grape batch"
+            ) : entityName === "must" ? (
+              "Buy Must"
+            ) : (
+              <>
+                {formType === "create" ? "New" : "Edit"}{" "}
+                {EntitiesNames[entityName][0]}
+              </>
+            )}
+          </Typography>
         </Box>
 
         {children}

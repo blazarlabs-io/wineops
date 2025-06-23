@@ -2,29 +2,14 @@
 
 import { DataTable } from "@/components/table/data-table";
 import { Must } from "@/models/types/db";
-import { StrictMode, useMemo } from "react";
+import { useMemo } from "react";
 import { GroupCellRenderer } from "./GroupCellRenderer";
 import { useMust } from "@/context/must";
-import { db } from "@/lib/firebase/services";
 import { GROUP_COLUMN_WIDTH } from "@/data/constants";
 import { mustColumns } from "./columns";
 
-interface MustsTableProps {
-  onChangeData?: (data: Must[]) => void;
-  openGroupingDialog: boolean;
-  handleCloseGroupingDialog: () => void;
-  openUngroupingDialog: boolean;
-  handleCloseUngroupingDialog: () => void;
-}
-
-export default function MustsTable({
-  onChangeData,
-  openGroupingDialog,
-  handleCloseGroupingDialog,
-  openUngroupingDialog,
-  handleCloseUngroupingDialog,
-}: MustsTableProps) {
-  const { musts, updateSelectedMusts } = useMust();
+export default function MustsTable() {
+  const { musts } = useMust();
 
   const normalizedMusts = useMemo(
     () =>
@@ -57,42 +42,31 @@ export default function MustsTable({
     [musts]
   );
 
-  const updateGroup = async (uid: string, rows: Partial<Must>[]) =>
-    await db.must.updateGroup(uid, rows);
-
   return (
-    <StrictMode>
-      <DataTable<Must>
-        onChangeData={onChangeData}
-        openGroupingDialog={openGroupingDialog}
-        openUngroupingDialog={openUngroupingDialog}
-        handleCloseGroupingDialog={handleCloseGroupingDialog}
-        handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-        data={normalizedMusts}
-        columns={mustColumns}
-        groupColumnDef={{
-          headerName: "Must ID",
-          rowDrag: true,
-          minWidth: 200,
-          cellRendererParams: {
-            innerRenderer: GroupCellRenderer,
-            suppressCount: true,
-          },
-          cellRenderer: "agGroupCellRenderer",
-          width: GROUP_COLUMN_WIDTH,
-          lockPinned: true,
-          lockPosition: true,
-          suppressMovable: true,
-        }}
-        updateGroup={updateGroup}
-        updateSelectedData={updateSelectedMusts}
-        groupByButtons={[
-          { name: "Vessel Type", columnName: "groupByVesselType" },
-          { name: "Location", columnName: "groupByLocation" },
-          { name: "Status", columnName: "groupByStatus" },
-        ]}
-        getRowId={({ data }) => `${data.id}-${data?.vesselId}`}
-      />
-    </StrictMode>
+    <DataTable<Must>
+      data={normalizedMusts}
+      columns={mustColumns}
+      groupColumnDef={{
+        headerName: "Must ID",
+        rowDrag: true,
+        minWidth: 200,
+        cellRendererParams: {
+          innerRenderer: GroupCellRenderer,
+          suppressCount: true,
+        },
+        cellRenderer: "agGroupCellRenderer",
+        width: GROUP_COLUMN_WIDTH,
+        lockPinned: true,
+        lockPosition: true,
+        suppressMovable: true,
+      }}
+      groupByButtons={[
+        { name: "Vessel Type", columnName: "groupByVesselType" },
+        { name: "Location", columnName: "groupByLocation" },
+        { name: "Status", columnName: "groupByStatus" },
+      ]}
+      getRowId={({ data }) => `${data.id}-${data?.vesselId}`}
+      entityName="must"
+    />
   );
 }

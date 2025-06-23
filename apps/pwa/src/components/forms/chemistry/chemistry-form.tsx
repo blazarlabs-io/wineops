@@ -12,6 +12,8 @@ import {
   ChemistryType,
   StageOfProduction,
 } from "@/models/types/db";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { parseToDate } from "@/utils/date-format";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { ExpandMore } from "@mui/icons-material";
@@ -35,24 +37,26 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { useSnackbar } from "notistack";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export type ChemistryProps = {
-  children?: ReactNode;
-  chemistryItem?: Chemistry;
-  closeDrawer?: () => void;
-  type?: FormMode;
-};
-
-export default function ChemistryForm({
-  chemistryItem,
-  closeDrawer,
-  type = "create",
-}: ChemistryProps) {
+export default function ChemistryForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+
+  const closeDialog = useDialogDrawerStore(({ closeDialog }) => closeDialog);
+
+  const closeDrawer = useCallback(
+    () => closeDialog("form-drawer"),
+    [closeDialog]
+  );
+
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const formType: FormMode = selected.length > 0 ? "edit" : "create";
+
+  const [chemistryItem, setChemistryItem] = useState<Chemistry | undefined>();
 
   const { chemistry } = useChemistry();
   const {
@@ -79,7 +83,7 @@ export default function ChemistryForm({
 
   const handleCreateChemistryItem = useCallback(
     async (uid: string, data: Chemistry) => {
-      if (type === "create") {
+      if (formType === "create") {
         data.group = [data.name];
         data.rowType = "item";
       }
@@ -108,7 +112,7 @@ export default function ChemistryForm({
               variant: "success",
             });
 
-            closeDrawer?.();
+            closeDrawer();
           } else {
             enqueueSnackbar(`Error updating chemistry item`, {
               variant: "error",
@@ -126,7 +130,7 @@ export default function ChemistryForm({
               variant: "success",
             });
 
-            closeDrawer?.();
+            closeDrawer();
           } else {
             enqueueSnackbar(`Error creating chemistry item`, {
               variant: "error",
@@ -144,7 +148,7 @@ export default function ChemistryForm({
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, type]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType]
   );
 
   const onSubmit = async (data: Chemistry) => {
@@ -156,6 +160,18 @@ export default function ChemistryForm({
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (selected.length > 0 && chemistry.length > 0) {
+      const existingItem = chemistry.find(({ id }) => id === selected[0]?.id);
+
+      if (!existingItem) return;
+
+      setChemistryItem(existingItem);
+    } else {
+      setChemistryItem(undefined);
+    }
+  }, [chemistry, selected]);
 
   useEffect(() => {
     const chemistryItemID = `Chemistry_${chemistry.filter(({ rowType }) => rowType !== "group")?.length + 1}`;
@@ -180,549 +196,542 @@ export default function ChemistryForm({
 
   return (
     <>
-      {formData && formData !== undefined && (
-        <div
+      <Stack
+        sx={{
+          background: "var(--mui-palette-background-default)",
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
           style={{
-            background: "var(--mui-palette-background-default)",
             height: "100%",
             display: "flex",
             flexDirection: "column",
-            overflow: "hidden",
           }}
         >
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            style={{
-              height: "100%",
+          <Box
+            sx={{
+              p: 2,
+              flex: 1,
+              overflowY: "auto",
+              minHeight: 0,
               display: "flex",
               flexDirection: "column",
             }}
           >
-            <Box
-              sx={{
-                flex: 1,
-                overflowY: "auto",
-                minHeight: 0,
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Accordion defaultExpanded>
-                <AccordionDetails>
-                  <div className="p-4 flex flex-col gap-4 border-l">
-                    <div className="hidden">
-                      <FormControl>
-                        <Input
-                          id={formData.id as Chemistry["id"]}
-                          value={formData.id}
-                          type="hidden"
-                          {...register("id")}
-                        />
-                      </FormControl>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter order date:
-                      </InputLabel>
-
-                      <DatePicker
-                        label="Order date"
-                        value={
-                          formData?.orderDate
-                            ? dayjs(parseToDate(formData?.orderDate))
-                            : null
-                        }
-                        onChange={(newValue) =>
-                          handleSelectChange(
-                            "orderDate",
-                            newValue
-                              ? Timestamp.fromDate(newValue.toDate())
-                              : undefined
-                          )
-                        }
+            <Accordion defaultExpanded disableGutters={true}>
+              <AccordionDetails>
+                <div className="flex flex-col gap-4">
+                  <div className="hidden">
+                    <FormControl>
+                      <Input
+                        id={formData?.id as Chemistry["id"]}
+                        value={formData?.id}
+                        type="hidden"
+                        {...register("id")}
                       />
+                    </FormControl>
+                  </div>
 
-                      {errors?.orderDate && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.orderDate?.message as string}
-                        </Typography>
-                      )}
-                    </div>
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter order date:
+                    </InputLabel>
 
-                    <div className="flex flex-col gap-2">
+                    <DatePicker
+                      label="Order date"
+                      value={
+                        formData?.orderDate
+                          ? dayjs(parseToDate(formData?.orderDate))
+                          : null
+                      }
+                      onChange={(newValue) =>
+                        handleSelectChange(
+                          "orderDate",
+                          newValue
+                            ? Timestamp.fromDate(newValue.toDate())
+                            : undefined
+                        )
+                      }
+                    />
+
+                    {errors?.orderDate && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.orderDate?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter name:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="name"
+                        label="Name"
+                        type="text"
+                        variant="outlined"
+                        {...register("name")}
+                      />
+                    </FormControl>
+
+                    {errors?.name && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.name?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter reference ID:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="chemistryID"
+                        label="Chemistry item ID"
+                        type="text"
+                        variant="outlined"
+                        {...register("chemistryID")}
+                      />
+                    </FormControl>
+
+                    {errors?.chemistryID && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.chemistryID?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 w-full">
                       <InputLabel className="text-sm text-muted-foreground">
-                        Enter name:
+                        Select type:
                       </InputLabel>
 
                       <FormControl>
-                        <Input
-                          id="name"
-                          label="Name"
-                          type="text"
-                          variant="outlined"
-                          {...register("name")}
+                        <Autocomplete
+                          freeSolo
+                          options={Object.values(ChemistryType)}
+                          value={formData?.type || ""}
+                          onChange={(_event, newValue) => {
+                            handleSelectChange("type", newValue || "");
+                          }}
+                          onInputChange={(_event, newInputValue) => {
+                            handleSelectChange("type", newInputValue);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Type"
+                              variant="outlined"
+                            />
+                          )}
                         />
                       </FormControl>
-
-                      {errors?.name && (
+                      {errors?.type && (
                         <Typography
                           variant="body2"
                           color="error"
                           className="mt-1"
                         >
-                          {errors?.name?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter reference ID:
-                      </InputLabel>
-
-                      <FormControl>
-                        <Input
-                          id="chemistryID"
-                          label="Chemistry item ID"
-                          type="text"
-                          variant="outlined"
-                          {...register("chemistryID")}
-                        />
-                      </FormControl>
-
-                      {errors?.chemistryID && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.chemistryID?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col gap-2 w-full">
-                        <InputLabel className="text-sm text-muted-foreground">
-                          Select type:
-                        </InputLabel>
-
-                        <FormControl>
-                          <Autocomplete
-                            freeSolo
-                            options={Object.values(ChemistryType)}
-                            value={formData?.type || ""}
-                            onChange={(_event, newValue) => {
-                              handleSelectChange("type", newValue || "");
-                            }}
-                            onInputChange={(_event, newInputValue) => {
-                              handleSelectChange("type", newInputValue);
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Type"
-                                variant="outlined"
-                              />
-                            )}
-                          />
-                        </FormControl>
-                        {errors?.type && (
-                          <Typography
-                            variant="body2"
-                            color="error"
-                            className="mt-1"
-                          >
-                            {errors?.type?.message as string}
-                          </Typography>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter quantity:
-                      </InputLabel>
-
-                      <Stack direction="row" gap={2} alignItems="center">
-                        <FormControl sx={{ flex: 1 }}>
-                          <Input
-                            id="qty"
-                            label="Quantity"
-                            type="number"
-                            variant="outlined"
-                            {...register("qty")}
-                          />
-                        </FormControl>
-
-                        <Box sx={{ width: "40px" }}>
-                          {MASS_UNITS[0] || "kg"}
-                        </Box>
-                      </Stack>
-
-                      {errors?.qty && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.qty?.message as string}
+                          {errors?.type?.message as string}
                         </Typography>
                       )}
                     </div>
                   </div>
-                </AccordionDetails>
-              </Accordion>
 
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="general-info-content"
-                  id="general-info-header"
-                >
-                  <Typography component="span">
-                    Usage & Compliance Record
-                  </Typography>
-                </AccordionSummary>
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter quantity:
+                    </InputLabel>
 
-                <AccordionDetails>
-                  <div className="p-4 flex flex-col gap-4 border-l">
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Select used stage of production:
-                      </InputLabel>
-
-                      <FormControl>
-                        <Select
-                          name="stageOfProduction"
-                          id="stageOfProduction"
-                          variant="outlined"
-                          value={formData?.stageOfProduction ?? ""}
-                          onChange={(e) =>
-                            handleSelectChange(
-                              "stageOfProduction",
-                              e.target.value
-                            )
-                          }
-                        >
-                          <MenuItem value="">
-                            <em>None</em>
-                          </MenuItem>
-                          {Object.values(StageOfProduction).map((stage) => {
-                            return (
-                              <MenuItem key={stage} value={stage}>
-                                {stage}
-                              </MenuItem>
-                            );
-                          })}
-                        </Select>
-                      </FormControl>
-
-                      {errors?.stageOfProduction && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.stageOfProduction?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter recommended dosage:
-                      </InputLabel>
-
-                      <Stack direction="row" gap={2} alignItems="center">
-                        <FormControl sx={{ flex: 1 }}>
-                          <Input
-                            id="recommendedDosage"
-                            label="Recommended dosage"
-                            type="number"
-                            variant="outlined"
-                            {...register("recommendedDosage")}
-                          />
-                        </FormControl>
-
-                        <Box sx={{ width: "40px" }}>/dm³</Box>
-                      </Stack>
-
-                      {errors?.recommendedDosage && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.recommendedDosage?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter maximum admisible dosage:
-                      </InputLabel>
-
-                      <Stack direction="row" gap={2} alignItems="center">
-                        <FormControl sx={{ flex: 1 }}>
-                          <Input
-                            id="maxDosage"
-                            label="Maximum admisible dosage"
-                            type="number"
-                            variant="outlined"
-                            {...register("maxDosage")}
-                          />
-                        </FormControl>
-
-                        <Box sx={{ width: "40px" }}>/dm³</Box>
-                      </Stack>
-
-                      {errors?.maxDosage && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.maxDosage?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter expiry date:
-                      </InputLabel>
-
-                      <DatePicker
-                        label="Expiry date"
-                        value={
-                          formData?.expiryDate
-                            ? dayjs(parseToDate(formData?.expiryDate))
-                            : null
-                        }
-                        onChange={(newValue) =>
-                          handleSelectChange(
-                            "expiryDate",
-                            newValue
-                              ? Timestamp.fromDate(newValue.toDate())
-                              : undefined
-                          )
-                        }
-                      />
-
-                      {errors?.expiryDate && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.expiryDate?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter invoice no:
-                      </InputLabel>
-
-                      <FormControl>
+                    <Stack direction="row" gap={2} alignItems="center">
+                      <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="invoiceNo"
-                          label="Invoice no"
-                          type="text"
-                          variant="outlined"
-                          {...register("invoiceNo")}
-                        />
-                      </FormControl>
-
-                      {errors?.invoiceNo && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.invoiceNo?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter manufacturer:
-                      </InputLabel>
-
-                      <FormControl>
-                        <Input
-                          id="manufacturer"
-                          label="Manufacturer"
-                          type="text"
-                          variant="outlined"
-                          {...register("manufacturer")}
-                        />
-                      </FormControl>
-
-                      {errors?.manufacturer && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.manufacturer?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter certificat de calitate:
-                      </InputLabel>
-
-                      <FormControl>
-                        <Input
-                          id="certificatCalitate"
-                          label="Certificat de calitate"
-                          type="text"
-                          variant="outlined"
-                          {...register("certificatCalitate")}
-                        />
-                      </FormControl>
-
-                      {errors?.certificatCalitate && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.certificatCalitate?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter minimum stock alert:
-                      </InputLabel>
-
-                      <FormControl>
-                        <Input
-                          id="minimumStockAlert"
-                          label="Minimum stock alert"
+                          id="qty"
+                          label="Quantity"
                           type="number"
                           variant="outlined"
-                          {...register("minimumStockAlert")}
+                          {...register("qty")}
                         />
                       </FormControl>
 
-                      {errors?.minimumStockAlert && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.minimumStockAlert?.message as string}
-                        </Typography>
-                      )}
-                    </div>
+                      <Box sx={{ width: "40px" }}>{MASS_UNITS[0] || "kg"}</Box>
+                    </Stack>
+
+                    {errors?.qty && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.qty?.message as string}
+                      </Typography>
+                    )}
                   </div>
-                </AccordionDetails>
-              </Accordion>
+                </div>
+              </AccordionDetails>
+            </Accordion>
 
-              <Accordion defaultExpanded>
-                <AccordionDetails>
-                  <div className="p-4 flex flex-col gap-4 border-l">
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter legal/use notes:
-                      </InputLabel>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls="general-info-content"
+                id="general-info-header"
+              >
+                <Typography component="span">
+                  Usage & Compliance Record
+                </Typography>
+              </AccordionSummary>
 
-                      <FormControl>
-                        <Input
-                          id="legalUseNotes"
-                          label="Legal/Use notes"
-                          type="text"
-                          variant="outlined"
-                          {...register("legalUseNotes")}
-                        />
-                      </FormControl>
+              <AccordionDetails>
+                <div className="p-4 flex flex-col gap-4 border-l">
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Select used stage of production:
+                    </InputLabel>
 
-                      {errors?.legalUseNotes && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.legalUseNotes?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter comments:
-                      </InputLabel>
+                    <FormControl>
+                      <Select
+                        name="stageOfProduction"
+                        id="stageOfProduction"
+                        variant="outlined"
+                        value={formData?.stageOfProduction ?? ""}
+                        onChange={(e) =>
+                          handleSelectChange(
+                            "stageOfProduction",
+                            e.target.value
+                          )
+                        }
+                      >
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        {Object.values(StageOfProduction).map((stage) => {
+                          return (
+                            <MenuItem key={stage} value={stage}>
+                              {stage}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
 
-                      <FormControl>
-                        <Input
-                          id="comments"
-                          label="Comments"
-                          type="text"
-                          variant="outlined"
-                          {...register("comments")}
-                        />
-                      </FormControl>
-
-                      {errors?.comments && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.comments?.message as string}
-                        </Typography>
-                      )}
-                    </div>
+                    {errors?.stageOfProduction && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.stageOfProduction?.message as string}
+                      </Typography>
+                    )}
                   </div>
-                </AccordionDetails>
-              </Accordion>
-            </Box>
 
-            <Box
-              p={2}
-              gap={2}
-              display="flex"
-              justifyContent="end"
-              sx={{
-                zIndex: 1,
-                flexShrink: 0,
-                borderTop: "1px solid #ccc",
-                background: "var(--mui-palette-background-default)",
-              }}
-            >
-              <FormControl>
-                <Button disabled={isSubmitting} onClick={() => closeDrawer?.()}>
-                  Cancel
-                </Button>
-              </FormControl>
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter recommended dosage:
+                    </InputLabel>
 
-              <FormControl>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={isSubmitting}
-                >
-                  Save
-                </Button>
-              </FormControl>
-            </Box>
-          </form>
-        </div>
-      )}
+                    <Stack direction="row" gap={2} alignItems="center">
+                      <FormControl sx={{ flex: 1 }}>
+                        <Input
+                          id="recommendedDosage"
+                          label="Recommended dosage"
+                          type="number"
+                          variant="outlined"
+                          {...register("recommendedDosage")}
+                        />
+                      </FormControl>
+
+                      <Box sx={{ width: "40px" }}>/dm³</Box>
+                    </Stack>
+
+                    {errors?.recommendedDosage && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.recommendedDosage?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter maximum admisible dosage:
+                    </InputLabel>
+
+                    <Stack direction="row" gap={2} alignItems="center">
+                      <FormControl sx={{ flex: 1 }}>
+                        <Input
+                          id="maxDosage"
+                          label="Maximum admisible dosage"
+                          type="number"
+                          variant="outlined"
+                          {...register("maxDosage")}
+                        />
+                      </FormControl>
+
+                      <Box sx={{ width: "40px" }}>/dm³</Box>
+                    </Stack>
+
+                    {errors?.maxDosage && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.maxDosage?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter expiry date:
+                    </InputLabel>
+
+                    <DatePicker
+                      label="Expiry date"
+                      value={
+                        formData?.expiryDate
+                          ? dayjs(parseToDate(formData?.expiryDate))
+                          : null
+                      }
+                      onChange={(newValue) =>
+                        handleSelectChange(
+                          "expiryDate",
+                          newValue
+                            ? Timestamp.fromDate(newValue.toDate())
+                            : undefined
+                        )
+                      }
+                    />
+
+                    {errors?.expiryDate && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.expiryDate?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter invoice no:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="invoiceNo"
+                        label="Invoice no"
+                        type="text"
+                        variant="outlined"
+                        {...register("invoiceNo")}
+                      />
+                    </FormControl>
+
+                    {errors?.invoiceNo && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.invoiceNo?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter manufacturer:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="manufacturer"
+                        label="Manufacturer"
+                        type="text"
+                        variant="outlined"
+                        {...register("manufacturer")}
+                      />
+                    </FormControl>
+
+                    {errors?.manufacturer && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.manufacturer?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter certificat de calitate:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="certificatCalitate"
+                        label="Certificat de calitate"
+                        type="text"
+                        variant="outlined"
+                        {...register("certificatCalitate")}
+                      />
+                    </FormControl>
+
+                    {errors?.certificatCalitate && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.certificatCalitate?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter minimum stock alert:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="minimumStockAlert"
+                        label="Minimum stock alert"
+                        type="number"
+                        variant="outlined"
+                        {...register("minimumStockAlert")}
+                      />
+                    </FormControl>
+
+                    {errors?.minimumStockAlert && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.minimumStockAlert?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion defaultExpanded>
+              <AccordionDetails>
+                <div className="p-4 flex flex-col gap-4 border-l">
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter legal/use notes:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="legalUseNotes"
+                        label="Legal/Use notes"
+                        type="text"
+                        variant="outlined"
+                        {...register("legalUseNotes")}
+                      />
+                    </FormControl>
+
+                    {errors?.legalUseNotes && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.legalUseNotes?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter comments:
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="comments"
+                        label="Comments"
+                        type="text"
+                        variant="outlined"
+                        {...register("comments")}
+                      />
+                    </FormControl>
+
+                    {errors?.comments && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.comments?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+
+          <Box
+            p={2}
+            gap={2}
+            display="flex"
+            justifyContent="end"
+            sx={{
+              bottom: 0,
+              zIndex: 1,
+              flexShrink: 0,
+              position: "sticky",
+              borderTop: "1px solid #ccc",
+              background: "var(--mui-palette-background-default)",
+            }}
+          >
+            <FormControl>
+              <Button disabled={isSubmitting} onClick={closeDrawer}>
+                Cancel
+              </Button>
+            </FormControl>
+
+            <FormControl>
+              <Button type="submit" variant="contained" disabled={isSubmitting}>
+                Save
+              </Button>
+            </FormControl>
+          </Box>
+        </form>
+      </Stack>
     </>
   );
 }

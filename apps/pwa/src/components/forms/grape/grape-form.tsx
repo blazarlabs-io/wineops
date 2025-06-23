@@ -29,20 +29,13 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { ExpandMore } from "@mui/icons-material";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 
-export type GrapeFormProps = {
-  children?: React.ReactNode;
-  grape?: Grape;
-  closeDrawer?: () => void;
-  type?: FormMode;
-};
-
-export default function GrapeForm({
-  grape,
-  closeDrawer,
-  type = "create",
-}: GrapeFormProps) {
+export default function GrapeForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [generalExpanded, setGeneralExpanded] = useState(true);
   const [detailsExpanded, setDetailsExpanded] = useState(false);
@@ -60,8 +53,18 @@ export default function GrapeForm({
     setParametersExpanded((prevExpanded) => !prevExpanded);
   };
 
-  const { user } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
+  const closeDialog = useDialogDrawerStore(({ closeDialog }) => closeDialog);
+
+  const closeDrawer = useCallback(
+    () => closeDialog("form-drawer"),
+    [closeDialog]
+  );
+
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const formType: FormMode = selected.length > 0 ? "edit" : "create";
+
+  const [workingGrape, setWorkingGrape] = useState<Grape | undefined>();
 
   const { grapes } = useGrape();
   const {
@@ -71,10 +74,10 @@ export default function GrapeForm({
     reset,
     formState: { errors },
   } = useForm<Grape>({
-    resolver: joiResolver(grapeSchema),
+    resolver: joiResolver(grapeSchema, { stripUnknown: true }),
   });
 
-  const [formData, setFormData] = useState<Grape | undefined>(grape);
+  const [formData, setFormData] = useState<Grape | undefined>(workingGrape);
 
   const handleSelectChange = useCallback(
     (name: string, value: any) => {
@@ -86,7 +89,7 @@ export default function GrapeForm({
 
   const handleCreateGrape = useCallback(
     async (uid: string, data: any) => {
-      if (type === "create") {
+      if (formType === "create") {
         data.group = [data.name];
         data.rowType = "item";
       }
@@ -161,7 +164,7 @@ export default function GrapeForm({
               variant: "success",
             });
 
-            closeDrawer?.();
+            closeDrawer();
           } else {
             enqueueSnackbar(`Error updating grape`, {
               variant: "error",
@@ -179,7 +182,7 @@ export default function GrapeForm({
               variant: "success",
             });
 
-            closeDrawer?.();
+            closeDrawer();
           } else {
             enqueueSnackbar(`Error creating grape`, {
               variant: "error",
@@ -197,12 +200,10 @@ export default function GrapeForm({
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, type]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType]
   );
 
-  const onSubmit = async (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const onSubmit = async (data: Grape) => {
     setIsSubmitting(true);
 
     try {
@@ -213,11 +214,23 @@ export default function GrapeForm({
   };
 
   useEffect(() => {
+    if (selected.length > 0 && grapes.length > 0) {
+      const existingGrape = grapes.find(({ id }) => id === selected[0]?.id);
+
+      if (!existingGrape) return;
+
+      setWorkingGrape(existingGrape);
+    } else {
+      setWorkingGrape(undefined);
+    }
+  }, [grapes, selected]);
+
+  useEffect(() => {
     const name = `BatchID_${grapes?.length + 1}`;
 
     const formatted = {
-      ...grape,
-      ...(!grape && {
+      ...workingGrape,
+      ...(!workingGrape && {
         id: Date.now().toString(),
         name,
         group: [name],
@@ -253,7 +266,7 @@ export default function GrapeForm({
 
     reset(formatted);
     setFormData(formatted);
-  }, [reset, grape, grapes?.length]);
+  }, [reset, workingGrape, grapes?.length]);
 
   useEffect(() => {
     if (errors) {
@@ -1222,13 +1235,14 @@ export default function GrapeForm({
             sx={{
               bottom: 0,
               zIndex: 1,
+              flexShrink: 0,
               position: "sticky",
               borderTop: "1px solid #ccc",
               background: "var(--mui-palette-background-default)",
             }}
           >
             <FormControl>
-              <Button disabled={isSubmitting} onClick={() => closeDrawer?.()}>
+              <Button disabled={isSubmitting} onClick={closeDrawer}>
                 Cancel
               </Button>
             </FormControl>

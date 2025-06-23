@@ -16,6 +16,8 @@ import {
   Vineyard,
   WineColor,
 } from "@/models/types/db";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { generateYearsList } from "@/utils/generators";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { Add, ExpandMore, ReceiptLong } from "@mui/icons-material";
@@ -46,23 +48,28 @@ import { Controller, useForm } from "react-hook-form";
 
 export type VineyardFormProps = {
   children?: React.ReactNode;
-  vineyard: Vineyard | null;
-  closeDrawer?: () => void;
-  type?: FormMode;
   onSave?: (data: Vineyard) => void;
   clicked?: boolean;
 };
 
-export default function VineyardForm({
-  vineyard,
-  closeDrawer,
-  type = "create",
-  onSave,
-  clicked,
-}: VineyardFormProps) {
+export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { mode } = useColorScheme();
+
+  const closeDialog = useDialogDrawerStore(({ closeDialog }) => closeDialog);
+
+  const closeDrawer = useCallback(
+    () => closeDialog("form-drawer"),
+    [closeDialog]
+  );
+
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const formType: FormMode = selected.length > 0 ? "edit" : "create";
+
+  const [vineyard, setVineyard] = useState<Vineyard | null>(null);
+
   const { vineyards } = useVineyard();
   const {
     register,
@@ -161,9 +168,9 @@ export default function VineyardForm({
 
   const handleCreateVineyard = useCallback(
     async (uid: string, data: any) => {
-      console.log("DATA", type, data);
+      console.log("DATA", formType, data);
 
-      if (type === "create") data.group = [data.name];
+      if (formType === "create") data.group = [data.name];
 
       data.createdAt = Timestamp.now();
 
@@ -229,7 +236,7 @@ export default function VineyardForm({
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, type]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType]
   );
 
   const onSubmit = (data: any, e: any) => {
@@ -242,9 +249,30 @@ export default function VineyardForm({
   };
 
   useEffect(() => {
+    if (selected.length > 0 && vineyards.length > 0) {
+      const existingVineyard = vineyards.find(
+        ({ id }) => id === selected[0]?.id
+      );
+
+      if (!existingVineyard) return;
+
+      setVineyard(existingVineyard);
+    } else {
+      setVineyard({
+        id: Date.now().toString(),
+        labData: [],
+        tasks: [],
+        documents: [],
+        notes: [],
+        rowType: "item",
+      } as unknown as Vineyard);
+    }
+  }, [vineyards, selected]);
+
+  useEffect(() => {
     if (vineyard) {
       vineyard.cadastralNumber = vineyard.cadastralNumber || [];
-      if (vineyard.name.length > 0) {
+      if (vineyard?.name?.length > 0) {
         // console.log("EXISTING VINEYARD", vineyard);
         reset(vineyard);
         setFormData(vineyard);
@@ -255,7 +283,7 @@ export default function VineyardForm({
         reset(vineyard);
       }
     }
-  }, [vineyard]);
+  }, [reset, setValue, vineyard, vineyards?.length]);
 
   useEffect(() => {
     if (errors) {
@@ -534,7 +562,7 @@ export default function VineyardForm({
                       {/* * MAP */}
                       <div className="w-full bg-muted rounded-md min-h-[320px] relative">
                         <PolygonDrawingMap
-                          initialCoordinates={formData.info.location.map}
+                          initialCoordinates={formData.info?.location?.map}
                           onComplete={handlePolygonDrawingComplete}
                         />
                       </div>

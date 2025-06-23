@@ -4,12 +4,7 @@ import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED } from "@/data/constants";
 import { ExpandMore } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type FunctionComponent,
-} from "react";
+import { useCallback, useState, type FunctionComponent } from "react";
 import { useVineyard } from "@/context/vineyard";
 import { useGetVineyardLabData } from "@/hooks/use-get-vineyard-lab-data";
 import { LabReport } from "@/models/types/db";
@@ -27,7 +22,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
     labReports,
     vineyards
   );
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState<boolean>(node.expanded);
   const [openCadastrals, setOpenCadastrals] = useState<boolean>(false);
 
   // * master detail custom renderer
@@ -35,11 +30,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(node.expanded ? ROW_HEIGHT_EXPANDED : ROW_HEIGHT_DEFAULT);
-  }, []);
-
-  useEffect(() => {
-    setExpanded(node.expanded);
-  }, [node.expanded]);
+  }, [node]);
 
   const isGroup = node?.group || node?.data?.rowType === "group";
 
