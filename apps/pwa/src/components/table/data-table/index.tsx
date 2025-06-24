@@ -181,7 +181,7 @@ export const DataTable = <T extends DashboardEntity>({
     if (existingGroup) return;
 
     return {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       rowType: "group",
       group,
     };
@@ -197,18 +197,47 @@ export const DataTable = <T extends DashboardEntity>({
 
     const newGroup = createNewGroup(group);
 
-    const updatedRows = selectedRows.map((row) => ({
-      id: row.id,
-      rowType: row.rowType,
-      group:
-        group.length > 0
-          ? row.rowType === "group"
-            ? (newGroup?.group ?? group)
-            : [...(newGroup?.group ?? group), row.name]
-          : row.rowType === "group"
-            ? [...row.group.slice(0, -2), row.group[row.group.length - 1]]
-            : [...row.group.slice(0, -2), row.name],
-    }));
+    const newGroups = newGroup?.group ? [newGroup] : [];
+
+    const fullySelectedGroups = getFullySelectedGroups(selectedRows, data);
+
+    const updatedRows = selectedRows.map((row) => {
+      const groupPrefix = newGroup?.group ?? group;
+      const foundGroupIndex = row?.group.findIndex((item) =>
+        fullySelectedGroups.includes(item)
+      );
+
+      const hierarchyGroup =
+        foundGroupIndex > -1
+          ? [...groupPrefix, ...row?.group.slice(foundGroupIndex, -1)]
+          : groupPrefix;
+
+      const newHierarchyGroup = createNewGroup(hierarchyGroup);
+
+      if (newHierarchyGroup && newHierarchyGroup?.group?.length > 0) {
+        if (
+          !newGroups.find(
+            (newGroup) =>
+              newGroup.group.join(",") === newHierarchyGroup.group.join(",")
+          )
+        ) {
+          newGroups.push(newHierarchyGroup);
+        }
+      }
+
+      return {
+        id: row.id,
+        rowType: row.rowType,
+        group:
+          group.length > 0
+            ? row.rowType === "group"
+              ? groupPrefix
+              : [...(newHierarchyGroup?.group ?? hierarchyGroup), row.name]
+            : row.rowType === "group"
+              ? [...row.group.slice(0, -2), row.group[row.group.length - 1]]
+              : [...row.group.slice(0, -2), row.name],
+      };
+    });
 
     const updatedMap = new Map(updatedRows.map((row) => [row.id, row]));
 
@@ -230,7 +259,9 @@ export const DataTable = <T extends DashboardEntity>({
 
     const updateRes: DbResponse = await db[entityName].updateGroup(
       uid,
-      newGroup ? [...updatedRowsWithUnused, newGroup] : updatedRowsWithUnused
+      newGroups.length > 0
+        ? [...updatedRowsWithUnused, ...newGroups]
+        : updatedRowsWithUnused
     );
 
     if (updateRes.status === 200) {
@@ -514,3 +545,45 @@ export const DataTable = <T extends DashboardEntity>({
     </>
   );
 };
+
+function getFullySelectedGroups(selected: any[], rows: any[]) {
+  const selectedIds = new Set(selected.map((r) => r.id));
+  const groupMap = new Map<string, any[]>();
+
+  rows.forEach((row) => {
+    if (row.rowType === "item" && Array.isArray(row.group)) {
+      const groupKey = JSON.stringify(row.group.slice(0, -1));
+      if (!groupMap.has(groupKey)) groupMap.set(groupKey, []);
+      groupMap.get(groupKey)!.push(row);
+    }
+  });
+
+  const fullySelectedGroups = new Set<string>();
+
+  for (const [key, items] of groupMap.entries()) {
+    if (items.every((item) => selectedIds.has(item.id))) {
+      fullySelectedGroups.add(key);
+    }
+  }
+
+  const finalGroups: string[][] = [];
+
+  for (const key of fullySelectedGroups) {
+    const group = JSON.parse(key) as string[];
+
+    const hasParent = group
+      .map((_, i) => group.slice(0, i))
+      .filter((prefix) => prefix.length > 0)
+      .some((prefix) => fullySelectedGroups.has(JSON.stringify(prefix)));
+
+    if (!hasParent) {
+      finalGroups.push(group);
+    }
+  }
+
+  const groupsToKeep: string[] = finalGroups.map(
+    (groupArray) => groupArray.at(-1)!
+  );
+
+  return groupsToKeep;
+}
