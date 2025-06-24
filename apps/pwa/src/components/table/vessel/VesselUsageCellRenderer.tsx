@@ -9,6 +9,13 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
   const { value, data, node } = params;
   const isGroup = node.group || data.rowType === "group";
 
+  const usage =
+    data?.type === VesselType.BARREL
+      ? data?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL
+      : data?.type === VesselType.STAINLESS_STEEL_TANK
+        ? data?.sstInfo?.usage
+        : data?.usage;
+
   const withUsage = isGroup
     ? (value ?? [])
         .flat(Infinity)
@@ -21,13 +28,6 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
                 : usage) ?? "") !== ""
         )
     : [];
-
-  const usage =
-    data?.type === VesselType.BARREL
-      ? data?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL
-      : data?.type === VesselType.STAINLESS_STEEL_TANK
-        ? data?.sstInfo?.usage
-        : data?.usage;
 
   return (
     <Stack
