@@ -1,11 +1,6 @@
 import { IconButton, Stack, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type FunctionComponent,
-} from "react";
+import { useCallback, useState, type FunctionComponent } from "react";
 import {
   ROW_HEIGHT_DEFAULT,
   ROW_HEIGHT_EXPANDED_VESSEL,
@@ -19,7 +14,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 ) => {
   const { value, data, node } = params;
 
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState<boolean>(node.expanded);
 
   const handleMasterDetailExpansion = useCallback(() => {
     setExpanded(!node.expanded);
@@ -28,10 +23,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       node.expanded ? ROW_HEIGHT_EXPANDED_VESSEL : ROW_HEIGHT_DEFAULT
     );
   }, [node]);
-
-  useEffect(() => {
-    setExpanded(node.expanded);
-  }, [node.expanded]);
 
   const isGroup = node?.group || node?.data?.rowType === "group";
 

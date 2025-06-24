@@ -14,11 +14,10 @@ import {
   NOTES,
   TASKS,
   VINEYARDS,
-  VINEYARDS_GROUPS,
   WINERY,
 } from "@/lib/firebase/config";
 import { VineyardActions } from "@/models/types/actions";
-import { Group, LabReport, Note, Task, Vineyard } from "@/models/types/db";
+import { LabReport, Note, Task, Vineyard } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
@@ -31,8 +30,6 @@ import {
 
 interface VineyardContextType {
   vineyards: Vineyard[];
-  selectedVineyards: Vineyard[];
-  updateSelectedVineyards: (vineyards: Vineyard[]) => void;
   actions: VineyardActions;
   labReports: LabReport[];
   notes: Note[];
@@ -62,7 +59,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   const { user } = useAuth();
 
   const [vineyards, setVineyards] = useState<Vineyard[]>([]);
-  const [selectedVineyards, setSelectedVineyards] = useState<Vineyard[]>([]);
+
   const [labReports, setLabReports] = useState<LabReport[]>([]);
   const [actions] = useState<VineyardActions>({
     harvest: {
@@ -84,10 +81,6 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
-
-  const updateSelectedVineyards = useCallback((vineyards: Vineyard[]) => {
-    setSelectedVineyards(vineyards);
-  }, []);
 
   const updateSelectedTasks = useCallback((ts: Task[]) => {
     setSelectedTasks(ts);
@@ -113,6 +106,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
 
         if (querySnapshot.empty) {
           console.log("No vineyards found");
+          setVineyards([]);
           return;
         }
 
@@ -139,6 +133,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
 
         if (querySnapshot.empty) {
           console.log("No lab reports found");
+          setLabReports([]);
           return;
         }
 
@@ -156,6 +151,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
 
         if (querySnapshot.empty) {
           console.log("No notes found");
+          setNotes([]);
           return;
         }
 
@@ -173,6 +169,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
 
         if (querySnapshot.empty) {
           console.log("No tasks found");
+          setTasks([]);
           return;
         }
 
@@ -194,17 +191,11 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   }, [user]);
 
   const memoizedVineyards = useMemo(() => vineyards, [vineyards]);
-  const memoizedSelectedGrapes = useMemo(
-    () => selectedVineyards,
-    [selectedVineyards]
-  );
 
   return (
     <VineyardContext.Provider
       value={{
         vineyards: memoizedVineyards,
-        selectedVineyards: memoizedSelectedGrapes,
-        updateSelectedVineyards,
         actions,
         labReports,
         notes,

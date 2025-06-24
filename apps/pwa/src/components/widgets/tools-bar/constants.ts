@@ -1,5 +1,5 @@
 export type ButtonProps = {
-  enabled: boolean;
+  enabled?: boolean;
   onClick?: () => void;
 };
 

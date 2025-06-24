@@ -30,18 +30,16 @@ import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { setNestedValue } from "@/helpers/form-helpers";
+import { useVineyard } from "@/context/vineyard";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 
-export type HarvestActionFormProps = {
-  vineyards: Vineyard[];
-  selectedVineyards?: Vineyard[];
-  actions?: VineyardActions;
-};
+export default function VineyardLabActionForm() {
+  const { vineyards, actions } = useVineyard();
 
-export default function VineyardLabActionForm({
-  vineyards,
-  actions,
-  selectedVineyards,
-}: HarvestActionFormProps) {
+  const selectedVineyards = useSelectedEntitiesStore(
+    ({ selected }) => selected
+  );
+
   const { teamMembers } = useWinery();
   const { user } = useAuth();
   const {

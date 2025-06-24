@@ -15,20 +15,51 @@ import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { QuickDrawerType } from "@/models/types/db";
 import { useColorScheme } from "@mui/material";
+import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
+import { useDialogDrawerStore } from "@/store/dialogs";
 
-export type ToolsBarProps = {
-  buttons: Partial<Record<ButtonType, ButtonProps>>;
+const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
+  [ButtonType.ADD]: {
+    enabled: false,
+  },
+  [ButtonType.EDIT]: {
+    enabled: false,
+  },
+  [ButtonType.GROUP]: {
+    enabled: false,
+  },
+  [ButtonType.UNGROUP]: {
+    enabled: false,
+  },
+  [ButtonType.DELETE]: {
+    enabled: false,
+  },
 };
 
-export default function ToolsBar({
-  buttons = {
-    [ButtonType.ADD]: {
-      enabled: true,
-    },
-  },
-}: ToolsBarProps) {
+export type ToolsBarProps = {
+  buttons?: Partial<Record<ButtonType, ButtonProps>>;
+};
+
+export default function ToolsBar(props: ToolsBarProps) {
   const { mode } = useColorScheme();
   const { updateOpen, updateType } = useQuickDrawer();
+
+  const buttons = props.buttons || ALL_BUTTONS;
+
+  const {
+    enableAdd,
+    enableGrouping,
+    enableUngrouping,
+    enableEdit,
+    enableDelete,
+  } = useSortToolsBarStates();
+
+  const open = useDialogDrawerStore(({ open }) => open);
+  const openGroupingDialog = () => open("group-entities");
+  const openUngroupingDialog = () => open("ungroup-entities");
+  const openDeleteDialog = () => open("delete-entities");
+  const openFormDrawer = () => open("form-drawer");
+
   const handleOpenDrawer = (type: string) => {
     updateOpen(true);
     updateType(type as QuickDrawerType);
@@ -47,8 +78,8 @@ export default function ToolsBar({
             <IconButton
               color="default"
               aria-label="add"
-              onClick={buttons[ButtonType.ADD]?.onClick}
-              disabled={!buttons[ButtonType.ADD]?.enabled}
+              onClick={buttons[ButtonType.ADD]?.onClick || openFormDrawer}
+              disabled={!(buttons[ButtonType.ADD]?.enabled || enableAdd)}
             >
               <Add className="" />
             </IconButton>
@@ -57,8 +88,8 @@ export default function ToolsBar({
             <IconButton
               color="default"
               aria-label="edit"
-              disabled={!buttons[ButtonType.EDIT]?.enabled}
-              onClick={buttons[ButtonType.EDIT]?.onClick}
+              disabled={!(buttons[ButtonType.EDIT]?.enabled || enableEdit)}
+              onClick={buttons[ButtonType.EDIT]?.onClick || openFormDrawer}
             >
               <Edit />
             </IconButton>
@@ -68,8 +99,8 @@ export default function ToolsBar({
             <IconButton
               color="default"
               aria-label="group"
-              disabled={!buttons[ButtonType.GROUP]?.enabled}
-              onClick={buttons[ButtonType.GROUP]?.onClick}
+              disabled={!(buttons[ButtonType.GROUP]?.enabled || enableGrouping)}
+              onClick={buttons[ButtonType.GROUP]?.onClick || openGroupingDialog}
             >
               <SelectAll />
             </IconButton>
@@ -80,8 +111,12 @@ export default function ToolsBar({
               color="default"
               size="small"
               aria-label="ungroup"
-              disabled={!buttons[ButtonType.UNGROUP]?.enabled}
-              onClick={buttons[ButtonType.UNGROUP]?.onClick}
+              disabled={
+                !(buttons[ButtonType.UNGROUP]?.enabled || enableUngrouping)
+              }
+              onClick={
+                buttons[ButtonType.UNGROUP]?.onClick || openUngroupingDialog
+              }
             >
               <Deselect className="" />
             </IconButton>
@@ -91,8 +126,8 @@ export default function ToolsBar({
             <IconButton
               color="error"
               aria-label="delete"
-              disabled={!buttons[ButtonType.DELETE]?.enabled}
-              onClick={buttons[ButtonType.DELETE]?.onClick}
+              disabled={!(buttons[ButtonType.DELETE]?.enabled || enableDelete)}
+              onClick={buttons[ButtonType.DELETE]?.onClick || openDeleteDialog}
             >
               <DeleteOutline className="" />
             </IconButton>
