@@ -4,40 +4,47 @@
 import { vineyardHarvestActionSample } from "@/data/actions-samples";
 import { useAuth } from "@/lib/firebase/auth";
 import { vineyardHarvestActionSchema } from "@/models/schemas/actions/vineyard-harvest-action-schema";
-import { ActionRelation, VineyardHarvestAction } from "@/models/types/actions";
-import { Vineyard } from "@/models/types/db";
+import {
+  ActionRelation,
+  VineyardActions,
+  VineyardActionType,
+  VineyardHarvestAction,
+} from "@/models/types/actions";
+import { LabReport, Vessel, Vineyard, VineyardStatus } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
-import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
-import { generateDummyDocs } from "@/utils/generators";
-import { Attachment } from "@mui/icons-material";
+import { useConsumable } from "@/context/consumable";
+import { useGrape } from "@/context/grape";
+import { useVineyard } from "@/context/vineyard";
+import { useWinery } from "@/context/winery";
+import { countries } from "@/data/countries";
+import { db } from "@/lib/firebase/services";
+import { ExpandMore } from "@mui/icons-material";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Autocomplete,
   Box,
   Button,
-  Chip,
+  Checkbox,
   FormControl,
-  Grid,
   TextField as Input,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
   Stack,
+  TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
-import { Theme, useTheme } from "@mui/material/styles";
+import { useColorScheme } from "@mui/material/styles";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
+import { enqueueSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { setNestedValue } from "@/helpers/form-helpers";
-import { useGrape } from "@/context/grape";
-import { useVineyard } from "@/context/vineyard";
-import { useVessel } from "@/context/vessel";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
+import { cleanUndefined } from "@/utils/clean-undefined";
+import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -62,7 +69,6 @@ export default function VineyardHarvestActionForm() {
 
   const { user } = useAuth();
   const { grapes } = useGrape();
-  const theme = useTheme();
   const {
     register,
     handleSubmit,
@@ -72,14 +78,18 @@ export default function VineyardHarvestActionForm() {
   } = useForm({
     resolver: joiResolver(vineyardHarvestActionSchema),
   });
-
-  const { vineyardNames } = useGetVineyardsNames(vineyards);
-
+  const { mode } = useColorScheme();
+  const { teamMembers } = useWinery();
   const [formData, setFormData] = useState<VineyardHarvestAction>(
     vineyardHarvestActionSample
   );
+  const { labReports: labData } = useVineyard();
+  const { consumables } = useConsumable();
+  const { vineyardNames } = useGetVineyardsNames(vineyards);
 
   const [disableSubject, setDisableSubject] = useState<boolean>(false);
+  const [localVineyard, setLocalVineyard] = useState<Vineyard | null>(null);
+  const [harvestEnded, setHarvestEnded] = useState<boolean>(false);
 
   const handleChange = useCallback(
     (name: string, value: any) => {
@@ -91,157 +101,331 @@ export default function VineyardHarvestActionForm() {
 
       if (name === "subject.name") {
         //value = Timestamp.fromDate(value.toDate());
-        setValue(
-          "subject.id" as string,
-          vineyards.filter((v) => v.name === value)[0]?.id as string
-        );
-        setValue("subject.name" as string, value as any);
-      } else {
-        setValue(name as string, value as any);
+        const selected = vineyards.filter((v) => v.name === value)[0];
+
+        value = {
+          id: selected?.id as string,
+          name: selected?.name as string,
+        };
+
+        setValue("subject.id" as string, value.id as string);
+        setValue("subject.name" as string, value.name as any);
+        setValue(name as string, value as ActionRelation[]);
+        setFormData({ ...formData, subject: value });
+        setLocalVineyard(selected as Vineyard);
+
+        return;
+      } else if (name === "consumables") {
+        const prevConsumables =
+          (formData.consumables as ActionRelation[]) || [];
+
+        // * Check if the consumable is already in the list
+        const alreadyInList = prevConsumables.find((c) => c.name === value);
+
+        console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+        console.log("prevConsumables", prevConsumables);
+        console.log("alreadyInList", alreadyInList);
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+
+        if (alreadyInList !== undefined) {
+          console.log("\n\n already in list: LEAVE AS IS");
+          value = [alreadyInList] as ActionRelation[];
+        } else if (prevConsumables.length === 0) {
+          // add consumable to list
+          console.log("\n\n not in list and prevConsumables is empty: ADD");
+          const newConsumable = {
+            id: consumables.filter((c) => c.name === value)[0].id,
+            name: value,
+          };
+          value = [...prevConsumables, newConsumable] as ActionRelation[];
+        } else {
+          // remove consumable from list
+          console.log(
+            "\n\n not in list and prevConsumables is not empty: DELETE"
+          );
+          value = prevConsumables.slice(0, -1) as ActionRelation[];
+        }
+
+        console.log("\n\n----------------------------");
+        console.log("value", value);
+        console.log("----------------------------\n\n");
+
+        setValue("consumables" as string, value as ActionRelation[]);
+        setFormData((prevData: VineyardHarvestAction) => {
+          return {
+            ...prevData,
+            consumables: value,
+          };
+        });
+        return;
+      } else if (name === "sugar" && value === "acidity") {
+        value = {
+          id: "",
+          name: "",
+          value: value,
+          variation: 0,
+          unit: "g/dm³",
+          responsible: { name: "", email: "" },
+          date: new Date().toDateString(),
+        };
+
+        setValue(name as string, value);
+        setFormData((prevData: VineyardHarvestAction) => {
+          return {
+            ...prevData,
+            [name]: value,
+          };
+        });
+        return;
+      } else if (name === "location") {
+        setValue("location" as string, value as string);
+        setFormData((prevData: VineyardHarvestAction) => {
+          return {
+            ...prevData,
+            location: value,
+          };
+        });
+        return;
+      } else if (name === "responsible") {
+        const selectedMember = teamMembers.filter((m) => m.name === value)[0];
+        setValue("responsible" as string, selectedMember);
+        setFormData((prevData: VineyardHarvestAction) => {
+          return {
+            ...prevData,
+            responsible: selectedMember,
+          };
+        });
+        return;
+      } else if (name === "sugar.value") {
+        setValue("sugar.value" as string, value as number);
+        setFormData((prevData: VineyardHarvestAction) => {
+          return {
+            ...prevData,
+            sugar: {
+              ...prevData.sugar,
+              value: value,
+            },
+          };
+        });
+        return;
+      } else if (name === "acidity.value") {
+        setValue("acidity.value" as string, value as number);
+        setFormData((prevData: VineyardHarvestAction) => {
+          return {
+            ...prevData,
+            acidity: {
+              ...prevData.acidity,
+              value: value,
+            },
+          };
+        });
       }
-
-      console.log("VALUE", name, value);
-
-      const path = name.split(".");
-      const newFormData = setNestedValue(formData, path, value);
-
-      setFormData(newFormData);
     },
-    [formData, setValue]
+    [consumables, formData, setValue, vineyards]
   );
 
-  const handleMultipleSelectChange = useCallback(
-    (event: SelectChangeEvent<typeof formData.vessels>) => {
-      const {
-        target: { value },
-      } = event;
+  const onSubmit = useCallback(
+    (data: any, e: any) => {
+      e.stopPropagation();
+      e.preventDefault();
 
-      const _vessels = vessels?.filter((v) => v.id === value[0]);
-      // console.log("XXX", vessels, value);
-      // console.log("SELECTED VESSELS", _vessels);
+      const selected = vineyards.filter((v) => v.id === localVineyard?.id)[0];
 
-      setFormData({
-        ...formData,
-        vessels: _vessels as ActionRelation[],
-      });
+      console.log("SUBMIT", user?.uid, data, selected);
+      console.log("ERRORS:", errors);
+
+      const cleanData = cleanUndefined(data);
+
+      console.log("CLEANED", cleanData);
+
+      actions?.harvest.exec(user?.uid as string, cleanData, selected);
+
+      setFormData(data);
     },
-    [formData, vessels]
+    [actions?.harvest, errors, localVineyard?.id, user?.uid, vineyards]
   );
-
-  const getStyles = (
-    name: string,
-    _name: readonly ActionRelation[],
-    theme: Theme
-  ) => {
-    return {
-      fontWeight: _name[0]?.name.includes(name)
-        ? theme.typography.fontWeightMedium
-        : theme.typography.fontWeightRegular,
-      backgroundColor: _name[0]?.name.includes(name)
-        ? theme.palette.primary.main
-        : theme.palette.action.selected,
-    };
-  };
-
-  const onSubmit = (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
-    console.log(
-      "SUBMIT",
-      data,
-      vineyards.filter((v) => v.id === data.subject.id)[0]
-    );
-    console.log("ERRORS:", errors);
-
-    actions?.harvest.exec(
-      user?.uid as string,
-      data,
-      vineyards.filter((v) => v.id === data.subject.id)[0]
-    );
-
-    setFormData(data);
-  };
 
   useEffect(() => {
-    vineyardHarvestActionSample.id = Date.now().toString();
-    vineyardHarvestActionSample.type = "harvest";
-    vineyardHarvestActionSample.executionDate = new Date().toDateString();
-    vineyardHarvestActionSample.consumables = [];
-    vineyardHarvestActionSample.batch = {
-      id: `BatchID_${grapes?.length + 1}`,
-      quantity: 0,
-    };
-    vineyardHarvestActionSample.invoiceNumber = `invoice-${Date.now().toString()}`;
-    vineyardHarvestActionSample.equipment = [] as ActionRelation[];
-    vineyardHarvestActionSample.description = "";
-    vineyardHarvestActionSample.documents = generateDummyDocs(10);
+    if (localVineyard) {
+      vineyardHarvestActionSample.consumables = [];
 
-    // * If there is only one vineyard selected, else use the first vineyard is any
+      vineyardHarvestActionSample.subject = {
+        id: formData.subject.id,
+        name: formData.subject.name,
+      };
+
+      const selected = vineyards.filter((v) => v.id === formData.subject.id)[0];
+
+      // ? We get the corresponding lab report
+      const labReport = labData?.filter((l) =>
+        selected?.labData?.some((ld) => ld.id === l.id)
+      )[0];
+
+      let sugar, acidity;
+
+      if (labReport?.results?.sugar.value === undefined) {
+        sugar = 0;
+      } else {
+        sugar = labReport?.results?.sugar.value;
+      }
+
+      if (labReport?.results?.acidity.value === undefined) {
+        acidity = 0;
+      } else {
+        acidity = labReport?.results?.acidity.value;
+      }
+
+      vineyardHarvestActionSample.sugar = {
+        id: labReport?.id,
+        name: "",
+        value: sugar as number,
+        variation: labReport?.results?.sugar?.variation,
+        date: labReport?.date || new Date().toDateString(),
+        unit: (labReport?.units?.[0] as string as string) || "",
+      };
+
+      vineyardHarvestActionSample.acidity = {
+        id: labReport?.id,
+        name: "",
+        value: acidity,
+        variation: labReport?.results?.acidity?.variation,
+        date: labReport?.date || new Date().toDateString(),
+        unit: (labReport?.units?.[0] as string) || "",
+      };
+
+      setHarvestEnded(selected.status === VineyardStatus.HARVEST_ENDED);
+
+      //  * We get all batches data belonging to the selected vineyard
+      const withBatches = grapes.filter((g) =>
+        selected?.batches?.some((b: ActionRelation) => b.id === g.id)
+      );
+
+      // * We calculate the total weight
+      const totalWeight = withBatches.reduce(
+        (accumulator, currentValue) =>
+          accumulator + (currentValue.metrics?.actual || 0),
+        0
+      );
+
+      vineyardHarvestActionSample.weight = totalWeight;
+
+      const result = {
+        ...formData,
+        ...vineyardHarvestActionSample,
+      };
+
+      console.log("result", result);
+
+      setFormData(result);
+      reset(result);
+    }
+  }, [localVineyard]);
+
+  useEffect(() => {
+    // * General
+    vineyardHarvestActionSample.id = Date.now().toString();
+    vineyardHarvestActionSample.batchId = `BatchID_${grapes?.length + 1}`;
+    vineyardHarvestActionSample.type = "harvest";
+    vineyardHarvestActionSample.weight = 0;
+    vineyardHarvestActionSample.executionDate = new Date().toDateString();
+    vineyardHarvestActionSample.equipment = [];
+    vineyardHarvestActionSample.consumables = [];
+    vineyardHarvestActionSample.sugar.value = 0;
+    if (vineyardHarvestActionSample.acidity)
+      vineyardHarvestActionSample.acidity.value = 0;
+
+    // * One vineyard is selected
     if (selectedVineyards && selectedVineyards.length === 1) {
       setDisableSubject(true);
+
       vineyardHarvestActionSample.subject = {
         id: selectedVineyards[0].id,
         name: selectedVineyards[0].name,
       };
-      vineyardHarvestActionSample.supplier = selectedVineyards[0].name;
-      vineyardHarvestActionSample.vessels = selectedVineyards[0]
-        .vessels as ActionRelation[];
-      vineyardHarvestActionSample.location =
-        selectedVineyards[0].info?.location?.city;
-    } else if (
-      vineyards &&
-      vineyards.length > 0 &&
-      vessels &&
-      vessels.length > 0
-    ) {
-      setDisableSubject(false);
-      vineyardHarvestActionSample.subject = {
-        id: vineyards[0].id,
-        name: vineyards[0].name,
-      };
-      vineyardHarvestActionSample.supplier = vineyards[0].name;
-      vineyardHarvestActionSample.vessels = vineyards[0]
-        .vessels as ActionRelation[];
-      vineyardHarvestActionSample.location = vineyards[0].info?.location?.city;
-    }
 
-    if (labReports && labReports.length > 0) {
-      console.log("LAB REPORTS", labReports);
-      vineyardHarvestActionSample.latestLabData = {
-        date: (labReports[0].date as Timestamp).toDate().toDateString(),
-        sugar: {
-          value: labReports[0].results.sugar.value,
-          unit: labReports[0].units[0] as string,
-        },
-        acidity: {
-          value: labReports[0].results.acidity.value,
-          unit: labReports[0].units[0] as string,
-        },
+      setLocalVineyard(selectedVineyards[0]);
+
+      // ? We get the corresponding lab report
+      const labReport = labData?.filter((l) =>
+        selectedVineyards[0]?.labData?.some((ld) => ld.id === l.id)
+      )[0];
+
+      let sugar, acidity;
+
+      if (labReport?.results?.sugar.value === undefined) {
+        sugar = 0;
+      } else {
+        sugar = labReport?.results?.sugar.value;
+      }
+
+      if (labReport?.results?.acidity.value === undefined) {
+        acidity = 0;
+      } else {
+        acidity = labReport?.results?.acidity.value;
+      }
+
+      vineyardHarvestActionSample.sugar = {
+        id: labReport?.id,
+        name: "",
+        value: sugar as number,
+        variation: labReport?.results?.sugar?.variation,
+        date: labReport?.date || new Date().toDateString(),
+        unit: (labReport?.units?.[0] as string as string) || "",
       };
+
+      vineyardHarvestActionSample.acidity = {
+        id: labReport?.id,
+        name: "",
+        value: acidity as number,
+        variation: labReport?.results?.acidity?.variation,
+        date: labReport?.date || new Date().toDateString(),
+        unit: (labReport?.units?.[0] as string) || "",
+      };
+
+      vineyardHarvestActionSample.harvestEnded =
+        selectedVineyards[0].status === VineyardStatus.HARVEST_ENDED;
+
+      setHarvestEnded(vineyardHarvestActionSample.harvestEnded);
+
+      console.log("LAB REPORT", vineyardHarvestActionSample);
+
+      //  * We get all batches data belonging to the selected vineyard
+      const withBatches = grapes.filter((g) =>
+        selectedVineyards[0]?.batches?.some(
+          (b: ActionRelation) => b.id === g.id
+        )
+      );
+
+      // * We calculate the total weight
+      const totalWeight = withBatches.reduce(
+        (accumulator, currentValue) =>
+          accumulator + (currentValue.metrics?.actual || 0),
+        0
+      );
+
+      // * We set the total weight
+      vineyardHarvestActionSample.weight = totalWeight;
+
+      console.log(
+        "vineyardHarvestActionSample",
+        withBatches,
+        vineyardHarvestActionSample
+      );
     } else {
-      vineyardHarvestActionSample.latestLabData = {
-        date: new Date().toDateString(),
-        sugar: {
-          value: 0,
-          unit: "N/A",
-        },
-        acidity: {
-          value: 0,
-          unit: "N/A",
-        },
-      };
+      setDisableSubject(false);
     }
-
-    reset(vineyardHarvestActionSample);
 
     setFormData(vineyardHarvestActionSample);
-  }, [vineyards, vessels, labReports, selectedVineyards]);
+    reset(vineyardHarvestActionSample);
+  }, [selectedVineyards]);
 
   useEffect(() => {
     if (errors) {
       console.log("ERRORS", errors);
     }
   }, [errors]);
+
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -266,52 +450,71 @@ export default function VineyardHarvestActionForm() {
                   </FormControl>
                 </div>
 
-                <div className="flex flex-col w-full">
-                  {/* <DemoItem label="DatePicker"> */}
-                  <Box display={"flex"} flexDirection={"column"} gap={2}>
+                <Accordion
+                  defaultExpanded
+                  sx={{
+                    background:
+                      mode === "dark"
+                        ? "#121212 !important"
+                        : "#ffffff !important",
+                    borderBottom:
+                      "1px solid var(--mui-palette-divider) !important",
+                  }}
+                  disableGutters
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Typography component="span">General Info</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                  >
                     {/* * ACTION SUBJECT */}
-                    <FormControl fullWidth>
-                      <InputLabel id="subject-select">
-                        Subject of the Action
-                      </InputLabel>
-                      <Select
-                        disabled={disableSubject}
-                        name="subject.name"
-                        // labelId="subject-select"
-                        id="subject-select"
-                        value={(formData.subject.name as string) || ""}
-                        label="Subject of the Action"
-                        onChange={(e) =>
-                          handleChange("subject.name", e.target.value)
-                        }
-                      >
-                        {vineyardNames &&
-                          vineyardNames.length > 0 &&
-                          vineyardNames.map((name) => (
-                            <MenuItem key={name} value={name}>
-                              {name}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
-                    {/* * SUPPLIER */}
-                    <div className="hidden">
+                    <Stack display={"flex"} direction={"column"} gap={1}>
+                      <Typography variant="body2" color="textSecondary">
+                        Selected vineyard
+                      </Typography>
                       <FormControl fullWidth>
-                        <TextField
-                          slotProps={{
-                            input: {
-                              readOnly: true,
-                            },
+                        <Autocomplete
+                          id="subject.name"
+                          disabled={disableSubject}
+                          options={vineyardNames || []}
+                          value={localVineyard?.name || ""}
+                          filterSelectedOptions
+                          renderInput={(params) => (
+                            <TextField {...params} label="Vineyard" />
+                          )}
+                          onChange={(e, value) => {
+                            handleChange("subject.name", value as string);
                           }}
-                          type="text"
-                          {...register("supplier")}
-                          id="outlined-basic"
-                          label="Supplier"
-                          variant="outlined"
                         />
+                        {/* <InputLabel id="subject-select">Vineyard</InputLabel> */}
+                        {/* <Select
+                          disabled={disableSubject}
+                          name="subject.name"
+                          // labelId="subject-select"
+                          id="subject-select"
+                          value={(formData.subject.name as string) || ""}
+                          label="Vineyard"
+                          onChange={(e) =>
+                            handleChange("subject.name", e.target.value)
+                          }
+                        >
+                          {vineyardNames &&
+                            vineyardNames.length > 0 &&
+                            vineyardNames.map((name) => (
+                              <MenuItem key={name} value={name}>
+                                {name}
+                              </MenuItem>
+                            ))}
+                        </Select> */}
                       </FormControl>
-                    </div>
+                    </Stack>
                     {/* * EXECUTION DATE */}
+                    {/* TODO allow past dates */}
                     <Stack gap={1} className="w-full">
                       <DatePicker
                         name="executionDate"
@@ -333,277 +536,383 @@ export default function VineyardHarvestActionForm() {
                         }}
                       />
                     </Stack>
-                    {/* * CONSUMABLES */}
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Consumables
-                      </InputLabel>
-                      <Select
-                        disabled
-                        name="consumables"
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={"no-consumables"}
-                        label="Consumables"
-                        onChange={(e) => handleChange("consumables", e)}
-                      >
-                        <MenuItem value={"no-consumables"}>
-                          No consumables
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
                     {/* * BATCH */}
                     <div className="">
+                      <Stack display={"flex"} direction={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the Batch ID
+                        </Typography>
+                        <FormControl fullWidth>
+                          <TextField
+                            id="outlined-basic"
+                            label="Batch ID"
+                            variant="outlined"
+                            {...register("batchId")}
+                          />
+                        </FormControl>
+                      </Stack>
+                    </div>
+                    <Stack display={"flex"} direction={"column"} gap={1}>
+                      <Typography variant="body2" color="textSecondary">
+                        Enter the weight (Kg)
+                      </Typography>
                       <FormControl fullWidth>
+                        <TextField
+                          type="number"
+                          id="outlined-basic"
+                          label="Weight (Kg)"
+                          variant="outlined"
+                          inputProps={{
+                            min: "0",
+                            step: "0.01",
+                          }}
+                          {...register("weight")}
+                        />
+                      </FormControl>
+                    </Stack>
+                    {/* * RESPONSIBLE */}
+                    <FormControl fullWidth>
+                      <Stack display={"flex"} flexDirection={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the responsible person
+                        </Typography>
+                        <ResponsibleTeamMemberField
+                          teamMembers={teamMembers}
+                          onChange={(value) => {
+                            handleChange("responsible.name", value);
+                          }}
+                        />
+                      </Stack>
+                    </FormControl>
+                    {/* * CONSUMABLE */}
+                    {/* TODO: multiple consumables and show quantity */}
+                    {/* ! Checkout primary-vinification decant action form for custom component */}
+                    <FormControl fullWidth>
+                      <Stack display={"flex"} flexDirection={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the consumables used
+                        </Typography>
+                        <Autocomplete
+                          id="consumables"
+                          options={consumables.map((item) => item.name)}
+                          value={
+                            (formData?.consumables !== undefined &&
+                              (formData?.consumables?.map(
+                                (item) => item.name
+                              )[0] as string)) ||
+                            ""
+                          }
+                          filterSelectedOptions
+                          renderInput={(params) => (
+                            <TextField {...params} label="Consumables used" />
+                          )}
+                          onChange={(e, value) => {
+                            handleChange("consumables", value as string);
+                          }}
+                        />
+                      </Stack>
+                    </FormControl>
+                    {/* * TOOLS & EQUIPMENT */}
+                    <FormControl fullWidth>
+                      <Stack display={"flex"} flexDirection={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Select the tools&equipment used
+                        </Typography>
+                        <Autocomplete
+                          id="equipment"
+                          multiple
+                          options={equipment.map((item) => item.name)}
+                          value={formData?.equipment?.map((item) => item.name)}
+                          filterSelectedOptions
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Tools & equipment used"
+                            />
+                          )}
+                          onChange={(e, value) => {
+                            // handleChange("responsible.name", value as string);
+                          }}
+                        />
+                      </Stack>
+                    </FormControl>
+                  </AccordionDetails>
+                </Accordion>
+
+                {/* * TRANSPORTATION INFO */}
+                <Accordion
+                  sx={{
+                    background:
+                      mode === "dark"
+                        ? "#121212 !important"
+                        : "#ffffff !important",
+                    borderBottom:
+                      "1px solid var(--mui-palette-divider) !important",
+                  }}
+                  disableGutters
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Typography component="span">Transporation Info</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                  >
+                    {/* * LOCATION */}
+                    {/* TODO: a predefined user list of locations shoudl exist in DB. If not, the create one using the new location input */}
+                    <FormControl fullWidth>
+                      <Stack display={"flex"} flexDirection={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Select the processing location
+                        </Typography>
+                        <Autocomplete
+                          id="location"
+                          options={countries.map((item) => item.name)}
+                          value={formData?.location}
+                          filterSelectedOptions
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Processing location"
+                            />
+                          )}
+                          onChange={(e, value) => {
+                            handleChange("location", value as string);
+                          }}
+                        />
+                      </Stack>
+                    </FormControl>
+                    {/* * DSIPATCH INVOICE */}
+                    <div className="">
+                      <Stack display={"flex"} direction={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the dispatch invoice
+                        </Typography>
+                        <FormControl fullWidth>
+                          <TextField
+                            id="outlined-basic"
+                            label="Dispatch Invoice"
+                            variant="outlined"
+                            {...register("invoiceNumber")}
+                          />
+                        </FormControl>
+                      </Stack>
+                    </div>
+                    {/* * TANSPORTATION COMPANY */}
+                    {/* TODO same behaviour as location */}
+                    <FormControl fullWidth>
+                      <Stack display={"flex"} flexDirection={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the transportation company name
+                        </Typography>
+                        {/* <Autocomplete
+                          id="location"
+                          options={countries.map((item) => item.name)}
+                          value={formData?.location}
+                          filterSelectedOptions
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Processing location"
+                            />
+                          )}
+                          onChange={(e, value) => {
+                            // handleChange("location", value as string);
+                          }}
+                        /> */}
                         <TextField
                           id="outlined-basic"
-                          label="Batch Name"
+                          label="Transportation Company"
                           variant="outlined"
-                          {...register("batch.id")}
+                          {...register("transportCompanyName")}
                         />
-                      </FormControl>
-                    </div>
-                    <FormControl fullWidth>
-                      <TextField
-                        type="number"
-                        id="outlined-basic"
-                        label="Quantity Kg"
-                        variant="outlined"
-                        inputProps={{
-                          min: "0",
-                          step: "0.01",
-                        }}
-                        {...register("batch.quantity")}
-                      />
-                    </FormControl>
-                    {/* * LATEST LAB DATA */}
-                    <Stack gap={1}>
-                      <Typography variant="body2" color="text.secondary">
-                        Latest Lab Data
-                      </Typography>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-2">
-                          <Typography variant="body2" color="text.secondary">
-                            Sugar
-                          </Typography>
-                          <TextField
-                            disabled
-                            type="number"
-                            id="outlined-basic"
-                            variant="outlined"
-                            inputProps={{
-                              min: "0",
-                              step: "0.01",
-                            }}
-                            {...register("latestLabData.sugar.value")}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <Typography variant="body2" color="text.secondary">
-                            Acidity
-                          </Typography>
-                          <TextField
-                            disabled
-                            type="number"
-                            id="outlined-basic"
-                            variant="outlined"
-                            inputProps={{
-                              min: "0",
-                              step: "0.01",
-                            }}
-                            {...register("latestLabData.acidity.value")}
-                          />
-                        </div>
-                      </div>
-                    </Stack>
-                    {/* * VESSELS
-                    <FormControl fullWidth>
-                      <InputLabel id="vessels-select-label">Vessels</InputLabel>
-                      {vessels &&
-                        vessels !== undefined &&
-                        vessels.length > 0 && (
-                          <Select
-                            labelId="vessels-select-label"
-                            id="vessels-select"
-                            multiple
-                            value={formData.vessels || []}
-                            onChange={handleMultipleSelectChange}
-                            input={
-                              <OutlinedInput
-                                id="vessels-select"
-                                label="Vessels"
-                              />
-                            }
-                            renderValue={(selected) => (
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  flexWrap: "wrap",
-                                  gap: 0.5,
-                                }}
-                              >
-                                {selected.map((value) => {
-                                  return (
-                                    <Chip key={value.id} label={value.name} />
-                                  );
-                                })}
-                              </Box>
-                            )}
-                            MenuProps={MenuProps}
-                          >
-                            {vessels.map((vessel) => (
-                              <MenuItem
-                                key={vessel.id}
-                                value={vessel.id} // Use the vessel id as the value
-                                style={getStyles(
-                                  vessel.name,
-                                  [
-                                    formData?.vessels?.filter(
-                                      (v: any) => v.name === vessel.name
-                                    )[0] as any,
-                                  ],
-                                  theme
-                                )}
-                              >
-                                {vessel.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        )}
-                    </FormControl> */}
-                    {/* * EQUIPMENT */}
-                    <FormControl fullWidth>
-                      <InputLabel id="equipment-select-label">
-                        Equipment
-                      </InputLabel>
-                      {equipment &&
-                      equipment !== undefined &&
-                      equipment.length > 0 ? (
-                        <Select
-                          labelId="equipment-select-label"
-                          id="equipment-select"
-                          multiple
-                          value={formData.equipment}
-                          // onChange={handleMultipleSelectChange}
-                          input={
-                            <OutlinedInput
-                              id="equipment-select"
-                              label="Equipment"
-                            />
-                          }
-                          renderValue={(selected) => (
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 0.5,
-                              }}
-                            >
-                              {selected.map((value) => {
-                                return (
-                                  <Chip key={value.id} label={value.name} />
-                                );
-                              })}
-                            </Box>
-                          )}
-                          MenuProps={MenuProps}
-                        >
-                          {equipment.map((vessel) => (
-                            <MenuItem
-                              key={vessel.id}
-                              value={vessel.id} // Use the vessel id as the value
-                              style={getStyles(
-                                vessel.name,
-                                [
-                                  formData.vessels.filter(
-                                    (v: any) => v.name === vessel.name
-                                  )[0] as any,
-                                ],
-                                theme
-                              )}
-                            >
-                              {vessel.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      ) : (
-                        <Select
-                          labelId="equipment-select-label"
-                          id="equipment-select"
-                          multiple
-                          disabled
-                          value={formData.equipment}
-                          onChange={handleMultipleSelectChange}
-                          input={
-                            <OutlinedInput
-                              id="equipment-select"
-                              label="Equipment"
-                            />
-                          }
-                          MenuProps={MenuProps}
-                        ></Select>
-                      )}
-                    </FormControl>
-                    {/* * DESCRIPTION */}
-                    <FormControl fullWidth>
-                      <TextField
-                        type="text"
-                        id="description"
-                        label="Description"
-                        variant="outlined"
-                        {...register("description")}
-                      />
-                    </FormControl>
-                    {/* * LOCATION */}
-                    <div className="hidden">
-                      <FormControl fullWidth>
-                        <TextField
-                          type="text"
-                          id="location"
-                          label="Location"
-                          variant="outlined"
-                          {...register("location")}
-                        />
-                      </FormControl>
-                    </div>
-
-                    <Stack gap={1}>
-                      <Typography variant="body2" color="text.secondary">
-                        Documents
-                      </Typography>
-                      <Stack
-                        gap={1}
-                        padding={2}
-                        sx={{
-                          border: "2px",
-                          borderColor: "var(--mui-palette-divider)",
-                          borderStyle: "solid",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        {formData.documents &&
-                          formData.documents.length > 0 &&
-                          formData.documents
-                            .filter((item) => parseInt(item.id) <= 1)
-                            .map((item) => (
-                              <div key={`${item.id}-${item.name}`}>
-                                <div className="flex items-center gap-2">
-                                  <Attachment
-                                    fontSize="small"
-                                    color="primary"
-                                  />
-                                  <Typography variant="body2">{`${item.name}-${new Date(item.uploadDate).toLocaleDateString()}.doc`}</Typography>
-                                </div>
-                              </div>
-                            ))}
                       </Stack>
-                    </Stack>
-                  </Box>
-                </div>
+                    </FormControl>
+                    {/* * VEHICLE ID NUMBER */}
+                    <FormControl fullWidth>
+                      <Stack display={"flex"} flexDirection={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the vehicle registration number
+                        </Typography>
+                        <TextField
+                          id="outlined-basic"
+                          label="Vehicle number"
+                          variant="outlined"
+                          {...register("transportVehicleId")}
+                        />
+                        {/* <Autocomplete
+                          id="transportVehicleId"
+                          options={[]}
+                          // value={formData?.location}
+                          filterSelectedOptions
+                          renderInput={(params) => (
+                            <TextField {...params} label="Vehicle number" />
+                          )}
+                          {...register("transportVehicleId")}
+                          // onChange={(e, value) => {
+                          //   handleChange("transportDriverName", value as string);
+                          // }}
+                        /> */}
+                      </Stack>
+                    </FormControl>
+                    {/* * DRIVER'S NAME */}
+                    <div className="">
+                      <Stack display={"flex"} direction={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the driver&apos;s name
+                        </Typography>
+                        <FormControl fullWidth>
+                          <TextField
+                            id="outlined-basic"
+                            label="Driver's name"
+                            variant="outlined"
+                            {...register("transportDriverName")}
+                          />
+                        </FormControl>
+                      </Stack>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+
+                {/* * QUALITY PARAMETERS */}
+                <Accordion
+                  sx={{
+                    background:
+                      mode === "dark"
+                        ? "#121212 !important"
+                        : "#ffffff !important",
+                    borderBottom:
+                      "1px solid var(--mui-palette-divider) !important",
+                  }}
+                  disableGutters
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Typography component="span">Quality Parameters</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                  >
+                    {/* * MASS CONCENTRATION OF SUGARS */}
+                    <div className="">
+                      <Stack display={"flex"} direction={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the mass concentration of sugars (g/dm³)
+                        </Typography>
+                        <FormControl fullWidth>
+                          <TextField
+                            id="outlined-basic"
+                            label="Sugar (g/dm³)"
+                            variant="outlined"
+                            type="number"
+                            inputProps={{ step: 0.01, min: 0, max: 10000 }}
+                            {...register("sugar.value")}
+                          />
+                        </FormControl>
+                      </Stack>
+                    </div>
+                    {/* * ACIDITY */}
+                    <div className="">
+                      <Stack display={"flex"} direction={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the acidity (g/dm³)
+                        </Typography>
+                        <FormControl fullWidth>
+                          <TextField
+                            id="outlined-basic"
+                            type="number"
+                            label="Acidity (g/dm³)"
+                            variant="outlined"
+                            inputProps={{ step: 0.01, min: 0, max: 10000 }}
+                            {...register("acidity.value")}
+                          />
+                        </FormControl>
+                      </Stack>
+                    </div>
+                    {/* * CERTIFICATE DE INOFENSIVITATE */}
+                    <div className="">
+                      <Stack display={"flex"} direction={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the certificat de inofensivitate ID
+                        </Typography>
+                        <FormControl fullWidth>
+                          <TextField
+                            id="outlined-basic"
+                            label="Certificat de inofensivitate ID"
+                            variant="outlined"
+                            // {...register("invoice")}
+                          />
+                        </FormControl>
+                      </Stack>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+                {/* * ADDITIONAL INFORMATION */}
+                <Accordion
+                  sx={{
+                    background:
+                      mode === "dark"
+                        ? "#121212 !important"
+                        : "#ffffff !important",
+                    borderBottom:
+                      "1px solid var(--mui-palette-divider) !important",
+                  }}
+                  disableGutters
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Typography component="span">
+                      Additional Information
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                  >
+                    <Typography variant="body1">Description</Typography>
+                    <TextareaAutosize
+                      minRows={8}
+                      placeholder="Description or additional information..."
+                      style={{
+                        width: "100%",
+                        border: "1px solid",
+                        borderColor: "var(--mui-palette-divider)",
+                        borderRadius: "4px",
+                        padding: "16px 8px",
+                      }}
+                    />
+                  </AccordionDetails>
+                </Accordion>
               </div>
             </div>
 
-            <Box display={"flex"} justifyContent={"end"}>
+            <Box display={"flex"} justifyContent={"space-between"}>
+              <Stack direction="row" spacing={0} alignItems="center">
+                <Checkbox
+                  checked={!!harvestEnded || false}
+                  color="error"
+                  // {...register("harvestEnded")}
+                  onChange={(e) => {
+                    setHarvestEnded(e.target.checked);
+                    setValue("harvestEnded", e.target.checked);
+                    setFormData({
+                      ...formData,
+                      harvestEnded: e.target.checked,
+                    });
+                  }}
+                />
+                <Typography variant="body1" color="textSecondary">
+                  Harvest ended
+                </Typography>
+              </Stack>
               <FormControl>
                 <Button type="submit" variant="contained" className="mt-8">
                   Execute

@@ -1,3 +1,4 @@
+import { CONCENTRATION_UNITS } from "@/data/constants";
 import {
   ActionRelation,
   VineyardGlobalAction,
@@ -13,7 +14,6 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
 import { db } from "../firebase/services";
-import { CONCENTRATION_UNITS } from "@/data/constants";
 
 export const vineyardHarvestAction = async (
   uid: string,
@@ -26,11 +26,11 @@ export const vineyardHarvestAction = async (
   console.log("vineyard", vineyard);
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 
-  const batchId = Date.now().toString();
-
   const updatedVineyard: Vineyard = {
     ...vineyard,
-    status: VineyardStatus.HARVESTING,
+    status: actionData.harvestEnded
+      ? VineyardStatus.HARVEST_ENDED
+      : VineyardStatus.HARVESTING,
     actions: [
       ...(vineyard.actions || ([] as ActionRelation[])),
       {
@@ -41,8 +41,8 @@ export const vineyardHarvestAction = async (
     batches: [
       ...(vineyard.batches || ([] as ActionRelation[])),
       {
-        id: batchId,
-        name: actionData.batch.id,
+        id: actionData.batchId,
+        name: actionData.batchId,
       },
     ],
   };
@@ -71,22 +71,22 @@ export const vineyardHarvestAction = async (
 
   // * 3. Add batch of grapes
   const newBatch: Grape = {
-    id: batchId,
-    name: actionData.batch.id,
+    id: actionData.batchId,
+    name: actionData.batchId,
     date: Timestamp.now(),
-    group: [actionData.batch.id],
-    location: actionData.location,
+    group: [actionData.batchId],
+    location: actionData.location as string,
     rowType: "item",
     supplier: {
-      companyName: actionData.supplier,
-      dispatchInvoice: "",
-      invoiceNo: actionData.invoiceNumber,
+      companyName: actionData.transportCompanyName as string,
+      dispatchInvoice: actionData.invoiceNumber as string,
+      invoiceNo: actionData.invoiceNumber as string,
       vineyardName: actionData.subject.name,
     },
     entry: {
       grossWeight: 0,
       grossUnit: "kg",
-      netWeight: actionData.batch.quantity,
+      netWeight: actionData.weight as number,
       netUnit: "kg",
       tareWeight: 0,
       tareUnit: "kg",
@@ -97,14 +97,14 @@ export const vineyardHarvestAction = async (
     grapeVariety: vineyard.grapeVariety,
     certifications: vineyard.info.certifications,
     labData: {
-      date: actionData.latestLabData.date,
+      date: Timestamp.now(),
       sugar: {
-        value: actionData.latestLabData.sugar.value,
-        unit: actionData.latestLabData.sugar.unit,
+        value: actionData.sugar.value,
+        unit: actionData.sugar.unit,
       },
       acidity: {
-        value: actionData.latestLabData.acidity.value,
-        unit: actionData.latestLabData.acidity.unit,
+        value: actionData?.acidity?.value,
+        unit: actionData?.acidity?.unit,
       },
       density: "",
       temperature: "",
@@ -117,11 +117,11 @@ export const vineyardHarvestAction = async (
     notes: [],
     transportationInfo: {
       id: "",
-      vehicleIdNo: "",
-      companyName: "",
-      driverIdNo: "",
+      vehicleIdNo: actionData.transportVehicleId as string,
+      companyName: actionData.transportCompanyName as string,
+      driverIdNo: actionData.transportDriverName as string,
       certificate: "",
-      acquisitionInvoiceNo: "",
+      acquisitionInvoiceNo: actionData.invoiceNumber as string,
     },
     processingInfo: {
       receivingBay: "",
@@ -132,7 +132,7 @@ export const vineyardHarvestAction = async (
     tasks: [],
     documents: [],
     metrics: {
-      actual: actionData.batch.quantity,
+      actual: actionData.weight as number,
     },
   };
 
@@ -170,7 +170,7 @@ export const vineyardLabAction = async (
       email: actionData?.responsible?.email,
     },
     date: actionData.executionDate,
-    suportingDocs: [],
+    supportingDocuments: actionData.supportingDocuments,
     results: {
       sugar: {
         value: actionData.inputData?.sugar,
@@ -181,7 +181,6 @@ export const vineyardLabAction = async (
         variation: (Math.random() * 2 - 1).toFixed(2),
       },
     },
-    supportingDocs: [],
   });
 
   if (labRes.status === 200) {

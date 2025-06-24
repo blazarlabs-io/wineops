@@ -1,81 +1,74 @@
 import { VineyardHarvestAction } from "@/models/types/actions";
 import Joi from "joi";
+import { teamMemberSchema } from "../vineyard-schema";
 
-/*
- id: string;
-  supportingDocs: string[];
-  results: {
-    [key: string]: {
-      value: number;
-      variation: number;
-    };
-  };
-  units: string;
-  responsible: ResponsibleTeamMember;
-  date: Timestamp | string;
-*/
+const relationSchema = Joi.object({
+  id: Joi.string().optional().allow(""),
+  name: Joi.string().optional().allow(""),
+});
+
+const sugarSchema = Joi.object({
+  id: Joi.string().optional().allow(""),
+  name: Joi.string().optional().allow(""),
+  value: Joi.number().precision(2).min(0).max(10000).optional().messages({
+    "number.base": "Must be a number",
+    "number.min": "Value must be at least 0",
+    "number.max": "Value must be less than 10000",
+  }),
+  variation: Joi.number().precision(2).optional(),
+  unit: Joi.string().optional().allow(""),
+  responsible: Joi.object({
+    name: Joi.string().optional().allow(""),
+    email: Joi.string().optional().allow(""),
+  }),
+  date: Joi.date().optional(),
+});
+
+const aciditySchema = Joi.object({
+  id: Joi.string().optional().allow(""),
+  name: Joi.string().optional().allow(""),
+  value: Joi.number().precision(2).min(0).max(10000).optional().messages({
+    "number.base": "Must be a number",
+    "number.min": "Value must be at least 0",
+    "number.max": "Value must be less than 10000",
+  }),
+  variation: Joi.number().precision(2).optional(),
+  unit: Joi.string().optional().allow(""),
+  responsible: Joi.object({
+    name: Joi.string().optional().allow(""),
+    email: Joi.string().optional().allow(""),
+  }),
+  date: Joi.date().optional(),
+});
 
 export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
+  // * General info
   id: Joi.string().required(),
   type: Joi.string().required(),
   subject: Joi.object({
-    id: Joi.string().required(),
-    name: Joi.string().required(),
+    id: Joi.string().allow("").required(),
+    name: Joi.string().allow("").required(),
   }),
-  supplier: Joi.string().required(),
   executionDate: Joi.date().required(),
-  consumables: Joi.array().items(Joi.object()).optional(),
-  batch: {
-    id: Joi.string().optional().allow(""),
-    quantity: Joi.number().precision(2).optional(),
-  },
-  invoiceNumber: Joi.string().optional().allow(""),
-  latestLabData: Joi.object({
-    date: Joi.string().optional().allow(""),
-    sugar: Joi.object({
-      value: Joi.number().precision(2).optional(),
-      unit: Joi.string().optional().allow(""),
-    }),
-    acidity: {
-      value: Joi.number().precision(2).optional(),
-      unit: Joi.string().optional().allow(""),
-    },
-  }).optional(),
-  vessels: Joi.array()
-    .items(
-      Joi.object({
-        id: Joi.string().optional().allow(""),
-        name: Joi.string().optional().allow(""),
-      })
-    )
-    .optional(),
-  equipment: Joi.array()
-    .items(
-      Joi.object({
-        id: Joi.string().optional().allow(""),
-        name: Joi.string().optional().allow(""),
-      })
-    )
-    .optional(),
-  description: Joi.string().allow(""),
+  batchId: Joi.string().optional().allow(""),
+  weight: Joi.number().optional(),
+  responsible: teamMemberSchema.optional(),
+  consumables: Joi.array().items(relationSchema).optional(),
+  equipment: Joi.array().items(relationSchema).optional(),
+  //  * Transport info
   location: Joi.string().optional().allow(""),
-  documents: Joi.array()
-    .items(
-      Joi.object({
-        id: Joi.string().optional().allow(""),
-        name: Joi.string().optional().allow(""),
-        fileUrl: Joi.string().optional().allow(""),
-        owner: Joi.object({
-          name: Joi.string().optional().allow(""),
-          email: Joi.string().optional().allow(""),
-        }),
-        uploadDate: Joi.string().optional().allow(""),
-        media: Joi.object({
-          type: Joi.string().optional().allow(""),
-          subtype: Joi.string().optional().allow(""),
-          sizeMb: Joi.number().precision(2).optional(),
-        }),
-      })
-    )
-    .optional(),
+  invoiceNumber: Joi.string().optional().allow(""),
+  transportCompanyName: Joi.string().optional().allow(""),
+  transportVehicleId: Joi.string().optional().allow(""),
+  transportDriverName: Joi.string().optional().allow(""),
+  // * Quality params
+  sugar: sugarSchema.optional(),
+  acidity: aciditySchema.optional(),
+  certificateOfInofensiviate: Joi.string().optional().allow(""),
+  // * Additional info
+  description: Joi.string().allow("").max(250).messages({
+    "string.max":
+      "Description must be less than or equal to 250 characters long",
+  }),
+  harvestEnded: Joi.boolean().default(false).optional(),
 });

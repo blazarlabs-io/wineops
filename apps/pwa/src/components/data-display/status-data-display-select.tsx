@@ -30,6 +30,10 @@ export default function StatusDataDisplaySelect({
     setStatuses(Object.values(VineyardStatus));
   }, [VineyardStatus]);
 
+  useEffect(() => {
+    setSelected(status as VineyardStatus);
+  }, [status]);
+
   return (
     <>
       {status && selected && statuses && (

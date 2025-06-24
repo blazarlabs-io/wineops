@@ -10,6 +10,7 @@ import {
   Note,
   ResponsibleTeamMember,
   SingleDocument,
+  TeamMember,
   Vineyard,
 } from "./db";
 
@@ -110,27 +111,29 @@ export type GrapeProcessingAction = {
 };
 
 export interface VineyardHarvestAction {
+  // * General Info
   id: string;
   type: VineyardActionType;
   subject: Subject;
-  supplier: string;
   executionDate: string | Timestamp;
-  consumables: any;
-  batch: {
-    id: string;
-    quantity: number;
-  };
-  invoiceNumber: string;
-  latestLabData: {
-    date: Timestamp | string;
-    sugar: Partial<LabElement>;
-    acidity: Partial<LabElement>;
-  };
-  vessels: ActionRelation[];
-  equipment: ActionRelation[];
-  description: string;
-  location: string;
-  documents: SingleDocument[];
+  batchId: string;
+  weight: number | string;
+  responsible?: TeamMember;
+  consumables?: ActionRelation[];
+  equipment?: ActionRelation[];
+  // * Transport Info
+  location?: string;
+  invoiceNumber?: string;
+  transportCompanyName?: string;
+  transportVehicleId?: string;
+  transportDriverName?: string;
+  // * QUALITY PARAMS
+  sugar: Partial<LabElement>;
+  acidity?: Partial<LabElement>;
+  certificateOfInofensiviate?: string;
+  // * ADDITIONAL INFO
+  description?: string;
+  harvestEnded?: boolean;
 }
 
 export interface VineyardGlobalAction {
@@ -140,8 +143,7 @@ export interface VineyardGlobalAction {
   inUseVineyard: ActionRelation;
   responsible?: ResponsibleTeamMember;
   inputData?: any;
-  notes?: Note[];
-  supportingDocuments?: SingleDocument[];
+  supportingDocuments?: { name: string; url: string }[];
   consumables?: ActionRelation[];
   equipment?: ActionRelation[];
 }

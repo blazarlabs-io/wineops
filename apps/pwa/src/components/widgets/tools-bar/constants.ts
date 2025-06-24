@@ -9,6 +9,8 @@ export const ButtonType = {
   DELETE: "delete",
   GROUP: "group",
   UNGROUP: "ungroup",
+  PIN: "pin",
+  PIVOT: "pivot",
 } as const;
 
 export type ButtonType = (typeof ButtonType)[keyof typeof ButtonType];

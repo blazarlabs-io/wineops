@@ -4,6 +4,8 @@ import {
   Deselect,
   Edit,
   FormatListBulleted,
+  PivotTableChartOutlined,
+  PushPinOutlined,
   SelectAll,
   SwapVert,
   Tune,
@@ -73,7 +75,7 @@ export default function ToolsBar(props: ToolsBarProps) {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Box display="flex" gap={1}>
+        <Box display="flex" gap={1} alignItems="center">
           {buttons[ButtonType.ADD] && (
             <IconButton
               color="default"
@@ -94,6 +96,35 @@ export default function ToolsBar(props: ToolsBarProps) {
               <Edit />
             </IconButton>
           )}
+
+          {buttons[ButtonType.PIN] && (
+            <IconButton
+              color="default"
+              aria-label="pin"
+              disabled={!buttons[ButtonType.PIN]?.enabled}
+              onClick={buttons[ButtonType.PIN]?.onClick}
+            >
+              <PushPinOutlined className="" />
+            </IconButton>
+          )}
+
+          {buttons[ButtonType.DELETE] && (
+            <IconButton
+              color="error"
+              aria-label="delete"
+              disabled={!buttons[ButtonType.DELETE]?.enabled}
+              onClick={buttons[ButtonType.DELETE]?.onClick}
+            >
+              <DeleteOutline className="" />
+            </IconButton>
+          )}
+
+          <div
+            className="w-[1px] h-[24px]"
+            style={{
+              backgroundColor: "var(--mui-palette-divider)",
+            }}
+          />
 
           {buttons[ButtonType.GROUP] && (
             <IconButton
@@ -122,14 +153,14 @@ export default function ToolsBar(props: ToolsBarProps) {
             </IconButton>
           )}
 
-          {buttons[ButtonType.DELETE] && (
+          {buttons[ButtonType.PIVOT] && (
             <IconButton
-              color="error"
-              aria-label="delete"
-              disabled={!(buttons[ButtonType.DELETE]?.enabled || enableDelete)}
-              onClick={buttons[ButtonType.DELETE]?.onClick || openDeleteDialog}
+              color="default"
+              aria-label="pivot"
+              disabled={!buttons[ButtonType.PIVOT]?.enabled}
+              onClick={buttons[ButtonType.PIVOT]?.onClick}
             >
-              <DeleteOutline className="" />
+              <PivotTableChartOutlined className="" />
             </IconButton>
           )}
         </Box>

@@ -30,6 +30,9 @@ import {
 
 interface VineyardContextType {
   vineyards: Vineyard[];
+  updateVineyards: (vineyards: Vineyard[]) => void;
+  selectedVineyards: Vineyard[];
+  updateSelectedVineyards: (vineyards: Vineyard[]) => void;
   actions: VineyardActions;
   labReports: LabReport[];
   notes: Note[];
@@ -82,6 +85,14 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
 
+  const updateVineyards = useCallback((vineyards: Vineyard[]) => {
+    setVineyards(vineyards);
+  }, []);
+
+  const updateSelectedVineyards = useCallback((vineyards: Vineyard[]) => {
+    setSelectedVineyards(vineyards);
+  }, []);
+
   const updateSelectedTasks = useCallback((ts: Task[]) => {
     setSelectedTasks(ts);
   }, []);
@@ -93,6 +104,8 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
     let unsubTasks = () => {};
 
     if (user && db) {
+      console.log("\n\nXXXXXREALTIMEXXXXX\n\n");
+
       // * Vineyards Realtime Updates
       const vineyardsRef = collection(
         db,
@@ -176,7 +189,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         querySnapshot.forEach((doc) => {
           tasks.push(doc.data() as Task);
         });
-        console.log("TASKS", tasks);
+
         setTasks(tasks);
       });
     }
@@ -196,6 +209,9 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
     <VineyardContext.Provider
       value={{
         vineyards: memoizedVineyards,
+        updateVineyards,
+        selectedVineyards: memoizedSelectedGrapes,
+        updateSelectedVineyards,
         actions,
         labReports,
         notes,

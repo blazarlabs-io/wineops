@@ -132,26 +132,28 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                 node.data.cadastralNumber?.map(
                   (cadastralNumber: string, index: number) => (
                     <>
-                      {index < 1 ? (
+                      {node.data.cadastralNumber.length === 1 ? (
                         <Typography variant="caption" key={index}>
                           {cadastralNumber}
-                          {index < node.data.cadastralNumber.length - 1}
                         </Typography>
                       ) : (
-                        index === node.data.cadastralNumber.length - 1 && (
-                          <Button
-                            type="button"
-                            key={index}
-                            variant="text"
-                            size="small"
-                            color="primary"
-                            className="lowercase! underline!"
-                            sx={{ maxWidth: "fit-content", padding: 0 }}
-                            onClick={() => setOpenCadastrals(true)}
-                          >
-                            + {node.data.cadastralNumber.length - 1} more
-                          </Button>
-                        )
+                        <>
+                          {index === 0 && (
+                            <Button
+                              type="button"
+                              key={index}
+                              variant="text"
+                              size="small"
+                              color="primary"
+                              className="lowercase!"
+                              sx={{ maxWidth: "fit-content", padding: 0 }}
+                              onClick={() => setOpenCadastrals(true)}
+                            >
+                              {node.data.cadastralNumber.length} cadastral
+                              numbers
+                            </Button>
+                          )}
+                        </>
                       )}
                     </>
                   )

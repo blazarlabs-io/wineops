@@ -39,6 +39,7 @@ export const vineyardColumns: ColDef[] = [
     },
   },
   {
+    headerName: "Quantity Overview",
     field: "forcastedYield",
     minWidth: 240,
     flex: 1,

@@ -981,13 +981,6 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
                             >
                               Select the year of plantation of the vineyard
                             </Typography>
-                            {formData?.info?.vines?.yearOfPlantation && (
-                              <Typography color="primary" variant="body2">
-                                {new Date().getFullYear() -
-                                  formData?.info?.vines?.yearOfPlantation}{" "}
-                                years
-                              </Typography>
-                            )}
                           </Stack>
                           <Autocomplete
                             id="info.vines.yearOfPlantation"

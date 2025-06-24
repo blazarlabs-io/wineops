@@ -2,7 +2,6 @@ import {
   VineyardGlobalAction,
   VineyardHarvestAction,
 } from "@/models/types/actions";
-import { LabDataSimple } from "@/models/types/db";
 import { Timestamp } from "firebase/firestore";
 
 export const vineyardHarvestActionSample: VineyardHarvestAction = {
@@ -12,36 +11,37 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
     id: "",
     name: "",
   },
-  supplier: "",
   executionDate: Timestamp.now(),
-  consumables: [],
-  batch: {
-    id: "",
-    quantity: 0,
-  },
+  consumables: [] as { id: string; name: string }[],
+  batchId: "",
+  weight: "",
   invoiceNumber: "",
-  latestLabData: {
-    date: Timestamp.now(),
-    sugar: {
-      value: 0,
-      unit: "",
-    } as {
-      value: number;
-      unit: string;
-    },
-    acidity: {
-      value: 0,
-      unit: "",
-    } as {
-      value: number;
-      unit: string;
-    },
-  },
-  vessels: [] as { id: string; name: string }[],
   equipment: [] as { id: string; name: string }[],
   description: "",
   location: "",
-  documents: [],
+  responsible: {
+    id: "",
+    name: "",
+    lastName: "",
+    email: "",
+  },
+  sugar: {
+    id: "",
+    name: "",
+    value: 0,
+    variation: 0,
+    unit: "g/dm³",
+    responsible: {
+      name: "",
+      email: "",
+    },
+    date: Timestamp.now(),
+  },
+  acidity: {},
+  certificateOfInofensiviate: "",
+  transportCompanyName: "",
+  transportVehicleId: "",
+  transportDriverName: "",
 };
 
 export const vineyardGlobalActionSample: VineyardGlobalAction = {
@@ -57,6 +57,5 @@ export const vineyardGlobalActionSample: VineyardGlobalAction = {
     email: "",
   },
   inputData: {},
-  notes: [],
   supportingDocuments: [],
 };
