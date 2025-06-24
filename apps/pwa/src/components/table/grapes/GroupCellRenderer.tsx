@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IconButton, Link, Stack, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type FunctionComponent,
-} from "react";
+import { useCallback, useState, type FunctionComponent } from "react";
 import formatDate from "@/utils/date-format";
 import {
   DEFAULT_LOCALE,
@@ -22,9 +17,9 @@ import EntityLocation from "../EntityLocation";
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
 ) => {
-  const { value, data, node } = params;
+  const { value, node } = params;
 
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState<boolean>(node.expanded);
 
   const handleMasterDetailExpansion = useCallback(() => {
     setExpanded(!node.expanded);
@@ -33,10 +28,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       node.expanded ? ROW_HEIGHT_EXPANDED_GRAPE : ROW_HEIGHT_DEFAULT
     );
   }, [node]);
-
-  useEffect(() => {
-    setExpanded(node.expanded);
-  }, [node.expanded]);
 
   const batchId: any[] =
     node?.aggData?.batchId ??
@@ -66,8 +57,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   return (
     <>
       <Stack
-        justifyContent="center"
         gap={1}
+        justifyContent="center"
         justifyItems="flex-start"
         height={ROW_HEIGHT_DEFAULT}
         sx={{

@@ -50,7 +50,8 @@
     "react-hook-form": "^7.56.3",
     "react-phone-input-material-ui": "^2.18.1",
     "tailwind-merge": "^3.2.0",
-    "zod": "^3.24.4"
+    "zod": "^3.24.4",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

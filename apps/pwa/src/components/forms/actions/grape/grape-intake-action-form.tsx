@@ -2,11 +2,9 @@
 "use client";
 
 import {
-  GrapeActions,
   GrapeIntakeAction,
   VineyardGlobalAction,
 } from "@/models/types/actions";
-import { Grape, LabReport } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useWinery } from "@/context/winery";
@@ -32,20 +30,19 @@ import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useGrape } from "@/context/grape";
+import { useVineyard } from "@/context/vineyard";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { Grape } from "@/models/types/db";
 
-export type GrapeActionFormProps = {
-  grapes: Grape[];
-  selectedGrapes?: Grape[];
-  actions?: GrapeActions;
-  labReports?: LabReport[];
-};
+export default function GrapeIntakeActionForm() {
+  const { grapes, actions } = useGrape();
+  const { labReports } = useVineyard();
 
-export default function GrapeIntakeActionForm({
-  grapes,
-  selectedGrapes,
-  actions,
-  labReports,
-}: GrapeActionFormProps) {
+  const selectedGrapes = useSelectedEntitiesStore(
+    ({ selected }) => selected
+  ) as Grape[];
+
   const { teamMembers } = useWinery();
   const { user } = useAuth();
   const {

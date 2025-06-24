@@ -1,13 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import {
-  GrapeActions,
-  GrapeIntakeAction,
-  GrapeProcessingAction,
-  VineyardGlobalAction,
-} from "@/models/types/actions";
-import { Grape, LabReport, Vessel } from "@/models/types/db";
+import { GrapeProcessingAction } from "@/models/types/actions";
+import { Grape } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useWinery } from "@/context/winery";
@@ -34,22 +29,20 @@ import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMust } from "@/context/must";
+import { useGrape } from "@/context/grape";
+import { useVessel } from "@/context/vessel";
+import { useVineyard } from "@/context/vineyard";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 
-export type GrapeActionFormProps = {
-  grapes: Grape[];
-  selectedGrapes?: Grape[];
-  actions?: GrapeActions;
-  labReports?: LabReport[];
-  vessels?: Vessel[];
-};
+export default function GrapeProcessingActionForm() {
+  const { grapes, actions } = useGrape();
+  const { vessels } = useVessel();
+  const { labReports } = useVineyard();
 
-export default function GrapeProcessingActionForm({
-  grapes,
-  selectedGrapes,
-  actions,
-  labReports,
-  vessels,
-}: GrapeActionFormProps) {
+  const selectedGrapes = useSelectedEntitiesStore(
+    ({ selected }) => selected
+  ) as Grape[];
+
   const { musts } = useMust();
   const { teamMembers } = useWinery();
   const { user } = useAuth();

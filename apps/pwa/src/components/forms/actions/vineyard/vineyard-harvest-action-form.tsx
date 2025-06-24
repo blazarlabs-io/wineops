@@ -4,16 +4,12 @@
 import { vineyardHarvestActionSample } from "@/data/actions-samples";
 import { useAuth } from "@/lib/firebase/auth";
 import { vineyardHarvestActionSchema } from "@/models/schemas/actions/vineyard-harvest-action-schema";
-import {
-  ActionRelation,
-  VineyardActions,
-  VineyardHarvestAction,
-} from "@/models/types/actions";
-import { LabReport, Vessel, Vineyard } from "@/models/types/db";
+import { ActionRelation, VineyardHarvestAction } from "@/models/types/actions";
+import { Vineyard } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
-import { generateDummyDocs, generateLabData } from "@/utils/generators";
+import { generateDummyDocs } from "@/utils/generators";
 import { Attachment } from "@mui/icons-material";
 import {
   Box,
@@ -39,14 +35,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { setNestedValue } from "@/helpers/form-helpers";
 import { useGrape } from "@/context/grape";
-
-export type HarvestActionFormProps = {
-  vineyards: Vineyard[];
-  selectedVineyards?: Vineyard[];
-  actions?: VineyardActions;
-  vessels?: Vessel[];
-  labReports?: LabReport[];
-};
+import { useVineyard } from "@/context/vineyard";
+import { useVessel } from "@/context/vessel";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -61,13 +52,14 @@ const MenuProps = {
 
 const equipment: ActionRelation[] = [];
 
-export default function VineyardHarvestActionForm({
-  vineyards,
-  actions,
-  vessels,
-  labReports,
-  selectedVineyards,
-}: HarvestActionFormProps) {
+export default function VineyardHarvestActionForm() {
+  const { vineyards, actions, labReports } = useVineyard();
+  const { vessels } = useVessel();
+
+  const selectedVineyards = useSelectedEntitiesStore(
+    ({ selected }) => selected
+  ) as Vineyard[];
+
   const { user } = useAuth();
   const { grapes } = useGrape();
   const theme = useTheme();

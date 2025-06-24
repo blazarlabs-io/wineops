@@ -18,8 +18,6 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 interface WineryContextType {
   winery: Winery | null;
   teamMembers: TeamMember[];
-  selectedTeamMembers: TeamMember[];
-  updateSelectedTeamMembers: (teamMembers: TeamMember[]) => void;
 }
 
 const WineryContext = createContext<WineryContextType | null>(null);
@@ -41,14 +39,6 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
   const mountRef = useRef<boolean>(false);
   const [winery, setWinery] = useState<Winery | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [selectedTeamMembers, setSelectedTeamMembers] = useState<TeamMember[]>(
-    []
-  );
-
-  const updateSelectedTeamMembers = (teamMembers: TeamMember[]) => {
-    console.log("teamMembers", teamMembers);
-    setSelectedTeamMembers(teamMembers);
-  };
 
   useEffect(() => {
     if (!user) {
@@ -105,6 +95,7 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (querySnapshot.empty) {
         console.log("No team members found");
+        setTeamMembers([]);
         return;
       }
 
@@ -119,15 +110,13 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       unsubTeamMembers();
     };
-  }, [user]);
+  }, [user, winery]);
 
   return (
     <WineryContext.Provider
       value={{
         winery,
         teamMembers,
-        selectedTeamMembers,
-        updateSelectedTeamMembers,
       }}
     >
       {children}

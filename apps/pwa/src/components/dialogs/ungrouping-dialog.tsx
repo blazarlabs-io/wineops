@@ -13,31 +13,33 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import { DashboardEntity } from "@/models/types/dashboard";
 import EntityChip from "./entity-chip";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { useDialogDrawerStore } from "@/store/dialogs";
 
 type UngroupingDialogProps<T> = {
-  open: boolean;
-  rows: T[];
-  onClose: () => void;
-  onUngroup: () => void;
+  onUngroup: (selected: T[]) => void;
 };
 
 export default function UngroupingDialog<T extends DashboardEntity>({
-  open,
-  rows,
-  onClose,
   onUngroup,
 }: UngroupingDialogProps<T>) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const { dialogs, close } = useDialogDrawerStore((state) => state);
+  const isOpen = dialogs["ungroup-entities"];
+  const onClose = () => close("ungroup-entities");
+
   const handleUngroup = () => {
-    onUngroup();
+    onUngroup(selected as T[]);
     onClose();
   };
 
   return (
     <Dialog
-      open={open}
+      open={isOpen}
       onClose={onClose}
       fullScreen={fullScreen}
       aria-labelledby="ungrouping-dialog-title"
@@ -68,10 +70,10 @@ export default function UngroupingDialog<T extends DashboardEntity>({
           Are you sure you want to ungroup the following items?
         </Typography>
         <Stack px={0} gap={1} marginTop={2} direction="row" flexWrap="wrap">
-          {rows.map((row) => (
+          {selected.map((row) => (
             <EntityChip
               row={row}
-              key={`${row.id}-${row["vesselId" as keyof T] || ""}`}
+              key={`${row.id}-${row["vesselId" as keyof DashboardEntity] || ""}`}
             />
           ))}
         </Stack>

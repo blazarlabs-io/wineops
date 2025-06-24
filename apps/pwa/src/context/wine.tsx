@@ -18,8 +18,6 @@ import { useVessel } from "./vessel";
 
 interface WineContextType {
   wines: Wine[];
-  selectedWines: Wine[];
-  updateSelectedWines: (wines: Wine[]) => void;
 }
 
 const WineContext = createContext<WineContextType | null>(null);
@@ -42,11 +40,6 @@ export const WineProvider = ({ children }: IWineProvider) => {
   const { user } = useAuth();
 
   const [wines, setWines] = useState<Wine[]>([]);
-  const [selectedWines, setSelectedWines] = useState<Wine[]>([]);
-
-  const updateSelectedWines = useCallback((wines: Wine[]) => {
-    setSelectedWines(wines);
-  }, []);
 
   useEffect(() => {
     let unsubWines = () => {};
@@ -80,8 +73,6 @@ export const WineProvider = ({ children }: IWineProvider) => {
     };
   }, [user]);
 
-  const memoizedSelectedWines = useMemo(() => selectedWines, [selectedWines]);
-
   const hydrateWinesWithUpdatedVessels = useCallback(
     (wines: Wine[], allVessels: Vessel[]): Wine[] => {
       return wines.map((wine) => {
@@ -112,8 +103,6 @@ export const WineProvider = ({ children }: IWineProvider) => {
     <WineContext
       value={{
         wines: hydratedWines,
-        selectedWines: memoizedSelectedWines,
-        updateSelectedWines: updateSelectedWines,
       }}
     >
       {children}

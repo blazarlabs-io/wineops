@@ -7,7 +7,6 @@ import { Vessel } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -17,8 +16,6 @@ import {
 
 interface VesselContextType {
   vessels: Vessel[];
-  selectedVessels: Vessel[];
-  updateSelectedVessels: (vessels: Vessel[]) => void;
 }
 
 const VesselContext = createContext<VesselContextType | null>(null);
@@ -41,11 +38,6 @@ export const VesselProvider = ({ children }: IVesselProvider) => {
   const { user } = useAuth();
 
   const [vessels, setVessels] = useState<Vessel[]>([]);
-  const [selectedVessels, setSelectedVessels] = useState<Vessel[]>([]);
-
-  const updateSelectedVessels = useCallback((vessels: Vessel[]) => {
-    setSelectedVessels(vessels);
-  }, []);
 
   useEffect(() => {
     let unsubVessels = () => {};
@@ -70,7 +62,6 @@ export const VesselProvider = ({ children }: IVesselProvider) => {
         });
 
         setVessels(vessels);
-        console.log("vessels", vessels);
       });
     }
 
@@ -81,17 +72,11 @@ export const VesselProvider = ({ children }: IVesselProvider) => {
   }, [user]);
 
   const memoizedVessels = useMemo(() => vessels, [vessels]);
-  const memoizedSelectedVessels = useMemo(
-    () => selectedVessels,
-    [selectedVessels]
-  );
 
   return (
     <VesselContext
       value={{
         vessels: memoizedVessels,
-        selectedVessels: memoizedSelectedVessels,
-        updateSelectedVessels: updateSelectedVessels,
       }}
     >
       {children}

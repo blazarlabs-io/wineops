@@ -7,7 +7,6 @@ import { Consumable } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -17,8 +16,6 @@ import {
 
 interface ConsumableContextType {
   consumables: Consumable[];
-  selectedConsumables: Consumable[];
-  updateSelectedConsumables: (consumables: Consumable[]) => void;
 }
 
 const ConsumableContext = createContext<ConsumableContextType | null>(null);
@@ -41,13 +38,6 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
   const { user } = useAuth();
 
   const [consumables, setConsumables] = useState<Consumable[]>([]);
-  const [selectedConsumables, setSelectedConsumables] = useState<Consumable[]>(
-    []
-  );
-
-  const updateSelectedConsumables = useCallback((consumables: Consumable[]) => {
-    setSelectedConsumables(consumables);
-  }, []);
 
   useEffect(() => {
     let unsubConsumables = () => {};
@@ -87,17 +77,11 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
   }, [user]);
 
   const memoizedConsumables = useMemo(() => consumables, [consumables]);
-  const memoizedSelectedConsumables = useMemo(
-    () => selectedConsumables,
-    [selectedConsumables]
-  );
 
   return (
     <ConsumableContext
       value={{
         consumables: memoizedConsumables,
-        selectedConsumables: memoizedSelectedConsumables,
-        updateSelectedConsumables: updateSelectedConsumables,
       }}
     >
       {children}

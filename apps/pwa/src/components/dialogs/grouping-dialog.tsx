@@ -1,7 +1,6 @@
 import { DashboardEntity } from "@/models/types/dashboard";
 import { SelectAll } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -20,24 +19,27 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ChangeEvent, useState } from "react";
 import EntityChip from "./entity-chip";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useGrouping } from "@/hooks/use-grouping";
 
 type GroupingDialogProps<T> = {
-  open: boolean;
-  rows: T[];
-  groups: string[];
-  onClose: () => void;
-  onAddToGroup: (group: string[]) => void;
+  data?: T[];
+  onAddToGroup: (selected: T[], group: string[]) => void;
 };
 
 export default function GroupingDialog<T extends DashboardEntity>({
-  open,
-  rows,
-  groups,
-  onClose,
+  data = [],
   onAddToGroup,
 }: GroupingDialogProps<T>) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const { dialogs, close } = useDialogDrawerStore((state) => state);
+  const isOpen = dialogs["group-entities"];
+  const onClose = () => close("group-entities");
 
   const [selectedGroup, setSelectedGroup] = useState<string>("");
   const [selectedGroupDisplayName, setSelectedGroupDisplayName] =
@@ -99,7 +101,7 @@ export default function GroupingDialog<T extends DashboardEntity>({
           : [...selectedGroups, newGroup]
         : selectedGroups;
 
-    onAddToGroup(groupsToAdd);
+    onAddToGroup(selected as T[], groupsToAdd);
     handleClose();
   };
 
@@ -112,9 +114,11 @@ export default function GroupingDialog<T extends DashboardEntity>({
       ? `${selectedGroup}${newGroup ? ` > ${newGroup}` : ""}`
       : newGroup;
 
+  const { uniqueGroups } = useGrouping<T>(data);
+
   return (
     <Dialog
-      open={open}
+      open={isOpen}
       onClose={handleClose}
       fullScreen={fullScreen}
       aria-labelledby="grouping-dialog-title"
@@ -181,7 +185,7 @@ export default function GroupingDialog<T extends DashboardEntity>({
                     <MenuItem aria-label="None" value="none">
                       <em>None</em>
                     </MenuItem>
-                    {groups.map((group) => (
+                    {uniqueGroups.map((group) => (
                       <MenuItem key={group} value={group}>
                         <Typography variant="body2">{group}</Typography>
                       </MenuItem>
@@ -235,7 +239,7 @@ export default function GroupingDialog<T extends DashboardEntity>({
                         <MenuItem aria-label="Root" value="root">
                           <Typography variant="body2">Root</Typography>
                         </MenuItem>
-                        {groups.map((group) => (
+                        {uniqueGroups.map((group) => (
                           <MenuItem key={group} value={group}>
                             <Typography variant="body2">{group}</Typography>
                           </MenuItem>
@@ -280,10 +284,10 @@ export default function GroupingDialog<T extends DashboardEntity>({
             )}
           </Typography>
           <Stack px={0} gap={1} marginTop={2} direction="row" flexWrap="wrap">
-            {rows.map((row) => (
+            {selected.map((row) => (
               <EntityChip
                 row={row}
-                key={`${row.id}-${row["vesselId" as keyof T] || ""}`}
+                key={`${row.id}-${row["vesselId" as keyof DashboardEntity] || ""}`}
               />
             ))}
           </Stack>

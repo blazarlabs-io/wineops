@@ -1,5 +1,6 @@
 import WorkspaceLayout from "@/components/layout/workspace-layout";
 import type { Metadata } from "next";
+import { StrictMode } from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,5 +12,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <WorkspaceLayout>{children}</WorkspaceLayout>;
+  return (
+    <WorkspaceLayout>
+      <StrictMode>{children}</StrictMode>
+    </WorkspaceLayout>
+  );
 }

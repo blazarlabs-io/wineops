@@ -143,8 +143,10 @@ export default function VineyardDetailsWidget({
                 label="Orientation"
                 value={
                   localVineyard.info?.location?.orientation
-                    .split("-")
-                    .join(" ") || "N/A"
+                    ? localVineyard.info?.location?.orientation
+                        .split("-")
+                        .join(" ")
+                    : "N/A"
                 }
               />
               <SimpleDataDisplay

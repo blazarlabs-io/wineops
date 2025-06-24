@@ -2,7 +2,7 @@
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
-import { Department, Role, TeamMember } from "@/models/types/db";
+import { Department, FormMode, Role, TeamMember } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { createTeamMemberSchema } from "@/models/schemas/create-team-member-schema";
@@ -19,22 +19,28 @@ import {
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactPhoneInput from "react-phone-input-material-ui";
+import { useSnackbar } from "notistack";
+import { db } from "@/lib/firebase/services";
+import { useAuth } from "@/lib/firebase/auth";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { useWinery } from "@/context/winery";
 
-export type TeamMembersFormProps = {
-  type: "create" | "edit";
-  member: TeamMember;
-  roles: Role[];
-  onDataSubmit: (data: any) => void;
-  onClose: () => void;
-};
+export default function TeamMemberCreateEditForm() {
+  const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
-export default function TeamMemberCreateEditForm({
-  type,
-  member,
-  roles,
-  onDataSubmit,
-  onClose,
-}: TeamMembersFormProps) {
+  const close = useDialogDrawerStore(({ close }) => close);
+  const closeDrawer = useCallback(() => close("form-drawer"), [close]);
+
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const formType: FormMode = selected.length > 0 ? "edit" : "create";
+
+  const { teamMembers } = useWinery();
+  const existingMember =
+    teamMembers?.find(({ id }) => id === selected[0]?.id) || null;
+
   const {
     register,
     handleSubmit,
@@ -45,51 +51,71 @@ export default function TeamMemberCreateEditForm({
     resolver: joiResolver(createTeamMemberSchema),
   });
 
-  const [formData, setFormData] = useState<TeamMember | null>(null);
+  const [formData, setFormData] = useState<TeamMember>();
 
-  const handleChange = useCallback((name: string, value: any) => {
-    console.log("name", name, "value", value);
-    setFormData((prev) => ({
-      ...(prev as TeamMember),
-      [name]: value,
-    }));
-    setValue(name, value);
-  }, []);
+  const handleChange = useCallback(
+    (name: string, value: any) => {
+      console.log("name", name, "value", value);
+      setFormData((prev) => ({
+        ...(prev as TeamMember),
+        [name]: value,
+      }));
+      setValue(name, value);
+    },
+    [setValue]
+  );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
     console.log("ERRORS:", errors);
-    onDataSubmit(data);
+
+    if (formType === "create") {
+      const teamRes = await db.team.create(user?.uid, data);
+
+      if (teamRes.status === 200) {
+        enqueueSnackbar("Team member created successfully", {
+          variant: "success",
+        });
+      } else {
+        enqueueSnackbar("Error creating team member", { variant: "error" });
+      }
+    } else if (formType === "edit") {
+      const teamRes = await db.team.update(user?.uid, data);
+
+      if (teamRes.status === 200) {
+        enqueueSnackbar("Team member updated successfully", {
+          variant: "success",
+        });
+      } else {
+        enqueueSnackbar("Error updating team member", { variant: "error" });
+      }
+    }
+
+    closeDrawer();
+
     setFormData(data);
   };
 
   useEffect(() => {
-    if (member && type) {
-      console.log("TYPE", type, member);
+    const formatted = {
+      ...existingMember,
+      ...(!existingMember && {
+        id: Date.now().toString(),
+        name: "",
+        lastName: "",
+        email: "",
+        role: "",
+        avatar: "",
+        department: "",
+        contactPhone: "",
+      }),
+    } as TeamMember;
 
-      let _member: TeamMember | null = null;
-
-      if (type === "create") {
-        _member = {
-          id: Date.now().toString(),
-          name: "",
-          lastName: "",
-          email: "",
-          role: "",
-          avatar: "",
-          department: "",
-          contactPhone: "",
-        };
-      } else if (type === "edit") {
-        _member = member;
-      }
-
-      reset(_member as TeamMember);
-      setFormData(_member);
-    }
-  }, [member, type]);
+    reset(formatted);
+    setFormData(formatted);
+  }, [existingMember, reset, selected]);
 
   useEffect(() => {
     if (errors) {
@@ -169,17 +195,15 @@ export default function TeamMemberCreateEditForm({
                       // className="capitalize"
                       onChange={(e) => handleChange("role", e.target.value)}
                     >
-                      {roles &&
-                        roles.length > 0 &&
-                        roles.map((role) => (
-                          <MenuItem
-                            key={role}
-                            value={role}
-                            // className="capitalize"
-                          >
-                            {role}
-                          </MenuItem>
-                        ))}
+                      {Object.values(Role)?.map((role) => (
+                        <MenuItem
+                          key={role}
+                          value={role}
+                          // className="capitalize"
+                        >
+                          {role}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                   {/* * DEPARTMENT */}
@@ -222,12 +246,12 @@ export default function TeamMemberCreateEditForm({
           </div>
 
           <Box display={"flex"} justifyContent={"end"} gap={2} marginTop={2}>
-            <Button type="button" variant="outlined" onClick={onClose}>
+            <Button type="button" variant="outlined" onClick={closeDrawer}>
               Cancel
             </Button>
             <FormControl>
               <Button type="submit" variant="contained">
-                {type === "create" ? "Create" : "Update"}
+                {formType === "create" ? "Create" : "Update"}
               </Button>
             </FormControl>
           </Box>

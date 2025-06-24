@@ -16,6 +16,8 @@ import {
   Vineyard,
   WineColor,
 } from "@/models/types/db";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { generateYearsList } from "@/utils/generators";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { Add, ExpandMore, ReceiptLong } from "@mui/icons-material";
@@ -46,24 +48,24 @@ import { Controller, useForm } from "react-hook-form";
 
 export type VineyardFormProps = {
   children?: React.ReactNode;
-  vineyard: Vineyard | null;
-  closeDrawer?: () => void;
-  type?: FormMode;
   onSave?: (data: Vineyard) => void;
   clicked?: boolean;
 };
 
-export default function VineyardForm({
-  vineyard,
-  closeDrawer,
-  type = "create",
-  onSave,
-  clicked,
-}: VineyardFormProps) {
+export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { mode } = useColorScheme();
+
+  const close = useDialogDrawerStore(({ close }) => close);
+  const closeDrawer = useCallback(() => close("form-drawer"), [close]);
+
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const formType: FormMode = selected.length > 0 ? "edit" : "create";
+
   const { vineyards } = useVineyard();
+
   const {
     register,
     handleSubmit,
@@ -75,7 +77,7 @@ export default function VineyardForm({
     resolver: joiResolver(vineyardSchema),
   });
 
-  const [formData, setFormData] = useState<Vineyard | null>(vineyard);
+  const [formData, setFormData] = useState<Vineyard | null>();
   const [cadastral, setCadastral] = useState<string>("");
   const btnRef = useRef<HTMLButtonElement>(null);
 
@@ -93,7 +95,7 @@ export default function VineyardForm({
     const data: string[] = (formData?.cadastralNumber as string[]) || [];
     data.push(value);
     setValue(path, data);
-    setFormData((prevData: Vineyard | null) => {
+    setFormData((prevData) => {
       if (!prevData) {
         return null;
       }
@@ -114,7 +116,7 @@ export default function VineyardForm({
       data.splice(index, 1);
     }
     setValue(path, data);
-    setFormData((prevData: Vineyard | null) => {
+    setFormData((prevData) => {
       if (!prevData) {
         return null;
       }
@@ -161,9 +163,9 @@ export default function VineyardForm({
 
   const handleCreateVineyard = useCallback(
     async (uid: string, data: any) => {
-      console.log("DATA", type, data);
+      console.log("DATA", formType, data);
 
-      if (type === "create") data.group = [data.name];
+      if (formType === "create") data.group = [data.name];
 
       data.createdAt = Timestamp.now();
 
@@ -229,7 +231,7 @@ export default function VineyardForm({
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, type]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType]
   );
 
   const onSubmit = (data: any, e: any) => {
@@ -241,21 +243,52 @@ export default function VineyardForm({
     handleCreateVineyard(user?.uid || "", data);
   };
 
-  useEffect(() => {
-    if (vineyard) {
-      vineyard.cadastralNumber = vineyard.cadastralNumber || [];
-      if (vineyard.name.length > 0) {
-        // console.log("EXISTING VINEYARD", vineyard);
-        reset(vineyard);
-        setFormData(vineyard);
-      } else {
-        // console.log("NEW VINEYARD", vineyard);
-        setValue("name", `Vineyard ${vineyards?.length + 1}`);
-        setFormData(vineyard);
-        reset(vineyard);
-      }
+  /*useEffect(() => {
+    if (selected.length > 0 && vineyards.length > 0) {
+      const existingVineyard = vineyards.find(
+        ({ id }) => id === selected[0]?.id
+      );
+
+      if (!existingVineyard) return;
+
+      setWorkingVineyard(existingVineyard);
+    } else {
+      setWorkingVineyard({
+        id: Date.now().toString(),
+        labData: [],
+        tasks: [],
+        documents: [],
+        notes: [],
+        rowType: "item",
+      } as unknown as Vineyard);
     }
-  }, [vineyard]);
+  }, [vineyards, selected]);*/
+
+  const existingVineyard = vineyards?.find(({ id }) => id === selected[0]?.id);
+
+  useEffect(() => {
+    const name = `Vineyard ${vineyards?.length + 1}`;
+
+    const formatted: Vineyard = {
+      ...existingVineyard,
+      cadastralNumber: existingVineyard?.cadastralNumber || [],
+      name: existingVineyard?.name || name,
+      ...(!existingVineyard && {
+        id: Date.now().toString(),
+        name,
+        group: [name],
+        labData: [],
+        tasks: [],
+        documents: [],
+        notes: [],
+        cadastralNumber: [],
+        rowType: "item",
+      }),
+    } as Vineyard;
+
+    setFormData(formatted);
+    reset(formatted);
+  }, [existingVineyard, reset, vineyards?.length]);
 
   useEffect(() => {
     if (errors) {
@@ -534,7 +567,7 @@ export default function VineyardForm({
                       {/* * MAP */}
                       <div className="w-full bg-muted rounded-md min-h-[320px] relative">
                         <PolygonDrawingMap
-                          initialCoordinates={formData.info.location.map}
+                          initialCoordinates={formData.info?.location?.map}
                           onComplete={handlePolygonDrawingComplete}
                         />
                       </div>
