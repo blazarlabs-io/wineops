@@ -1,22 +1,19 @@
 import { ReactNode } from "react";
 import { Card, Typography } from "@mui/material";
-import { cn } from "@/utils/styling";
 
 export type SimpleDataDisplayProps = {
   label: ReactNode;
   value: ReactNode;
-  classNames?: string;
 };
 
-export default function SimpleDataDisplay({
+export default function OrientationDataDisplay({
   label,
   value,
-  classNames = "",
 }: SimpleDataDisplayProps) {
   return (
     <Card
       variant="outlined"
-      className={cn("min-w-[168px] flex flex-col gap-1 w-full p-2", classNames)}
+      className="min-w-[168px] flex flex-col gap-1 w-full p-2 capitalize"
     >
       <Typography variant="body2" color="textDisabled">
         {label}

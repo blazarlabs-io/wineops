@@ -2,22 +2,27 @@
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
-import { VineyardActions, VineyardGlobalAction } from "@/models/types/actions";
-import { Vineyard } from "@/models/types/db";
+import { VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
+import { setNestedValue } from "@/helpers/form-helpers";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
 import { useAuth } from "@/lib/firebase/auth";
+import { db } from "@/lib/firebase/services";
 import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
-import { generateNotes } from "@/utils/generators";
-import { Attachment } from "@mui/icons-material";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { BackupOutlined, DeleteOutline } from "@mui/icons-material";
 import {
   Box,
   Button,
   FormControl,
+  FormHelperText,
+  IconButton,
   TextField as Input,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
   Stack,
@@ -27,11 +32,10 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
+import { File } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { setNestedValue } from "@/helpers/form-helpers";
-import { useVineyard } from "@/context/vineyard";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 
 export default function VineyardLabActionForm() {
   const { vineyards, actions } = useVineyard();
@@ -56,6 +60,8 @@ export default function VineyardLabActionForm() {
     vineyardGlobalActionSample
   );
   const [disableSubject, setDisableSubject] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const handleChange = useCallback(
     (name: string, value: any) => {
@@ -73,6 +79,14 @@ export default function VineyardLabActionForm() {
         setValue("inUseVineyard.name" as string, value as any);
       } else {
         setValue(name as string, value as any);
+      }
+
+      if (name === "responsible.name") {
+        setValue(
+          "responsible.email" as string,
+          teamMembers.filter((tm) => tm?.name === value)[0]?.email as any
+        );
+        setValue("responsible.name" as string, value as any);
       }
 
       const path = name.split(".");
@@ -103,6 +117,73 @@ export default function VineyardLabActionForm() {
     [setValue, vineyards]
   );
 
+  const handleNewUpload = useCallback(
+    (name: string, url: string, file: File) => {
+      const filesUrls = formData.supportingDocuments;
+      filesUrls?.push({
+        name: file.name,
+        url: url,
+      });
+      setFormData((prev) => ({
+        ...(prev as VineyardGlobalAction),
+        supportingDocuments: filesUrls,
+      }));
+      setValue(name, filesUrls);
+    },
+    [formData.supportingDocuments, setValue]
+  );
+
+  const handleFile = useCallback((e: any) => {
+    const file = e.target.files[0];
+    console.log(file);
+    // TODO: upload file and show upload progress...
+    db.storage.uploadFile(
+      file,
+      user?.uid,
+      "labResults",
+      (progress: number) => {
+        setIsUploading(true);
+        setUploadProgress(progress);
+      },
+      (complete: string) => {
+        setIsUploading(false);
+        setUploadProgress(0);
+        console.log(complete);
+        handleNewUpload("supportingDocuments", complete, file);
+      },
+      (error: Error) => {
+        setIsUploading(false);
+        setUploadProgress(0);
+        console.log(error);
+      }
+    );
+  }, []);
+
+  const handleDeleteFile = useCallback(
+    async (name: string, index: number) => {
+      const filesUrls = formData.supportingDocuments;
+      filesUrls?.splice(index, 1);
+      setFormData((prev) => ({
+        ...(prev as VineyardGlobalAction),
+        supportingDocuments: filesUrls,
+      }));
+      setValue(name, filesUrls);
+
+      const deleteFileRes = await db.storage.deleteFile(
+        user?.uid,
+        "labResults",
+        name
+      );
+
+      if (deleteFileRes.status == 200) {
+        console.log("File deleted");
+      } else {
+        console.log("Error deleting file");
+      }
+    },
+    [formData.supportingDocuments, setValue]
+  );
+
   const onSubmit = (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
@@ -122,14 +203,13 @@ export default function VineyardLabActionForm() {
     vineyardGlobalActionSample.id = Date.now().toString();
     vineyardGlobalActionSample.type = "lab-report";
     vineyardGlobalActionSample.executionDate = new Date().toDateString();
-    vineyardGlobalActionSample.notes = generateNotes();
     if (
       vineyardGlobalActionSample.responsible !== undefined &&
       teamMembers &&
       teamMembers.length > 0
     ) {
-      vineyardGlobalActionSample.responsible.name = teamMembers[0]?.name;
-      vineyardGlobalActionSample.responsible.email = teamMembers[0]?.email;
+      vineyardGlobalActionSample.responsible.name = ""; //teamMembers[0]?.name;
+      vineyardGlobalActionSample.responsible.email = ""; //teamMembers[0]?.email;
     }
 
     // * If there is only one vineyard selected, else use the first vineyard is any
@@ -189,11 +269,12 @@ export default function VineyardLabActionForm() {
                 <div className="flex flex-col w-full">
                   {/* <DemoItem label="DatePicker"> */}
                   <Box display={"flex"} flexDirection={"column"} gap={2}>
+                    <Typography>General Info</Typography>
                     {/* * In use Vineyard */}
                     {/* TODO Needs to update both vineyard name and id */}
                     <FormControl fullWidth>
                       <InputLabel id="subject-select">
-                        In Use Vineyard
+                        Selected vineyard
                       </InputLabel>
                       <Select
                         disabled={disableSubject}
@@ -201,7 +282,7 @@ export default function VineyardLabActionForm() {
                         // labelId="subject-select"
                         id="inUseVineyard.name"
                         value={(formData.inUseVineyard?.name as string) || ""}
-                        label="In Use Vineyard"
+                        label="Vineyard"
                         onChange={(e) => {
                           handleInUseVineyardChange(e.target.value);
                         }}
@@ -217,6 +298,9 @@ export default function VineyardLabActionForm() {
                     </FormControl>
                     {/* * EXECUTION DATE */}
                     <Stack gap={1} className="w-full">
+                      <Typography variant="body2" color="text.secondary">
+                        Select execution Date
+                      </Typography>
                       <DatePicker
                         name="executionDate"
                         value={
@@ -238,96 +322,132 @@ export default function VineyardLabActionForm() {
                       />
                     </Stack>
                     {/* * RESPONSIBLE */}
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Responsible&apos;s Name
-                      </InputLabel>
-                      <Select
-                        name="responsible.name"
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={
-                          formData?.responsible?.name ||
-                          teamMembers[0]?.name ||
-                          ""
-                        }
-                        label="Responsible's Name"
-                        onChange={(e) => {
-                          handleChange("responsible.name", e.target.value);
-                        }}
-                      >
-                        {teamMembers &&
-                          teamMembers.length > 0 &&
-                          teamMembers.map((member) => (
-                            <MenuItem key={member?.name} value={member?.name}>
-                              {member?.name}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
+                    <Stack gap={1} className="w-full">
+                      <Typography variant="body2" color="text.secondary">
+                        Enter the responsible person
+                      </Typography>
+                      <FormControl fullWidth>
+                        <ResponsibleTeamMemberField
+                          teamMembers={teamMembers}
+                          onChange={(value) => {
+                            handleChange("responsible.name", value);
+                          }}
+                        />
+                        {errors.responsible &&
+                          Array.isArray(errors.responsible) && (
+                            <FormHelperText error>
+                              {errors.responsible[0]?.message}
+                            </FormHelperText>
+                          )}
+                      </FormControl>
+                    </Stack>
+                    <Typography>Lab Results</Typography>
                     {/* * LATEST LAB DATA */}
-                    <div className="">
+                    <Stack
+                      direction={"column"}
+                      gap={1}
+                      display={"flex"}
+                      className=""
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Enter the mass concentration of sugars (g/dm³)
+                      </Typography>
                       <FormControl fullWidth>
                         <TextField
                           type="number"
                           id="outlined-basic"
-                          label="Sugar"
+                          label="Sugar (g/dm³)"
                           variant="outlined"
                           inputProps={{
-                            min: "0",
+                            min: "0.01",
+                            max: "10000",
                             step: "0.01",
                           }}
                           {...register("inputData.sugar")}
                         />
+                        {(errors.inputData as any).sugar?.message && (
+                          <FormHelperText error>
+                            {(errors.inputData as any).sugar.message}
+                          </FormHelperText>
+                        )}
                       </FormControl>
-                    </div>
-                    <FormControl fullWidth>
-                      <TextField
-                        type="number"
-                        id="outlined-basic"
-                        label="Acidity"
-                        variant="outlined"
-                        inputProps={{
-                          min: "0",
-                          step: "0.01",
-                        }}
-                        {...register("inputData.acidity")}
-                      />
-                    </FormControl>
-
-                    {/* * NOTES */}
-                    {/* <FormControl fullWidth>
-                      <TextField
-                        type="text"
-                        id="description"
-                        label="Description"
-                        variant="outlined"
-                        {...register("description")}
-                      />
-                    </FormControl> */}
+                    </Stack>
+                    <Stack
+                      direction={"column"}
+                      gap={1}
+                      display={"flex"}
+                      className=""
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Enter the acidity (g/dm³)
+                      </Typography>
+                      <FormControl fullWidth>
+                        <TextField
+                          type="number"
+                          id="outlined-basic"
+                          label="Acidity (g/dm³)"
+                          variant="outlined"
+                          inputProps={{
+                            min: "0.01",
+                            max: "10000",
+                            step: "0.01",
+                          }}
+                          {...register("inputData.acidity")}
+                        />
+                      </FormControl>
+                    </Stack>
 
                     <Stack gap={1}>
                       <Typography variant="body2" color="text.secondary">
                         Supporting Documents
                       </Typography>
-                      <Stack
-                        gap={1}
-                        padding={2}
-                        sx={{
-                          border: "2px",
-                          borderColor: "var(--mui-palette-divider)",
-                          borderStyle: "solid",
-                          borderRadius: "8px",
-                        }}
-                      >
+                      {isUploading && (
+                        <LinearProgress
+                          variant="determinate"
+                          value={uploadProgress}
+                        />
+                      )}
+                      {formData.supportingDocuments &&
+                        formData.supportingDocuments.length > 0 &&
+                        formData.supportingDocuments.map((doc, index) => (
+                          <Stack
+                            key={doc.name}
+                            gap={1}
+                            display={"flex"}
+                            alignItems={"center"}
+                            direction={"row"}
+                            justifyContent={"space-between"}
+                          >
+                            <Stack
+                              gap={1}
+                              display={"flex"}
+                              alignItems={"center"}
+                              direction={"row"}
+                            >
+                              <File width={16} height={16} />
+                              <Typography variant="body2">
+                                {doc.name}
+                              </Typography>
+                            </Stack>
+                            <IconButton
+                              size="small"
+                              className="max-w-[24px] max-h-[24px]"
+                              color="error"
+                              onClick={() => handleDeleteFile(doc.name, index)}
+                            >
+                              <DeleteOutline className="max-w-4 max-h-4" />
+                            </IconButton>
+                          </Stack>
+                        ))}
+                      <Stack gap={1} paddingY={2}>
                         <Button
-                          variant="contained"
+                          variant="outlined"
                           component="label"
                           className="w-full flex items-center gap-2"
                         >
-                          <Attachment className="w-4 h-4" />
+                          <BackupOutlined className="w-4 h-4" />
                           Upload File
-                          <input type="file" hidden />
+                          <input type="file" hidden onChange={handleFile} />
                         </Button>
                       </Stack>
                     </Stack>

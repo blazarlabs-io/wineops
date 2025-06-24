@@ -4,6 +4,8 @@ import {
   Deselect,
   Edit,
   FormatListBulleted,
+  PivotTableChartOutlined,
+  PushPinOutlined,
   SelectAll,
   SwapVert,
   Tune,
@@ -26,6 +28,12 @@ const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
     enabled: false,
   },
   [ButtonType.GROUP]: {
+    enabled: false,
+  },
+  [ButtonType.PIN]: {
+    enabled: false,
+  },
+  [ButtonType.PIVOT]: {
     enabled: false,
   },
   [ButtonType.UNGROUP]: {
@@ -73,13 +81,13 @@ export default function ToolsBar(props: ToolsBarProps) {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Box display="flex" gap={1}>
+        <Box display="flex" gap={1} alignItems="center">
           {buttons[ButtonType.ADD] && (
             <IconButton
               color="default"
               aria-label="add"
-              onClick={buttons[ButtonType.ADD]?.onClick || openFormDrawer}
-              disabled={!(buttons[ButtonType.ADD]?.enabled || enableAdd)}
+              onClick={openFormDrawer}
+              disabled={!enableAdd}
             >
               <Add className="" />
             </IconButton>
@@ -88,19 +96,48 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="default"
               aria-label="edit"
-              disabled={!(buttons[ButtonType.EDIT]?.enabled || enableEdit)}
-              onClick={buttons[ButtonType.EDIT]?.onClick || openFormDrawer}
+              disabled={!enableEdit}
+              onClick={openFormDrawer}
             >
               <Edit />
             </IconButton>
           )}
 
+          {buttons[ButtonType.PIN] && (
+            <IconButton
+              color="default"
+              aria-label="pin"
+              disabled={!buttons[ButtonType.PIN]?.enabled}
+              onClick={buttons[ButtonType.PIN]?.onClick}
+            >
+              <PushPinOutlined className="" />
+            </IconButton>
+          )}
+
+          {buttons[ButtonType.DELETE] && (
+            <IconButton
+              color="error"
+              aria-label="delete"
+              disabled={!enableDelete}
+              onClick={openDeleteDialog}
+            >
+              <DeleteOutline className="" />
+            </IconButton>
+          )}
+
+          <div
+            className="w-[1px] h-[24px]"
+            style={{
+              backgroundColor: "var(--mui-palette-divider)",
+            }}
+          />
+
           {buttons[ButtonType.GROUP] && (
             <IconButton
               color="default"
               aria-label="group"
-              disabled={!(buttons[ButtonType.GROUP]?.enabled || enableGrouping)}
-              onClick={buttons[ButtonType.GROUP]?.onClick || openGroupingDialog}
+              disabled={!enableGrouping}
+              onClick={openGroupingDialog}
             >
               <SelectAll />
             </IconButton>
@@ -111,25 +148,21 @@ export default function ToolsBar(props: ToolsBarProps) {
               color="default"
               size="small"
               aria-label="ungroup"
-              disabled={
-                !(buttons[ButtonType.UNGROUP]?.enabled || enableUngrouping)
-              }
-              onClick={
-                buttons[ButtonType.UNGROUP]?.onClick || openUngroupingDialog
-              }
+              disabled={!enableUngrouping}
+              onClick={openUngroupingDialog}
             >
               <Deselect className="" />
             </IconButton>
           )}
 
-          {buttons[ButtonType.DELETE] && (
+          {buttons[ButtonType.PIVOT] && (
             <IconButton
-              color="error"
-              aria-label="delete"
-              disabled={!(buttons[ButtonType.DELETE]?.enabled || enableDelete)}
-              onClick={buttons[ButtonType.DELETE]?.onClick || openDeleteDialog}
+              color="default"
+              aria-label="pivot"
+              disabled={!buttons[ButtonType.PIVOT]?.enabled}
+              onClick={buttons[ButtonType.PIVOT]?.onClick}
             >
-              <DeleteOutline className="" />
+              <PivotTableChartOutlined className="" />
             </IconButton>
           )}
         </Box>

@@ -12,6 +12,8 @@ import Tab from "@mui/material/Tab";
 import { Box, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import LabReportSimpleDataDisplay from "@/components/data-display/lab-report-simple-data-display";
+import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
+import CadastralDataDisplay from "@/components/data-display/cadastral-data-display";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -135,11 +137,13 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Elevation"
                 value={
-                  localVineyard.info?.location?.elevation?.toString() + " m" ||
+                  (localVineyard.info?.location?.elevation !== undefined &&
+                    localVineyard.info?.location?.elevation?.toString() +
+                      " m") ||
                   "N/A"
                 }
               />
-              <SimpleDataDisplay
+              <OrientationDataDisplay
                 label="Orientation"
                 value={
                   localVineyard.info?.location?.orientation
@@ -152,14 +156,16 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Sunlight Hours"
                 value={
-                  localVineyard.info?.vines?.sunlightHours + " hours" || "N/A"
+                  (localVineyard.info?.vines?.sunlightHours !== undefined &&
+                    localVineyard.info?.vines?.sunlightHours + " h/year") ||
+                  "N/A"
                 }
               />
               <SimpleDataDisplay
                 label="Soil Type"
                 value={localVineyard.info?.vines?.soilType?.toString() || "N/A"}
               />
-              <SimpleDataDisplay
+              <CadastralDataDisplay
                 label="Cadastral Number"
                 value={localVineyard.cadastralNumber || "N/A"}
               />
@@ -183,24 +189,25 @@ export default function VineyardDetailsWidget({
                 className="flex p-1 w-full gap-4 justify-between rounded-md"
               >
                 <SimpleDataDisplay
-                  label="Clonal Selection"
-                  value={
-                    localVineyard?.grape?.clonalSelection?.toString() || "N/A"
-                  }
-                />
-                <SimpleDataDisplay
-                  label="Vivc Number"
-                  value={localVineyard?.grape?.vivcNumber?.toString() || "N/A"}
-                />
-                <SimpleDataDisplay
                   label="Country of Origin"
                   value={
                     localVineyard?.grape?.countryOfOrigin?.toString() || "N/A"
                   }
                 />
                 <SimpleDataDisplay
+                  label="Clonal Selection"
+                  value={
+                    localVineyard?.grape?.clonalSelection?.toString() || "N/A"
+                  }
+                />
+                <SimpleDataDisplay
                   label="Grape Color"
                   value={localVineyard?.grapeColor?.toString() || "N/A"}
+                  classNames="capitalize"
+                />
+                <SimpleDataDisplay
+                  label="Vivc Number"
+                  value={localVineyard?.grape?.vivcNumber?.toString() || "N/A"}
                 />
               </div>
             ) : (
@@ -226,11 +233,14 @@ export default function VineyardDetailsWidget({
                 <SimpleDataDisplay
                   label="Spacing"
                   value={
-                    localVineyard.info?.vines?.plantingScheme?.spacing?.toString() +
-                      " m" || "N/A"
+                    (localVineyard.info?.vines?.plantingScheme?.spacing !==
+                      undefined &&
+                      localVineyard.info?.vines?.plantingScheme?.spacing?.toString() +
+                        " m") ||
+                    "N/A"
                   }
                 />
-                <SimpleDataDisplay
+                <OrientationDataDisplay
                   label="Row Orientation"
                   value={
                     localVineyard.info?.vines?.plantingScheme?.rowOrientation
@@ -242,8 +252,8 @@ export default function VineyardDetailsWidget({
                 <SimpleDataDisplay
                   label="Density"
                   value={
-                    localVineyard.info?.vines?.plantingScheme?.density?.toString() ||
-                    "N/A"
+                    localVineyard.info?.vines?.plantingScheme?.density?.toString() +
+                      " m" || "N/A"
                   }
                 />
                 <SimpleDataDisplay

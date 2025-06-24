@@ -12,6 +12,7 @@ import chemistry from "./chemistry";
 import note from "./note";
 import wine from "./wine";
 import task from "./task";
+import storage from "./storage";
 
 const db: any = {};
 
@@ -28,5 +29,6 @@ db.chemistry = chemistry;
 db.note = note;
 db.wine = wine;
 db.task = task;
+db.storage = storage;
 
 export { db };

@@ -57,13 +57,20 @@ export default function QuickActionsWidgetStepTwo<
           maxWidth: RIGHT_DRAWER_WIDTH,
           overflowX: "hidden",
           height: "100%",
+          maxHeight: "90% !important",
         }}
+        // className="debug-red"
       >
         <Stack gap={2} py={2} height="100%" pr={2}>
           {/* *Form */}
           <React.Fragment>{selectedAction?.form}</React.Fragment>
         </Stack>
       </Box>
+      {/* <Box display={"flex"} justifyContent={"end"}>
+        <Button variant="contained">
+          <Icon icon={"mdi:check"} width={24} height={24} />
+        </Button>
+      </Box> */}
     </Box>
   );
 }
