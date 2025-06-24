@@ -13,11 +13,11 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
     ? (value ?? [])
         .flat(Infinity)
         .filter(
-          ({ type, usage, barrelInfo, sstInfo }: any) =>
-            ((type === VesselType.BARREL
-              ? barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL
-              : type === VesselType.STAINLESS_STEEL_TANK
-                ? sstInfo?.usage
+          (vessel: any) =>
+            ((vessel?.type === VesselType.BARREL
+              ? vessel?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL
+              : vessel?.type === VesselType.STAINLESS_STEEL_TANK
+                ? vessel?.sstInfo?.usage
                 : usage) ?? "") !== ""
         )
     : [];

@@ -2,10 +2,9 @@
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { useGrouping } from "@/hooks/use-grouping";
 import { useAuth } from "@/lib/firebase/auth";
 import { DashboardEntity } from "@/models/types/dashboard";
-import { DbResponse } from "@/models/types/db";
+import { DbResponse, EntityName } from "@/models/types/db";
 import { nodesToEntities } from "@/utils/notes-to-entities";
 import { Button, Stack, Typography, useColorScheme } from "@mui/material";
 import {
@@ -39,6 +38,10 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
+import { db } from "@/lib/firebase/services";
+import getUnusedGroups from "@/utils/get-unused-groups";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -55,37 +58,23 @@ ModuleRegistry.registerModules([
 
 interface DataTableProps<T extends DashboardEntity> {
   gridTheme?: string;
-  openGroupingDialog: boolean;
-  handleCloseGroupingDialog: () => void;
-  openUngroupingDialog: boolean;
-  handleCloseUngroupingDialog: () => void;
   data?: T[];
-  onChangeData?: (data: T[]) => void;
   entryKey?: keyof T;
-  updateSelectedData: (data: T[]) => void;
   columns: ColDef[];
-  //groupCellRenderer: FunctionComponent<CustomCellRendererProps>;
-  updateGroup: (uid: string, rows: Partial<T>[]) => Promise<DbResponse>;
   groupColumnDef?: ColDef<any, any>;
   groupByButtons?: any[];
   getRowId?: GetRowIdFunc<any> | undefined;
+  entityName?: EntityName;
 }
 
 export const DataTable = <T extends DashboardEntity>({
   gridTheme = "ag-theme-quartz",
-  onChangeData,
-  openGroupingDialog,
-  handleCloseGroupingDialog,
-  openUngroupingDialog,
-  handleCloseUngroupingDialog,
   data = [],
-  updateSelectedData,
   columns,
-  //groupCellRenderer,
-  updateGroup,
   groupColumnDef,
   groupByButtons,
   getRowId,
+  entityName,
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
@@ -153,14 +142,6 @@ export const DataTable = <T extends DashboardEntity>({
     };
   }, []);
 
-  // * Event Handlers
-  const handleOnRowSelected = useCallback(
-    (data: any) => {
-      updateSelectedData(data.api.getSelectedRows());
-    },
-    [updateSelectedData]
-  );
-
   // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
@@ -170,38 +151,16 @@ export const DataTable = <T extends DashboardEntity>({
     }
   }, [isDarkMode]);
 
-  /*const normalizedData: T[] = useMemo(
-    () =>
-      rowData.map((row: T) => ({
-        ...row,
-        group: [
-          ...(!row.group || row.group.length < 1
-            ? [row[entryKey] ?? row.id]
-            : row.group),
-        ],
-      })),
-    [entryKey, rowData]
-  );*/
-
-  const {
-    groupToExpand,
-    uniqueGroups,
-    groupedData,
-    selectedRows,
-    setGroupedData,
-    setSelectedRows,
-    setGroupToExpand,
-  } = useGrouping<T>(rowData);
+  const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
 
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
       const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
       // * Selected items in an array format, Only list of items grouping is ignored
       const entities = nodesToEntities<T>(selectedNodes);
-      onChangeData?.(entities);
-      setSelectedRows(entities);
+      setSelected(entities, entityName);
     },
-    [onChangeData, setSelectedRows]
+    [entityName, setSelected]
   );
 
   const { user } = useAuth();
@@ -228,10 +187,11 @@ export const DataTable = <T extends DashboardEntity>({
     };
   };
 
-  const updateRowsGroup = async (group: string[] = []) => {
-    const isGrouping = group.length > 0;
+  const updateRowsGroup = async (selectedRows: T[], group: string[] = []) => {
+    if (!entityName || !db[entityName] || !uid || selectedRows.length === 0)
+      return;
 
-    if (!uid || selectedRows.length === 0) return;
+    const isGrouping = group.length > 0;
 
     setGroupToExpand(group);
 
@@ -265,14 +225,12 @@ export const DataTable = <T extends DashboardEntity>({
       ...updatedRows.filter(({ id }) => !unusedGroupsIds.includes(id)),
     ];
 
-    setSelectedRows([]);
+    setSelected([]);
     gridRef.current?.api?.deselectAll();
 
-    const updateRes: DbResponse = await updateGroup(
+    const updateRes: DbResponse = await db[entityName].updateGroup(
       uid,
-      (newGroup
-        ? [...updatedRowsWithUnused, newGroup]
-        : updatedRowsWithUnused) as Partial<T>[]
+      newGroup ? [...updatedRowsWithUnused, newGroup] : updatedRowsWithUnused
     );
 
     if (updateRes.status === 200) {
@@ -300,11 +258,7 @@ export const DataTable = <T extends DashboardEntity>({
     setRowData(data);
   }, [data]);
 
-  useEffect(() => {
-    if (rowData && rowData.length > 0) {
-      setGroupedData(rowData);
-    }
-  }, [rowData, setGroupedData]);
+  const [groupToExpand, setGroupToExpand] = useState<string[]>([]);
 
   const isGroupOpenByDefault = useCallback(
     (params: IsGroupOpenByDefaultParams) => {
@@ -387,6 +341,8 @@ export const DataTable = <T extends DashboardEntity>({
         if (!newRowData) {
           console.log("invalid move");
         } else if (newRowData !== rowData) {
+          if (!entityName || !db[entityName]) return;
+
           console.log("onRowDragEnd, modifying grid row data");
           event.api.setGridOption("rowData", newRowData);
           console.log("newRowData:", newRowData);
@@ -400,14 +356,15 @@ export const DataTable = <T extends DashboardEntity>({
             group: unusedGroupsIds.includes(row.id) ? [] : row.group,
           }));
 
-          setSelectedRows([]);
+          setSelected([]);
           gridRef.current?.api?.deselectAll();
 
           if (target?.group) {
             setGroupToExpand(target.group);
           }
 
-          await updateGroup(uid, updatedNewRowData as T[]);
+          await db[entityName].updateGroup(uid, updatedNewRowData);
+
           enqueueSnackbar("Saved changes", { variant: "success" });
         }
         gridRef.current!.api.clearFocusedCell();
@@ -417,12 +374,11 @@ export const DataTable = <T extends DashboardEntity>({
     },
     [
       enqueueSnackbar,
+      entityName,
       potentialParent,
-      setGroupToExpand,
       setPotentialParentForNode,
-      setSelectedRows,
+      setSelected,
       uid,
-      updateGroup,
     ]
   );
 
@@ -486,25 +442,27 @@ export const DataTable = <T extends DashboardEntity>({
 
   return (
     <>
-      <Stack gap={2} direction="row">
-        {groupByButtons?.map(({ name, columnName }) => (
-          <Button
-            key={columnName}
-            autoFocus
-            size="small"
-            variant={groupedField === columnName ? "contained" : "outlined"}
-            id={columnName}
-            name={columnName}
-            onClick={() => handleGroupBy(columnName)}
-          >
-            {groupedField === columnName ? `Unpivot ` : `Pivot by `}
-            {name}
-          </Button>
-        ))}
-      </Stack>
+      {groupByButtons && groupByButtons.length > 0 && (
+        <Stack gap={2} direction="row">
+          {groupByButtons?.map(({ name, columnName }) => (
+            <Button
+              key={columnName}
+              autoFocus
+              size="small"
+              variant={groupedField === columnName ? "contained" : "outlined"}
+              id={columnName}
+              name={columnName}
+              onClick={() => handleGroupBy(columnName)}
+            >
+              {groupedField === columnName ? `Unpivot ` : `Pivot by `}
+              {name}
+            </Button>
+          ))}
+        </Stack>
+      )}
 
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-        {groupedData && groupedData.length > 0 ? (
+        {filteredData?.length > 0 ? (
           <AgGridReact
             theme={myTheme}
             ref={gridRef}
@@ -526,7 +484,6 @@ export const DataTable = <T extends DashboardEntity>({
                 )?.name || autoGroupColumnDef.headerName,
             }}
             rowSelection={rowSelection}
-            onRowSelected={handleOnRowSelected}
             onSelectionChanged={handleOnSelectionChanged}
             containerStyle={{ height: "100%", width: "100%" }}
             isGroupOpenByDefault={isGroupOpenByDefault}
@@ -548,39 +505,12 @@ export const DataTable = <T extends DashboardEntity>({
           </div>
         )}
       </div>
-      <GroupingDialog<T>
-        groups={uniqueGroups as string[]}
-        rows={selectedRows}
-        open={openGroupingDialog}
-        onClose={handleCloseGroupingDialog}
-        onAddToGroup={updateRowsGroup}
-      />
-      <UngroupingDialog<T>
-        rows={selectedRows}
-        open={openUngroupingDialog}
-        onClose={handleCloseUngroupingDialog}
-        onUngroup={updateRowsGroup}
-      />
+
+      <GroupingDialog<T> onAddToGroup={updateRowsGroup} data={rowData} />
+
+      <UngroupingDialog<T> onUngroup={updateRowsGroup} />
+
+      <DeleteEntitiesDialog data={rowData} />
     </>
   );
-};
-
-const getUnusedGroups = (data: DashboardEntity[]) => {
-  const leafGroupPaths = data
-    .filter((item) => item.rowType !== "group" && Array.isArray(item.group))
-    .map((item) => item.group.join("|"));
-
-  const groupOnlyRows = data.filter(
-    (item) => item.rowType === "group" && Array.isArray(item.group)
-  );
-
-  const unusedGroups = groupOnlyRows.filter((groupRow) => {
-    const groupPath = groupRow.group.join("|");
-    return !leafGroupPaths.some(
-      (leafPath) =>
-        leafPath.startsWith(groupPath + "|") || leafPath === groupPath
-    );
-  });
-
-  return unusedGroups;
 };

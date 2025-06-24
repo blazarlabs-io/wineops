@@ -2,12 +2,7 @@
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
-import {
-  ActionRelation,
-  VineyardActions,
-  VineyardGlobalAction,
-} from "@/models/types/actions";
-import { Vineyard } from "@/models/types/db";
+import { ActionRelation, VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useWinery } from "@/context/winery";
@@ -37,12 +32,7 @@ import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-export type HarvestActionFormProps = {
-  vineyards: Vineyard[];
-  selectedVineyards?: Vineyard[];
-  actions?: VineyardActions;
-};
+import { useVineyard } from "@/context/vineyard";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -58,10 +48,9 @@ const MenuProps = {
 const equipment: ActionRelation[] = [];
 const consumables: ActionRelation[] = [];
 
-export default function VineyardIrrigationActionForm({
-  vineyards,
-  actions,
-}: HarvestActionFormProps) {
+export default function VineyardIrrigationActionForm() {
+  const { vineyards } = useVineyard();
+
   const { teamMembers } = useWinery();
   const theme = useTheme();
   const { user } = useAuth();

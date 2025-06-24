@@ -1,7 +1,7 @@
 "use client";
 
 import { MustDecantAction } from "@/models/types/actions";
-import { Must } from "@/models/types/db";
+import { Must, MustWithVessel } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useAuth } from "@/lib/firebase/auth";
@@ -34,6 +34,7 @@ import { useConsumable } from "@/context/consumable";
 import { FormValue } from "../../types";
 import { VOLUME_UNITS } from "@/data/constants";
 import { parseToDate } from "@/utils/date-format";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 
 const initialFormData: MustDecantAction = {
   id: "",
@@ -61,7 +62,7 @@ export default function MustDecantActionForm() {
 
   const moveToWine = watch("moveToWine");
 
-  const { musts: allMusts, selectedMusts, actions } = useMust();
+  const { musts: allMusts, actions } = useMust();
   const filteredMusts = useMemo(
     () =>
       allMusts.filter(
@@ -73,6 +74,10 @@ export default function MustDecantActionForm() {
       ),
     [allMusts]
   );
+
+  const selectedMusts = useSelectedEntitiesStore(
+    ({ selected }) => selected
+  ) as unknown as MustWithVessel[];
 
   const { vessels: allVessels } = useVessel();
   const { consumables: allConsumables } = useConsumable();

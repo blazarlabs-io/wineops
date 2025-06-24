@@ -12,10 +12,11 @@ import {
 } from "ag-grid-community";
 // Core CSS
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { Task, TeamMember } from "@/models/types/db";
 import { useColorScheme } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
 import { columns } from "./columns";
+import { useVineyard } from "@/context/vineyard";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -24,18 +25,11 @@ const rowSelection: RowSelectionOptions = {
   headerCheckbox: false,
 };
 
-export type TasksTableProps = {
-  data: Task[];
-  onSelectionChange?: (selectedRows: any[]) => void;
-};
-
-const TasksTable = ({ data, onSelectionChange }: TasksTableProps) => {
+const TasksTable = () => {
   const { mode } = useColorScheme();
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
 
   const isDarkMode = mode === "dark";
-
-  console.log("data", data);
 
   // Column Definitions: Defines & controls grid columns.
   const [colDefs] = useState<ColDef[]>(columns);
@@ -79,11 +73,15 @@ const TasksTable = ({ data, onSelectionChange }: TasksTableProps) => {
     };
   }, []);
 
+  const { tasks } = useVineyard();
+
+  const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+
   const handleRowSelection = useCallback(
     (data: any) => {
-      onSelectionChange?.(data.api.getSelectedRows());
+      setSelected(data.api.getSelectedRows(), "task");
     },
-    [onSelectionChange]
+    [setSelected]
   );
 
   // * Change GRID Theme Mode on Mount
@@ -99,7 +97,7 @@ const TasksTable = ({ data, onSelectionChange }: TasksTableProps) => {
     <div className={`${themeClass} w-full h-[calc(100vh-212px)]`}>
       <AgGridReact
         theme={myTheme}
-        rowData={data}
+        rowData={tasks}
         columnDefs={colDefs}
         defaultColDef={defaultColDef}
         pagination={true}
