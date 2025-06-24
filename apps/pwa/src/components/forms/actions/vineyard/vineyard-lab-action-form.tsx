@@ -2,25 +2,19 @@
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
-import { VineyardActions, VineyardGlobalAction } from "@/models/types/actions";
-import { Vineyard } from "@/models/types/db";
+import { VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { setNestedValue } from "@/helpers/form-helpers";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { BackupOutlined, DeleteOutline } from "@mui/icons-material";
 import {
-  Attachment,
-  Backup,
-  BackupOutlined,
-  Delete,
-  DeleteOutline,
-} from "@mui/icons-material";
-import {
-  Autocomplete,
   Box,
   Button,
   FormControl,
@@ -339,11 +333,12 @@ export default function VineyardLabActionForm() {
                             handleChange("responsible.name", value);
                           }}
                         />
-                        {errors.responsible?.name && (
-                          <FormHelperText error>
-                            {errors.responsible.name.message}
-                          </FormHelperText>
-                        )}
+                        {errors.responsible &&
+                          Array.isArray(errors.responsible) && (
+                            <FormHelperText error>
+                              {errors.responsible[0]?.message}
+                            </FormHelperText>
+                          )}
                       </FormControl>
                     </Stack>
                     <Typography>Lab Results</Typography>
@@ -370,9 +365,9 @@ export default function VineyardLabActionForm() {
                           }}
                           {...register("inputData.sugar")}
                         />
-                        {errors.inputData?.sugar && (
+                        {(errors.inputData as any).sugar?.message && (
                           <FormHelperText error>
-                            {errors.inputData.sugar.message}
+                            {(errors.inputData as any).sugar.message}
                           </FormHelperText>
                         )}
                       </FormControl>

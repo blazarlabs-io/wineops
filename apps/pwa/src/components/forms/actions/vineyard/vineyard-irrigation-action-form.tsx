@@ -5,11 +5,11 @@ import { vineyardGlobalActionSample } from "@/data/actions-samples";
 import { ActionRelation, VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
 import { useAuth } from "@/lib/firebase/auth";
 import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
-import { generateNotes } from "@/utils/generators";
 import { Attachment } from "@mui/icons-material";
 import {
   Box,
@@ -32,7 +32,6 @@ import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useVineyard } from "@/context/vineyard";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -132,7 +131,6 @@ export default function VineyardIrrigationActionForm() {
       };
 
       vineyardGlobalActionSample.executionDate = new Date().toDateString();
-      vineyardGlobalActionSample.notes = generateNotes();
 
       if (
         vineyardGlobalActionSample.consumables &&

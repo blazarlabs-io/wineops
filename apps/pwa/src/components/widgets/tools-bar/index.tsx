@@ -30,6 +30,12 @@ const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.GROUP]: {
     enabled: false,
   },
+  [ButtonType.PIN]: {
+    enabled: false,
+  },
+  [ButtonType.PIVOT]: {
+    enabled: false,
+  },
   [ButtonType.UNGROUP]: {
     enabled: false,
   },
@@ -80,8 +86,8 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="default"
               aria-label="add"
-              onClick={buttons[ButtonType.ADD]?.onClick || openFormDrawer}
-              disabled={!(buttons[ButtonType.ADD]?.enabled || enableAdd)}
+              onClick={openFormDrawer}
+              disabled={!enableAdd}
             >
               <Add className="" />
             </IconButton>
@@ -90,8 +96,8 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="default"
               aria-label="edit"
-              disabled={!(buttons[ButtonType.EDIT]?.enabled || enableEdit)}
-              onClick={buttons[ButtonType.EDIT]?.onClick || openFormDrawer}
+              disabled={!enableEdit}
+              onClick={openFormDrawer}
             >
               <Edit />
             </IconButton>
@@ -112,8 +118,8 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="error"
               aria-label="delete"
-              disabled={!buttons[ButtonType.DELETE]?.enabled}
-              onClick={buttons[ButtonType.DELETE]?.onClick}
+              disabled={!enableDelete}
+              onClick={openDeleteDialog}
             >
               <DeleteOutline className="" />
             </IconButton>
@@ -130,8 +136,8 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="default"
               aria-label="group"
-              disabled={!(buttons[ButtonType.GROUP]?.enabled || enableGrouping)}
-              onClick={buttons[ButtonType.GROUP]?.onClick || openGroupingDialog}
+              disabled={!enableGrouping}
+              onClick={openGroupingDialog}
             >
               <SelectAll />
             </IconButton>
@@ -142,12 +148,8 @@ export default function ToolsBar(props: ToolsBarProps) {
               color="default"
               size="small"
               aria-label="ungroup"
-              disabled={
-                !(buttons[ButtonType.UNGROUP]?.enabled || enableUngrouping)
-              }
-              onClick={
-                buttons[ButtonType.UNGROUP]?.onClick || openUngroupingDialog
-              }
+              disabled={!enableUngrouping}
+              onClick={openUngroupingDialog}
             >
               <Deselect className="" />
             </IconButton>

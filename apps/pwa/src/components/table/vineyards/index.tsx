@@ -21,28 +21,23 @@ export default function VineyardsTable() {
   );
 
   return (
-    <StrictMode>
-      <DataTable<Vineyard>
-        onChangeData={onChangeData}
-        openGroupingDialog={openGroupingDialog}
-        openUngroupingDialog={openUngroupingDialog}
-        handleCloseGroupingDialog={handleCloseGroupingDialog}
-        handleCloseUngroupingDialog={handleCloseUngroupingDialog}
-        data={normalizedVineyards}
-        columns={vineyardColumns}
-        groupColumnDef={{
-          headerName: "Vineyard Name",
-          rowDrag: true,
-          cellRendererParams: {
-            innerRenderer: GroupCellRenderer,
-            suppressCount: true,
-          },
-          cellRenderer: "agGroupCellRenderer",
-          width: GROUP_COLUMN_WIDTH,
-        }}
-        updateGroup={updateGroup}
-        updateSelectedData={updateSelectedVineyards}
-      />
-    </StrictMode>
+    <DataTable<Vineyard>
+      data={normalizedVineyards}
+      columns={vineyardColumns}
+      groupColumnDef={{
+        headerName: "Name",
+        rowDrag: true,
+        cellRendererParams: {
+          innerRenderer: GroupCellRenderer,
+          suppressCount: true,
+        },
+        cellRenderer: "agGroupCellRenderer",
+        width: GROUP_COLUMN_WIDTH,
+        lockPinned: true,
+        lockPosition: true,
+        suppressMovable: true,
+      }}
+      entityName="vineyard"
+    />
   );
 }

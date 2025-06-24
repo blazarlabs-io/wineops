@@ -24,39 +24,7 @@ export default function VineyardsDashboard() {
       >
         <Typography variant="h4">Vineyards Management</Typography>
 
-        <ToolsBar
-          buttons={{
-            [ButtonType.ADD]: {
-              enabled: selectedVineyards.length === 0,
-              onClick: handleOpenFormDrawer,
-            },
-            [ButtonType.EDIT]: {
-              enabled: enableEdit,
-              onClick: handleEditVineyards,
-            },
-            [ButtonType.PIN]: {
-              enabled: false,
-              onClick: () => {}, // TODO: Pinning functionality here
-            },
-
-            [ButtonType.DELETE]: {
-              enabled: enableDelete,
-              onClick: handleOpenDeleteDialog,
-            },
-            [ButtonType.GROUP]: {
-              enabled: enableGrouping,
-              onClick: handleClickOpenGroupingDialog,
-            },
-            [ButtonType.UNGROUP]: {
-              enabled: enableUngrouping,
-              onClick: handleClickOpenUngroupingDialog,
-            },
-            [ButtonType.PIVOT]: {
-              enabled: false,
-              onClick: () => {}, // TODO: Pivoting functionality here
-            },
-          }}
-        />
+        <ToolsBar />
 
         <VineyardsTable />
       </Stack>

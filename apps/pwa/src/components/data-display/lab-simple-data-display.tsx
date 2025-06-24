@@ -1,4 +1,5 @@
 import { LabDataSimple } from "@/models/types/db";
+import { Timestamp } from "firebase/firestore";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 export type LabSimpleDataDisplayProps = {
@@ -15,7 +16,11 @@ export default function LabSimpleDataDisplay({
       {data && data !== undefined && data.length > 0 && (
         <div className="flex flex-col items-start justify-start gap-4">
           <p className="text-xs text-muted-foreground leading-[0.8]">
-            {new Date(data[0].items[0].date).toISOString().split("T")[0]}
+            {
+              new Date((data[0].items[0].date as Timestamp).toDate())
+                .toISOString()
+                .split("T")[0]
+            }
           </p>
           <div className="flex items-center gap-4">
             <div className="flex flex-col gap-2">

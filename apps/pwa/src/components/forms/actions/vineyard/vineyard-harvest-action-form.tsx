@@ -4,13 +4,8 @@
 import { vineyardHarvestActionSample } from "@/data/actions-samples";
 import { useAuth } from "@/lib/firebase/auth";
 import { vineyardHarvestActionSchema } from "@/models/schemas/actions/vineyard-harvest-action-schema";
-import {
-  ActionRelation,
-  VineyardActions,
-  VineyardActionType,
-  VineyardHarvestAction,
-} from "@/models/types/actions";
-import { LabReport, Vessel, Vineyard, VineyardStatus } from "@/models/types/db";
+import { ActionRelation, VineyardHarvestAction } from "@/models/types/actions";
+import { Vineyard, VineyardStatus } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useConsumable } from "@/context/consumable";
@@ -18,7 +13,9 @@ import { useGrape } from "@/context/grape";
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { countries } from "@/data/countries";
-import { db } from "@/lib/firebase/services";
+import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { cleanUndefined } from "@/utils/clean-undefined";
 import { ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
@@ -39,29 +36,14 @@ import { useColorScheme } from "@mui/material/styles";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { enqueueSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
-import { cleanUndefined } from "@/utils/clean-undefined";
-import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 
 const equipment: ActionRelation[] = [];
 
 export default function VineyardHarvestActionForm() {
-  const { vineyards, actions, labReports } = useVineyard();
-  const { vessels } = useVessel();
+  const { vineyards, actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
     ({ selected }) => selected
