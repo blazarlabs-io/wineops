@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { default as LabResultsChart } from "@/components/charts/lab-results";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import DocumentsSimpleTable from "@/components/table/documents-simple";
@@ -7,11 +8,13 @@ import CadastralDataDisplay from "@/components/data-display/cadastral-data-displ
 import LabReportResponsibleDataDisplay from "@/components/data-display/lab-report-responsible-data-display";
 import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
 import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Add } from "@mui/icons-material";
+import labReport from "@/lib/firebase/services/lab-report";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -54,13 +57,34 @@ export default function VineyardDetailsWidget({
 }: VineyardDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
   const [localVineyard, setLocalVineyard] = useState<Vineyard>(vineyard);
+  const [docs, setDocs] = useState<any[]>([]);
+  const mountRef = useRef<boolean>(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
   useEffect(() => {
-    console.log("vineyard", vineyard);
+    if (labReports && !mountRef.current) {
+      mountRef.current = true;
+      labReports.map((l: any) => {
+        if (l.supportingDocuments && l.supportingDocuments?.length > 0) {
+          console.log("l.supportingDocuments", l);
+          l.supportingDocuments.map((d: any) => {
+            const newDoc = {
+              name: d.name,
+              url: d.url,
+              responsible: l.responsible,
+              date: l.date,
+            };
+            setDocs((prev) => [...prev, newDoc]);
+          });
+        }
+      });
+    }
+  }, [labReports]);
+
+  useEffect(() => {
     setLocalVineyard(vineyard);
   }, [vineyard]);
 
@@ -269,11 +293,23 @@ export default function VineyardDetailsWidget({
       <TabPanel value={value} index={2}>
         {labReports && labReports.length > 0 && (
           <Stack display={"flex"} direction={"column"} gap={0}>
-            <Link href="" className="max-h-fit! leading-[0.8rem]!">
-              <Typography variant="body2" color="primary">
-                View all
-              </Typography>
-            </Link>
+            <div className="flex items-center justify-start gap-4 w-full">
+              <Button
+                size="small"
+                variant="text"
+                className="capitalize!"
+                startIcon={<Add />}
+              >
+                New Report
+              </Button>
+              <div
+                className="w-[1px] h-[24px]"
+                style={{ background: "var(--mui-palette-divider)" }}
+              />
+              <Button size="small" variant="text" className="capitalize!">
+                View All
+              </Button>
+            </div>
             <div className="flex items-center gap-4 w-full overflow-x-auto">
               <div className="min-w-fit h-full flex flex-col max-w-[200px] max-h-[180px] gap-2 overflow-y-scroll pr-4">
                 {labReports.map((item, index) => {
@@ -318,12 +354,12 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={5}>
         <div className="flex gap-8 px-4 relative">
-          <div className="absolute -top-10 right-16 z-10">
+          <div className="absolute -top-19 right-8 z-10">
             <Link href="" className="underline">
               View All
             </Link>
           </div>
-          <DocumentsSimpleTable data={localVineyard.documents} />
+          <DocumentsSimpleTable data={docs} />
         </div>
       </TabPanel>
     </Box>
