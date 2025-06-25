@@ -1,6 +1,7 @@
-import { LabDataSimple, LabReport } from "@/models/types/db";
+import { LabReport } from "@/models/types/db";
+import { Avatar, Typography } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 export type LabSimpleDataDisplayProps = {
   data: LabReport;
@@ -10,15 +11,32 @@ export default function LabReportSimpleDataDisplay({
   data,
 }: LabSimpleDataDisplayProps) {
   if (!data) return;
+
   return (
     <>
       {data && data !== undefined && (
-        <div className="flex flex-col items-start justify-start gap-4">
-          <p className="text-xs text-muted-foreground leading-[0.8]">
-            {new Date((data.date as Timestamp)?.seconds * 1000).toDateString()}
-          </p>
+        <div className="grid grid-cols-2">
+          <div className="flex flex-col gap-1">
+            <Typography
+              variant="caption"
+              color="textDisabled"
+              className="text-xs text-muted-foreground leading-[0]"
+            >
+              {new Date(
+                (data.date as Timestamp)?.seconds * 1000
+              ).toDateString()}
+            </Typography>
+            <div className="flex items-center gap-2">
+              <Avatar sx={{ width: 20, height: 20 }}>
+                <Typography variant="caption">
+                  {data.responsible.name.charAt(0).toLocaleUpperCase()}
+                </Typography>
+              </Avatar>
+              <Typography variant="body2">{data.responsible.name}</Typography>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <div className="flex items-start gap-1">
                 <p className=" text-muted-foreground leading-[0.8]">Sugar</p>
                 <p className="text-[10px] leading-[0.8]">{data.units}</p>
@@ -49,7 +67,7 @@ export default function LabReportSimpleDataDisplay({
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <div className="flex items-start gap-1">
                 <p className="text-muted-foreground leading-[0.8]">Acidity</p>
                 <div className="flex items-start gap-[1px]">

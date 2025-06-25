@@ -9,7 +9,7 @@ import Link from "next/link";
 import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import LabReportSimpleDataDisplay from "@/components/data-display/lab-report-simple-data-display";
 import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
@@ -270,45 +270,47 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={2}>
         {labReports && labReports.length > 0 && (
-          <div className="flex items-center gap-4 w-full overflow-x-auto">
-            <div className="min-w-fit h-full flex flex-col max-w-[200px] max-h-[268px] gap-2 overflow-y-scroll pr-4">
-              {labReports.map((item, index) => {
-                return (
-                  <div
-                    key={item.id + index}
-                    className="min-w-fit rounded-md w-full"
-                    style={{
-                      border: "1px solid var(--mui-palette-divider)",
-                    }}
-                  >
-                    {/* {index < 3 && ( */}
-                    <div className="flex items-center min-w-fit max-w-fit gap-8 px-4 py-3 h-full ">
-                      <LabReportSimpleDataDisplay data={item} />
+          <Stack display={"flex"} direction={"column"} gap={0}>
+            <Link href="" className="max-h-fit! leading-[0.8rem]!">
+              <Typography variant="body2" color="primary">
+                View all
+              </Typography>
+            </Link>
+            <div className="flex items-center gap-4 w-full overflow-x-auto">
+              <div className="min-w-fit h-full flex flex-col max-w-[200px] max-h-[180px] gap-2 overflow-y-scroll pr-4">
+                {labReports.map((item, index) => {
+                  return (
+                    <div
+                      key={item.id + index}
+                      className="min-w-fit rounded-md w-full"
+                      style={{
+                        border: "1px solid var(--mui-palette-divider)",
+                      }}
+                    >
+                      {/* {index < 3 && ( */}
+                      <div className="flex items-center min-w-fit max-w-fit gap-8 px-2 py-1 h-full ">
+                        <LabReportSimpleDataDisplay data={item} />
+                      </div>
+                      {/* )} */}
                     </div>
-                    {/* )} */}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+              <div
+                className="min-w-[600px] w-full flex items-center justify-start"
+                style={{ height: "220px" }}
+              >
+                <LabResultsChart
+                  data={{
+                    id: "1",
+                    items: labReports,
+                    date: new Date().toISOString(),
+                  }}
+                />
+              </div>
             </div>
-            <div
-              className="min-w-[600px] w-full flex items-center justify-start"
-              style={{ height: "220px" }}
-            >
-              <LabResultsChart
-                data={{
-                  id: "1",
-                  items: labReports,
-                  date: new Date().toISOString(),
-                }}
-              />
-            </div>
-          </div>
+          </Stack>
         )}
-        <div className="absolute -top-2 right-12 z-10">
-          <Link href="" className="underline">
-            View All
-          </Link>
-        </div>
       </TabPanel>
       <TabPanel value={value} index={3}>
         <Typography>Tasks</Typography>

@@ -25,7 +25,7 @@ export default function LabResultsChart({ data }: LabResultsChartProps) {
     <>
       {labData && (
         <LineChart
-          height={188}
+          height={124}
           series={[
             {
               data: labData.sugar,
