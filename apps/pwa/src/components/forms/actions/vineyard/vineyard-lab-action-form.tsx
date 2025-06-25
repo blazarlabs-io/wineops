@@ -309,7 +309,7 @@ export default function VineyardLabActionForm() {
                             : dayjs(formData.executionDate)
                         }
                         label="Execution Date"
-                        disablePast
+                        disableFuture
                         views={["year", "month", "day"]}
                         className="w-full"
                         onChange={(date) => {
@@ -365,9 +365,9 @@ export default function VineyardLabActionForm() {
                           }}
                           {...register("inputData.sugar")}
                         />
-                        {(errors.inputData as any).sugar?.message && (
+                        {(errors.inputData as any)?.sugar?.message && (
                           <FormHelperText error>
-                            {(errors.inputData as any).sugar.message}
+                            {(errors.inputData as any)?.sugar.message}
                           </FormHelperText>
                         )}
                       </FormControl>

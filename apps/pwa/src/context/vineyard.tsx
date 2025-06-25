@@ -18,7 +18,7 @@ import {
 } from "@/lib/firebase/config";
 import { VineyardActions } from "@/models/types/actions";
 import { LabReport, Note, Task, Vineyard } from "@/models/types/db";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, Timestamp } from "firebase/firestore";
 import {
   createContext,
   useCallback,
@@ -139,6 +139,13 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
 
         querySnapshot.forEach((doc) => {
           labReports.push(doc.data() as LabReport);
+          // sort reports by date
+          labReports.sort((a, b) => {
+            return (
+              (b.date as Timestamp).toDate().getTime() -
+              (a.date as Timestamp).toDate().getTime()
+            );
+          });
         });
         setLabReports(labReports);
       });

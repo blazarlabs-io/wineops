@@ -506,7 +506,6 @@ export default function VineyardHarvestActionForm() {
                             : dayjs(formData.executionDate)
                         }
                         label="Execution Date"
-                        disablePast
                         views={["year", "month", "day"]}
                         className="w-full"
                         onChange={(date) => {
