@@ -313,9 +313,11 @@ export default function VineyardHarvestActionForm() {
     vineyardHarvestActionSample.equipment = [];
     vineyardHarvestActionSample.consumables = [];
     vineyardHarvestActionSample.sugar.value = 0;
-    if (vineyardHarvestActionSample.acidity)
+    vineyardHarvestActionSample.sugar.date = Timestamp.now();
+    if (vineyardHarvestActionSample.acidity) {
       vineyardHarvestActionSample.acidity.value = 0;
-
+      vineyardHarvestActionSample.acidity.date = Timestamp.now();
+    }
     // * One vineyard is selected
     if (selectedVineyards && selectedVineyards.length === 1) {
       setDisableSubject(true);

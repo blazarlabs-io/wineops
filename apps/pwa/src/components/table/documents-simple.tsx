@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Download } from "@mui/icons-material";
+import { Delete, DeleteOutline, Download } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -100,6 +100,9 @@ export default function DocumentsSimpleTable({
                       onClick={() => handleDownloadDocument(item.url)}
                     >
                       <Download />
+                    </Button>
+                    <Button size="small">
+                      <DeleteOutline color="error" />
                     </Button>
                   </TableCell>
                 </TableRow>
