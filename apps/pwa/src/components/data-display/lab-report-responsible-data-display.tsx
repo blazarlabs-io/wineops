@@ -7,7 +7,7 @@ export type LabSimpleDataDisplayProps = {
   data: LabReport;
 };
 
-export default function LabReportSimpleDataDisplay({
+export default function LabReportResponsibleDataDisplay({
   data,
 }: LabSimpleDataDisplayProps) {
   if (!data) return;
@@ -15,15 +15,27 @@ export default function LabReportSimpleDataDisplay({
   return (
     <>
       {data && data !== undefined && (
-        <div className="flex flex-col gap-1">
-          <Typography
-            variant="caption"
-            color="textDisabled"
-            className="text-xs text-muted-foreground leading-[0]"
-          >
-            {new Date((data.date as Timestamp)?.seconds * 1000).toDateString()}
-          </Typography>
-          <div className="flex items-center gap-4 mt-1">
+        <div className="grid grid-cols-2">
+          <div className="flex flex-col gap-1">
+            <Typography
+              variant="caption"
+              color="textDisabled"
+              className="text-xs text-muted-foreground leading-[0]"
+            >
+              {new Date(
+                (data.date as Timestamp)?.seconds * 1000
+              ).toDateString()}
+            </Typography>
+            <div className="flex items-center gap-2">
+              <Avatar sx={{ width: 20, height: 20 }}>
+                <Typography variant="caption">
+                  {data.responsible.name.charAt(0).toLocaleUpperCase()}
+                </Typography>
+              </Avatar>
+              <Typography variant="body2">{data.responsible.name}</Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-start gap-1">
                 <p className=" text-muted-foreground leading-[0.8]">Sugar</p>

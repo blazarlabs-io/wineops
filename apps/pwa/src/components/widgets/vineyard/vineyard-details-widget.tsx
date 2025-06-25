@@ -1,19 +1,17 @@
 import { default as LabResultsChart } from "@/components/charts/lab-results";
-import LabSingleItemDataDisplay from "@/components/data-display/lab-single-item-data-display";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import DocumentsSimpleTable from "@/components/table/documents-simple";
-import { convertIsoToShortDate } from "@/helpers/date-helpers";
 import { LabReport, Vineyard } from "@/models/types/db";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/base/tabs';
-import Link from "next/link";
-import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { Box, Paper, Stack, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import LabReportSimpleDataDisplay from "@/components/data-display/lab-report-simple-data-display";
-import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
 import CadastralDataDisplay from "@/components/data-display/cadastral-data-display";
+import LabReportResponsibleDataDisplay from "@/components/data-display/lab-report-responsible-data-display";
+import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
+import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
+import { Box, Paper, Stack, Typography } from "@mui/material";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -289,7 +287,7 @@ export default function VineyardDetailsWidget({
                     >
                       {/* {index < 3 && ( */}
                       <div className="flex items-center min-w-fit max-w-fit gap-8 px-2 py-1 h-full ">
-                        <LabReportSimpleDataDisplay data={item} />
+                        <LabReportResponsibleDataDisplay data={item} />
                       </div>
                       {/* )} */}
                     </div>
