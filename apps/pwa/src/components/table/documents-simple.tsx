@@ -1,6 +1,6 @@
-import { convertIsoToShortDate } from "@/helpers/date-helpers";
-import { SingleDocument } from "@/models/types/db";
-import { Typography } from "@mui/material";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Download } from "@mui/icons-material";
+import { Button, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -10,27 +10,34 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 
 export type DocumentsSimpleTableProps = {
-  data: SingleDocument[];
+  data: any[];
 };
 
 export default function DocumentsSimpleTable({
   data,
 }: DocumentsSimpleTableProps) {
-  console.log(data);
+  const handleDownloadDocument = (url: string) => {
+    window.open(url, "_blank");
+  };
+
   return (
     <TableContainer
       component={Paper}
       sx={{
         display: "flex",
         alignItems: "start",
-        height: "280px",
+        height: "224px",
         width: "100%",
         paddingRight: 8,
         background: "transparent",
-        padding: 4,
+        paddingX: 2,
+        paddingY: 1,
+        border: "1px solid var(--mui-palette-divider)",
+        overflowY: "scroll",
       }}
     >
       <Table
+        size="small"
         sx={{
           minWidth: "fit-content",
           width: "100%",
@@ -45,19 +52,16 @@ export default function DocumentsSimpleTable({
               <Typography>File Name</Typography>
             </TableCell>
             <TableCell className="font-bold">
-              <Typography>Owner Name</Typography>
+              <Typography>Document Type</Typography>
             </TableCell>
             <TableCell className="font-bold">
-              <Typography>Owner Email</Typography>
+              <Typography>Upload Date</Typography>
             </TableCell>
             <TableCell className="font-bold">
-              <Typography>Uploaded</Typography>
+              <Typography>Owner Name & Email</Typography>
             </TableCell>
             <TableCell className="font-bold">
-              <Typography>File Ext.</Typography>
-            </TableCell>
-            <TableCell className="font-bold">
-              <Typography>File Size</Typography>
+              <Typography></Typography>
             </TableCell>
           </TableRow>
         </TableHead>
@@ -66,34 +70,37 @@ export default function DocumentsSimpleTable({
             data.length > 0 &&
             data.map((item) => (
               <>
-                <TableRow key={item.id + item.name}>
+                <TableRow
+                  key={item.id + item.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
                   <TableCell className="font-medium">
-                    <Typography color="textSecondary">{item.name}</Typography>
-                  </TableCell>
-                  <TableCell>
                     <Typography color="textSecondary">
-                      {item.owner.name}
+                      {item.name.split(".").slice(0, -1).join(".") || "N/A"}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography color="textSecondary">
-                      {item.owner.email}
+                      .{item.name.split(".").pop() || "N/A"}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography color="textSecondary">
-                      {convertIsoToShortDate(item.uploadDate)}
+                      {item.date.toDate().toLocaleDateString()}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography color="textSecondary">
-                      .{item.media.subtype}
+                      {item.responsible.name}
                     </Typography>
                   </TableCell>
-                  <TableCell className="text-left">
-                    <Typography color="textSecondary">
-                      {item.media.sizeMb} MB
-                    </Typography>
+                  <TableCell>
+                    <Button
+                      size="small"
+                      onClick={() => handleDownloadDocument(item.url)}
+                    >
+                      <Download />
+                    </Button>
                   </TableCell>
                 </TableRow>
               </>
