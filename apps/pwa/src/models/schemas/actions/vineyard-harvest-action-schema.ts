@@ -21,7 +21,7 @@ const sugarSchema = Joi.object({
     name: Joi.string().optional().allow(""),
     email: Joi.string().optional().allow(""),
   }),
-  date: Joi.date().optional(),
+  date: Joi.date().optional().allow(""),
 });
 
 const aciditySchema = Joi.object({
@@ -38,7 +38,7 @@ const aciditySchema = Joi.object({
     name: Joi.string().optional().allow(""),
     email: Joi.string().optional().allow(""),
   }),
-  date: Joi.date().optional(),
+  date: Joi.date().optional().allow(""),
 });
 
 export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({

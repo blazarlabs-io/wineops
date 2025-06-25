@@ -1,20 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { default as LabResultsChart } from "@/components/charts/lab-results";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import DocumentsSimpleTable from "@/components/table/documents-simple";
 import { LabReport, Vineyard } from "@/models/types/db";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/base/tabs';
 import CadastralDataDisplay from "@/components/data-display/cadastral-data-display";
 import LabReportResponsibleDataDisplay from "@/components/data-display/lab-report-responsible-data-display";
 import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
+import DocumentsTable from "@/components/table/documents";
 import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
+import { Add } from "@mui/icons-material";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Add } from "@mui/icons-material";
-import labReport from "@/lib/firebase/services/lab-report";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -353,13 +351,16 @@ export default function VineyardDetailsWidget({
         <Typography>Weather</Typography>
       </TabPanel>
       <TabPanel value={value} index={5}>
-        <div className="flex gap-8 px-4 relative">
-          <div className="absolute -top-19 right-8 z-10">
-            <Link href="" className="underline">
+        <div className="flex flex-col max-h-[300px] overflow-hidden">
+          {/* <div className="flex items-center justify-start w-full">
+            <Button variant="text" className="">
+              Upload
+            </Button>
+            <Button variant="text" className="">
               View All
-            </Link>
-          </div>
-          <DocumentsSimpleTable data={docs} />
+            </Button>
+          </div> */}
+          <DocumentsTable docs={docs} />
         </div>
       </TabPanel>
     </Box>
