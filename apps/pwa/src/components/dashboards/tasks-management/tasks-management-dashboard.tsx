@@ -25,9 +25,10 @@ export default function TasksManagementDashboard() {
         <Typography variant="h4">Tasks Management</Typography>
         <ToolsBar
           buttons={{
-            [ButtonType.ADD]: {},
-            [ButtonType.EDIT]: {},
-            [ButtonType.DELETE]: {},
+            [ButtonType.GROUP]: { hide: true },
+            [ButtonType.UNGROUP]: { hide: true },
+            [ButtonType.PIVOT]: { hide: true },
+            [ButtonType.PIN]: { hide: true },
           }}
         />
 

@@ -5,7 +5,10 @@ const MuiPaper: Components<Omit<Theme, "components">>["MuiPaper"] = {
     root: ({ theme }) => ({
       boxShadow: "none",
       border: "none",
-      "&.MuiMenu-paper": {},
+      "&.MuiMenu-paper": {
+        boxShadow: theme.shadows[8],
+        border: `1px solid ${theme.palette.divider}`,
+      },
       "&.MuiDrawer-paper": {},
       "&.Popover-paper": {},
     }),

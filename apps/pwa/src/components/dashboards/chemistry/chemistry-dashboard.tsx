@@ -24,7 +24,7 @@ export default function ChemistryDashboard() {
       >
         <Typography variant="h4">Chemistry</Typography>
 
-        <ToolsBar />
+        <ToolsBar groupByButtons={[{ name: "by Type", columnName: "type" }]} />
 
         <ChemistryTable />
       </Stack>

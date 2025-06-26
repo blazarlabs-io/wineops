@@ -47,7 +47,6 @@ export default function ChemistryTable() {
         lockPosition: true,
         suppressMovable: true,
       }}
-      groupByButtons={[{ name: "Type", columnName: "type" }]}
       entityName="chemistry"
     />
   );

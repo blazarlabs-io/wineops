@@ -47,10 +47,6 @@ export default function GrapesTable() {
         lockPosition: true,
         suppressMovable: true,
       }}
-      groupByButtons={[
-        { name: "Date", columnName: "groupByDate" },
-        { name: "Variety", columnName: "groupByVariety" },
-      ]}
       entityName="grape"
     />
   );

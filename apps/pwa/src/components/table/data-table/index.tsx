@@ -3,7 +3,7 @@ import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
-import { DashboardEntity } from "@/models/types/dashboard";
+import { DashboardEntity, GroupBy } from "@/models/types/dashboard";
 import { DbResponse, EntityName } from "@/models/types/db";
 import { nodesToEntities } from "@/utils/notes-to-entities";
 import { Button, Stack, Typography, useColorScheme } from "@mui/material";
@@ -42,6 +42,7 @@ import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import { db } from "@/lib/firebase/services";
 import getUnusedGroups from "@/utils/get-unused-groups";
+import { useGridStore } from "@/store/grid";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -415,57 +416,54 @@ export const DataTable = <T extends DashboardEntity>({
 
   const treeData = gridRef.current?.api?.getGridOption("treeData");
 
-  type GroupBy =
-    | "groupByDate"
-    | "groupByVariety"
-    | "groupByStatus"
-    | "groupByVesselType"
-    | "groupByLocation"
-    | "type";
+  const { groupedField } = useGridStore();
 
-  const [groupedField, setGroupedField] = useState<GroupBy>();
+  const handleGroupBy = useCallback(
+    (field?: GroupBy) => {
+      const api = gridRef.current?.api;
 
-  const handleGroupBy = (field: GroupBy) => {
-    const api = gridRef.current?.api;
+      if (!api) return;
 
-    if (!api) return;
+      const isAlreadyGrouped = !field;
 
-    const isAlreadyGrouped = groupedField === field;
+      if (isAlreadyGrouped) {
+        api.setRowGroupColumns([]);
+        api.updateGridOptions({ treeData: true });
+      } else {
+        api.setRowGroupColumns([field]);
+        api.updateGridOptions({ treeData: false });
+      }
 
-    if (isAlreadyGrouped) {
-      api.setRowGroupColumns([]);
-      api.updateGridOptions({ treeData: true });
-      setGroupedField(undefined);
-    } else {
-      api.setRowGroupColumns([field]);
-      api.updateGridOptions({ treeData: false });
-      setGroupedField(field);
-    }
+      const allCols = api.getColumns() || [];
 
-    const allCols = api.getColumns() || [];
+      const columnsToToggleVisibility = allCols.filter(
+        (col) => col?.getColDef()?.headerName === autoGroupColumnDef?.headerName
+      );
 
-    const columnsToToggleVisibility = allCols.filter(
-      (col) => col?.getColDef()?.headerName === autoGroupColumnDef?.headerName
-    );
+      if (columnsToToggleVisibility.length > 0) {
+        api.setColumnsVisible(columnsToToggleVisibility, !isAlreadyGrouped);
+      }
 
-    if (columnsToToggleVisibility.length > 0) {
-      api.setColumnsVisible(columnsToToggleVisibility, !isAlreadyGrouped);
-    }
+      api.setColumnsVisible(
+        ["vesselId"],
+        (isAlreadyGrouped &&
+          ["groupByVesselType", "groupByLocation"].includes(
+            groupedField || ""
+          )) ||
+          !["groupByVesselType", "groupByLocation"].includes(field ?? "")
+      );
 
-    api.setColumnsVisible(
-      ["vesselId"],
-      (isAlreadyGrouped &&
-        ["groupByVesselType", "groupByLocation"].includes(
-          groupedField || ""
-        )) ||
-        !["groupByVesselType", "groupByLocation"].includes(field)
-    );
+      api.setColumnsVisible(
+        ["statusData"],
+        groupedField === "groupByStatus" || field !== "groupByStatus"
+      );
+    },
+    [autoGroupColumnDef?.headerName, groupedField]
+  );
 
-    api.setColumnsVisible(
-      ["statusData"],
-      groupedField === "groupByStatus" || field !== "groupByStatus"
-    );
-  };
+  useEffect(() => {
+    handleGroupBy(groupedField);
+  }, [groupedField, handleGroupBy]);
 
   const filteredData = rowData?.filter(
     ({ rowType }) => rowType === "item" || rowType !== "group"
@@ -524,9 +522,9 @@ export const DataTable = <T extends DashboardEntity>({
             getRowId={getRowId ?? (({ data }) => data.id)}
             suppressRowHoverHighlight={true}
             suppressCellFocus={true}
-            suppressGroupChangesColumnVisibility={
-              groupedField?.includes("groupBy") ? true : false
-            }
+            suppressGroupChangesColumnVisibility={columns.some(({ field }) =>
+              field?.startsWith("groupBy")
+            )}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
