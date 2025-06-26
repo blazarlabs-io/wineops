@@ -4,7 +4,7 @@ import { useEffect, type FunctionComponent } from "react";
 import LabReportSimpleDataDisplay from "@/components/data-display/lab-report-simple-data-display";
 import { useVineyard } from "@/context/vineyard";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { useGetVineyardLabData } from "@/hooks/use-get-vineyard-lab-data";
+import { useGetLabData } from "@/hooks/use-get-lab-data";
 import { LabReport } from "@/models/types/db";
 import { Box } from "@mui/material";
 
@@ -12,7 +12,7 @@ export const LabDataCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
 ) => {
   const { labReports, vineyards } = useVineyard();
-  const { labData } = useGetVineyardLabData(
+  const { labData } = useGetLabData(
     params.node.data?.name,
     params.node.data?.labData,
     labReports,
