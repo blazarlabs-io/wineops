@@ -141,14 +141,14 @@ export default function GrapeProcessingActionForm() {
           name: teamMembers[0]?.name,
           email: teamMembers[0]?.email,
         },
-        units: selectedGrapes[0].labData.acidity.unit as string,
+        units: selectedGrapes[0]?.labData?.acidity?.unit as string,
         results: {
           sugar: {
-            value: selectedGrapes[0].labData.acidity.value as number,
+            value: selectedGrapes[0]?.labData?.acidity?.value as number,
             variation: 0,
           },
           acidity: {
-            value: selectedGrapes[0].labData.acidity.value as number,
+            value: selectedGrapes[0]?.labData?.acidity?.value as number,
             variation: 0,
           },
         },
@@ -165,14 +165,14 @@ export default function GrapeProcessingActionForm() {
           name: teamMembers[0]?.name,
           email: teamMembers[0]?.email,
         },
-        units: grapes[0]?.labData.acidity.unit as string,
+        units: grapes[0]?.labData?.acidity?.unit as string,
         results: {
           sugar: {
-            value: grapes[0]?.labData.acidity.value as number,
+            value: grapes[0]?.labData?.acidity?.value as number,
             variation: 0,
           },
           acidity: {
-            value: grapes[0]?.labData.acidity.value as number,
+            value: grapes[0]?.labData?.acidity?.value as number,
             variation: 0,
           },
         },
@@ -201,13 +201,10 @@ export default function GrapeProcessingActionForm() {
   return (
     <>
       {formData && formData !== undefined && (
-        <div
-          className="pl-4 w-full border-l"
-          style={{ borderColor: "var(--mui-palette-divider)" }}
-        >
+        <div className="w-full pr-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
             <div className="w-full">
-              <div className="pl-4 flex flex-col gap-4 w-full">
+              <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-col w-full">
                   {/* <DemoItem label="DatePicker"> */}
                   <Box display={"flex"} flexDirection={"column"} gap={2}>

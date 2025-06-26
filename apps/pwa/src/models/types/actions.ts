@@ -119,7 +119,11 @@ export interface VineyardHarvestAction {
   batchId: string;
   weight: number | string;
   responsible?: TeamMember;
-  consumables?: ActionRelation[];
+  consumables?: {
+    id: string;
+    name: string;
+    qty: number;
+  }[];
   equipment?: ActionRelation[];
   // * Transport Info
   location?: string;
@@ -144,7 +148,11 @@ export interface VineyardGlobalAction {
   responsible?: ResponsibleTeamMember;
   inputData?: any;
   supportingDocuments?: { name: string; url: string }[];
-  consumables?: ActionRelation[];
+  consumables?: {
+    id: string;
+    name: string;
+    qty: number;
+  }[];
   equipment?: ActionRelation[];
 }
 
