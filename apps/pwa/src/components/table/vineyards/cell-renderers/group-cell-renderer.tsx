@@ -6,7 +6,7 @@ import { Box, Button, IconButton, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useCallback, useState, type FunctionComponent } from "react";
 import { useVineyard } from "@/context/vineyard";
-import { useGetVineyardLabData } from "@/hooks/use-get-vineyard-lab-data";
+import { useGetLabData } from "@/hooks/use-get-lab-data";
 import { LabReport } from "@/models/types/db";
 import GroupBadge from "../../group-badge";
 import CadastralDialog from "@/components/dialogs/cadastral-dialog";
@@ -16,7 +16,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   value,
 }) => {
   const { labReports, vineyards } = useVineyard();
-  const { labData } = useGetVineyardLabData(
+  const { labData } = useGetLabData(
     value,
     node.data?.labData,
     labReports,

@@ -27,9 +27,10 @@ export default function TeamMembersPeoplePage() {
 
         <ToolsBar
           buttons={{
-            [ButtonType.ADD]: {},
-            [ButtonType.EDIT]: {},
-            [ButtonType.DELETE]: {},
+            [ButtonType.GROUP]: { hide: true },
+            [ButtonType.UNGROUP]: { hide: true },
+            [ButtonType.PIVOT]: { hide: true },
+            [ButtonType.PIN]: { hide: true },
           }}
         />
 

@@ -573,6 +573,7 @@ export type Vessel = Entity & {
   barrelInfo?: BarrelInfo;
   sstInfo?: StainlessSteelTankInfo;
   history?: VesselHistory[];
+  labData?: ActionRelation[];
 };
 
 export const ConsumableCategory = {
@@ -610,6 +611,7 @@ export type Consumable = Entity & {
   organicBiodynamicStatus?: boolean;
   compatibleEquipment?: string;
   usage?: ExpandableUsage[];
+  labData?: ActionRelation[];
 };
 
 export const ChemistryType = {
@@ -652,6 +654,7 @@ export type Chemistry = Entity & {
   minimumStockAlert?: number;
   legalUseNotes?: string;
   comments?: string;
+  labData?: ActionRelation[];
 };
 
 export type WineInfo = {

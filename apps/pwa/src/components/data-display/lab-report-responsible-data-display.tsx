@@ -36,69 +36,77 @@ export default function LabReportResponsibleDataDisplay({
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-start gap-1">
-                <p className=" text-muted-foreground leading-[0.8]">Sugar</p>
-                <p className="text-[10px] leading-[0.8]">{data.units}</p>
-              </div>
-              <div className="flex items-start gap-1">
-                <p className="text-muted-foreground leading-[0.8]">
-                  {data.results.sugar.value.toFixed(2)}
-                </p>
-                <div
-                  className="flex items-start gap-[1px]"
-                  style={{
-                    color:
-                      data.results.sugar.variation.toString().charAt(0) === "-"
-                        ? "#FF7878"
-                        : "#00C950",
-                  }}
-                >
-                  {data.results.sugar.variation.toString().charAt(0) === "-" ? (
-                    <ArrowDown className="w-3 h-3" />
-                  ) : (
-                    <ArrowUp className="w-3 h-3" />
-                  )}
-
-                  <p className="text-[10px] leading-[0.8]">
-                    {data.results.sugar.variation.toString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex items-start gap-1">
-                <p className="text-muted-foreground leading-[0.8]">Acidity</p>
-                <div className="flex items-start gap-[1px]">
+            {data?.results?.sugar?.value && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-start gap-1">
+                  <p className=" text-muted-foreground leading-[0.8]">Sugar</p>
                   <p className="text-[10px] leading-[0.8]">{data.units}</p>
                 </div>
-              </div>
-              <div className="flex items-start gap-1">
-                <p className="text-muted-foreground leading-[0.8]">
-                  {data.results.acidity.value.toFixed(2)}
-                </p>
-                <div
-                  className="flex items-start gap-[1px]"
-                  style={{
-                    color:
-                      data.results.sugar.variation.toString().charAt(0) === "-"
-                        ? "#FF7878"
-                        : "#00C950",
-                  }}
-                >
-                  {data.results.sugar.variation.toString().charAt(0) === "-" ? (
-                    <ArrowDown className="w-3 h-3" />
-                  ) : (
-                    <ArrowUp className="w-3 h-3" />
-                  )}
-
-                  <p className="text-[10px] leading-[0.8]">
-                    {data.results.sugar.variation.toString()}
+                <div className="flex items-start gap-1">
+                  <p className="text-muted-foreground leading-[0.8]">
+                    {data.results.sugar.value.toFixed(2)}
                   </p>
+                  <div
+                    className="flex items-start gap-[1px]"
+                    style={{
+                      color:
+                        data.results.sugar.variation.toString().charAt(0) ===
+                        "-"
+                          ? "#FF7878"
+                          : "#00C950",
+                    }}
+                  >
+                    {data.results.sugar.variation.toString().charAt(0) ===
+                    "-" ? (
+                      <ArrowDown className="w-3 h-3" />
+                    ) : (
+                      <ArrowUp className="w-3 h-3" />
+                    )}
+
+                    <p className="text-[10px] leading-[0.8]">
+                      {data.results.sugar.variation.toString()}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {data?.results?.acidity?.value && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-start gap-1">
+                  <p className="text-muted-foreground leading-[0.8]">Acidity</p>
+                  <div className="flex items-start gap-[1px]">
+                    <p className="text-[10px] leading-[0.8]">{data.units}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-1">
+                  <p className="text-muted-foreground leading-[0.8]">
+                    {data.results.acidity.value.toFixed(2)}
+                  </p>
+                  <div
+                    className="flex items-start gap-[1px]"
+                    style={{
+                      color:
+                        data.results.sugar.variation.toString().charAt(0) ===
+                        "-"
+                          ? "#FF7878"
+                          : "#00C950",
+                    }}
+                  >
+                    {data.results.sugar.variation.toString().charAt(0) ===
+                    "-" ? (
+                      <ArrowDown className="w-3 h-3" />
+                    ) : (
+                      <ArrowUp className="w-3 h-3" />
+                    )}
+
+                    <p className="text-[10px] leading-[0.8]">
+                      {data.results.sugar.variation.toString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

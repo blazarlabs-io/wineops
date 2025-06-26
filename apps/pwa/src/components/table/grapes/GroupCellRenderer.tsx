@@ -13,6 +13,9 @@ import StatusDataDisplay from "@/components/data-display/status-data-display";
 import { ExpandMore } from "@mui/icons-material";
 import GrapeDetailsWidget from "@/components/widgets/grape/grape-details-widget";
 import EntityLocation from "../EntityLocation";
+import { LabReport } from "@/models/types/db";
+import { useGrape } from "@/context/grape";
+import { useGetLabData } from "@/hooks/use-get-lab-data";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
@@ -54,6 +57,14 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       return { date, location };
     });
 
+  const { labReports, grapes } = useGrape();
+  const { labData } = useGetLabData(
+    value,
+    node.data?.labData,
+    labReports,
+    grapes
+  );
+
   return (
     <>
       <Stack
@@ -80,6 +91,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
             </>
           ) : node?.field === "groupByVariety" ? (
             <>{value ? value : <i>Unknown variety</i>}</>
+          ) : node?.field === "groupByLocation" ? (
+            <>{value ? value : <i>Unknown location</i>}</>
           ) : (
             <Stack justifyItems="center">
               <Typography variant="body1">{value}</Typography>
@@ -127,7 +140,10 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   style={{ borderColor: "var(--mui-palette-divider)" }}
                   className="fixed bottom-0 border-t flex items-center left-0 w-full h-[259px] bg-transparent z-[9999]"
                 >
-                  <GrapeDetailsWidget grape={node.data} />
+                  <GrapeDetailsWidget
+                    grape={node.data}
+                    labReports={labData as LabReport[]}
+                  />
                 </Stack>
               )}
             </Stack>

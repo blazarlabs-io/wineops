@@ -24,7 +24,13 @@ export default function SecondaryVinificationDashboard() {
       >
         <Typography variant="h4">Secondary Vinification</Typography>
 
-        <ToolsBar />
+        <ToolsBar
+          groupByButtons={[
+            { name: "by Vessel Type", columnName: "groupByVesselType" },
+            { name: "by Location", columnName: "groupByLocation" },
+            { name: "by Status", columnName: "groupByStatus" },
+          ]}
+        />
 
         <WinesTable />
       </Stack>

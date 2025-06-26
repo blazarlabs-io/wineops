@@ -24,7 +24,13 @@ export default function GrapesDashboard() {
       >
         <Typography variant="h4">Grapes Management</Typography>
 
-        <ToolsBar />
+        <ToolsBar
+          groupByButtons={[
+            { name: "by Processing Location", columnName: "groupByLocation" },
+            { name: "by Date", columnName: "groupByDate" },
+            { name: "by Grape Variety", columnName: "groupByVariety" },
+          ]}
+        />
 
         <GrapesTable />
       </Stack>
