@@ -1,5 +1,7 @@
 import LabItem from "@/components/data-display/lab-item";
+import LabReportSimpleDataDisplay from "@/components/data-display/lab-report-simple-data-display";
 import { DEFAULT_LOCALE, ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { LabReport } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -20,6 +22,26 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
       ) : (
         value && (
           <Stack>
+            <LabReportSimpleDataDisplay
+              data={
+                {
+                  id: "",
+                  date: value?.date,
+                  units: "g/dm³",
+                  results: {
+                    sugar: {
+                      value: value?.sugar?.value || "",
+                      variation: value?.sugar?.variation || "",
+                    },
+                    acidity: {
+                      value: value?.acidity?.value || "",
+                      variation: value?.acidity?.variation || "",
+                    },
+                  },
+                } as unknown as LabReport
+              }
+            />
+            {/*
             {value?.date && (
               <Typography variant="caption" color="textDisabled">
                 {formatDate(value?.date, { locale: DEFAULT_LOCALE })}
@@ -37,7 +59,7 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
                 label="Acidity"
                 data={value?.acidity ?? { value: "N/A" }}
               />
-            </Stack>
+            </Stack>*/}
           </Stack>
         )
       )}
