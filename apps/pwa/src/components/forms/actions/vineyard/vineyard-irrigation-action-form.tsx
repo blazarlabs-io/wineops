@@ -5,6 +5,7 @@ import { vineyardGlobalActionSample } from "@/data/actions-samples";
 import { ActionRelation, VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import { useConsumable } from "@/context/consumable";
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
@@ -36,7 +37,6 @@ import { Timestamp } from "firebase/firestore";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
-import { useConsumable } from "@/context/consumable";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

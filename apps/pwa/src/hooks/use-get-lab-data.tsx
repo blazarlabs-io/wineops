@@ -28,10 +28,11 @@ export const useGetLabData = (
           r.id ===
           (entity?.labData
             ? Array.isArray(entity?.labData)
-              ? entity?.labData
-              : [entity?.labData]
-            : []
-          )?.filter((l) => l?.id === r?.id)[0]?.id
+              ? (entity?.labData as unknown as LabReport[]).find(
+                  (l) => l.id === r.id
+                )?.id
+              : (entity?.labData as unknown as LabReport).id
+            : null)
       );
 
       setLabData(labRes);

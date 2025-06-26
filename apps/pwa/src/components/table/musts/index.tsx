@@ -1,12 +1,12 @@
 "use client";
 
 import { DataTable } from "@/components/table/data-table";
-import { Must, MustWineVessel } from "@/models/types/db";
-import { useMemo } from "react";
-import { GroupCellRenderer } from "./GroupCellRenderer";
 import { useMust } from "@/context/must";
 import { GROUP_COLUMN_WIDTH } from "@/data/constants";
+import { Must, MustWineVessel } from "@/models/types/db";
+import { useMemo } from "react";
 import { mustColumns } from "./columns";
+import { GroupCellRenderer } from "./GroupCellRenderer";
 
 export default function MustsTable() {
   const { musts } = useMust();
@@ -33,7 +33,7 @@ export default function MustsTable() {
             vesselLocation: vessel.location,
             qty: vessel.qty ?? 0,
             group: [
-              ...must?.group.slice(0, -1),
+              ...(must?.group as string[])?.slice(0, -1),
               `${must.name}-${vessel?.name}`,
             ],
           }),

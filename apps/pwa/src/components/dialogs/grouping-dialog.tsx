@@ -186,8 +186,10 @@ export default function GroupingDialog<T extends DashboardEntity>({
                       <em>None</em>
                     </MenuItem>
                     {uniqueGroups.map((group) => (
-                      <MenuItem key={group} value={group}>
-                        <Typography variant="body2">{group}</Typography>
+                      <MenuItem key={group as string} value={group as string}>
+                        <Typography variant="body2">
+                          {group as string}
+                        </Typography>
                       </MenuItem>
                     ))}
                     <div
@@ -240,8 +242,13 @@ export default function GroupingDialog<T extends DashboardEntity>({
                           <Typography variant="body2">Root</Typography>
                         </MenuItem>
                         {uniqueGroups.map((group) => (
-                          <MenuItem key={group} value={group}>
-                            <Typography variant="body2">{group}</Typography>
+                          <MenuItem
+                            key={group as string}
+                            value={group as string}
+                          >
+                            <Typography variant="body2">
+                              {group as string}
+                            </Typography>
                           </MenuItem>
                         ))}
                         <div

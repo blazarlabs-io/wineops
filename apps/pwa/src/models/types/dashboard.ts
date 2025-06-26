@@ -3,15 +3,21 @@ import {
   Consumable,
   Grape,
   GrapeStatus,
+  Must,
   Priority,
+  TeamMember,
   Vessel,
   Vineyard,
   VineyardStatus,
+  Wine,
 } from "./db";
 
 export type DashboardEntity =
   | Vineyard
   | Grape
+  | Must
+  | TeamMember
+  | Wine
   | Vessel
   | Chemistry
   | Consumable;

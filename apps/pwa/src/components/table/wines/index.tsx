@@ -33,7 +33,7 @@ export default function WinesTable() {
             vesselLocation: vessel.location,
             qty: vessel.qty ?? 0,
             group: [
-              ...wine?.group.slice(0, -1),
+              ...(wine?.group as string[]).slice(0, -1),
               `${wine.name}-${vessel?.name}`,
             ],
           }),
