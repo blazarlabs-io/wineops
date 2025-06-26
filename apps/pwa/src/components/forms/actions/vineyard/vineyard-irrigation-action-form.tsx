@@ -5,6 +5,7 @@ import { vineyardGlobalActionSample } from "@/data/actions-samples";
 import { ActionRelation, VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import { useConsumable } from "@/context/consumable";
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
@@ -12,10 +13,12 @@ import { useAuth } from "@/lib/firebase/auth";
 import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
 import { Attachment } from "@mui/icons-material";
 import {
+  Autocomplete,
   Box,
   Button,
   Chip,
   FormControl,
+  IconButton,
   TextField as Input,
   InputLabel,
   MenuItem,
@@ -23,15 +26,17 @@ import {
   Select,
   SelectChangeEvent,
   Stack,
+  TextField,
   Theme,
   Typography,
   useTheme,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
+import { ClearIcon, DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -45,11 +50,11 @@ const MenuProps = {
 };
 
 const equipment: ActionRelation[] = [];
-const consumables: ActionRelation[] = [];
+// const consumables: ActionRelation[] = [];
 
 export default function VineyardIrrigationActionForm() {
   const { vineyards } = useVineyard();
-
+  const { consumables } = useConsumable();
   const { teamMembers } = useWinery();
   const theme = useTheme();
   const { user } = useAuth();
@@ -57,6 +62,7 @@ export default function VineyardIrrigationActionForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: joiResolver(vineyardGlobalActionSchema),
@@ -65,13 +71,58 @@ export default function VineyardIrrigationActionForm() {
   const [formData, setFormData] = useState<VineyardGlobalAction>(
     vineyardGlobalActionSample
   );
+  const [localConsumables, setLocalConsumables] = useState<
+    { name: string; id: string; qty: number }[]
+  >([]);
 
-  const handleChange = useCallback((name: string, value: any) => {
-    setFormData((prev) => ({
-      ...(prev as VineyardGlobalAction),
-      [name]: value,
-    }));
-  }, []);
+  const handleChange = useCallback(
+    (name: string, value: any) => {
+      console.log("NAME", name, value);
+      if (name.startsWith("consumables")) {
+        const data = consumables?.filter((v) => v.consumableID === value[0]);
+        const newValue = {
+          id: data[0]?.id,
+          name: data[0]?.consumableID as string,
+          qty: 0,
+        };
+        console.log("newValue", data, newValue);
+        if (formData.consumables === undefined) formData.consumables = [];
+        formData?.consumables?.push(newValue);
+        setFormData(() => formData);
+        // setValue("consumables", formData.consumables);
+        console.log("VALUE", name, value, formData.consumables, consumables);
+        return;
+      }
+      setFormData((prev) => ({
+        ...(prev as VineyardGlobalAction),
+        [name]: value,
+      }));
+    },
+    [consumables, formData]
+  );
+
+  const handleQtyChange = useCallback(
+    (value: any, index: number) => {
+      if (formData?.consumables && formData?.consumables?.length > 0) {
+        formData.consumables[index].qty = value[index].qty;
+        console.log(" formData.consumables", value, formData.consumables);
+        setFormData(() => formData);
+      }
+    },
+    [formData]
+  );
+
+  useEffect(() => {
+    if (formData?.consumables && formData?.consumables?.length > 0) {
+      const _consumables = consumables?.filter((c) =>
+        formData.consumables?.some((v) => v.name === (c.consumableID as string))
+      );
+      setLocalConsumables(
+        _consumables as { name: string; id: string; qty: number }[]
+      );
+      console.log("LOCAL CONSUMABLES", _consumables);
+    }
+  }, [formData.consumables, consumables]);
 
   const getStyles = (
     name: string,
@@ -226,7 +277,6 @@ export default function VineyardIrrigationActionForm() {
                             : dayjs(formData.executionDate)
                         }
                         label="Execution Date"
-                        disablePast
                         views={["year", "month", "day"]}
                         className="w-full"
                         onChange={(date) => {
@@ -238,8 +288,138 @@ export default function VineyardIrrigationActionForm() {
                         }}
                       />
                     </Stack>
-                    {/* * CONSUMABLES */}
+                    {/* * RESPONSIBLE */}
                     <FormControl fullWidth>
+                      <Stack display={"flex"} flexDirection={"column"} gap={1}>
+                        <Typography variant="body2" color="textSecondary">
+                          Enter the responsible person
+                        </Typography>
+                        <ResponsibleTeamMemberField
+                          teamMembers={teamMembers}
+                          onChange={(value) => {
+                            handleChange("responsible.name", value);
+                          }}
+                        />
+                      </Stack>
+                    </FormControl>
+                    {/* ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */}
+                    <div className="flex flex-col gap-2">
+                      <InputLabel className="text-sm text-muted-foreground">
+                        Enter the consumables used
+                      </InputLabel>
+
+                      <Autocomplete
+                        multiple
+                        noOptionsText="No vessels available"
+                        options={consumables?.map((v) => v.consumableID)}
+                        value={localConsumables.map((v) => v.name)}
+                        // getOptionLabel={(option) => option as string}
+                        filterSelectedOptions
+                        onChange={(_event, newValue) => {
+                          handleChange("consumables", newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            variant="outlined"
+                            label="Consumables used"
+                          />
+                        )}
+                      />
+
+                      {(localConsumables || []).length > 0 && (
+                        <Stack
+                          p={2}
+                          pb={1}
+                          gap={1}
+                          sx={{
+                            border: "1px solid var(--mui-palette-divider)",
+                          }}
+                        >
+                          {localConsumables?.map(({ id, name = "" }, index) => (
+                            <Fragment key={id}>
+                              <Stack
+                                gap={1}
+                                key={id}
+                                direction="row"
+                                alignItems="center"
+                              >
+                                <Typography
+                                  variant="body2"
+                                  component="div"
+                                  sx={{ flex: 1 }}
+                                >
+                                  {name}
+                                </Typography>
+
+                                <FormControl>
+                                  <Input
+                                    id="qty"
+                                    size="small"
+                                    label="Qty"
+                                    type="number"
+                                    variant="outlined"
+                                    value={localConsumables[index].qty}
+                                    slotProps={{
+                                      htmlInput: { min: 1, step: "any" },
+                                    }}
+                                    sx={{ width: "80px" }}
+                                    onChange={(e) => {
+                                      const updated: VineyardGlobalAction["consumables"] =
+                                        [...(formData.consumables || [])];
+                                      updated[index].qty = Number(
+                                        e.target.value
+                                      );
+                                      console.log("UPDATED", e.target.value);
+                                      handleQtyChange(updated, index);
+                                    }}
+                                  />
+                                </FormControl>
+
+                                <IconButton
+                                  size="small"
+                                  disabled={false}
+                                  onClick={() => {
+                                    const updated =
+                                      formData.consumables?.filter(
+                                        (vessel) => vessel.id !== id
+                                      );
+                                    // handleSelectChange("vessels", updated);
+                                  }}
+                                >
+                                  <ClearIcon fontSize="small" />
+                                </IconButton>
+                              </Stack>
+
+                              <Typography
+                                key={index}
+                                variant="body2"
+                                color="error"
+                                className="mt-1"
+                              >
+                                {errors?.vessels &&
+                                  Array.isArray(errors?.vessels) &&
+                                  (errors?.vessels[index]?.qty
+                                    ?.message as string)}
+                              </Typography>
+                            </Fragment>
+                          ))}
+                        </Stack>
+                      )}
+
+                      {errors?.vessels && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.vessels?.message as string}
+                        </Typography>
+                      )}
+                    </div>
+                    {/* ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */}
+                    {/* * CONSUMABLES */}
+                    {/* <FormControl fullWidth>
                       <InputLabel id="consumables-select-label">
                         Consumables
                       </InputLabel>
@@ -312,7 +492,7 @@ export default function VineyardIrrigationActionForm() {
                           MenuProps={MenuProps}
                         ></Select>
                       )}
-                    </FormControl>
+                    </FormControl> */}
                     {/* * EQUIPMENT */}
                     <FormControl fullWidth>
                       <InputLabel id="equipment-select-label">

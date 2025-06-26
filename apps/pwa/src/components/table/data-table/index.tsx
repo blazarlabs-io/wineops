@@ -204,13 +204,13 @@ export const DataTable = <T extends DashboardEntity>({
 
     const updatedRows = selectedRows.map((row) => {
       const groupPrefix = newGroup?.group ?? group;
-      const foundGroupIndex = row?.group.findIndex((item) =>
+      const foundGroupIndex = row?.group?.findIndex((item) =>
         fullySelectedGroups.includes(item)
       );
 
       const hierarchyGroup =
-        foundGroupIndex > -1
-          ? [...groupPrefix, ...row?.group.slice(foundGroupIndex, -1)]
+        foundGroupIndex !== undefined && foundGroupIndex > -1
+          ? [...groupPrefix, ...(row?.group?.slice(foundGroupIndex, -1) ?? [])]
           : groupPrefix;
 
       const newHierarchyGroup = createNewGroup(hierarchyGroup);
@@ -230,13 +230,16 @@ export const DataTable = <T extends DashboardEntity>({
         id: row.id,
         rowType: row.rowType,
         group:
-          group.length > 0
+          group.length > 0 && row.rowType !== undefined
             ? row.rowType === "group"
               ? groupPrefix
               : [...(newHierarchyGroup?.group ?? hierarchyGroup), row.name]
             : row.rowType === "group"
-              ? [...row.group.slice(0, -2), row.group[row.group.length - 1]]
-              : [...row.group.slice(0, -2), row.name],
+              ? [
+                  ...(row?.group as string[])?.slice(0, -2),
+                  row?.group?.[row.group?.length - 1],
+                ]
+              : [...(row?.group as string[]), row.name],
       };
     });
 

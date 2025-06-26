@@ -179,16 +179,28 @@ export const Shift = {
 
 export type Shift = (typeof Shift)[keyof typeof Shift];
 
-export interface TeamMember extends ResponsibleTeamMember {
-  id: string;
-  name: string;
-  lastName: string;
-  email: string;
-  role?: Role | string;
-  avatar?: string;
-  department?: Department | string;
-  contactPhone?: string;
-}
+export type TeamMember = Entity &
+  ResponsibleTeamMember & {
+    id: string;
+    name: string;
+    lastName: string;
+    email: string;
+    role?: Role | string;
+    avatar?: string;
+    department?: Department | string;
+    contactPhone?: string;
+    labData?: ActionRelation[];
+  };
+// export type TeamMember extends ResponsibleTeamMember  = Entity &  ={
+//   id: string;
+//   name: string;
+//   lastName: string;
+//   email: string;
+//   role?: Role | string;
+//   avatar?: string;
+//   department?: Department | string;
+//   contactPhone?: string;
+// }
 
 export type EmergencyContact = {
   id: string;
@@ -293,7 +305,7 @@ export type RowType = (typeof RowType)[keyof typeof RowType];
 type Entity = {
   id: string;
   name: string;
-  group: string[];
+  group?: string[];
   rowType?: RowType;
 };
 

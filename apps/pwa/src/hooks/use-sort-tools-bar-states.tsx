@@ -16,7 +16,9 @@ export const useSortToolsBarStates = () => {
     setEnableGrouping(selected?.length > 0);
     setEnableDelete(selected?.length > 0);
 
-    const isDataGrouped = selected?.some(({ group }) => group?.length > 1);
+    const isDataGrouped = selected?.some(
+      ({ group }) => Array.isArray(group) && group.length > 1
+    );
 
     setEnableUngrouping(isDataGrouped);
   }, [selected]);

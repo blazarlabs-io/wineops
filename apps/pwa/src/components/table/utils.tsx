@@ -41,7 +41,7 @@ export function shiftGroups<T extends DashboardEntity>(
     }
   }
 
-  if (pathStartsWith(newParentPath, sourcePath)) {
+  if (pathStartsWith(newParentPath, sourcePath as string[])) {
     console.log("\nPathStartsWith:", newParentPath, sourcePath);
     return null; // invalid move - we are moving a parent folder into one of its child folders
   }
@@ -64,20 +64,24 @@ export function shiftGroups<T extends DashboardEntity>(
   // All the rows before the split index not starting with the source path
   const rowsBefore = items
     .slice(0, splitIndex)
-    .filter((item) => !pathStartsWith(item.group, sourcePath));
+    .filter((item) => !pathStartsWith(item.group, sourcePath as string[]));
 
   // All the rows starting with the source path, with the path updated
   const rowsMiddle = items
-    .filter((item) => pathStartsWith(item.group, sourcePath))
+    .filter((item) => pathStartsWith(item.group, sourcePath as string[]))
     .map((item) => ({
       ...item,
-      group: pathReplaceBase(item.group, sourcePath, newParentPath),
+      group: pathReplaceBase(
+        item.group as string[],
+        sourcePath as string[],
+        newParentPath
+      ),
     }));
 
   // All the rows after the split index not starting with the source path
   const rowsAfter = items
     .slice(splitIndex)
-    .filter((item) => !pathStartsWith(item.group, sourcePath));
+    .filter((item) => !pathStartsWith(item.group, sourcePath as string[]));
 
   console.log("\nROWS:", [...rowsBefore, ...rowsMiddle, ...rowsAfter]);
 

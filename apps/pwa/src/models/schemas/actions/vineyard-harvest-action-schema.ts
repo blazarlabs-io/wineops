@@ -2,7 +2,7 @@ import { VineyardHarvestAction } from "@/models/types/actions";
 import Joi from "joi";
 import { teamMemberSchema } from "../vineyard-schema";
 
-const relationSchema = Joi.object({
+export const relationSchema = Joi.object({
   id: Joi.string().optional().allow(""),
   name: Joi.string().optional().allow(""),
 });

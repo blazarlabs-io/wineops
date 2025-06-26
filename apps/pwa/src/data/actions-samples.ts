@@ -12,7 +12,7 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
     name: "",
   },
   executionDate: Timestamp.now(),
-  consumables: [] as { id: string; name: string }[],
+  consumables: [] as { id: string; name: string; qty: number }[],
   batchId: "",
   weight: "",
   invoiceNumber: "",

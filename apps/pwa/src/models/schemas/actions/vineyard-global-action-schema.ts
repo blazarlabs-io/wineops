@@ -1,5 +1,7 @@
 import { VineyardGlobalAction } from "@/models/types/actions";
 import Joi from "joi";
+import { teamMemberSchema } from "../vineyard-schema";
+import { relationSchema } from "./vineyard-harvest-action-schema";
 
 export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
   id: Joi.string().required(),
@@ -9,16 +11,15 @@ export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
     id: Joi.string().required(),
     name: Joi.string().required(),
   }),
-  responsible: Joi.object({
-    name: Joi.string().required().allow("").messages({
-      "any.required": "Name is required.",
-      "string.base": "You must choose a name.",
-      "string.empty": "Name cannot be empty.",
-    }),
-    email: Joi.string().allow(""),
-  }).required(),
-  consumables: Joi.array().items(Joi.object()).optional(),
-  equipment: Joi.array().items(Joi.object()).optional(),
+  responsible: teamMemberSchema.required(),
+  consumables: Joi.array()
+    .items({
+      id: Joi.string().allow("").required(),
+      name: Joi.string().allow("").required(),
+      qty: Joi.number().precision(2).required(),
+    })
+    .optional(),
+  equipment: Joi.array().items(relationSchema).optional(),
   inputData: Joi.object({
     sugar: Joi.number().precision(2).required().messages({
       "any.required": "Sugar is required.",
