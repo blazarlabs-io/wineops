@@ -17,8 +17,11 @@ export const useSortChartData = (data: LabDataChart) => {
       const acidity: number[] = [];
       const labels: string[] = [];
       data.items.forEach((item) => {
-        sugar.push(item.results.sugar.value);
-        acidity.push(item.results.acidity.value);
+        if (item.results?.sugar?.value) sugar.push(item.results.sugar.value);
+
+        if (item.results?.acidity?.value)
+          acidity.push(item.results.acidity.value);
+
         labels.push(
           `${new Date((item.date as Timestamp).seconds * 1000).toDateString()}`
         );
