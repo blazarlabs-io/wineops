@@ -60,11 +60,6 @@ export default function WinesTable() {
         lockPosition: true,
         suppressMovable: true,
       }}
-      groupByButtons={[
-        { name: "Vessel Type", columnName: "groupByVesselType" },
-        { name: "Location", columnName: "groupByLocation" },
-        { name: "Status", columnName: "groupByStatus" },
-      ]}
       getRowId={({ data }) => `${data.id}-${data?.vesselId}`}
       entityName="wine"
     />

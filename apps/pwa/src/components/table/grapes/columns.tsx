@@ -15,6 +15,7 @@ export const grapesColumns: ColDef<
     batchId: MultiCol;
     groupByDate: any;
     groupByVariety: any;
+    groupByLocation: any;
   },
   any
 >[] = [
@@ -43,11 +44,19 @@ export const grapesColumns: ColDef<
     keyCreator: (params) => params?.value || "Unknown grape variety",
   },
   {
+    headerName: "Group: Location",
+    field: "groupByLocation",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: (params) => params?.data?.location,
+    keyCreator: (params) => params?.value || "Unknown location",
+  },
+  {
     headerName: "Batch ID",
     field: "batchId",
     minWidth: 200,
     flex: 1,
-    cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: BatchIDCellRenderer,
   },
@@ -56,7 +65,6 @@ export const grapesColumns: ColDef<
     field: "metrics",
     minWidth: 240,
     flex: 1,
-    cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: QuantityCellRenderer,
   },
@@ -64,7 +72,6 @@ export const grapesColumns: ColDef<
     field: "supplier",
     minWidth: 150,
     flex: 1,
-    cellStyle: { width: "100%" },
     editable: false,
     cellRenderer: SupplierCellRenderer,
   },
@@ -73,14 +80,12 @@ export const grapesColumns: ColDef<
     field: "labData",
     minWidth: 200,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: LabDataCellRenderer,
   },
   {
     field: "notes",
     minWidth: 200,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: NotesCellRenderer,
   },
 ];

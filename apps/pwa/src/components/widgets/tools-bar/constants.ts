@@ -1,6 +1,7 @@
 export type ButtonProps = {
   enabled?: boolean;
   onClick?: () => void;
+  hide?: boolean;
 };
 
 export const ButtonType = {

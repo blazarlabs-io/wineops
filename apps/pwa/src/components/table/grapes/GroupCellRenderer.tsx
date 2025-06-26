@@ -80,6 +80,8 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
             </>
           ) : node?.field === "groupByVariety" ? (
             <>{value ? value : <i>Unknown variety</i>}</>
+          ) : node?.field === "groupByLocation" ? (
+            <>{value ? value : <i>Unknown location</i>}</>
           ) : (
             <Stack justifyItems="center">
               <Typography variant="body1">{value}</Typography>

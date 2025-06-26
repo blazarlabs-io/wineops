@@ -24,7 +24,13 @@ export default function PrimaryVinificationDashboard() {
       >
         <Typography variant="h4">Primary Vinification</Typography>
 
-        <ToolsBar />
+        <ToolsBar
+          groupByButtons={[
+            { name: "by Vessel Type", columnName: "groupByVesselType" },
+            { name: "by Location", columnName: "groupByLocation" },
+            { name: "by Status", columnName: "groupByStatus" },
+          ]}
+        />
 
         <MustsTable />
       </Stack>

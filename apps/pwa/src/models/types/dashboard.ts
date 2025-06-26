@@ -17,3 +17,11 @@ export type DashboardEntity =
   | Consumable;
 
 export type EntityStatus = VineyardStatus | GrapeStatus | Priority;
+
+export type GroupBy =
+  | "groupByDate"
+  | "groupByVariety"
+  | "groupByStatus"
+  | "groupByVesselType"
+  | "groupByLocation"
+  | "type";

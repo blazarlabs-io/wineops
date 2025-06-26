@@ -10,7 +10,7 @@ import {
   SwapVert,
   Tune,
 } from "@mui/icons-material";
-import { Box, IconButton, Stack } from "@mui/material";
+import { Box, IconButton, ListItemText, Stack } from "@mui/material";
 import { Search } from "lucide-react";
 import { ButtonType, ButtonProps } from "./constants";
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
@@ -19,40 +19,59 @@ import { QuickDrawerType } from "@/models/types/db";
 import { useColorScheme } from "@mui/material";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useDialogDrawerStore } from "@/store/dialogs";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { useState, MouseEvent } from "react";
+import { useGridStore } from "@/store/grid";
+import { GroupBy } from "@/models/types/dashboard";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
     enabled: false,
+    hide: false,
   },
   [ButtonType.EDIT]: {
     enabled: false,
+    hide: false,
   },
   [ButtonType.GROUP]: {
     enabled: false,
+    hide: false,
   },
   [ButtonType.PIN]: {
     enabled: false,
+    hide: false,
   },
   [ButtonType.PIVOT]: {
     enabled: false,
+    hide: false,
   },
   [ButtonType.UNGROUP]: {
     enabled: false,
+    hide: false,
   },
   [ButtonType.DELETE]: {
     enabled: false,
+    hide: false,
   },
+};
+
+type GroupByButtons = {
+  name: string;
+  columnName: GroupBy;
 };
 
 export type ToolsBarProps = {
   buttons?: Partial<Record<ButtonType, ButtonProps>>;
+  groupByButtons?: GroupByButtons[];
 };
 
 export default function ToolsBar(props: ToolsBarProps) {
   const { mode } = useColorScheme();
   const { updateOpen, updateType } = useQuickDrawer();
 
-  const buttons = props.buttons || ALL_BUTTONS;
+  const buttons = { ...ALL_BUTTONS, ...props.buttons };
+  const groupByButtons = props.groupByButtons || [];
 
   const {
     enableAdd,
@@ -68,10 +87,29 @@ export default function ToolsBar(props: ToolsBarProps) {
   const openDeleteDialog = () => open("delete-entities");
   const openFormDrawer = () => open("form-drawer");
 
+  const { setGroupedField, groupedField } = useGridStore();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openPivot = Boolean(anchorEl);
+
+  const handleClickPivot = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePivot = () => {
+    setAnchorEl(null);
+  };
+
+  const handleGroupBy = (columnName: GroupBy) => {
+    setGroupedField(columnName === groupedField ? undefined : columnName);
+    handleClosePivot();
+  };
+
   const handleOpenDrawer = (type: string) => {
     updateOpen(true);
     updateType(type as QuickDrawerType);
   };
+
   return (
     <>
       <Box
@@ -103,7 +141,7 @@ export default function ToolsBar(props: ToolsBarProps) {
             </IconButton>
           )}
 
-          {buttons[ButtonType.PIN] && (
+          {!buttons[ButtonType.PIN]?.hide && (
             <IconButton
               color="default"
               aria-label="pin"
@@ -132,7 +170,7 @@ export default function ToolsBar(props: ToolsBarProps) {
             }}
           />
 
-          {buttons[ButtonType.GROUP] && (
+          {!buttons[ButtonType.GROUP]?.hide && (
             <IconButton
               color="default"
               aria-label="group"
@@ -143,7 +181,7 @@ export default function ToolsBar(props: ToolsBarProps) {
             </IconButton>
           )}
 
-          {buttons[ButtonType.UNGROUP] && (
+          {!buttons[ButtonType.UNGROUP]?.hide && (
             <IconButton
               color="default"
               size="small"
@@ -155,15 +193,44 @@ export default function ToolsBar(props: ToolsBarProps) {
             </IconButton>
           )}
 
-          {buttons[ButtonType.PIVOT] && (
-            <IconButton
-              color="default"
-              aria-label="pivot"
-              disabled={!buttons[ButtonType.PIVOT]?.enabled}
-              onClick={buttons[ButtonType.PIVOT]?.onClick}
-            >
-              <PivotTableChartOutlined className="" />
-            </IconButton>
+          {!buttons[ButtonType.PIVOT]?.hide && (
+            <>
+              <IconButton
+                color={!!groupedField ? "primary" : "default"}
+                aria-label="pivot"
+                disabled={
+                  !buttons[ButtonType.PIVOT]?.enabled &&
+                  groupByButtons.length === 0
+                }
+                onClick={buttons[ButtonType.PIVOT]?.onClick || handleClickPivot}
+              >
+                <PivotTableChartOutlined className="" />
+              </IconButton>
+
+              {groupByButtons.length > 0 && (
+                <Menu
+                  id="pivot-menu"
+                  anchorEl={anchorEl}
+                  open={openPivot}
+                  onClose={handleClosePivot}
+                  slotProps={{
+                    list: {
+                      "aria-labelledby": "pivot-button",
+                    },
+                  }}
+                >
+                  {groupByButtons.map(({ name, columnName }) => (
+                    <MenuItem
+                      key={columnName}
+                      selected={columnName === groupedField}
+                      onClick={() => handleGroupBy(columnName)}
+                    >
+                      <ListItemText>{name}</ListItemText>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              )}
+            </>
           )}
         </Box>
 
