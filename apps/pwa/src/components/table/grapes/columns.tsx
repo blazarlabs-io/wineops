@@ -7,6 +7,7 @@ import { SupplierCellRenderer } from "./SupplierCellRenderer";
 import { LabDataCellRenderer } from "./LabDataCellRenderer";
 import { NotesCellRenderer } from "../NotesCellRenderer";
 import formatDate from "@/utils/date-format";
+import { TasksCellRenderer } from "../tasks-cell-renderer";
 
 type MultiCol = Record<keyof Grape, any>;
 
@@ -69,6 +70,7 @@ export const grapesColumns: ColDef<
     cellRenderer: QuantityCellRenderer,
   },
   {
+    headerName: "Supplier",
     field: "supplier",
     minWidth: 150,
     flex: 1,
@@ -83,6 +85,14 @@ export const grapesColumns: ColDef<
     cellRenderer: LabDataCellRenderer,
   },
   {
+    headerName: "Tasks",
+    field: "tasks",
+    minWidth: 124,
+    flex: 1,
+    cellRenderer: TasksCellRenderer,
+  },
+  {
+    headerName: "Notes",
     field: "notes",
     minWidth: 200,
     flex: 1,

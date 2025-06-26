@@ -1,21 +1,29 @@
-import { Grape } from "@/models/types/db";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Grape, LabReport } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import GrapeEntryContent from "./grape-entry-content";
 import SupplierContent from "./supplier-content";
 import DocumentsContent from "./documents-content";
 import LabDataContent from "./lab-data-content";
+import DocumentsTable from "@/components/table/documents";
 
 export type GrapeDetailsWidgetProps = {
   grape: Grape;
+  labReports: LabReport[];
 };
 
-export default function GrapeDetailsWidget({ grape }: GrapeDetailsWidgetProps) {
+export default function GrapeDetailsWidget({
+  grape,
+  labReports,
+}: GrapeDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
+  const [docs, setDocs] = useState<any[]>([]);
+  const mountRef = useRef<boolean>(false);
 
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -25,6 +33,25 @@ export default function GrapeDetailsWidget({ grape }: GrapeDetailsWidgetProps) {
     padding: "8px 16px !important",
     minHeight: "fit-content !important",
   };
+
+  useEffect(() => {
+    if (labReports && !mountRef.current) {
+      mountRef.current = true;
+      labReports.map((l: any) => {
+        if (l.supportingDocuments && l.supportingDocuments?.length > 0) {
+          l.supportingDocuments.map((d: any) => {
+            const newDoc = {
+              name: d.name,
+              url: d.url,
+              responsible: l.responsible,
+              date: l.date,
+            };
+            setDocs((prev) => [...prev, newDoc]);
+          });
+        }
+      });
+    }
+  }, [labReports]);
 
   return (
     <Box
@@ -75,7 +102,9 @@ export default function GrapeDetailsWidget({ grape }: GrapeDetailsWidgetProps) {
       </TabPanel>
 
       <TabPanel value={value} index={4}>
-        <DocumentsContent documents={grape.documents} />
+        <div className="flex flex-col max-h-[300px] overflow-hidden">
+          <DocumentsTable docs={docs} />
+        </div>
       </TabPanel>
     </Box>
   );

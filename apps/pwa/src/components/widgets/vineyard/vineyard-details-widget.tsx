@@ -110,8 +110,8 @@ export default function VineyardDetailsWidget({
         aria-label="Vertical tabs example"
         sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
-        <Tab label="details" {...a11yProps(0)} sx={sx} />
-        <Tab label="grapeVariety" {...a11yProps(1)} sx={sx} />
+        <Tab label="Details" {...a11yProps(0)} sx={sx} />
+        <Tab label="Grape&nbsp;Variety" {...a11yProps(1)} sx={sx} />
         <Tab label="Lab Results" {...a11yProps(2)} sx={sx} />
         <Tab label="Tasks" {...a11yProps(3)} sx={sx} />
         <Tab label="Weather" {...a11yProps(4)} sx={sx} />
