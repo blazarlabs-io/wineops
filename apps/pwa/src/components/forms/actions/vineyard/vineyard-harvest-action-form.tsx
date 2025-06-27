@@ -458,7 +458,6 @@ export default function VineyardHarvestActionForm({
                       display: "flex",
                       gap: 2,
                       flexDirection: "column",
-                      p: 0,
                     }}
                   >
                     {/* * ACTION SUBJECT */}
@@ -647,7 +646,11 @@ export default function VineyardHarvestActionForm({
                     <Typography component="span">Transporation Info</Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                    }}
                   >
                     {/* * LOCATION */}
                     {/* TODO: a predefined user list of locations shoudl exist in DB. If not, the create one using the new location input */}
@@ -785,7 +788,11 @@ export default function VineyardHarvestActionForm({
                     <Typography component="span">Quality Parameters</Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                    }}
                   >
                     {/* * MASS CONCENTRATION OF SUGARS */}
                     <div className="">
@@ -863,7 +870,11 @@ export default function VineyardHarvestActionForm({
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                    }}
                   >
                     <Typography variant="body1">Description</Typography>
                     <TextareaAutosize
