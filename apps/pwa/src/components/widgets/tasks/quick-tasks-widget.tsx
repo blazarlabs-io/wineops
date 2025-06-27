@@ -1,5 +1,6 @@
 import TaskCard from "@/components/cards/task-card";
 import CreateTaskForm from "@/components/forms/tasks/create-task-form";
+import { useQuickDrawer } from "@/context/quick-drawer";
 import { useWinery } from "@/context/winery";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
@@ -13,7 +14,8 @@ import { useCallback, useState } from "react";
 export default function QuickTasksWidget() {
   const { user } = useAuth();
   const { teamMembers } = useWinery();
-  const [open, setOpen] = useState(false);
+  const { openForm } = useQuickDrawer();
+  const [open, setOpen] = useState(openForm || false);
 
   const handleOpen = useCallback(() => {
     setOpen(!open);
