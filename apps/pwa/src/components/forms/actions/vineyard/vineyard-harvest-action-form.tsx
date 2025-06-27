@@ -383,8 +383,6 @@ export default function VineyardHarvestActionForm() {
 
   useEffect(() => {}, []);
 
-  console.log("formData:", formData);
-
   return (
     <>
       {formData && formData !== undefined && (
