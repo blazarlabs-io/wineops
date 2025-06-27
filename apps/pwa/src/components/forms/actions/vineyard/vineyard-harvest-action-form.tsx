@@ -243,24 +243,10 @@ export default function VineyardHarvestActionForm() {
         selected?.labData?.some((ld) => ld.id === l.id)
       )[0];
 
-      let sugar, acidity;
-
-      if (labReport?.results?.sugar.value === undefined) {
-        sugar = 0;
-      } else {
-        sugar = labReport?.results?.sugar.value;
-      }
-
-      if (labReport?.results?.acidity.value === undefined) {
-        acidity = 0;
-      } else {
-        acidity = labReport?.results?.acidity.value;
-      }
-
       vineyardHarvestActionSample.sugar = {
         id: labReport?.id,
         name: "",
-        value: sugar as number,
+        value: labReport?.results?.sugar?.value ?? 0,
         variation: labReport?.results?.sugar?.variation,
         date: labReport?.date || new Date().toDateString(),
         unit: (labReport?.units?.[0] as string as string) || "",
@@ -269,7 +255,7 @@ export default function VineyardHarvestActionForm() {
       vineyardHarvestActionSample.acidity = {
         id: labReport?.id,
         name: "",
-        value: acidity,
+        value: labReport?.results?.acidity?.value ?? 0,
         variation: labReport?.results?.acidity?.variation,
         date: labReport?.date || new Date().toDateString(),
         unit: (labReport?.units?.[0] as string) || "",
@@ -314,7 +300,7 @@ export default function VineyardHarvestActionForm() {
     vineyardHarvestActionSample.consumables = [];
     vineyardHarvestActionSample.sugar.value = 0;
     vineyardHarvestActionSample.sugar.date = Timestamp.now();
-    if (vineyardHarvestActionSample.acidity) {
+    if (vineyardHarvestActionSample.acidity?.value) {
       vineyardHarvestActionSample.acidity.value = 0;
       vineyardHarvestActionSample.acidity.date = Timestamp.now();
     }
@@ -410,6 +396,8 @@ export default function VineyardHarvestActionForm() {
   }, [errors]);
 
   useEffect(() => {}, []);
+
+  console.log("formData:", formData);
 
   return (
     <>
