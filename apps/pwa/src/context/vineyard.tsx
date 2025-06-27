@@ -64,17 +64,17 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
   const [actions] = useState<VineyardActions>({
     harvest: {
       exec: vineyardHarvestAction,
-      form: <VineyardHarvestActionFormComposer />,
+      form: VineyardHarvestActionFormComposer,
       icon: "hugeicons:grapes",
     },
     "lab-report": {
       exec: vineyardLabAction,
-      form: <VineyardLabActionFormComposer />,
+      form: VineyardLabActionFormComposer,
       icon: "material-symbols:lab-profile-outline",
     },
     irrigation: {
       exec: vineyardLabAction,
-      form: <VineyardIrrigationActionFormComposer />,
+      form: VineyardIrrigationActionFormComposer,
       icon: "material-symbols:water-drop",
     },
   });

@@ -215,7 +215,7 @@ export default function VineyardIrrigationActionForm() {
     <>
       {formData && formData !== undefined && (
         <div
-          className="w-full pr-4"
+          className="w-full p-4"
           style={{ borderColor: "var(--mui-palette-divider)" }}
         >
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
@@ -613,7 +613,7 @@ export default function VineyardIrrigationActionForm() {
             <Box display={"flex"} justifyContent={"end"}>
               <FormControl>
                 <Button type="submit" variant="contained" className="mt-8">
-                  Execute
+                  Submit
                 </Button>
               </FormControl>
             </Box>

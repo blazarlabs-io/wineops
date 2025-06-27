@@ -713,7 +713,7 @@ export default function MustDecantActionForm() {
                 variant="contained"
                 className="mt-8"
               >
-                Execute
+                Submit
               </Button>
             </FormControl>
           </Box>
