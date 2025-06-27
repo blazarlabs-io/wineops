@@ -10,7 +10,6 @@ export const columns: ColDef[] = [
     field: "avatar",
     minWidth: 120,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: AvatarCellRenderer,
   },
   {
@@ -18,7 +17,6 @@ export const columns: ColDef[] = [
     field: "name",
     minWidth: 125,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: FullNameCellRenderer,
   },
   {
@@ -26,14 +24,12 @@ export const columns: ColDef[] = [
     field: "role",
     minWidth: 56,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: RoleCellRenderer,
   },
   {
     headerName: "Department",
     field: "department",
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: DepartmentCellRenderer,
   },
   {
@@ -41,13 +37,11 @@ export const columns: ColDef[] = [
     field: "contactPhone",
     minWidth: 80,
     flex: 1,
-    cellStyle: { width: "100%" },
   },
   {
     headerName: "Email",
     field: "email",
     minWidth: 80,
     flex: 1,
-    cellStyle: { width: "100%" },
   },
 ];
