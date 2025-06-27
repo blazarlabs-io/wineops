@@ -234,6 +234,37 @@ export const vineyardIrrigationAction = async (
 ) => {
   console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
   console.log("UID", uid);
-  console.log("vineyardIrrigationAction", actionData);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+
+  // * 1. Add Action
+  const actionRes = await db.action.create(uid, actionData);
+
+  if (actionRes.status === 200) {
+    enqueueSnackbar("Action created", { variant: "success" });
+  } else {
+    enqueueSnackbar("Error creating action", { variant: "error" });
+  }
+
+  // * 2. Update Vineyard
+  const vineyardRes = await db.vineyard.update(
+    uid,
+    actionData.inUseVineyard.id,
+    {
+      actions: [
+        ...(vineyard.actions || ([] as ActionRelation[])),
+        {
+          id: actionData.id,
+          name: "irrigation",
+        },
+      ],
+    }
+  );
+
+  if (vineyardRes.status === 200) {
+    enqueueSnackbar("Vineyard status updated", { variant: "success" });
+  } else {
+    enqueueSnackbar("Vineyard status update failed", { variant: "error" });
+  }
 };

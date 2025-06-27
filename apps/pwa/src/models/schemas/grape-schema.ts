@@ -3,7 +3,7 @@
 import { Timestamp } from "firebase/firestore";
 import Joi from "joi";
 
-const TimestampOrString = Joi.alternatives().try(
+export const TimestampOrString = Joi.alternatives().try(
   Joi.string().isoDate(),
   Joi.object().custom((value, helpers) => {
     if (value instanceof Timestamp) return value;

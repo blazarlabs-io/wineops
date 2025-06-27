@@ -58,4 +58,6 @@ export const vineyardGlobalActionSample: VineyardGlobalAction = {
   },
   inputData: {},
   supportingDocuments: [],
+  consumables: [],
+  equipment: [],
 };
