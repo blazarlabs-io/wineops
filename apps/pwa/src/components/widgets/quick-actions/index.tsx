@@ -26,7 +26,14 @@ export default function QuickActionsWidget({
 
   const handleActionClick = useCallback(
     (action: string) => {
+      const key = action.split(" ").join("-");
+      const selected = actions[key];
+      console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
       console.log("ACTION CLICKED", action);
+      console.log("KEY", key);
+      console.log("SELECTED", selected);
+      console.log("ACTIONS", actions);
+      console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
       onClick(action);
       setSelectedAction(() => actions[action.split(" ").join("-")]);
       setFormTitle(`${action} action`);

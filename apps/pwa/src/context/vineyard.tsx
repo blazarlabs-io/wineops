@@ -75,7 +75,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
     },
     irrigation: {
       exec: vineyardIrrigationAction,
-      form: <VineyardIrrigationActionFormComposer />,
+      form: VineyardIrrigationActionFormComposer,
       icon: "material-symbols:water-drop",
     },
   });
