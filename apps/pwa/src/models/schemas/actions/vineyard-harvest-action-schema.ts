@@ -2,6 +2,7 @@ import { VineyardHarvestAction } from "@/models/types/actions";
 import Joi from "joi";
 import { teamMemberSchema } from "../vineyard-schema";
 import { Timestamp } from "firebase/firestore";
+import { TimestampOrString } from "../grape-schema";
 
 export const relationSchema = Joi.object({
   id: Joi.string().optional().allow(""),
@@ -31,6 +32,7 @@ const sugarSchema = Joi.object({
     email: Joi.string().optional().allow(""),
   }),
   date: TimestampOrString.optional().allow(""),
+                                                                                                                                                                                                                                                                                              date: TimestampOrString,
 });
 
 const aciditySchema = Joi.object({
@@ -47,7 +49,7 @@ const aciditySchema = Joi.object({
     name: Joi.string().optional().allow(""),
     email: Joi.string().optional().allow(""),
   }),
-  date: TimestampOrString.optional().allow(""),
+  date: TimestampOrString,
 });
 
 export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
@@ -62,7 +64,13 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
   batchId: Joi.string().optional().allow(""),
   weight: Joi.number().optional(),
   responsible: teamMemberSchema.optional(),
-  consumables: Joi.array().items(relationSchema).optional(),
+  consumables: Joi.array()
+    .items({
+      id: Joi.string().allow("").optional(),
+      name: Joi.string().allow("").optional(),
+      qty: Joi.number().precision(2).optional(),
+    })
+    .optional(),
   equipment: Joi.array().items(relationSchema).optional(),
   //  * Transport info
   location: Joi.string().optional().allow(""),

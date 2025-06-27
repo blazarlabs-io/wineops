@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useAuth } from "@/lib/firebase/auth";
-import { TEAM, WINERY } from "@/lib/firebase/config";
+import { DOCUMENTS, LAB_REPORTS, TEAM, WINERY } from "@/lib/firebase/config";
 import { db as sdb } from "@/lib/firebase/services";
 import { db } from "@/lib/firebase/client";
 
@@ -18,6 +19,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 interface WineryContextType {
   winery: Winery | null;
   teamMembers: TeamMember[];
+  documents: any[];
 }
 
 const WineryContext = createContext<WineryContextType | null>(null);
@@ -39,6 +41,7 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
   const mountRef = useRef<boolean>(false);
   const [winery, setWinery] = useState<Winery | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -87,8 +90,44 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const teamMembersRef = collection(db, WINERY, user?.uid as string, TEAM);
+    const documentsRef = collection(db, WINERY, user?.uid as string, DOCUMENTS);
+    // const labReportsRef = collection(db, WINERY, user?.uid as string, LAB_REPORTS);
 
     let unsubTeamMembers = () => {};
+    let unsubDocuments = () => {};
+
+    unsubDocuments = onSnapshot(documentsRef, async (querySnapshot) => {
+      const documents: any[] = [];
+
+      const labReportRes = await sdb.labReport.getAll(user?.uid as string);
+
+      if (labReportRes.status === 200) {
+        labReportRes.data.forEach((report: any) => {
+          if (
+            report.supportingDocuments &&
+            report.supportingDocuments.length > 0
+          ) {
+            report.supportingDocuments.forEach((doc: any) => {
+              documents.push(doc);
+            });
+          }
+        });
+      }
+
+      if (querySnapshot.empty) {
+        console.log("No documents found");
+        setDocuments([]);
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log(data);
+        documents.push(data);
+      });
+
+      setDocuments(documents);
+    });
 
     unsubTeamMembers = onSnapshot(teamMembersRef, (querySnapshot) => {
       const teamMembers: TeamMember[] = [];
@@ -109,6 +148,7 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
       unsubTeamMembers();
+      unsubDocuments();
     };
   }, [user, winery]);
 
@@ -117,6 +157,7 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         winery,
         teamMembers,
+        documents,
       }}
     >
       {children}

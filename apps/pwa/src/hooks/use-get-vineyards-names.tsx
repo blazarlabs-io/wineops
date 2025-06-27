@@ -5,7 +5,6 @@ export const useGetVineyardsNames = (vineyards: Vineyard[]) => {
   const [vineyardNames, setVineyardNames] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("vineyards", vineyards);
     if (!vineyards || vineyards.length === 0 || vineyards === undefined) return;
     const fVineyards = vineyards.filter(
       (vineyard) => vineyard.rowType === "item"

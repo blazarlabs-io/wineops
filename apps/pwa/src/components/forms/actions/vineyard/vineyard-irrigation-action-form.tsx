@@ -9,9 +9,7 @@ import { useConsumable } from "@/context/consumable";
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
-import { useAuth } from "@/lib/firebase/auth";
 import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
-import { Attachment } from "@mui/icons-material";
 import {
   Autocomplete,
   Box,
@@ -36,7 +34,9 @@ import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import FileUploaderField from "../../custom-fields/file-uploader-field";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
+import { useAuth } from "@/lib/firebase/auth";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -53,11 +53,11 @@ const equipment: ActionRelation[] = [];
 // const consumables: ActionRelation[] = [];
 
 export default function VineyardIrrigationActionForm() {
-  const { vineyards } = useVineyard();
+  const { vineyards, actions } = useVineyard();
+  const { user } = useAuth();
   const { consumables } = useConsumable();
   const { teamMembers } = useWinery();
   const theme = useTheme();
-  const { user } = useAuth();
   const {
     register,
     handleSubmit,
@@ -71,26 +71,34 @@ export default function VineyardIrrigationActionForm() {
   const [formData, setFormData] = useState<VineyardGlobalAction>(
     vineyardGlobalActionSample
   );
-  const [localConsumables, setLocalConsumables] = useState<
-    { name: string; id: string; qty: number }[]
-  >([]);
 
   const handleChange = useCallback(
     (name: string, value: any) => {
-      console.log("NAME", name, value);
+      // console.log("NAME", name, value);
       if (name.startsWith("consumables")) {
         const data = consumables?.filter((v) => v.consumableID === value[0]);
         const newValue = {
           id: data[0]?.id,
           name: data[0]?.consumableID as string,
-          qty: 0,
+          qty: data[0]?.qty as number,
         };
-        console.log("newValue", data, newValue);
         if (formData.consumables === undefined) formData.consumables = [];
-        formData?.consumables?.push(newValue);
-        setFormData(() => formData);
-        // setValue("consumables", formData.consumables);
-        console.log("VALUE", name, value, formData.consumables, consumables);
+        // formData?.consumables?.push(newValue);
+        const _consumables = [
+          ...(formData.consumables as {
+            name: string;
+            id: string;
+            qty: number;
+          }[]),
+          newValue,
+        ];
+        setFormData((prev) => ({
+          ...(prev as VineyardGlobalAction),
+          consumables: _consumables,
+        }));
+
+        setValue("consumables", _consumables);
+
         return;
       }
       setFormData((prev) => ({
@@ -101,28 +109,39 @@ export default function VineyardIrrigationActionForm() {
     [consumables, formData]
   );
 
-  const handleQtyChange = useCallback(
-    (value: any, index: number) => {
+  function removeByIndex<T>(array: T[], index: number): T[] {
+    if (index < 0 || index >= array.length) return array; // index out of bounds
+    const result = [...array.slice(0, index), ...array.slice(index + 1)];
+    console.log("result", result);
+    return result;
+  }
+
+  const handleDeleteFromList = useCallback(
+    (value: string, index: number) => {
+      console.log("VALUE", value, index);
       if (formData?.consumables && formData?.consumables?.length > 0) {
-        formData.consumables[index].qty = value[index].qty;
-        console.log(" formData.consumables", value, formData.consumables);
-        setFormData(() => formData);
+        setFormData((prev) => ({
+          ...(prev as VineyardGlobalAction),
+          consumables: removeByIndex(formData.consumables as any, index),
+        }));
       }
     },
     [formData]
   );
 
-  useEffect(() => {
-    if (formData?.consumables && formData?.consumables?.length > 0) {
-      const _consumables = consumables?.filter((c) =>
-        formData.consumables?.some((v) => v.name === (c.consumableID as string))
-      );
-      setLocalConsumables(
-        _consumables as { name: string; id: string; qty: number }[]
-      );
-      console.log("LOCAL CONSUMABLES", _consumables);
-    }
-  }, [formData.consumables, consumables]);
+  const handleQtyChange = useCallback(
+    (index: number, value: any) => {
+      if (formData?.consumables && formData?.consumables?.length > 0) {
+        const data = formData.consumables as any;
+        data[index].qty = value;
+        setFormData((prev) => ({
+          ...(prev as VineyardGlobalAction),
+          consumables: data,
+        }));
+      }
+    },
+    [formData]
+  );
 
   const getStyles = (
     name: string,
@@ -166,29 +185,27 @@ export default function VineyardIrrigationActionForm() {
       (v) => v.id === data.inUseVineyard.id
     )[0];
 
-    // actions?.irrigation.exec(user?.uid as string, data, subjectVineyard);
+    console.log("SUBJECT VINEYARD", subjectVineyard);
+
+    actions?.irrigation.exec(user?.uid as string, data, subjectVineyard);
 
     setFormData(data);
   };
 
   useEffect(() => {
-    if (vineyards && vineyards.length > 0) {
+    if (
+      vineyards &&
+      vineyards.length > 0 &&
+      consumables &&
+      consumables.length > 0
+    ) {
       vineyardGlobalActionSample.id = Date.now().toString();
       vineyardGlobalActionSample.type = "irrigation";
-
+      vineyardGlobalActionSample.executionDate = new Date().toDateString();
       vineyardGlobalActionSample.inUseVineyard = {
         id: vineyards[0].id,
         name: vineyards[0].name,
       };
-
-      vineyardGlobalActionSample.executionDate = new Date().toDateString();
-
-      if (
-        vineyardGlobalActionSample.consumables &&
-        vineyardGlobalActionSample.consumables.length > 0
-      ) {
-        vineyardGlobalActionSample.consumables = [];
-      }
 
       if (
         vineyardGlobalActionSample.equipment &&
@@ -198,12 +215,9 @@ export default function VineyardIrrigationActionForm() {
       }
 
       reset(vineyardGlobalActionSample);
-
       setFormData(vineyardGlobalActionSample);
-
-      console.log("vineyardGlobalActionSample", vineyardGlobalActionSample);
     }
-  }, [vineyards]);
+  }, [vineyards, consumables]);
 
   useEffect(() => {
     if (errors) {
@@ -302,7 +316,7 @@ export default function VineyardIrrigationActionForm() {
                         />
                       </Stack>
                     </FormControl>
-                    {/* ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */}
+                    {/* ! CONSUMABLES */}
                     <div className="flex flex-col gap-2">
                       <InputLabel className="text-sm text-muted-foreground">
                         Enter the consumables used
@@ -312,8 +326,7 @@ export default function VineyardIrrigationActionForm() {
                         multiple
                         noOptionsText="No vessels available"
                         options={consumables?.map((v) => v.consumableID)}
-                        value={localConsumables.map((v) => v.name)}
-                        // getOptionLabel={(option) => option as string}
+                        value={[]}
                         filterSelectedOptions
                         onChange={(_event, newValue) => {
                           handleChange("consumables", newValue);
@@ -327,7 +340,7 @@ export default function VineyardIrrigationActionForm() {
                         )}
                       />
 
-                      {(localConsumables || []).length > 0 && (
+                      {(formData.consumables || []).length > 0 && (
                         <Stack
                           p={2}
                           pb={1}
@@ -336,74 +349,78 @@ export default function VineyardIrrigationActionForm() {
                             border: "1px solid var(--mui-palette-divider)",
                           }}
                         >
-                          {localConsumables?.map(({ id, name = "" }, index) => (
-                            <Fragment key={id}>
-                              <Stack
-                                gap={1}
-                                key={id}
-                                direction="row"
-                                alignItems="center"
-                              >
-                                <Typography
-                                  variant="body2"
-                                  component="div"
-                                  sx={{ flex: 1 }}
+                          {formData.consumables?.map(
+                            ({ id, name = "", qty }, index) => (
+                              <Fragment key={id}>
+                                <Stack
+                                  gap={1}
+                                  key={id}
+                                  direction="row"
+                                  alignItems="center"
                                 >
-                                  {name}
-                                </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    component="div"
+                                    sx={{ flex: 1 }}
+                                  >
+                                    {name}
+                                  </Typography>
 
-                                <FormControl>
-                                  <Input
-                                    id="qty"
+                                  <FormControl>
+                                    <Input
+                                      id="qty"
+                                      size="small"
+                                      label="Qty"
+                                      type="number"
+                                      variant="outlined"
+                                      value={qty || 0}
+                                      slotProps={{
+                                        htmlInput: { min: 1, step: "any" },
+                                      }}
+                                      sx={{ width: "80px" }}
+                                      onChange={(e) => {
+                                        const updated: VineyardGlobalAction["consumables"] =
+                                          [...(formData.consumables || [])];
+                                        updated[index].qty = Number(
+                                          e.target.value
+                                        );
+                                        console.log("UPDATED", e.target.value);
+                                        handleQtyChange(
+                                          index,
+                                          Number(e.target.value)
+                                        );
+                                      }}
+                                    />
+                                  </FormControl>
+
+                                  <IconButton
                                     size="small"
-                                    label="Qty"
-                                    type="number"
-                                    variant="outlined"
-                                    value={localConsumables[index].qty}
-                                    slotProps={{
-                                      htmlInput: { min: 1, step: "any" },
-                                    }}
-                                    sx={{ width: "80px" }}
-                                    onChange={(e) => {
-                                      const updated: VineyardGlobalAction["consumables"] =
-                                        [...(formData.consumables || [])];
-                                      updated[index].qty = Number(
-                                        e.target.value
+                                    disabled={false}
+                                    onClick={() => {
+                                      handleDeleteFromList(
+                                        "consumables",
+                                        index
                                       );
-                                      console.log("UPDATED", e.target.value);
-                                      handleQtyChange(updated, index);
                                     }}
-                                  />
-                                </FormControl>
+                                  >
+                                    <ClearIcon fontSize="small" />
+                                  </IconButton>
+                                </Stack>
 
-                                <IconButton
-                                  size="small"
-                                  disabled={false}
-                                  onClick={() => {
-                                    const updated =
-                                      formData.consumables?.filter(
-                                        (vessel) => vessel.id !== id
-                                      );
-                                    // handleSelectChange("vessels", updated);
-                                  }}
+                                <Typography
+                                  key={index}
+                                  variant="body2"
+                                  color="error"
+                                  className="mt-1"
                                 >
-                                  <ClearIcon fontSize="small" />
-                                </IconButton>
-                              </Stack>
-
-                              <Typography
-                                key={index}
-                                variant="body2"
-                                color="error"
-                                className="mt-1"
-                              >
-                                {errors?.vessels &&
-                                  Array.isArray(errors?.vessels) &&
-                                  (errors?.vessels[index]?.qty
-                                    ?.message as string)}
-                              </Typography>
-                            </Fragment>
-                          ))}
+                                  {errors?.vessels &&
+                                    Array.isArray(errors?.vessels) &&
+                                    (errors?.vessels[index]?.qty
+                                      ?.message as string)}
+                                </Typography>
+                              </Fragment>
+                            )
+                          )}
                         </Stack>
                       )}
 
@@ -417,82 +434,7 @@ export default function VineyardIrrigationActionForm() {
                         </Typography>
                       )}
                     </div>
-                    {/* ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */}
-                    {/* * CONSUMABLES */}
-                    {/* <FormControl fullWidth>
-                      <InputLabel id="consumables-select-label">
-                        Consumables
-                      </InputLabel>
-                      {consumables &&
-                      consumables !== undefined &&
-                      consumables.length > 0 ? (
-                        <Select
-                          labelId="consumables-select-label"
-                          id="consumables-select"
-                          multiple
-                          value={formData.consumables}
-                          // onChange={handleMultipleSelectChange}
-                          input={
-                            <OutlinedInput
-                              id="consumables-select"
-                              label="Consumables"
-                            />
-                          }
-                          renderValue={(selected) => (
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 0.5,
-                              }}
-                            >
-                              {selected.map((value) => {
-                                return (
-                                  <Chip key={value.id} label={value.name} />
-                                );
-                              })}
-                            </Box>
-                          )}
-                          MenuProps={MenuProps}
-                        >
-                          {consumables.map((cons) => (
-                            <MenuItem
-                              key={cons.id}
-                              value={cons.id} // Use the vessel id as the value
-                              style={getStyles(
-                                cons.name,
-                                [
-                                  formData?.consumables?.filter(
-                                    (v: any) => v.name === cons.name
-                                  )[0] as any,
-                                ],
-                                theme
-                              )}
-                            >
-                              {cons.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      ) : (
-                        <Select
-                          labelId="equipment-select-label"
-                          id="equipment-select"
-                          multiple
-                          disabled
-                          value={formData.equipment}
-                          onChange={(e) =>
-                            handleMultipleSelectChange(e, "equipment")
-                          }
-                          input={
-                            <OutlinedInput
-                              id="equipment-select"
-                              label="Equipment"
-                            />
-                          }
-                          MenuProps={MenuProps}
-                        ></Select>
-                      )}
-                    </FormControl> */}
+
                     {/* * EQUIPMENT */}
                     <FormControl fullWidth>
                       <InputLabel id="equipment-select-label">
@@ -569,42 +511,10 @@ export default function VineyardIrrigationActionForm() {
                       )}
                     </FormControl>
 
-                    {/* * NOTES */}
-                    {/* <FormControl fullWidth>
-                      <TextField
-                        type="text"
-                        id="description"
-                        label="Description"
-                        variant="outlined"
-                        {...register("description")}
-                      />
-                    </FormControl> */}
-
-                    <Stack gap={1}>
-                      <Typography variant="body2" color="text.secondary">
-                        Supporting Documents
-                      </Typography>
-                      <Stack
-                        gap={1}
-                        padding={2}
-                        sx={{
-                          border: "2px",
-                          borderColor: "var(--mui-palette-divider)",
-                          borderStyle: "solid",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        <Button
-                          variant="contained"
-                          component="label"
-                          className="w-full flex items-center gap-2"
-                        >
-                          <Attachment className="w-4 h-4" />
-                          Upload File
-                          <input type="file" hidden />
-                        </Button>
-                      </Stack>
-                    </Stack>
+                    <FileUploaderField
+                      data={formData.supportingDocuments}
+                      path="supportingDocuments"
+                    />
                   </Box>
                 </div>
               </div>
