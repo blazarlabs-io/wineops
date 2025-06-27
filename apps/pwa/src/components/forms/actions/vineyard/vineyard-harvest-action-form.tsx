@@ -42,7 +42,12 @@ import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-mem
 
 const equipment: ActionRelation[] = [];
 
-export default function VineyardHarvestActionForm() {
+export default function VineyardHarvestActionForm({
+  onBackClick,
+}: {
+  onBackClick?: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { vineyards, actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
@@ -207,7 +212,7 @@ export default function VineyardHarvestActionForm() {
   );
 
   const onSubmit = useCallback(
-    (data: any, e: any) => {
+    async (data: any, e: any) => {
       e.stopPropagation();
       e.preventDefault();
 
@@ -220,9 +225,17 @@ export default function VineyardHarvestActionForm() {
 
       console.log("CLEANED", cleanData);
 
-      actions?.harvest.exec(user?.uid as string, cleanData, selected);
+      setIsSubmitting(true);
+
+      try {
+        await actions?.harvest.exec(user?.uid as string, cleanData, selected);
+      } finally {
+        setIsSubmitting(false);
+      }
 
       setFormData(data);
+
+      onBackClick?.();
     },
     [actions?.harvest, errors, localVineyard?.id, user?.uid, vineyards]
   );
@@ -388,10 +401,25 @@ export default function VineyardHarvestActionForm() {
       {formData && formData !== undefined && (
         <div
           className="w-full"
-          style={{ borderColor: "var(--mui-palette-divider)" }}
+          style={{
+            borderColor: "var(--mui-palette-divider)",
+            height: "100%",
+            overflow: "hidden",
+          }}
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-            <div className="w-full">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-full"
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <Box
+              className="w-full"
+              sx={{
+                p: 2,
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
               <div className="flex flex-col gap-4 w-full">
                 {/* * ID - HIDDEN */}
                 <div className="hidden">
@@ -426,7 +454,12 @@ export default function VineyardHarvestActionForm() {
                     <Typography component="span">General Info</Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                      p: 0,
+                    }}
                   >
                     {/* * ACTION SUBJECT */}
                     <Stack display={"flex"} direction={"column"} gap={1}>
@@ -847,9 +880,9 @@ export default function VineyardHarvestActionForm() {
                   </AccordionDetails>
                 </Accordion>
               </div>
-            </div>
+            </Box>
 
-            <Box display={"flex"} justifyContent={"space-between"}>
+            <Box p={2} gap={2} display="flex" justifyContent="space-between">
               <Stack direction="row" spacing={0} alignItems="center">
                 <Checkbox
                   checked={!!harvestEnded || false}
@@ -869,8 +902,13 @@ export default function VineyardHarvestActionForm() {
                 </Typography>
               </Stack>
               <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
-                  Execute
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="contained"
+                  className="mt-8"
+                >
+                  Submit
                 </Button>
               </FormControl>
             </Box>
