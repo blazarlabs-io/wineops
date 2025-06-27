@@ -2,7 +2,6 @@ import { VineyardHarvestAction } from "@/models/types/actions";
 import Joi from "joi";
 import { teamMemberSchema } from "../vineyard-schema";
 import { Timestamp } from "firebase/firestore";
-import { TimestampOrString } from "../grape-schema";
 
 export const relationSchema = Joi.object({
   id: Joi.string().optional().allow(""),
@@ -32,7 +31,6 @@ const sugarSchema = Joi.object({
     email: Joi.string().optional().allow(""),
   }),
   date: TimestampOrString.optional().allow(""),
-                                                                                                                                                                                                                                                                                              date: TimestampOrString,
 });
 
 const aciditySchema = Joi.object({
