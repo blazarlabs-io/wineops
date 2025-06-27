@@ -21,8 +21,7 @@ export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
     .optional(),
   equipment: Joi.array().items(relationSchema).optional(),
   inputData: Joi.object({
-    sugar: Joi.number().precision(2).required().messages({
-      "any.required": "Sugar is required.",
+    sugar: Joi.number().precision(2).optional().messages({
       "number.base": "Sugar must be a number.",
     }),
     acidity: Joi.number().precision(2).optional(),

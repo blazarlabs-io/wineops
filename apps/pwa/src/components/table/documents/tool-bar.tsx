@@ -1,17 +1,8 @@
-import {
-  Add,
-  Backup,
-  BackupOutlined,
-  Filter,
-  FilterList,
-  Print,
-} from "@mui/icons-material";
+import UploadDocumentsDialog from "@/components/dialogs/upload-documents-dialog";
+import { Backup, FilterList } from "@mui/icons-material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "@mui/icons-material/Search";
 import {
-  ColumnsPanelTrigger,
-  ExportCsv,
-  ExportPrint,
   FilterPanelTrigger,
   QuickFilter,
   QuickFilterClear,
@@ -22,6 +13,7 @@ import {
 } from "@mui/x-data-grid";
 import clsx from "clsx";
 import * as React from "react";
+import { useState } from "react";
 
 function Button(props: React.HTMLAttributes<HTMLButtonElement>) {
   return (
@@ -49,34 +41,43 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
 }
 
 export default function DocumentsTableToolbar() {
-  return (
-    <Toolbar
-      className="gap-2! p-2! border-t-[1px]"
-      style={{ borderColor: "var(--mui-palette-divider)" }}
-    >
-      <ToolbarButton
-        render={
-          <Button>
-            <Backup className="h-4! w-4! mr-1" />
-            Upload
-          </Button>
-        }
-      />
+  const [openUploadDialog, setOpenUploadDialog] = useState<boolean>(false);
 
-      <FilterPanelTrigger
-        render={
-          <ToolbarButton
-            render={
-              <Button>
-                <FilterList className="h-4! w-4! mr-1" />
-                Filter
-              </Button>
-            }
-          />
-        }
+  return (
+    <>
+      <UploadDocumentsDialog
+        open={openUploadDialog}
+        subject=""
+        uid=""
+        onClose={() => setOpenUploadDialog(false)}
       />
-      {/* <ExportCsv render={<ToolbarButton render={<Button>Export</Button>} />} /> */}
-      {/* <ExportPrint
+      <Toolbar
+        className="gap-2! p-2! border-t-[1px]"
+        style={{ borderColor: "var(--mui-palette-divider)" }}
+      >
+        <ToolbarButton
+          render={
+            <Button onClick={() => setOpenUploadDialog(true)}>
+              <Backup className="h-4! w-4! mr-1" />
+              Upload
+            </Button>
+          }
+        />
+
+        <FilterPanelTrigger
+          render={
+            <ToolbarButton
+              render={
+                <Button>
+                  <FilterList className="h-4! w-4! mr-1" />
+                  Filter
+                </Button>
+              }
+            />
+          }
+        />
+        {/* <ExportCsv render={<ToolbarButton render={<Button>Export</Button>} />} /> */}
+        {/* <ExportPrint
         render={
           <ToolbarButton
             render={
@@ -89,54 +90,55 @@ export default function DocumentsTableToolbar() {
         }
       /> */}
 
-      <QuickFilter
-        render={(props, state) => (
-          <div {...props} className="flex overflow-clip">
-            <QuickFilterTrigger
-              className={state.expanded ? "rounded-r-none border-r-0" : ""}
-              render={
-                <ToolbarButton
-                  render={
-                    <Button aria-label="Search">
-                      <SearchIcon fontSize="small" />
-                    </Button>
-                  }
+        <QuickFilter
+          render={(props, state) => (
+            <div {...props} className="flex overflow-clip">
+              <QuickFilterTrigger
+                className={state.expanded ? "rounded-r-none border-r-0" : ""}
+                render={
+                  <ToolbarButton
+                    render={
+                      <Button aria-label="Search">
+                        <SearchIcon fontSize="small" />
+                      </Button>
+                    }
+                  />
+                }
+              />
+              <div
+                className={clsx(
+                  "flex overflow-clip transition-all duration-300 ease-in-out",
+                  state.expanded ? "w-48" : "w-0"
+                )}
+              >
+                <QuickFilterControl
+                  aria-label="Search"
+                  placeholder="Search"
+                  render={({ slotProps, size, ...controlProps }) => (
+                    <TextInput
+                      {...controlProps}
+                      {...slotProps?.htmlInput}
+                      className={clsx(
+                        "flex-1 rounded-l-none",
+                        state.expanded && state.value !== "" && "rounded-r-none"
+                      )}
+                    />
+                  )}
                 />
-              }
-            />
-            <div
-              className={clsx(
-                "flex overflow-clip transition-all duration-300 ease-in-out",
-                state.expanded ? "w-48" : "w-0"
-              )}
-            >
-              <QuickFilterControl
-                aria-label="Search"
-                placeholder="Search"
-                render={({ slotProps, size, ...controlProps }) => (
-                  <TextInput
-                    {...controlProps}
-                    {...slotProps?.htmlInput}
-                    className={clsx(
-                      "flex-1 rounded-l-none",
-                      state.expanded && state.value !== "" && "rounded-r-none"
-                    )}
+                {state.expanded && state.value !== "" && (
+                  <QuickFilterClear
+                    render={
+                      <Button aria-label="Clear" className="rounded-l-none">
+                        <CancelIcon fontSize="small" />
+                      </Button>
+                    }
                   />
                 )}
-              />
-              {state.expanded && state.value !== "" && (
-                <QuickFilterClear
-                  render={
-                    <Button aria-label="Clear" className="rounded-l-none">
-                      <CancelIcon fontSize="small" />
-                    </Button>
-                  }
-                />
-              )}
+              </div>
             </div>
-          </div>
-        )}
-      />
-    </Toolbar>
+          )}
+        />
+      </Toolbar>
+    </>
   );
 }

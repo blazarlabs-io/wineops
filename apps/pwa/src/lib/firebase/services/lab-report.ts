@@ -1,6 +1,6 @@
-import { LabReport } from "@/models/types/db";
+import { DbResponse, LabReport } from "@/models/types/db";
 import { cleanUndefined } from "@/utils/clean-undefined";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db as fdb } from "../../firebase/client";
 import { LAB_REPORTS, WINERY } from "../config";
 
@@ -19,6 +19,30 @@ const labReport = {
     } catch (error) {
       console.log("error", error);
 
+      return {
+        data: null,
+        error,
+        status: 500,
+      };
+    }
+  },
+  getAll: async (uid: string): Promise<DbResponse> => {
+    try {
+      const docRef = doc(fdb, WINERY, uid);
+      const subcollectionRef = collection(docRef, LAB_REPORTS);
+      const querySnapshot = await getDocs(subcollectionRef);
+      const data = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return { ...data };
+      });
+
+      return {
+        data,
+        error: null,
+        status: 200,
+      };
+    } catch (error) {
+      console.log("error", error);
       return {
         data: null,
         error,

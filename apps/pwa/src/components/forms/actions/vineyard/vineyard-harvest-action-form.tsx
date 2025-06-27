@@ -4,7 +4,11 @@
 import { vineyardHarvestActionSample } from "@/data/actions-samples";
 import { useAuth } from "@/lib/firebase/auth";
 import { vineyardHarvestActionSchema } from "@/models/schemas/actions/vineyard-harvest-action-schema";
-import { ActionRelation, VineyardHarvestAction } from "@/models/types/actions";
+import {
+  ActionRelation,
+  VineyardGlobalAction,
+  VineyardHarvestAction,
+} from "@/models/types/actions";
 import { Vineyard, VineyardStatus } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
@@ -26,17 +30,19 @@ import {
   Button,
   Checkbox,
   FormControl,
+  IconButton,
   TextField as Input,
+  InputLabel,
   Stack,
   TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
-import { DatePicker } from "@mui/x-date-pickers";
+import { ClearIcon, DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 
@@ -78,6 +84,81 @@ export default function VineyardHarvestActionForm({
   const [localVineyard, setLocalVineyard] = useState<Vineyard | null>(null);
   const [harvestEnded, setHarvestEnded] = useState<boolean>(false);
 
+  // ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+  // const handleChange = useCallback(
+  //     (name: string, value: any) => {
+  //       // console.log("NAME", name, value);
+  //       if (name.startsWith("consumables")) {
+  //         const data = consumables?.filter((v) => v.consumableID === value[0]);
+  //         const newValue = {
+  //           id: data[0]?.id,
+  //           name: data[0]?.consumableID as string,
+  //           qty: data[0]?.qty as number,
+  //         };
+  //         if (formData.consumables === undefined) formData.consumables = [];
+  //         // formData?.consumables?.push(newValue);
+  //         const _consumables = [
+  //           ...(formData.consumables as {
+  //             name: string;
+  //             id: string;
+  //             qty: number;
+  //           }[]),
+  //           newValue,
+  //         ];
+  //         setFormData((prev) => ({
+  //           ...(prev as VineyardGlobalAction),
+  //           consumables: _consumables,
+  //         }));
+
+  //         setValue("consumables", _consumables);
+
+  //         return;
+  //       }
+  //       setFormData((prev) => ({
+  //         ...(prev as VineyardGlobalAction),
+  //         [name]: value,
+  //       }));
+  //     },
+  //     [consumables, formData]
+  //   );
+
+  function removeByIndex<T>(array: T[], index: number): T[] {
+    if (index < 0 || index >= array.length) return array; // index out of bounds
+    const result = [...array.slice(0, index), ...array.slice(index + 1)];
+    console.log("result", result);
+    return result;
+  }
+
+  const handleDeleteFromList = useCallback(
+    (value: string, index: number) => {
+      console.log("VALUE", value, index);
+      if (formData?.consumables && formData?.consumables?.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          consumables: removeByIndex(formData.consumables as any, index),
+        }));
+      }
+    },
+    [formData]
+  );
+
+  const handleQtyChange = useCallback(
+    (index: number, value: any) => {
+      if (formData?.consumables && formData?.consumables?.length > 0) {
+        const data = formData.consumables as any;
+        data[index].qty = value;
+        setFormData((prev) => ({
+          ...(prev as VineyardHarvestAction),
+          consumables: data,
+        }));
+      }
+    },
+    [formData]
+  );
+
+  // ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
   const handleChange = useCallback(
     (name: string, value: any) => {
       if (name.startsWith("executionDate")) {
@@ -103,48 +184,72 @@ export default function VineyardHarvestActionForm({
 
         return;
       } else if (name === "consumables") {
-        const prevConsumables =
-          (formData.consumables as ActionRelation[]) || [];
+        const data = consumables?.filter((v) => v.consumableID === value[0]);
+        const newValue = {
+          id: data[0]?.id,
+          name: data[0]?.consumableID as string,
+          qty: data[0]?.qty as number,
+        };
+        if (formData.consumables === undefined) formData.consumables = [];
+        // formData?.consumables?.push(newValue);
+        const _consumables = [
+          ...(formData.consumables as {
+            name: string;
+            id: string;
+            qty: number;
+          }[]),
+          newValue,
+        ];
+        setFormData((prev) => ({
+          ...(prev as VineyardHarvestAction),
+          consumables: _consumables,
+        }));
 
-        // * Check if the consumable is already in the list
-        const alreadyInList = prevConsumables.find((c) => c.name === value);
+        setValue("consumables", _consumables);
 
-        console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-        console.log("prevConsumables", prevConsumables);
-        console.log("alreadyInList", alreadyInList);
-        console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-
-        if (alreadyInList !== undefined) {
-          console.log("\n\n already in list: LEAVE AS IS");
-          value = [alreadyInList] as ActionRelation[];
-        } else if (prevConsumables.length === 0) {
-          // add consumable to list
-          console.log("\n\n not in list and prevConsumables is empty: ADD");
-          const newConsumable = {
-            id: consumables.filter((c) => c.name === value)[0].id,
-            name: value,
-          };
-          value = [...prevConsumables, newConsumable] as ActionRelation[];
-        } else {
-          // remove consumable from list
-          console.log(
-            "\n\n not in list and prevConsumables is not empty: DELETE"
-          );
-          value = prevConsumables.slice(0, -1) as ActionRelation[];
-        }
-
-        console.log("\n\n----------------------------");
-        console.log("value", value);
-        console.log("----------------------------\n\n");
-
-        setValue("consumables" as string, value as ActionRelation[]);
-        setFormData((prevData: VineyardHarvestAction) => {
-          return {
-            ...prevData,
-            consumables: value,
-          };
-        });
         return;
+        // const prevConsumables =
+        //   (formData.consumables as ActionRelation[]) || [];
+
+        // // * Check if the consumable is already in the list
+        // const alreadyInList = prevConsumables.find((c) => c.name === value);
+
+        // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+        // console.log("prevConsumables", prevConsumables);
+        // console.log("alreadyInList", alreadyInList);
+        // console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+
+        // if (alreadyInList !== undefined) {
+        //   console.log("\n\n already in list: LEAVE AS IS");
+        //   value = [alreadyInList] as ActionRelation[];
+        // } else if (prevConsumables.length === 0) {
+        //   // add consumable to list
+        //   console.log("\n\n not in list and prevConsumables is empty: ADD");
+        //   const newConsumable = {
+        //     id: consumables.filter((c) => c.name === value)[0].id,
+        //     name: value,
+        //   };
+        //   value = [...prevConsumables, newConsumable] as ActionRelation[];
+        // } else {
+        //   // remove consumable from list
+        //   console.log(
+        //     "\n\n not in list and prevConsumables is not empty: DELETE"
+        //   );
+        //   value = prevConsumables.slice(0, -1) as ActionRelation[];
+        // }
+
+        // console.log("\n\n----------------------------");
+        // console.log("value", value);
+        // console.log("----------------------------\n\n");
+
+        // setValue("consumables" as string, value as ActionRelation[]);
+        // setFormData((prevData: VineyardHarvestAction) => {
+        //   return {
+        //     ...prevData,
+        //     consumables: value,
+        //   };
+        // });
+        // return;
       } else if (name === "sugar" && value === "acidity") {
         value = {
           id: "",
@@ -256,12 +361,26 @@ export default function VineyardHarvestActionForm({
         selected?.labData?.some((ld) => ld.id === l.id)
       )[0];
 
+      let sugar, acidity, date;
+
+      if (labReport?.results?.sugar.value === undefined) {
+        sugar = 0;
+      } else {
+        sugar = labReport?.results?.sugar.value;
+      }
+
+      if (labReport?.results?.acidity.value === undefined) {
+        acidity = 0;
+      } else {
+        acidity = labReport?.results?.acidity.value;
+      }
+
       vineyardHarvestActionSample.sugar = {
         id: labReport?.id,
         name: "",
         value: labReport?.results?.sugar?.value ?? 0,
         variation: labReport?.results?.sugar?.variation,
-        date: labReport?.date || new Date().toDateString(),
+        date: labReport?.date || Timestamp.now(),
         unit: (labReport?.units?.[0] as string as string) || "",
       };
 
@@ -270,7 +389,7 @@ export default function VineyardHarvestActionForm({
         name: "",
         value: labReport?.results?.acidity?.value ?? 0,
         variation: labReport?.results?.acidity?.variation,
-        date: labReport?.date || new Date().toDateString(),
+        date: labReport?.date || Timestamp.now(),
         unit: (labReport?.units?.[0] as string) || "",
       };
 
@@ -574,7 +693,124 @@ export default function VineyardHarvestActionForm({
                     {/* * CONSUMABLE */}
                     {/* TODO: multiple consumables and show quantity */}
                     {/* ! Checkout primary-vinification decant action form for custom component */}
-                    <FormControl fullWidth>
+                    <div className="flex flex-col gap-2">
+                      <InputLabel className="text-sm text-muted-foreground">
+                        Enter the consumables used
+                      </InputLabel>
+
+                      <Autocomplete
+                        multiple
+                        noOptionsText="No vessels available"
+                        options={consumables?.map((v) => v.consumableID)}
+                        value={[]}
+                        filterSelectedOptions
+                        onChange={(_event, newValue) => {
+                          handleChange("consumables", newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            variant="outlined"
+                            label="Consumables used"
+                          />
+                        )}
+                      />
+
+                      {(formData.consumables || []).length > 0 && (
+                        <Stack
+                          p={2}
+                          pb={1}
+                          gap={1}
+                          sx={{
+                            border: "1px solid var(--mui-palette-divider)",
+                          }}
+                        >
+                          {formData.consumables?.map(
+                            ({ id, name = "", qty }, index) => (
+                              <Fragment key={id}>
+                                <Stack
+                                  gap={1}
+                                  key={id}
+                                  direction="row"
+                                  alignItems="center"
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    component="div"
+                                    sx={{ flex: 1 }}
+                                  >
+                                    {name}
+                                  </Typography>
+
+                                  <FormControl>
+                                    <Input
+                                      id="qty"
+                                      size="small"
+                                      label="Qty"
+                                      type="number"
+                                      variant="outlined"
+                                      value={qty || 0}
+                                      slotProps={{
+                                        htmlInput: { min: 1, step: "any" },
+                                      }}
+                                      sx={{ width: "80px" }}
+                                      onChange={(e) => {
+                                        const updated: VineyardGlobalAction["consumables"] =
+                                          [...(formData.consumables || [])];
+                                        updated[index].qty = Number(
+                                          e.target.value
+                                        );
+                                        console.log("UPDATED", e.target.value);
+                                        handleQtyChange(
+                                          index,
+                                          Number(e.target.value)
+                                        );
+                                      }}
+                                    />
+                                  </FormControl>
+
+                                  <IconButton
+                                    size="small"
+                                    disabled={false}
+                                    onClick={() => {
+                                      handleDeleteFromList(
+                                        "consumables",
+                                        index
+                                      );
+                                    }}
+                                  >
+                                    <ClearIcon fontSize="small" />
+                                  </IconButton>
+                                </Stack>
+
+                                <Typography
+                                  key={index}
+                                  variant="body2"
+                                  color="error"
+                                  className="mt-1"
+                                >
+                                  {errors?.consumables &&
+                                    Array.isArray(errors?.consumables) &&
+                                    (errors?.consumables[index]?.qty
+                                      ?.message as string)}
+                                </Typography>
+                              </Fragment>
+                            )
+                          )}
+                        </Stack>
+                      )}
+
+                      {errors?.consumables && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.consumables?.message as string}
+                        </Typography>
+                      )}
+                    </div>
+                    {/* <FormControl fullWidth>
                       <Stack display={"flex"} flexDirection={"column"} gap={1}>
                         <Typography variant="body2" color="textSecondary">
                           Enter the consumables used
@@ -598,7 +834,7 @@ export default function VineyardHarvestActionForm({
                           }}
                         />
                       </Stack>
-                    </FormControl>
+                    </FormControl> */}
                     {/* * TOOLS & EQUIPMENT */}
                     <FormControl fullWidth>
                       <Stack display={"flex"} flexDirection={"column"} gap={1}>
@@ -606,6 +842,7 @@ export default function VineyardHarvestActionForm({
                           Select the tools&equipment used
                         </Typography>
                         <Autocomplete
+                          disabled
                           id="equipment"
                           multiple
                           options={equipment.map((item) => item.name)}

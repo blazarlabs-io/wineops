@@ -5,6 +5,7 @@ import VineyardIrrigationActionFormComposer from "@/components/forms/actions/vin
 import VineyardLabActionFormComposer from "@/components/forms/actions/vineyard/vineyard-lab-action-form-composer";
 import {
   vineyardHarvestAction,
+  vineyardIrrigationAction,
   vineyardLabAction,
 } from "@/lib/actions/vineyard-actions";
 import { useAuth } from "@/lib/firebase/auth";
@@ -73,8 +74,8 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
       icon: "material-symbols:lab-profile-outline",
     },
     irrigation: {
-      exec: vineyardLabAction,
-      form: VineyardIrrigationActionFormComposer,
+      exec: vineyardIrrigationAction,
+      form: <VineyardIrrigationActionFormComposer />,
       icon: "material-symbols:water-drop",
     },
   });

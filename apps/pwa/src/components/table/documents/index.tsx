@@ -2,7 +2,7 @@
 import { useSortDocuments } from "@/hooks/use-sort-documents";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { documentsColumns } from "./columns";
 import DocumentsTableToolbar from "./tool-bar";
 
@@ -21,7 +21,7 @@ export default function DocumentsTable({ docs }: DocumentProps) {
   );
 
   return (
-    <Box sx={{ height: 300, width: "100%" }}>
+    <Box sx={{ height: 312, width: "100%" }}>
       {sortedDocs && columns && (
         <DataGrid
           rows={sortedDocs}
