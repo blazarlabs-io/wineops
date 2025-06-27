@@ -8,6 +8,8 @@ interface QuickDrawerContextType {
   updateOpen: (open: boolean) => void;
   type: QuickDrawerType;
   updateType: (type: QuickDrawerType) => void;
+  openForm: boolean;
+  updateOpenForm: (open: boolean) => void;
 }
 
 const QuickDrawerContext = createContext<QuickDrawerContextType | null>(null);
@@ -29,12 +31,17 @@ interface IQuickDrawerProvider {
 export const QuickDrawerProvider = ({ children }: IQuickDrawerProvider) => {
   const [open, setOpen] = useState<boolean>(false);
   const [type, setType] = useState<QuickDrawerType>("actions");
+  const [openForm, setOpenForm] = useState(false);
 
   const updateOpen = (open: boolean) => {
     setOpen(open);
   };
   const updateType = (type: QuickDrawerType) => {
     setType(type);
+  };
+
+  const updateOpenForm = (open: boolean) => {
+    setOpenForm(open);
   };
 
   return (
@@ -44,6 +51,8 @@ export const QuickDrawerProvider = ({ children }: IQuickDrawerProvider) => {
         updateOpen,
         type,
         updateType,
+        openForm,
+        updateOpenForm,
       }}
     >
       {children}
