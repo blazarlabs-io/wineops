@@ -1,11 +1,20 @@
 import { VineyardHarvestAction } from "@/models/types/actions";
 import Joi from "joi";
 import { teamMemberSchema } from "../vineyard-schema";
+import { Timestamp } from "firebase/firestore";
 
 export const relationSchema = Joi.object({
   id: Joi.string().optional().allow(""),
   name: Joi.string().optional().allow(""),
 });
+
+const TimestampOrString = Joi.alternatives().try(
+  Joi.string().isoDate(),
+  Joi.object().custom((value, helpers) => {
+    if (value instanceof Timestamp) return value;
+    return helpers.error("any.invalid");
+  }, "Timestamp validation")
+);
 
 const sugarSchema = Joi.object({
   id: Joi.string().optional().allow(""),
@@ -21,7 +30,7 @@ const sugarSchema = Joi.object({
     name: Joi.string().optional().allow(""),
     email: Joi.string().optional().allow(""),
   }),
-  date: Joi.date().optional().allow(""),
+  date: TimestampOrString.optional().allow(""),
 });
 
 const aciditySchema = Joi.object({
@@ -38,7 +47,7 @@ const aciditySchema = Joi.object({
     name: Joi.string().optional().allow(""),
     email: Joi.string().optional().allow(""),
   }),
-  date: Joi.date().optional().allow(""),
+  date: TimestampOrString.optional().allow(""),
 });
 
 export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
