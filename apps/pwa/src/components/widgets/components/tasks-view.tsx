@@ -159,6 +159,7 @@ export default function TasksView({ tasks }: TasksViewProps) {
               return (
                 count > 0 && (
                   <Stack
+                    key={status}
                     direction="row"
                     gap={0.5}
                     sx={{
@@ -168,7 +169,6 @@ export default function TasksView({ tasks }: TasksViewProps) {
                     }}
                   >
                     <Button
-                      key={status}
                       size="small"
                       variant={statuses.includes(status) ? "outlined" : "text"}
                       className="lowercase!"
