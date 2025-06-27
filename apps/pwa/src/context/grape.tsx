@@ -51,12 +51,12 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
   const [actions] = useState<GrapeActions>({
     "grape-intake": {
       exec: grapeIntakeAction,
-      form: <GrapeIntakeActionFormComposer />,
+      form: GrapeIntakeActionFormComposer,
       icon: "hugeicons:grapes",
     },
     "grape-processing": {
       exec: grapeProcessingAction,
-      form: <GrapeProcessingActionFormComposer />,
+      form: GrapeProcessingActionFormComposer,
       icon: "material-symbols:grain",
     },
   });

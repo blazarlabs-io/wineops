@@ -8,9 +8,9 @@ import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import GrapeEntryContent from "./grape-entry-content";
 import SupplierContent from "./supplier-content";
-import DocumentsContent from "./documents-content";
 import LabDataContent from "./lab-data-content";
 import DocumentsTable from "@/components/table/documents";
+import TasksView from "../components/tasks-view";
 
 export type GrapeDetailsWidgetProps = {
   grape: Grape;
@@ -98,7 +98,7 @@ export default function GrapeDetailsWidget({
       </TabPanel>
 
       <TabPanel value={value} index={3}>
-        <div className="flex gap-8 px-4">Task View</div>
+        <TasksView tasks={grape?.tasks || []} />
       </TabPanel>
 
       <TabPanel value={value} index={4}>

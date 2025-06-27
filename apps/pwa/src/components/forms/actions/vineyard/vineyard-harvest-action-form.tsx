@@ -42,7 +42,12 @@ import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-mem
 
 const equipment: ActionRelation[] = [];
 
-export default function VineyardHarvestActionForm() {
+export default function VineyardHarvestActionForm({
+  onBackClick,
+}: {
+  onBackClick?: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { vineyards, actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
@@ -207,7 +212,7 @@ export default function VineyardHarvestActionForm() {
   );
 
   const onSubmit = useCallback(
-    (data: any, e: any) => {
+    async (data: any, e: any) => {
       e.stopPropagation();
       e.preventDefault();
 
@@ -220,9 +225,17 @@ export default function VineyardHarvestActionForm() {
 
       console.log("CLEANED", cleanData);
 
-      actions?.harvest.exec(user?.uid as string, cleanData, selected);
+      setIsSubmitting(true);
+
+      try {
+        await actions?.harvest.exec(user?.uid as string, cleanData, selected);
+      } finally {
+        setIsSubmitting(false);
+      }
 
       setFormData(data);
+
+      onBackClick?.();
     },
     [actions?.harvest, errors, localVineyard?.id, user?.uid, vineyards]
   );
@@ -243,24 +256,10 @@ export default function VineyardHarvestActionForm() {
         selected?.labData?.some((ld) => ld.id === l.id)
       )[0];
 
-      let sugar, acidity;
-
-      if (labReport?.results?.sugar.value === undefined) {
-        sugar = 0;
-      } else {
-        sugar = labReport?.results?.sugar.value;
-      }
-
-      if (labReport?.results?.acidity.value === undefined) {
-        acidity = 0;
-      } else {
-        acidity = labReport?.results?.acidity.value;
-      }
-
       vineyardHarvestActionSample.sugar = {
         id: labReport?.id,
         name: "",
-        value: sugar as number,
+        value: labReport?.results?.sugar?.value ?? 0,
         variation: labReport?.results?.sugar?.variation,
         date: labReport?.date || new Date().toDateString(),
         unit: (labReport?.units?.[0] as string as string) || "",
@@ -269,7 +268,7 @@ export default function VineyardHarvestActionForm() {
       vineyardHarvestActionSample.acidity = {
         id: labReport?.id,
         name: "",
-        value: acidity,
+        value: labReport?.results?.acidity?.value ?? 0,
         variation: labReport?.results?.acidity?.variation,
         date: labReport?.date || new Date().toDateString(),
         unit: (labReport?.units?.[0] as string) || "",
@@ -314,7 +313,7 @@ export default function VineyardHarvestActionForm() {
     vineyardHarvestActionSample.consumables = [];
     vineyardHarvestActionSample.sugar.value = 0;
     vineyardHarvestActionSample.sugar.date = Timestamp.now();
-    if (vineyardHarvestActionSample.acidity) {
+    if (vineyardHarvestActionSample.acidity?.value) {
       vineyardHarvestActionSample.acidity.value = 0;
       vineyardHarvestActionSample.acidity.date = Timestamp.now();
     }
@@ -334,24 +333,10 @@ export default function VineyardHarvestActionForm() {
         selectedVineyards[0]?.labData?.some((ld) => ld.id === l.id)
       )[0];
 
-      let sugar, acidity;
-
-      if (labReport?.results?.sugar.value === undefined) {
-        sugar = 0;
-      } else {
-        sugar = labReport?.results?.sugar.value;
-      }
-
-      if (labReport?.results?.acidity.value === undefined) {
-        acidity = 0;
-      } else {
-        acidity = labReport?.results?.acidity.value;
-      }
-
       vineyardHarvestActionSample.sugar = {
         id: labReport?.id,
         name: "",
-        value: sugar as number,
+        value: labReport?.results?.sugar?.value ?? 0,
         variation: labReport?.results?.sugar?.variation,
         date: labReport?.date || new Date().toDateString(),
         unit: (labReport?.units?.[0] as string as string) || "",
@@ -360,7 +345,7 @@ export default function VineyardHarvestActionForm() {
       vineyardHarvestActionSample.acidity = {
         id: labReport?.id,
         name: "",
-        value: acidity as number,
+        value: labReport?.results?.acidity?.value ?? 0,
         variation: labReport?.results?.acidity?.variation,
         date: labReport?.date || new Date().toDateString(),
         unit: (labReport?.units?.[0] as string) || "",
@@ -416,10 +401,25 @@ export default function VineyardHarvestActionForm() {
       {formData && formData !== undefined && (
         <div
           className="w-full"
-          style={{ borderColor: "var(--mui-palette-divider)" }}
+          style={{
+            borderColor: "var(--mui-palette-divider)",
+            height: "100%",
+            overflow: "hidden",
+          }}
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-            <div className="w-full">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-full"
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <Box
+              className="w-full"
+              sx={{
+                p: 2,
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
               <div className="flex flex-col gap-4 w-full">
                 {/* * ID - HIDDEN */}
                 <div className="hidden">
@@ -454,7 +454,11 @@ export default function VineyardHarvestActionForm() {
                     <Typography component="span">General Info</Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                    }}
                   >
                     {/* * ACTION SUBJECT */}
                     <Stack display={"flex"} direction={"column"} gap={1}>
@@ -642,7 +646,11 @@ export default function VineyardHarvestActionForm() {
                     <Typography component="span">Transporation Info</Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                    }}
                   >
                     {/* * LOCATION */}
                     {/* TODO: a predefined user list of locations shoudl exist in DB. If not, the create one using the new location input */}
@@ -780,7 +788,11 @@ export default function VineyardHarvestActionForm() {
                     <Typography component="span">Quality Parameters</Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                    }}
                   >
                     {/* * MASS CONCENTRATION OF SUGARS */}
                     <div className="">
@@ -858,7 +870,11 @@ export default function VineyardHarvestActionForm() {
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails
-                    sx={{ display: "flex", gap: 2, flexDirection: "column" }}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "column",
+                    }}
                   >
                     <Typography variant="body1">Description</Typography>
                     <TextareaAutosize
@@ -875,9 +891,9 @@ export default function VineyardHarvestActionForm() {
                   </AccordionDetails>
                 </Accordion>
               </div>
-            </div>
+            </Box>
 
-            <Box display={"flex"} justifyContent={"space-between"}>
+            <Box p={2} gap={2} display="flex" justifyContent="space-between">
               <Stack direction="row" spacing={0} alignItems="center">
                 <Checkbox
                   checked={!!harvestEnded || false}
@@ -897,8 +913,13 @@ export default function VineyardHarvestActionForm() {
                 </Typography>
               </Stack>
               <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
-                  Execute
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="contained"
+                  className="mt-8"
+                >
+                  Submit
                 </Button>
               </FormControl>
             </Box>

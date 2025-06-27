@@ -14,21 +14,21 @@ export default function QuickActionsWidgetStepTwo<
   T extends SingleActionEntity,
 >({ title, selectedAction, onBackClick }: QuickActionsWidgetStepOneProps<T>) {
   console.log("selectedAction", selectedAction);
+  const FormComponent = selectedAction?.form;
+
   return (
     <Box
-      pl={2}
-      pb={2}
-      display={"flex"}
-      flexDirection={"column"}
+      display="flex"
+      flexDirection="column"
       gap={2}
       className="pointer-events-auto overflow-x-hidden"
-      height={"100%"}
+      height="100%"
       width="100%"
       minWidth={RIGHT_DRAWER_WIDTH}
     >
       <Box
-        display={"flex"}
-        alignItems={"center"}
+        display="flex"
+        alignItems="center"
         gap={1}
         className="absolute top-[80px] left-2"
       >
@@ -45,7 +45,7 @@ export default function QuickActionsWidgetStepTwo<
           <Typography variant="body2">Back</Typography>
         </Button>
       </Box>
-      <Box display={"flex"} alignItems={"center"} gap={1}>
+      <Box display="flex" alignItems="center" gap={1} px={2}>
         <Icon icon={selectedAction?.icon as string} width={24} height={24} />
         <Typography variant="h5" className="capitalize">
           {title}
@@ -57,13 +57,14 @@ export default function QuickActionsWidgetStepTwo<
           maxWidth: RIGHT_DRAWER_WIDTH,
           overflowX: "hidden",
           height: "100%",
-          maxHeight: "90% !important",
         }}
         // className="debug-red"
       >
-        <Stack gap={2} py={2} height="100%" pr={2}>
+        <Stack height="100%">
           {/* *Form */}
-          <React.Fragment>{selectedAction?.form}</React.Fragment>
+          <React.Fragment>
+            {FormComponent && <FormComponent onBackClick={onBackClick} />}
+          </React.Fragment>
         </Stack>
       </Box>
       {/* <Box display={"flex"} justifyContent={"end"}>

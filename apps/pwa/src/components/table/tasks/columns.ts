@@ -12,7 +12,6 @@ export const columns: ColDef[] = [
     field: "title",
     minWidth: 120,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: TitleCellRenderer,
   },
   {
@@ -20,7 +19,6 @@ export const columns: ColDef[] = [
     field: "status",
     minWidth: 125,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: StatusCellRenderer,
   },
   {
@@ -28,14 +26,12 @@ export const columns: ColDef[] = [
     field: "subjectOfAction",
     minWidth: 56,
     flex: 1,
-    cellStyle: { width: "100%" },
     // cellRenderer: RoleCellRenderer,
   },
   {
     headerName: "Priority",
     field: "priority",
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: PriorityCellRenderer,
   },
   {
@@ -43,7 +39,6 @@ export const columns: ColDef[] = [
     field: "startDate",
     minWidth: 80,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: DateCellRenderer,
   },
   {
@@ -51,7 +46,6 @@ export const columns: ColDef[] = [
     field: "dueDate",
     minWidth: 80,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: DateCellRenderer,
   },
   {
@@ -59,7 +53,6 @@ export const columns: ColDef[] = [
     field: "createdBy",
     minWidth: 80,
     flex: 1,
-    cellStyle: { width: "100%" },
     cellRenderer: CreatedByCellRenderer,
   },
 ];

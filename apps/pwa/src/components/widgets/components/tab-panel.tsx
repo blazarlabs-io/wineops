@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -14,7 +14,7 @@ export default function TabPanel({
   ...other
 }: TabPanelProps) {
   return (
-    <Box
+    <Stack
       role="tabpanel"
       hidden={value !== index}
       id={`vertical-tabpanel-${index}`}
@@ -26,7 +26,17 @@ export default function TabPanel({
         overflowY: "auto",
       }}
     >
-      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
-    </Box>
+      {value === index && (
+        <Stack
+          sx={{
+            p: 2,
+            height: "100%",
+            justifyContent: "center",
+          }}
+        >
+          {children}
+        </Stack>
+      )}
+    </Stack>
   );
 }
