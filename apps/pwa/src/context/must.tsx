@@ -48,7 +48,7 @@ export const MustProvider = ({ children }: IMustProvider) => {
   const [actions] = useState<MustActions>({
     "must-decant": {
       exec: mustDecantAction,
-      form: <MustDecantActionForm />,
+      form: MustDecantActionForm,
       icon: "material-symbols:science-outline",
     },
   });

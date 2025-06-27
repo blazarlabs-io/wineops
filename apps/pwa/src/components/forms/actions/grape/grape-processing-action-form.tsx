@@ -199,7 +199,7 @@ export default function GrapeProcessingActionForm() {
   return (
     <>
       {formData && formData !== undefined && (
-        <div className="w-full pr-4">
+        <div className="w-full p-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
             <div className="w-full">
               <div className="flex flex-col gap-4 w-full">
@@ -402,7 +402,7 @@ export default function GrapeProcessingActionForm() {
             <Box display={"flex"} justifyContent={"end"}>
               <FormControl>
                 <Button type="submit" variant="contained" className="mt-8">
-                  Execute
+                  Submit
                 </Button>
               </FormControl>
             </Box>
