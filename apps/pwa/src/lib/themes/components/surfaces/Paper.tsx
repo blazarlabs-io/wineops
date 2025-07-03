@@ -9,6 +9,10 @@ const MuiPaper: Components<Omit<Theme, "components">>["MuiPaper"] = {
         boxShadow: theme.shadows[8],
         border: `1px solid ${theme.palette.divider}`,
       },
+      "&.MuiAutocomplete-paper": {
+        boxShadow: theme.shadows[8],
+        border: `1px solid ${theme.palette.divider}`,
+      },
       "&.MuiDrawer-paper": {},
       "&.Popover-paper": {},
     }),

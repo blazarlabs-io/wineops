@@ -124,7 +124,7 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="default"
               aria-label="add"
-              onClick={openFormDrawer}
+              onClick={buttons[ButtonType.ADD]?.onClick || openFormDrawer}
               disabled={!enableAdd}
             >
               <Add className="" />
@@ -135,7 +135,7 @@ export default function ToolsBar(props: ToolsBarProps) {
               color="default"
               aria-label="edit"
               disabled={!enableEdit}
-              onClick={openFormDrawer}
+              onClick={buttons[ButtonType.EDIT]?.onClick || openFormDrawer}
             >
               <Edit />
             </IconButton>
