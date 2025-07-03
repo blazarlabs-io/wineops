@@ -112,7 +112,7 @@ export default function DeleteEntitiesDialog<T extends DashboardEntity>({
         <Box display={"flex"} gap={1} flexWrap={"wrap"} paddingTop={2}>
           {selected.map((entity) => {
             const { name, id } = getEntityNameAndId(entity);
-            return <Chip label={name} key={id} />;
+            return name && <Chip label={name} key={id} />;
           })}
         </Box>
       </DialogContent>

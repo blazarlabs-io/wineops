@@ -472,6 +472,12 @@ export const DataTable = <T extends DashboardEntity>({
     ({ rowType }) => rowType === "item" || rowType !== "group"
   );
 
+  useEffect(() => {
+    return () => {
+      setSelected([]);
+    };
+  }, [setSelected]);
+
   return (
     <>
       {groupByButtons && groupByButtons.length > 0 && (

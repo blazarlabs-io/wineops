@@ -13,6 +13,7 @@ import { MustProvider } from "./must";
 import { ChemistryProvider } from "./chemistry";
 import { WineProvider } from "./wine";
 import { QuickDrawerProvider } from "./quick-drawer";
+import { Anexa14Provider } from "./anexa14";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -28,14 +29,16 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                       <MustProvider>
                         <ChemistryProvider>
                           <WineProvider>
-                            <APIProvider
-                              apiKey={
-                                process.env
-                                  .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
-                              }
-                            >
-                              {children}
-                            </APIProvider>
+                            <Anexa14Provider>
+                              <APIProvider
+                                apiKey={
+                                  process.env
+                                    .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+                                }
+                              >
+                                {children}
+                              </APIProvider>
+                            </Anexa14Provider>
                           </WineProvider>
                         </ChemistryProvider>
                       </MustProvider>
