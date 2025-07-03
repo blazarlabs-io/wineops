@@ -17,8 +17,6 @@ export default function Anexa14Dashboard() {
 
     if (!id || entityName !== "anexa14") return;
 
-    console.log("{ selected, entityName }:", { selected, entityName });
-
     router.push(`anexa14/${id}`);
   };
 
