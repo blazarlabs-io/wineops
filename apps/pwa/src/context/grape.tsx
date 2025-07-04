@@ -54,10 +54,11 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
       form: GrapeIntakeActionFormComposer,
       icon: "hugeicons:grapes",
     },
-    "grape-processing": {
+    "grape-process": {
       exec: grapeProcessingAction,
       form: GrapeProcessingActionFormComposer,
       icon: "material-symbols:grain",
+      title: "Process Grapes into Must"
     },
   });
 

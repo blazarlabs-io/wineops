@@ -36,7 +36,7 @@ export default function QuickActionsWidget({
       console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
       onClick(action);
       setSelectedAction(() => actions[action.split(" ").join("-")]);
-      setFormTitle(`${action} action`);
+      setFormTitle(selected?.title ?? `${action} action`);
       setStep(2);
     },
     [actions, onClick]

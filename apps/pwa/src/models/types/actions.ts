@@ -38,15 +38,16 @@ export type GrapeSingleAction = {
   exec: (uid: string, actionData: any, grape: Grape) => void;
   form: any;
   icon: string;
+  title?: string;
 };
 
 export type GrapeActions = {
   "grape-intake": GrapeSingleAction;
-  "grape-processing": GrapeSingleAction;
+  "grape-process": GrapeSingleAction;
 };
 
 export type VineyardActionType = "harvest" | "lab-report" | "irrigation" | null;
-export type GrapeActionType = "grape-intake" | "grape-processing" | null;
+export type GrapeActionType = "grape-intake" | "grape-process" | null;
 
 export type GrapeIntakeAction = {
   id: string;
@@ -85,6 +86,14 @@ export type GrapeIntakeAction = {
   };
 };
 
+export type PressPercentage = {
+  id: string;
+  mustId: string;
+  inputQuantity: number; //Litres
+  vessels: Array<MustWineVessel>;
+  newPressPercentage: number;
+};
+
 export type GrapeProcessingAction = {
   id: string;
   batchId: string;
@@ -95,16 +104,12 @@ export type GrapeProcessingAction = {
   receivingBay?: any;
   destemmer?: any;
   press?: any;
-  pressPercentage?: {
-    mustId?: string;
-    inputQuantity?: number; //Litres
-    vessel?: string;
-    newPressPercentage?: number;
-  };
+  pressPercentage?: Array<PressPercentage>;
   wasteQuantity?: number;
   metrics?: {
     actual?: number;
   };
+  responsible?: TeamMember;
 };
 
 export interface VineyardHarvestAction {
