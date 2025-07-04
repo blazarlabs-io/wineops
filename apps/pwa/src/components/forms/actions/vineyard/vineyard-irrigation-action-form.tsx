@@ -52,7 +52,13 @@ const MenuProps = {
 const equipment: ActionRelation[] = [];
 // const consumables: ActionRelation[] = [];
 
-export default function VineyardIrrigationActionForm() {
+export default function VineyardIrrigationActionForm({
+  onBackClick,
+}: {
+  onBackClick?: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { vineyards, actions } = useVineyard();
   const { user } = useAuth();
   const { consumables } = useConsumable();
@@ -175,7 +181,7 @@ export default function VineyardIrrigationActionForm() {
     [formData, equipment]
   );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
@@ -187,9 +193,21 @@ export default function VineyardIrrigationActionForm() {
 
     console.log("SUBJECT VINEYARD", subjectVineyard);
 
-    actions?.irrigation.exec(user?.uid as string, data, subjectVineyard);
+    setIsSubmitting(true);
+
+    try {
+      await actions?.irrigation.exec(
+        user?.uid as string,
+        data,
+        subjectVineyard
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setFormData(data);
+
+    onBackClick?.();
   };
 
   useEffect(() => {
@@ -229,11 +247,26 @@ export default function VineyardIrrigationActionForm() {
     <>
       {formData && formData !== undefined && (
         <div
-          className="w-full p-4"
-          style={{ borderColor: "var(--mui-palette-divider)" }}
+          className="w-full"
+          style={{
+            borderColor: "var(--mui-palette-divider)",
+            height: "100%",
+            overflow: "hidden",
+          }}
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-            <div className="w-full">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="sw-full"
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <Box
+              className="w-full"
+              sx={{
+                p: 2,
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
               <div className="flex flex-col gap-4 w-full">
                 {/* * ID - HIDDEN */}
                 <div className="hidden">
@@ -518,11 +551,16 @@ export default function VineyardIrrigationActionForm() {
                   </Box>
                 </div>
               </div>
-            </div>
+            </Box>
 
-            <Box display={"flex"} justifyContent={"end"}>
+            <Box p={2} gap={2} display="flex" justifyContent="end">
               <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="contained"
+                  className="mt-8"
+                >
                   Submit
                 </Button>
               </FormControl>
