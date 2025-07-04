@@ -223,489 +223,507 @@ export default function MustDecantActionForm() {
   return (
     <>
       {formData && formData !== undefined && (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack gap={2}>
-            <div className="hidden">
-              <FormControl>
-                <Input
-                  id={formData.id as Must["id"]}
-                  value={formData.id || ""}
-                  type="hidden"
-                  {...register("id")}
-                />
-              </FormControl>
-            </div>
-
-            <Stack gap={1} className="w-full">
-              <DatePicker
-                name="executionDate"
-                value={
-                  formData?.executionDate
-                    ? dayjs(parseToDate(formData?.executionDate))
-                    : null
-                }
-                label="Date"
-                views={["year", "month", "day"]}
-                className="w-full"
-                onChange={(date) => {
-                  handleSelectChange(
-                    "executionDate",
-                    date ? Timestamp.fromDate(date.toDate()) : undefined
-                  );
-                }}
-              />
-
-              {errors?.executionDate && (
-                <Typography variant="body2" color="error" className="mt-1">
-                  {errors?.executionDate?.message as string}
-                </Typography>
-              )}
-            </Stack>
-
-            <FormControl fullWidth>
-              <InputLabel>Must Name</InputLabel>
-              <Select
-                id="mustId"
-                name="mustId"
-                label="Must Name"
-                value={formData?.mustId || ""}
-                onChange={(e) => {
-                  handleSelectChange("mustId", e.target.value);
-                }}
-                disabled={disableSubject}
-              >
-                {filteredMusts.map(({ id, name }) => (
-                  <MenuItem key={id} value={name}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {errors?.mustId && (
-              <Typography variant="body2" color="error" className="mt-1">
-                {errors?.mustId?.message as string}
-              </Typography>
-            )}
-
-            <FormControl fullWidth>
-              <InputLabel>Vessel Name</InputLabel>
-              <Select
-                id="vesselId"
-                name="vesselId"
-                label="Vessel Name"
-                value={formData?.vesselId || ""}
-                onChange={(e) => {
-                  handleSelectChange("vesselId", e.target.value);
-                }}
-                disabled={disableSubject}
-              >
-                {filteredVessels.map(({ id, name }) => (
-                  <MenuItem key={id} value={name}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {errors?.vesselId && (
-              <Typography variant="body2" color="error" className="mt-1">
-                {errors?.vesselId?.message as string}
-              </Typography>
-            )}
-
-            <div className="">
-              <FormControl fullWidth>
-                <TextField
-                  id="initialQty"
-                  type="number"
-                  label="Initial Qty (Dal)"
-                  variant="outlined"
-                  slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
-                  {...register("initialQty")}
-                />
-              </FormControl>
-
-              {errors?.initialQty && (
-                <Typography variant="body2" color="error" className="mt-1">
-                  {errors?.initialQty?.message as string}
-                </Typography>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Autocomplete
-                multiple
-                noOptionsText="No consumables available"
-                options={allConsumables.filter(
-                  (vessel) =>
-                    vessel.rowType !== "group" &&
-                    !formData.consumables?.some(({ id }) => id === vessel.id)
-                )}
-                value={[]}
-                getOptionLabel={(option) => option.name}
-                filterSelectedOptions
-                onChange={(_event, newValue) => {
-                  const added = newValue.at(-1);
-                  if (!added) return;
-                  const updated = [
-                    ...(formData.consumables ?? []),
-                    { ...added, qty: 1 },
-                  ];
-                  handleSelectChange("consumables", updated);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label="Choose Consumable"
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full"
+          style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
+          <Box
+            className="w-full"
+            sx={{
+              p: 2,
+              flex: 1,
+              overflowY: "auto",
+            }}
+          >
+            <Stack gap={2}>
+              <div className="hidden">
+                <FormControl>
+                  <Input
+                    id={formData.id as Must["id"]}
+                    value={formData.id || ""}
+                    type="hidden"
+                    {...register("id")}
                   />
-                )}
-              />
+                </FormControl>
+              </div>
 
-              {(formData?.consumables || []).length > 0 && (
-                <>
-                  <Typography component="span">Consumables used:</Typography>
-                  <Stack
-                    p={2}
-                    pb={1}
-                    gap={1}
-                    sx={{
-                      border: "1px solid var(--mui-palette-divider)",
-                    }}
-                  >
-                    {formData?.consumables?.map(
-                      ({ id, name, qty = "" }, index) => (
-                        <Fragment key={id}>
-                          <Stack
-                            gap={1}
-                            key={id}
-                            direction="row"
-                            alignItems="center"
-                          >
-                            <Typography
-                              variant="body2"
-                              component="div"
-                              sx={{ flex: 1 }}
-                            >
-                              {name}
-                            </Typography>
-
-                            <FormControl>
-                              <Input
-                                id="qty"
-                                size="small"
-                                label="Qty"
-                                type="number"
-                                variant="outlined"
-                                value={qty}
-                                slotProps={{
-                                  htmlInput: { min: 1, step: 1 },
-                                }}
-                                sx={{ width: "80px" }}
-                                onChange={(e) => {
-                                  const updated = [
-                                    ...(formData.consumables || []),
-                                  ];
-                                  updated[index].qty = Number(e.target.value);
-                                  handleSelectChange("consumables", updated);
-                                }}
-                              />
-                            </FormControl>
-
-                            <IconButton
-                              size="small"
-                              disabled={false}
-                              onClick={() => {
-                                const updated = formData.consumables?.filter(
-                                  (vessel) => vessel.id !== id
-                                );
-                                handleSelectChange("consumables", updated);
-                              }}
-                            >
-                              <ClearIcon fontSize="small" />
-                            </IconButton>
-                          </Stack>
-
-                          <Typography
-                            key={index}
-                            variant="body2"
-                            color="error"
-                            className="mt-1"
-                          >
-                            {errors?.consumables &&
-                              Array.isArray(errors?.consumables) &&
-                              (errors?.consumables[index]?.qty
-                                ?.message as string)}
-                          </Typography>
-                        </Fragment>
-                      )
-                    )}
-                  </Stack>
-                </>
-              )}
-
-              {errors?.consumables && (
-                <Typography variant="body2" color="error" className="mt-1">
-                  {errors?.consumables?.message as string}
-                </Typography>
-              )}
-            </div>
-
-            <div className="">
-              <FormControl fullWidth>
-                <TextField
-                  id="obtainedWineQty"
-                  type="number"
-                  label="Obtained Quantity (Dal)"
-                  variant="outlined"
-                  slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
-                  {...register("obtainedWineQty", {
-                    min: 0,
-                    validate: (value) => {
-                      if (typeof value !== "number") return true;
-
-                      if (
-                        value &&
-                        formData?.initialQty &&
-                        value >= formData.initialQty
-                      ) {
-                        return `Obtained quantity must be less or equal with ${formData.initialQty}`;
-                      }
-
-                      return true;
-                    },
-                  })}
-                />
-              </FormControl>
-
-              {errors?.obtainedWineQty && (
-                <Typography variant="body2" color="error" className="mt-1">
-                  {errors?.obtainedWineQty?.message as string}
-                </Typography>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Autocomplete
-                multiple
-                noOptionsText="No vessels available"
-                options={allVessels.filter(
-                  (vessel) =>
-                    vessel.rowType !== "group" &&
-                    !formData.vessels?.some(({ id }) => id === vessel.id)
-                )}
-                value={[]}
-                getOptionLabel={(option) => option.name}
-                filterSelectedOptions
-                onChange={(_event, newValue) => {
-                  const added = newValue.at(-1);
-                  if (!added) return;
-                  const updated = [
-                    ...(formData.vessels ?? []),
-                    { ...added, qty: 1 },
-                  ];
-                  handleSelectChange("vessels", updated);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label="Choose Vessel"
-                  />
-                )}
-              />
-
-              {(formData?.vessels || []).length > 0 && (
-                <>
-                  <Typography component="span">Vessels used:</Typography>
-                  <Stack
-                    p={2}
-                    pb={1}
-                    gap={1}
-                    sx={{
-                      border: "1px solid var(--mui-palette-divider)",
-                    }}
-                  >
-                    {formData?.vessels?.map(({ id, name, qty = "" }, index) => (
-                      <Fragment key={id}>
-                        <Stack
-                          gap={1}
-                          key={id}
-                          direction="row"
-                          alignItems="center"
-                        >
-                          <Typography
-                            variant="body2"
-                            component="div"
-                            sx={{ flex: 1 }}
-                          >
-                            {name}
-                          </Typography>
-
-                          <FormControl>
-                            <Input
-                              id="qty"
-                              size="small"
-                              label="Qty (Dal)"
-                              type="number"
-                              variant="outlined"
-                              value={qty}
-                              slotProps={{
-                                htmlInput: { min: 1, step: "any" },
-                              }}
-                              sx={{ width: "80px" }}
-                              onChange={(e) => {
-                                const updated = [...(formData.vessels || [])];
-                                updated[index].qty = Number(e.target.value);
-                                handleSelectChange("vessels", updated);
-                              }}
-                            />
-                          </FormControl>
-
-                          <IconButton
-                            size="small"
-                            disabled={false}
-                            onClick={() => {
-                              const updated = formData.vessels?.filter(
-                                (vessel) => vessel.id !== id
-                              );
-                              handleSelectChange("vessels", updated);
-                            }}
-                          >
-                            <ClearIcon fontSize="small" />
-                          </IconButton>
-                        </Stack>
-
-                        <Typography
-                          key={index}
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.vessels &&
-                            Array.isArray(errors?.vessels) &&
-                            (errors?.vessels[index]?.qty?.message as string)}
-                        </Typography>
-                      </Fragment>
-                    ))}
-                  </Stack>
-                </>
-              )}
-
-              {errors?.vessels && (
-                <Typography variant="body2" color="error" className="mt-1">
-                  {errors?.vessels?.message as string}
-                </Typography>
-              )}
-            </div>
-
-            <Stack direction="row" gap={2} alignItems="center">
-              <FormControl sx={{ flex: 1 }}>
-                <TextField
-                  id="wasteQuantity"
-                  type="number"
-                  label="Quantity of the Waste"
-                  variant="outlined"
-                  slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
-                  {...register("wasteQuantity", {
-                    min: 0,
-                    validate: (value) => {
-                      if (typeof value !== "number") return true;
-
-                      if (
-                        value &&
-                        formData?.initialQty &&
-                        value >= formData.initialQty
-                      ) {
-                        return `Waste quantity must be less or equal with ${formData.initialQty}`;
-                      }
-
-                      return true;
-                    },
-                  })}
-                />
-              </FormControl>
-
-              <FormControl sx={{ width: "100px" }}>
-                <InputLabel>Unit</InputLabel>
-                <Select
-                  name="wasteUnit"
-                  id="wasteUnit"
-                  label="Unit"
-                  variant="outlined"
-                  value={formData?.wasteUnit || ""}
-                  onChange={(e) =>
-                    handleSelectChange("wasteUnit", e.target.value || "")
+              <Stack gap={1} className="w-full">
+                <DatePicker
+                  name="executionDate"
+                  value={
+                    formData?.executionDate
+                      ? dayjs(parseToDate(formData?.executionDate))
+                      : null
                   }
+                  label="Date"
+                  views={["year", "month", "day"]}
+                  className="w-full"
+                  onChange={(date) => {
+                    handleSelectChange(
+                      "executionDate",
+                      date ? Timestamp.fromDate(date.toDate()) : undefined
+                    );
+                  }}
+                />
+
+                {errors?.executionDate && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.executionDate?.message as string}
+                  </Typography>
+                )}
+              </Stack>
+
+              <FormControl fullWidth>
+                <InputLabel>Must Name</InputLabel>
+                <Select
+                  id="mustId"
+                  name="mustId"
+                  label="Must Name"
+                  value={formData?.mustId || ""}
+                  onChange={(e) => {
+                    handleSelectChange("mustId", e.target.value);
+                  }}
+                  disabled={disableSubject}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  {VOLUME_UNITS.map((unit) => (
-                    <MenuItem key={unit} value={unit}>
-                      {unit}
+                  {filteredMusts.map(({ id, name }) => (
+                    <MenuItem key={id} value={name}>
+                      {name}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-            </Stack>
 
-            {errors?.wasteUnit && (
-              <Typography variant="body2" color="error" className="mt-1">
-                {errors?.wasteUnit?.message as string}
-              </Typography>
-            )}
-
-            <div className="">
-              <FormControl fullWidth>
-                <TextField
-                  id="notes"
-                  label="Notes"
-                  variant="outlined"
-                  {...register("notes")}
-                />
-              </FormControl>
-            </div>
-
-            <Stack>
-              <Controller
-                name="moveToWine"
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        {...field}
-                        checked={!!field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    }
-                    label="Move to Secondary Vinification"
-                  />
-                )}
-              />
-            </Stack>
-
-            <div className="">
-              <FormControl fullWidth>
-                <TextField
-                  id="wineName"
-                  label={moveToWine ? "Wine Name" : "New Must Name"}
-                  variant="outlined"
-                  {...register("wineName")}
-                />
-              </FormControl>
-
-              {errors?.wineName && (
+              {errors?.mustId && (
                 <Typography variant="body2" color="error" className="mt-1">
-                  {errors?.wineName?.message as string}
+                  {errors?.mustId?.message as string}
                 </Typography>
               )}
-            </div>
-          </Stack>
 
-          <Box py={2} display="flex" justifyContent="end">
+              <FormControl fullWidth>
+                <InputLabel>Vessel Name</InputLabel>
+                <Select
+                  id="vesselId"
+                  name="vesselId"
+                  label="Vessel Name"
+                  value={formData?.vesselId || ""}
+                  onChange={(e) => {
+                    handleSelectChange("vesselId", e.target.value);
+                  }}
+                  disabled={disableSubject}
+                >
+                  {filteredVessels.map(({ id, name }) => (
+                    <MenuItem key={id} value={name}>
+                      {name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {errors?.vesselId && (
+                <Typography variant="body2" color="error" className="mt-1">
+                  {errors?.vesselId?.message as string}
+                </Typography>
+              )}
+
+              <div className="">
+                <FormControl fullWidth>
+                  <TextField
+                    id="initialQty"
+                    type="number"
+                    label="Initial Qty (Dal)"
+                    variant="outlined"
+                    slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
+                    {...register("initialQty")}
+                  />
+                </FormControl>
+
+                {errors?.initialQty && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.initialQty?.message as string}
+                  </Typography>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Autocomplete
+                  multiple
+                  noOptionsText="No consumables available"
+                  options={allConsumables.filter(
+                    (vessel) =>
+                      vessel.rowType !== "group" &&
+                      !formData.consumables?.some(({ id }) => id === vessel.id)
+                  )}
+                  value={[]}
+                  getOptionLabel={(option) => option.name}
+                  filterSelectedOptions
+                  onChange={(_event, newValue) => {
+                    const added = newValue.at(-1);
+                    if (!added) return;
+                    const updated = [
+                      ...(formData.consumables ?? []),
+                      { ...added, qty: 1 },
+                    ];
+                    handleSelectChange("consumables", updated);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Choose Consumable"
+                    />
+                  )}
+                />
+
+                {(formData?.consumables || []).length > 0 && (
+                  <>
+                    <Typography component="span">Consumables used:</Typography>
+                    <Stack
+                      p={2}
+                      pb={1}
+                      gap={1}
+                      sx={{
+                        border: "1px solid var(--mui-palette-divider)",
+                      }}
+                    >
+                      {formData?.consumables?.map(
+                        ({ id, name, qty = "" }, index) => (
+                          <Fragment key={id}>
+                            <Stack
+                              gap={1}
+                              key={id}
+                              direction="row"
+                              alignItems="center"
+                            >
+                              <Typography
+                                variant="body2"
+                                component="div"
+                                sx={{ flex: 1 }}
+                              >
+                                {name}
+                              </Typography>
+
+                              <FormControl>
+                                <Input
+                                  id="qty"
+                                  size="small"
+                                  label="Qty"
+                                  type="number"
+                                  variant="outlined"
+                                  value={qty}
+                                  slotProps={{
+                                    htmlInput: { min: 1, step: 1 },
+                                  }}
+                                  sx={{ width: "80px" }}
+                                  onChange={(e) => {
+                                    const updated = [
+                                      ...(formData.consumables || []),
+                                    ];
+                                    updated[index].qty = Number(e.target.value);
+                                    handleSelectChange("consumables", updated);
+                                  }}
+                                />
+                              </FormControl>
+
+                              <IconButton
+                                size="small"
+                                disabled={false}
+                                onClick={() => {
+                                  const updated = formData.consumables?.filter(
+                                    (vessel) => vessel.id !== id
+                                  );
+                                  handleSelectChange("consumables", updated);
+                                }}
+                              >
+                                <ClearIcon fontSize="small" />
+                              </IconButton>
+                            </Stack>
+
+                            <Typography
+                              key={index}
+                              variant="body2"
+                              color="error"
+                              className="mt-1"
+                            >
+                              {errors?.consumables &&
+                                Array.isArray(errors?.consumables) &&
+                                (errors?.consumables[index]?.qty
+                                  ?.message as string)}
+                            </Typography>
+                          </Fragment>
+                        )
+                      )}
+                    </Stack>
+                  </>
+                )}
+
+                {errors?.consumables && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.consumables?.message as string}
+                  </Typography>
+                )}
+              </div>
+
+              <div className="">
+                <FormControl fullWidth>
+                  <TextField
+                    id="obtainedWineQty"
+                    type="number"
+                    label="Obtained Quantity (Dal)"
+                    variant="outlined"
+                    slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
+                    {...register("obtainedWineQty", {
+                      min: 0,
+                      validate: (value) => {
+                        if (typeof value !== "number") return true;
+
+                        if (
+                          value &&
+                          formData?.initialQty &&
+                          value >= formData.initialQty
+                        ) {
+                          return `Obtained quantity must be less or equal with ${formData.initialQty}`;
+                        }
+
+                        return true;
+                      },
+                    })}
+                  />
+                </FormControl>
+
+                {errors?.obtainedWineQty && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.obtainedWineQty?.message as string}
+                  </Typography>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Autocomplete
+                  multiple
+                  noOptionsText="No vessels available"
+                  options={allVessels.filter(
+                    (vessel) =>
+                      vessel.rowType !== "group" &&
+                      !formData.vessels?.some(({ id }) => id === vessel.id)
+                  )}
+                  value={[]}
+                  getOptionLabel={(option) => option.name}
+                  filterSelectedOptions
+                  onChange={(_event, newValue) => {
+                    const added = newValue.at(-1);
+                    if (!added) return;
+                    const updated = [
+                      ...(formData.vessels ?? []),
+                      { ...added, qty: 1 },
+                    ];
+                    handleSelectChange("vessels", updated);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Choose Vessel"
+                    />
+                  )}
+                />
+
+                {(formData?.vessels || []).length > 0 && (
+                  <>
+                    <Typography component="span">Vessels used:</Typography>
+                    <Stack
+                      p={2}
+                      pb={1}
+                      gap={1}
+                      sx={{
+                        border: "1px solid var(--mui-palette-divider)",
+                      }}
+                    >
+                      {formData?.vessels?.map(
+                        ({ id, name, qty = "" }, index) => (
+                          <Fragment key={id}>
+                            <Stack
+                              gap={1}
+                              key={id}
+                              direction="row"
+                              alignItems="center"
+                            >
+                              <Typography
+                                variant="body2"
+                                component="div"
+                                sx={{ flex: 1 }}
+                              >
+                                {name}
+                              </Typography>
+
+                              <FormControl>
+                                <Input
+                                  id="qty"
+                                  size="small"
+                                  label="Qty (Dal)"
+                                  type="number"
+                                  variant="outlined"
+                                  value={qty}
+                                  slotProps={{
+                                    htmlInput: { min: 1, step: "any" },
+                                  }}
+                                  sx={{ width: "80px" }}
+                                  onChange={(e) => {
+                                    const updated = [
+                                      ...(formData.vessels || []),
+                                    ];
+                                    updated[index].qty = Number(e.target.value);
+                                    handleSelectChange("vessels", updated);
+                                  }}
+                                />
+                              </FormControl>
+
+                              <IconButton
+                                size="small"
+                                disabled={false}
+                                onClick={() => {
+                                  const updated = formData.vessels?.filter(
+                                    (vessel) => vessel.id !== id
+                                  );
+                                  handleSelectChange("vessels", updated);
+                                }}
+                              >
+                                <ClearIcon fontSize="small" />
+                              </IconButton>
+                            </Stack>
+
+                            <Typography
+                              key={index}
+                              variant="body2"
+                              color="error"
+                              className="mt-1"
+                            >
+                              {errors?.vessels &&
+                                Array.isArray(errors?.vessels) &&
+                                (errors?.vessels[index]?.qty
+                                  ?.message as string)}
+                            </Typography>
+                          </Fragment>
+                        )
+                      )}
+                    </Stack>
+                  </>
+                )}
+
+                {errors?.vessels && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.vessels?.message as string}
+                  </Typography>
+                )}
+              </div>
+
+              <Stack direction="row" gap={2} alignItems="center">
+                <FormControl sx={{ flex: 1 }}>
+                  <TextField
+                    id="wasteQuantity"
+                    type="number"
+                    label="Quantity of the Waste"
+                    variant="outlined"
+                    slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
+                    {...register("wasteQuantity", {
+                      min: 0,
+                      validate: (value) => {
+                        if (typeof value !== "number") return true;
+
+                        if (
+                          value &&
+                          formData?.initialQty &&
+                          value >= formData.initialQty
+                        ) {
+                          return `Waste quantity must be less or equal with ${formData.initialQty}`;
+                        }
+
+                        return true;
+                      },
+                    })}
+                  />
+                </FormControl>
+
+                <FormControl sx={{ width: "100px" }}>
+                  <InputLabel>Unit</InputLabel>
+                  <Select
+                    name="wasteUnit"
+                    id="wasteUnit"
+                    label="Unit"
+                    variant="outlined"
+                    value={formData?.wasteUnit || ""}
+                    onChange={(e) =>
+                      handleSelectChange("wasteUnit", e.target.value || "")
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {VOLUME_UNITS.map((unit) => (
+                      <MenuItem key={unit} value={unit}>
+                        {unit}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Stack>
+
+              {errors?.wasteUnit && (
+                <Typography variant="body2" color="error" className="mt-1">
+                  {errors?.wasteUnit?.message as string}
+                </Typography>
+              )}
+
+              <div className="">
+                <FormControl fullWidth>
+                  <TextField
+                    id="notes"
+                    label="Notes"
+                    variant="outlined"
+                    {...register("notes")}
+                  />
+                </FormControl>
+              </div>
+
+              <Stack>
+                <Controller
+                  name="moveToWine"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          {...field}
+                          checked={!!field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                      }
+                      label="Move to Secondary Vinification"
+                    />
+                  )}
+                />
+              </Stack>
+
+              <div className="">
+                <FormControl fullWidth>
+                  <TextField
+                    id="wineName"
+                    label={moveToWine ? "Wine Name" : "New Must Name"}
+                    variant="outlined"
+                    {...register("wineName")}
+                  />
+                </FormControl>
+
+                {errors?.wineName && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.wineName?.message as string}
+                  </Typography>
+                )}
+              </div>
+            </Stack>
+          </Box>
+
+          <Box p={2} gap={2} display="flex" justifyContent="end">
             <FormControl>
               <Button
                 disabled={isSubmitting}

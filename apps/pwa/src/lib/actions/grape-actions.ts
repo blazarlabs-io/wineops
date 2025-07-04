@@ -7,7 +7,7 @@ import {
 } from "@/models/types/db";
 import { db } from "../firebase/services";
 import { enqueueSnackbar } from "notistack";
-import { ActionRelation } from "@/models/types/actions";
+import { ActionRelation, PressPercentage } from "@/models/types/actions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const grapeIntakeAction = async (
@@ -75,13 +75,13 @@ export const grapeProcessingAction = async (
       ...(grape.actions || ([] as ActionRelation[])),
       {
         id: actionData.id,
-        name: "grape-processing",
+        name: "grape-process",
       },
     ],
     status: GrapeStatus.PROCESSED,
     metrics: {
       ...grape.metrics,
-      actual: actionData.quantity,
+      actual: (grape.metrics?.actual || 0) - (actionData.quantity || 0),
       supply: 0,
       demand: 0,
     },
@@ -92,30 +92,35 @@ export const grapeProcessingAction = async (
   } else {
     enqueueSnackbar("Error updating grape", { variant: "error" });
   }
-  // // * 3. create a new must
-  const newMust: Must = {
-    id: Date.now().toString(),
-    name: actionData.pressPercentage.mustId,
-    date: actionData.executionDate,
-    group: [actionData.pressPercentage.mustId],
-    rowType: RowType.ITEM,
-    // grapeVariety: grape?.grapeVariety,
-    status: MustStatus.NEW_MUST,
-    metrics: {
-      actual: actionData.pressPercentage.inputQuantity,
-      supply: 0,
-      demand: 0,
-    },
-    labData: actionData.labReport,
-    vessels: [actionData.pressPercentage.vessel],
-  };
 
-  console.log("NEW MUST", newMust);
-  const mustRes = await db.must.create(uid, newMust);
+  if (Array.isArray(actionData.pressPercentage)) {
+    actionData.pressPercentage.map(async (press: PressPercentage) => {
+      // // * 3. create a new must
+      const newMust: Must = {
+        id: Date.now().toString(),
+        name: press?.mustId,
+        date: actionData.executionDate,
+        group: [press?.mustId],
+        rowType: RowType.ITEM,
+        // grapeVariety: grape?.grapeVariety,
+        status: MustStatus.NEW_MUST,
+        metrics: {
+          actual: press?.inputQuantity,
+          supply: 0,
+          demand: 0,
+        },
+        labData: actionData.labReport,
+        vessels: press?.vessels,
+      };
 
-  if (mustRes.status === 200) {
-    enqueueSnackbar("Must created", { variant: "success" });
-  } else {
-    enqueueSnackbar("Error creating must", { variant: "error" });
+      console.log("NEW MUST", newMust);
+      const mustRes = await db.must.create(uid, newMust);
+
+      if (mustRes.status === 200) {
+        enqueueSnackbar("Must created", { variant: "success" });
+      } else {
+        enqueueSnackbar("Error creating must", { variant: "error" });
+      }
+    });
   }
 };

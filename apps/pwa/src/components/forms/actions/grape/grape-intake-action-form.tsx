@@ -204,7 +204,7 @@ export default function GrapeIntakeActionForm({
         >
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="sw-full"
+            className="w-full"
             style={{ height: "100%", display: "flex", flexDirection: "column" }}
           >
             <Box
