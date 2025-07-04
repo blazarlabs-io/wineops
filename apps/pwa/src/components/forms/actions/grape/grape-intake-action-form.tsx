@@ -35,7 +35,13 @@ import { useVineyard } from "@/context/vineyard";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { Grape } from "@/models/types/db";
 
-export default function GrapeIntakeActionForm() {
+export default function GrapeIntakeActionForm({
+  onBackClick,
+}: {
+  onBackClick?: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { grapes, actions } = useGrape();
   const { labReports } = useVineyard();
 
@@ -85,7 +91,7 @@ export default function GrapeIntakeActionForm() {
     [formData, setValue]
   );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
@@ -95,9 +101,21 @@ export default function GrapeIntakeActionForm() {
       (v) => v.name === data.subjectGrape.name
     )[0];
 
-    actions?.["grape-intake"].exec(user?.uid as string, data, subjectGrape);
+    setIsSubmitting(true);
+
+    try {
+      await actions?.["grape-intake"].exec(
+        user?.uid as string,
+        data,
+        subjectGrape
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setFormData(data);
+
+    onBackClick?.();
   };
 
   useEffect(() => {
@@ -133,7 +151,7 @@ export default function GrapeIntakeActionForm() {
       grapeIntakeActionSample.subjectGrape.name = selectedGrapes[0]?.name;
       grapeIntakeActionSample.subjectGrape.id = selectedGrapes[0]?.id;
       grapeIntakeActionSample.grapeVariety = selectedGrapes[0]?.grapeVariety;
-      grapeIntakeActionSample.mass.net = selectedGrapes[0]?.metrics.actual;
+      grapeIntakeActionSample.mass.net = selectedGrapes[0]?.metrics?.actual;
     } else if (
       grapes &&
       grapes.length > 0 &&
@@ -144,14 +162,14 @@ export default function GrapeIntakeActionForm() {
       grapeIntakeActionSample.subjectGrape.name = grapes[0]?.name;
       grapeIntakeActionSample.subjectGrape.id = grapes[0]?.id;
       grapeIntakeActionSample.grapeVariety = grapes[0]?.grapeVariety;
-      grapeIntakeActionSample.mass.net = grapes[0].metrics.actual;
+      grapeIntakeActionSample.mass.net = grapes[0]?.metrics?.actual;
     }
 
     if (labReports && labReports.length > 0) {
       console.log("LAB REPORTS", labReports);
       grapeIntakeActionSample.qualityCharacteristics = {
-        sugar: labReports[0]?.results.sugar.value,
-        acidity: labReports[0]?.results.acidity.value,
+        sugar: labReports[0]?.results?.sugar?.value,
+        acidity: labReports[0]?.results?.acidity?.value,
       };
     } else {
       grapeIntakeActionSample.qualityCharacteristics = {
@@ -177,11 +195,26 @@ export default function GrapeIntakeActionForm() {
     <>
       {formData && formData !== undefined && (
         <div
-          className="w-full p-4"
-          style={{ borderColor: "var(--mui-palette-divider)" }}
+          className="w-full"
+          style={{
+            borderColor: "var(--mui-palette-divider)",
+            height: "100%",
+            overflow: "hidden",
+          }}
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-            <div className="w-full">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="sw-full"
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <Box
+              className="w-full"
+              sx={{
+                p: 2,
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
               <div className="flex flex-col gap-4 w-full ">
                 {/* * ID - HIDDEN */}
                 <div className="hidden">
@@ -532,7 +565,7 @@ export default function GrapeIntakeActionForm() {
                         }}
                       >
                         <Button
-                          variant="contained"
+                          variant="outlined"
                           component="label"
                           className="w-full flex items-center gap-2"
                         >
@@ -545,11 +578,16 @@ export default function GrapeIntakeActionForm() {
                   </Box>
                 </div>
               </div>
-            </div>
+            </Box>
 
-            <Box display={"flex"} justifyContent={"end"}>
+            <Box p={2} gap={2} display="flex" justifyContent="end">
               <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="contained"
+                  className="mt-8"
+                >
                   Submit
                 </Button>
               </FormControl>

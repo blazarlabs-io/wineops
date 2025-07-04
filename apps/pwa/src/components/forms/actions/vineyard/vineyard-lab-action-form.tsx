@@ -37,7 +37,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 
-export default function VineyardLabActionForm() {
+export default function VineyardLabActionForm({
+  onBackClick,
+}: {
+  onBackClick?: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { vineyards, actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
@@ -184,7 +190,7 @@ export default function VineyardLabActionForm() {
     [formData.supportingDocuments, setValue]
   );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
@@ -194,9 +200,21 @@ export default function VineyardLabActionForm() {
       (v) => v.id === data.inUseVineyard.id
     )[0];
 
-    actions?.["lab-report"].exec(user?.uid as string, data, subjectVineyard);
+    setIsSubmitting(true);
+
+    try {
+      await actions?.["lab-report"].exec(
+        user?.uid as string,
+        data,
+        subjectVineyard
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setFormData(data);
+
+    onBackClick?.();
   };
 
   useEffect(() => {
@@ -247,11 +265,26 @@ export default function VineyardLabActionForm() {
     <>
       {formData && formData !== undefined && (
         <div
-          className="w-full p-4"
-          style={{ borderColor: "var(--mui-palette-divider)" }}
+          className="w-full"
+          style={{
+            borderColor: "var(--mui-palette-divider)",
+            height: "100%",
+            overflow: "hidden",
+          }}
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-            <div className="w-full">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="sw-full"
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <Box
+              className="w-full"
+              sx={{
+                p: 2,
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
               <div className="flex flex-col gap-4 w-full">
                 {/* * ID - HIDDEN */}
                 <div className="hidden">
@@ -454,11 +487,16 @@ export default function VineyardLabActionForm() {
                   </Box>
                 </div>
               </div>
-            </div>
+            </Box>
 
-            <Box display={"flex"} justifyContent={"end"}>
+            <Box p={2} gap={2} display="flex" justifyContent="end">
               <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="contained"
+                  className="mt-8"
+                >
                   Submit
                 </Button>
               </FormControl>
