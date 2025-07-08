@@ -200,6 +200,7 @@ export default function GrapeProcessingActionForm({
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
+          id: "",
           name: "",
           email: "",
         },
@@ -226,6 +227,7 @@ export default function GrapeProcessingActionForm({
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
+          id: teamMembers[0]?.id,
           name: teamMembers[0]?.name,
           email: teamMembers[0]?.email,
         },
@@ -250,6 +252,7 @@ export default function GrapeProcessingActionForm({
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
+          id: teamMembers[0]?.id,
           name: teamMembers[0]?.name,
           email: teamMembers[0]?.email,
         },
