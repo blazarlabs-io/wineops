@@ -1,15 +1,16 @@
 @layer theme, base, mui, components, utilities;
 @import "tailwindcss";
 
-/* :root {
-  --background: var(--mui-palette-background-default);
-  --foreground: #171717;
+:root {
+  --anexa14-border-color: #000;
 }
-*/
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--mui-palette-background-default);
     --foreground: #ededed;
+    --anexa14-border-color: #555;
+
     body {
       scrollbar-color: var(--mui-palette-divider)
         var(--mui-palette-background-dark);
@@ -49,4 +50,27 @@
 
 .debug-blue {
   border: 1px solid rgb(0, 0, 255);
+}
+
+table#anexa14 thead tr th,
+table#anexa14 tbody tr td {
+  border: 1px solid var(--anexa14-border-color) !important;
+  padding: 1px;
+}
+
+@media print {
+  .print-style-title {
+    font-size: 16px !important;
+  }
+  .print-style {
+    font-size: 13px !important;
+    border: 0px !important;
+    overflow: visible !important;
+    overflowy: visible !important;
+    overflowx: visible !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
 }

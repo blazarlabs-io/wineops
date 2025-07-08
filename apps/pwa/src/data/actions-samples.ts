@@ -32,6 +32,7 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
     variation: 0,
     unit: "g/dm³",
     responsible: {
+      id: "",
       name: "",
       email: "",
     },
@@ -53,6 +54,7 @@ export const vineyardGlobalActionSample: VineyardGlobalAction = {
     name: "",
   },
   responsible: {
+    id: "",
     name: "",
     email: "",
   },

@@ -7,6 +7,7 @@ import {
   Must,
   MustWineVessel,
   ResponsibleTeamMember,
+  Supplier,
   TeamMember,
   Vineyard,
 } from "./db";
@@ -38,23 +39,24 @@ export type GrapeSingleAction = {
   exec: (uid: string, actionData: any, grape: Grape) => void;
   form: any;
   icon: string;
+  title?: string;
 };
 
 export type GrapeActions = {
   "grape-intake": GrapeSingleAction;
-  "grape-processing": GrapeSingleAction;
+  "grape-process": GrapeSingleAction;
 };
 
 export type VineyardActionType = "harvest" | "lab-report" | "irrigation" | null;
-export type GrapeActionType = "grape-intake" | "grape-processing" | null;
+export type GrapeActionType = "grape-intake" | "grape-process" | null;
 
 export type GrapeIntakeAction = {
   id: string;
   type: GrapeActionType;
   subjectGrape?: Subject;
   executionDate: string | Timestamp;
-  supplier?: string;
-  grapeVariety?: string;
+  supplier: Partial<Supplier>;
+  grapeVariety: string;
   weigherName?: ResponsibleTeamMember;
   mass?: {
     gross?: number;
@@ -73,16 +75,26 @@ export type GrapeIntakeAction = {
   labCertificateId?: string;
   certificateDeInofensiviate?: string;
   labTechnicianName?: string;
+  processingLocation?: string;
   transportInfo?: {
     vehicleId?: string;
     companyName?: string;
     driverId?: string;
   };
   invoiceNumber?: string;
-  supportingDocument?: {
+  supportingDocuments?: Array<{
     name: string;
     url: string;
-  };
+  }>;
+  additionalInfo?: string;
+};
+
+export type PressPercentage = {
+  id: string;
+  mustId: string;
+  inputQuantity: number; //Litres
+  vessels: Array<MustWineVessel>;
+  newPressPercentage: number;
 };
 
 export type GrapeProcessingAction = {
@@ -95,16 +107,12 @@ export type GrapeProcessingAction = {
   receivingBay?: any;
   destemmer?: any;
   press?: any;
-  pressPercentage?: {
-    mustId?: string;
-    inputQuantity?: number; //Litres
-    vessel?: string;
-    newPressPercentage?: number;
-  };
+  pressPercentage?: Array<PressPercentage>;
   wasteQuantity?: number;
   metrics?: {
     actual?: number;
   };
+  responsible?: TeamMember;
 };
 
 export interface VineyardHarvestAction {

@@ -46,7 +46,8 @@ const entrySchema = Joi.object({
   weigherName: Joi.string().required().min(2).max(50).messages({
     "any.required": "Please enter a weighbridge operator name",
     "string.empty": "Please enter a weighbridge operator name",
-    "string.min": "Supplier name must be at least 2 characters long",
+    "string.min":
+      "Weighbridge operator name must be at least 2 characters long",
     "string.max":
       "Weighbridge operator name must be less than or equal to 50 characters long",
   }),
@@ -61,14 +62,15 @@ const transportationInfoSchema = Joi.object({
   certificate: Joi.string().required().min(2).max(50).messages({
     "any.required": "Please enter the certificat de inofensivitate ID",
     "string.empty": "Please enter the certificat de inofensivitate ID",
-    "string.min": "Supplier name must be at least 2 characters long",
+    "string.min":
+      "Certificat de inofensivitate ID must be at least 2 characters long",
     "string.max":
       "Certificat de inofensivitate ID must be less than or equal to 50 characters long",
   }),
   acquisitionInvoiceNo: Joi.string().required().min(2).max(50).messages({
     "any.required": "Please enter the invoice ID",
     "string.empty": "Please enter the invoice ID",
-    "string.min": "Supplier name must be at least 2 characters long",
+    "string.min": "SInvoice ID must be at least 2 characters long",
     "string.max": "Invoice ID must be less than or equal to 50 characters long",
   }),
 });
@@ -125,7 +127,7 @@ const grapeLabDataSchema = Joi.object({
   labTechnicianName: Joi.string().required().min(2).max(50).messages({
     "any.required": "Please enter a lab technician name",
     "string.empty": "Please enter a lab technician name",
-    "string.min": "Supplier name must be at least 2 characters long",
+    "string.min": "Lab technician name must be at least 2 characters long",
     "string.max":
       "Lab technician name must be less than or equal to 50 characters long",
   }),
@@ -150,7 +152,7 @@ export const grapeSchema = Joi.object().keys({
     "any.required": "Please enter a Batch ID",
     "string.base": "Batch ID must be a string",
     "string.empty": "Please enter a Batch ID",
-    "string.min": "Supplier name must be at least 2 characters long",
+    "string.min": "Batch ID name must be at least 2 characters long",
     "string.max": "Batch ID must be less than or equal to 50 characters long",
   }),
   grapeVariety: Joi.string().required().messages({

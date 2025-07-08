@@ -33,11 +33,17 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { File } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 
-export default function VineyardLabActionForm() {
+export default function VineyardLabActionForm({
+  onBackClick,
+}: {
+  onBackClick?: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { vineyards, actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
@@ -52,6 +58,8 @@ export default function VineyardLabActionForm() {
     reset,
     setValue,
     formState: { errors },
+    setError,
+    clearErrors,
   } = useForm({
     resolver: joiResolver(vineyardGlobalActionSchema),
   });
@@ -62,6 +70,8 @@ export default function VineyardLabActionForm() {
   const [disableSubject, setDisableSubject] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const supportingDocumentsRef = useRef<HTMLInputElement | null>(null);
 
   const handleChange = useCallback(
     (name: string, value: any) => {
@@ -119,10 +129,11 @@ export default function VineyardLabActionForm() {
 
   const handleNewUpload = useCallback(
     (name: string, url: string, file: File) => {
-      const filesUrls = formData.supportingDocuments;
-      filesUrls?.push({
+      const filesUrls = formData.supportingDocuments || [];
+
+      filesUrls.push({
         name: file.name,
-        url: url,
+        url,
       });
       setFormData((prev) => ({
         ...(prev as VineyardGlobalAction),
@@ -133,41 +144,85 @@ export default function VineyardLabActionForm() {
     [formData.supportingDocuments, setValue]
   );
 
-  const handleFile = useCallback((e: any) => {
-    const file = e.target.files[0];
-    console.log(file);
-    // TODO: upload file and show upload progress...
-    db.storage.uploadFile(
-      file,
-      user?.uid,
-      "labResults",
-      (progress: number) => {
-        setIsUploading(true);
-        setUploadProgress(progress);
-      },
-      (complete: string) => {
-        setIsUploading(false);
-        setUploadProgress(0);
-        console.log(complete);
-        handleNewUpload("supportingDocuments", complete, file);
-      },
-      (error: Error) => {
-        setIsUploading(false);
-        setUploadProgress(0);
-        console.log(error);
+  const handleFile = useCallback(
+    (e: any) => {
+      const file = e.target.files[0];
+
+      supportingDocumentsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      if (!file) {
+        setError(`supportingDocuments`, {
+          type: "manual",
+          message: `Missing file`,
+        });
+
+        return;
       }
-    );
-  }, []);
+
+      if (
+        (formData.supportingDocuments || [])
+          .map(({ name }) => name)
+          .includes(file.name)
+      ) {
+        setError(`supportingDocuments`, {
+          type: "manual",
+          message: `File ${file.name} has already been uploaded`,
+        });
+
+        return;
+      }
+
+      clearErrors("supportingDocuments");
+
+      // TODO: upload file and show upload progress...
+      db.storage.uploadFile(
+        file,
+        user?.uid,
+        "labResults",
+        (progress: number) => {
+          setIsUploading(true);
+          setUploadProgress(progress);
+        },
+        (complete: string) => {
+          setIsUploading(false);
+          setUploadProgress(0);
+          console.log(complete);
+          handleNewUpload("supportingDocuments", complete, file);
+
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        },
+        (error: Error) => {
+          setIsUploading(false);
+          setUploadProgress(0);
+          console.log(error);
+
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+      );
+    },
+    [
+      clearErrors,
+      formData.supportingDocuments,
+      handleNewUpload,
+      setError,
+      user?.uid,
+    ]
+  );
 
   const handleDeleteFile = useCallback(
     async (name: string, index: number) => {
-      const filesUrls = formData.supportingDocuments;
-      filesUrls?.splice(index, 1);
+      const filesUrls = formData.supportingDocuments || [];
+      filesUrls.splice(index, 1);
+
       setFormData((prev) => ({
         ...(prev as VineyardGlobalAction),
         supportingDocuments: filesUrls,
       }));
-      setValue(name, filesUrls);
+      setValue("supportingDocuments", filesUrls);
+      clearErrors("supportingDocuments");
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
@@ -177,14 +232,15 @@ export default function VineyardLabActionForm() {
 
       if (deleteFileRes.status == 200) {
         console.log("File deleted");
+        if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
         console.log("Error deleting file");
       }
     },
-    [formData.supportingDocuments, setValue]
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
   );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
@@ -194,9 +250,21 @@ export default function VineyardLabActionForm() {
       (v) => v.id === data.inUseVineyard.id
     )[0];
 
-    actions?.["lab-report"].exec(user?.uid as string, data, subjectVineyard);
+    setIsSubmitting(true);
+
+    try {
+      await actions?.["lab-report"].exec(
+        user?.uid as string,
+        data,
+        subjectVineyard
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setFormData(data);
+
+    onBackClick?.();
   };
 
   useEffect(() => {
@@ -247,11 +315,26 @@ export default function VineyardLabActionForm() {
     <>
       {formData && formData !== undefined && (
         <div
-          className="w-full p-4"
-          style={{ borderColor: "var(--mui-palette-divider)" }}
+          className="w-full"
+          style={{
+            borderColor: "var(--mui-palette-divider)",
+            height: "100%",
+            overflow: "hidden",
+          }}
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-            <div className="w-full">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-full"
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <Box
+              className="w-full"
+              sx={{
+                p: 2,
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
               <div className="flex flex-col gap-4 w-full">
                 {/* * ID - HIDDEN */}
                 <div className="hidden">
@@ -439,6 +522,19 @@ export default function VineyardLabActionForm() {
                             </IconButton>
                           </Stack>
                         ))}
+
+                      {errors?.supportingDocuments && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.supportingDocuments?.message as string}
+                        </Typography>
+                      )}
+
+                      <div ref={supportingDocumentsRef}></div>
+
                       <Stack gap={1} paddingY={2}>
                         <Button
                           variant="outlined"
@@ -447,18 +543,28 @@ export default function VineyardLabActionForm() {
                         >
                           <BackupOutlined className="w-4 h-4" />
                           Upload File
-                          <input type="file" hidden onChange={handleFile} />
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            hidden
+                            onChange={handleFile}
+                          />
                         </Button>
                       </Stack>
                     </Stack>
                   </Box>
                 </div>
               </div>
-            </div>
+            </Box>
 
-            <Box display={"flex"} justifyContent={"end"}>
+            <Box p={2} gap={2} display="flex" justifyContent="end">
               <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="contained"
+                  className="mt-8"
+                >
                   Submit
                 </Button>
               </FormControl>

@@ -13,6 +13,7 @@ import note from "./note";
 import wine from "./wine";
 import task from "./task";
 import storage from "./storage";
+import anexa14 from "./anexa14";
 
 const db: any = {};
 
@@ -30,5 +31,6 @@ db.note = note;
 db.wine = wine;
 db.task = task;
 db.storage = storage;
+db.anexa14 = anexa14;
 
 export { db };

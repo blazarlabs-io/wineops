@@ -12,7 +12,8 @@ export type EntityName =
   | "wine"
   | "vessel"
   | "task"
-  | "team";
+  | "team"
+  | "anexa14";
 
 export const EntitiesNames: Record<EntityName, string[]> = {
   UNKNOWN: ["UNKNOWN", "UNKNOWNS"],
@@ -25,6 +26,7 @@ export const EntitiesNames: Record<EntityName, string[]> = {
   vessel: ["vessel", "vessels"],
   task: ["task", "tasks"],
   team: ["team member", "team members"],
+  anexa14: ["report", "reports"],
 } as const;
 
 export const WineColor = {
@@ -145,6 +147,7 @@ export type LabReport = {
 };
 
 export type ResponsibleTeamMember = {
+  id: string;
   name: string;
   email: string;
 };
@@ -179,18 +182,17 @@ export const Shift = {
 
 export type Shift = (typeof Shift)[keyof typeof Shift];
 
-export type TeamMember = Entity &
-  ResponsibleTeamMember & {
-    id: string;
-    name: string;
-    lastName: string;
-    email: string;
-    role?: Role | string;
-    avatar?: string;
-    department?: Department | string;
-    contactPhone?: string;
-    labData?: ActionRelation[];
-  };
+export type TeamMember = ResponsibleTeamMember & {
+  id: string;
+  name: string;
+  lastName: string;
+  email: string;
+  role?: Role | string;
+  avatar?: string;
+  department?: Department | string;
+  contactPhone?: string;
+  labData?: ActionRelation[];
+};
 // export type TeamMember extends ResponsibleTeamMember  = Entity &  ={
 //   id: string;
 //   name: string;
@@ -305,7 +307,7 @@ export type RowType = (typeof RowType)[keyof typeof RowType];
 type Entity = {
   id: string;
   name: string;
-  group?: string[];
+  group: string[]; // !!! 🔥 DO NOT MAKE THIS OPTIONAL, NORMALIZE DATA INSTEAD
   rowType?: RowType;
 };
 

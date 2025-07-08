@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { GrapeProcessingAction } from "@/models/types/actions";
+import { GrapeProcessingAction, PressPercentage } from "@/models/types/actions";
 import { Grape } from "@/models/types/db";
 import { joiResolver } from "@hookform/resolvers/joi";
 
@@ -16,9 +16,14 @@ import { useAuth } from "@/lib/firebase/auth";
 import { grapeProcessingActionSchema } from "@/models/schemas/actions/grape-processing-action-schema";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Autocomplete,
   Box,
   Button,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -29,10 +34,19 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
+import { Add, ExpandMore } from "@mui/icons-material";
+import ClearIcon from "@mui/icons-material/Clear";
 
-export default function GrapeProcessingActionForm() {
+export default function GrapeProcessingActionForm({
+  onBackClick,
+}: {
+  onBackClick?: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { grapes, actions } = useGrape();
   const { vessels } = useVessel();
   const { labReports } = useVineyard();
@@ -50,6 +64,7 @@ export default function GrapeProcessingActionForm() {
     reset,
     setValue,
     formState: { errors },
+    setError,
   } = useForm({
     resolver: joiResolver(grapeProcessingActionSchema),
   });
@@ -74,42 +89,118 @@ export default function GrapeProcessingActionForm() {
     [formData, setValue]
   );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     console.log("SUBMIT", data);
     console.log("ERRORS:", errors);
 
+    const totalPressPercentage = (data?.pressPercentage ?? []).reduce(
+      (sum: number, { newPressPercentage = 0 }) => sum + newPressPercentage,
+      0
+    );
+
+    if (totalPressPercentage !== 100) {
+      setError(`pressPercentage`, {
+        type: "manual",
+        message: `Total Press percentage % (${totalPressPercentage}) must be equal with 100%`,
+      });
+
+      return;
+    }
+
+    (data?.pressPercentage || []).forEach(
+      (item: PressPercentage, index: number) => {
+        const totalVesselsQty = (item.vessels ?? []).reduce(
+          (sum: number, { qty = 0 }) => sum + qty,
+          0
+        );
+
+        if ((item?.inputQuantity || 0) === 0) {
+          setError(`pressPercentage.${index}.inputQuantity`, {
+            type: "manual",
+            message: `Please enter a valid number for the must quantity`,
+          });
+
+          return;
+        }
+
+        if (totalVesselsQty !== (item?.inputQuantity || 0)) {
+          setError(`pressPercentage.${index}.vessels`, {
+            type: "manual",
+            message: `Total vessels quantity (${totalVesselsQty}) must be equal with must quantity (${item.inputQuantity})`,
+          });
+
+          return;
+        }
+
+        console.log(
+          "totalVesselsQty !== item.inputQuantity:",
+          totalVesselsQty,
+          data?.pressPercentage[0].inputQuantity
+        );
+        return;
+      }
+    );
+
     const subjectGrape = grapes.filter((g) => g?.name === data?.batchId)[0];
+
+    const grapeActual = subjectGrape?.metrics?.actual || 0;
+
+    if (grapeActual <= 0) {
+      setError(`quantity`, {
+        type: "manual",
+        message: `Batch quantity (${subjectGrape?.metrics?.actual}) must be greater than 0)`,
+      });
+
+      return;
+    }
+
+    if (grapeActual < (data?.quantity || 0)) {
+      setError(`quantity`, {
+        type: "manual",
+        message: `Grape quantity (${data?.quantity || 0}) must be less or equal with batch quantity (${grapeActual})`,
+      });
+
+      return;
+    }
 
     console.log("SUBJECT GRAPE", subjectGrape);
 
-    actions?.["grape-processing"].exec(user?.uid as string, data, subjectGrape);
+    setIsSubmitting(true);
+
+    try {
+      await actions?.["grape-process"].exec(
+        user?.uid as string,
+        data,
+        subjectGrape
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
 
     setFormData(data);
+
+    onBackClick?.();
   };
 
   useEffect(() => {
     const grapeProcessingActionSample: GrapeProcessingAction = {
       id: Date.now().toString(),
       batchId: "",
-      type: "grape-processing",
-      quantity: 0,
-      executionDate: new Date().toDateString(),
+      type: "grape-process",
+      quantity: undefined,
+      executionDate: Timestamp.fromDate(new Date()),
       receivingBay: {},
       destemmer: {},
       press: {},
-      pressPercentage: {
-        mustId: `MustID_${musts.length + 1}`,
-        inputQuantity: 0,
-        vessel: "",
-        newPressPercentage: 0,
-      },
+      pressPercentage: [],
       labReport: {
         id: "",
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
+          id: "",
           name: "",
           email: "",
         },
@@ -125,7 +216,7 @@ export default function GrapeProcessingActionForm() {
           },
         },
       },
-      wasteQuantity: 0,
+      wasteQuantity: undefined,
     };
 
     if (selectedGrapes && selectedGrapes.length === 1) {
@@ -136,6 +227,7 @@ export default function GrapeProcessingActionForm() {
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
+          id: teamMembers[0]?.id,
           name: teamMembers[0]?.name,
           email: teamMembers[0]?.email,
         },
@@ -160,6 +252,7 @@ export default function GrapeProcessingActionForm() {
         date: new Date().toDateString(),
         supportingDocs: [],
         responsible: {
+          id: teamMembers[0]?.id,
           name: teamMembers[0]?.name,
           email: teamMembers[0]?.email,
         },
@@ -190,225 +283,654 @@ export default function GrapeProcessingActionForm() {
     console.log("grapeProcessingActionSample", grapeProcessingActionSample);
   }, [grapes, selectedGrapes]);
 
+  const filteredMusts = musts.filter(({ rowType }) => rowType === "item");
+  const filteredVessels = vessels.filter(({ rowType }) => rowType === "item");
+
+  const handleAddPressPercentage = () => {
+    const pressPercentage = {
+      id: crypto.randomUUID(),
+      mustId: `MustID_${filteredMusts.length + 1 + (formData?.pressPercentage || [])?.length}`,
+      inputQuantity: undefined,
+      vessels: [],
+      newPressPercentage: undefined,
+    };
+
+    handleChange("pressPercentage", [
+      ...(formData?.pressPercentage || []),
+      pressPercentage,
+    ]);
+  };
+
+  const totalPressPercentage = useMemo(
+    () =>
+      (formData.pressPercentage || []).reduce(
+        (sum, item) => (sum += +(item.newPressPercentage || 0)),
+        0
+      ),
+    [formData.pressPercentage]
+  );
+
   useEffect(() => {
     if (errors) {
       console.log("ERRORS", errors);
     }
   }, [errors]);
 
+  if (!formData) return null;
+
   return (
-    <>
-      {formData && formData !== undefined && (
-        <div className="w-full p-4">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-            <div className="w-full">
-              <div className="flex flex-col gap-4 w-full">
-                <div className="flex flex-col w-full">
-                  {/* <DemoItem label="DatePicker"> */}
-                  <Box display={"flex"} flexDirection={"column"} gap={2}>
-                    {/* * ID */}
-                    {/* * QUANTITY */}
-                    <div className="hidden">
-                      <FormControl fullWidth>
-                        {/* <InputLabel id="quantity-select">
+    <div
+      className="w-full"
+      style={{
+        borderColor: "var(--mui-palette-divider)",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full"
+        style={{ height: "100%", display: "flex", flexDirection: "column" }}
+      >
+        <Box
+          className="w-full"
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+          }}
+        >
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col w-full">
+              {/* <DemoItem label="DatePicker"> */}
+              <Stack gap={2} sx={{ p: 2 }}>
+                {/* * ID */}
+                {/* * QUANTITY */}
+                <div className="hidden">
+                  <FormControl fullWidth>
+                    {/* <InputLabel id="quantity-select">
                           Grape Quantity (Kg)
                         </InputLabel> */}
-                        <TextField
-                          type="number"
-                          id="id-field"
-                          label="ID"
-                          variant="outlined"
-                          inputProps={{
-                            min: "0",
-                            step: "0.01",
-                          }}
-                          {...register("quantity")}
-                        />
-                      </FormControl>
-                    </div>
+                    <TextField
+                      type="number"
+                      id="id-field"
+                      label="ID"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: { min: 1, step: 0.01, max: 1_000_000 },
+                      }}
+                      {...register("quantity")}
+                    />
+                  </FormControl>
 
-                    {/* * BATCH ID */}
-                    <FormControl fullWidth>
-                      <InputLabel id="batchId-select">Batch ID</InputLabel>
-                      <Select
-                        disabled={disableSubject}
-                        name="batchId"
-                        // labelId="subject-select"
-                        id="batchId-select"
-                        value={(formData?.batchId as string) || ""}
-                        label="Batch ID"
-                        onChange={(e) => {
-                          handleChange("batchId", e.target.value);
-                        }}
-                      >
-                        {grapesNames &&
-                          grapesNames.length > 0 &&
-                          grapesNames.map((name) => (
-                            <MenuItem key={name} value={name}>
-                              {name}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
-                    {/* * EXECUTION DATE */}
-                    <Stack gap={1} className="w-full">
-                      <DatePicker
-                        name="executionDate"
-                        value={
-                          formData.executionDate instanceof Timestamp
-                            ? dayjs(formData.executionDate.toDate())
-                            : dayjs(formData.executionDate)
+                  {errors?.quantity && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.quantity?.message as string}
+                    </Typography>
+                  )}
+                </div>
+
+                {/* * BATCH ID */}
+                <FormControl fullWidth>
+                  <InputLabel id="batchId-select">
+                    {formData?.batchId ? "Selected batch ID" : "Batch ID"}
+                  </InputLabel>
+                  <Select
+                    disabled={disableSubject}
+                    name="batchId"
+                    // labelId="subject-select"
+                    id="batchId-select"
+                    value={(formData?.batchId as string) || ""}
+                    label={formData?.batchId ? "Selected batch ID" : "Batch ID"}
+                    onChange={(e) => {
+                      handleChange("batchId", e.target.value);
+                    }}
+                  >
+                    {grapesNames &&
+                      grapesNames.length > 0 &&
+                      grapesNames.map((name) => (
+                        <MenuItem key={name} value={name}>
+                          {name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+
+                {errors?.batchId && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.batchId?.message as string}
+                  </Typography>
+                )}
+                {/* * EXECUTION DATE */}
+                <Stack gap={1} className="w-full">
+                  <DatePicker
+                    name="executionDate"
+                    value={
+                      formData.executionDate instanceof Timestamp
+                        ? dayjs(formData.executionDate.toDate())
+                        : dayjs(formData.executionDate)
+                    }
+                    label={
+                      formData.executionDate
+                        ? "Execution date"
+                        : "Select execution date"
+                    }
+                    disablePast
+                    views={["year", "month", "day"]}
+                    className="w-full"
+                    onChange={(date) => {
+                      if (date) {
+                        handleChange("executionDate", date);
+                      } else {
+                        handleChange("executionDate", undefined);
+                      }
+                    }}
+                  />
+                </Stack>
+
+                {errors?.executionDate && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.executionDate?.message as string}
+                  </Typography>
+                )}
+
+                <FormControl fullWidth>
+                  <Stack display="flex" gap={1}>
+                    <ResponsibleTeamMemberField
+                      teamMembers={teamMembers}
+                      onChange={(value) => {
+                        handleChange("responsible.name", value);
+                      }}
+                    />
+                  </Stack>
+                </FormControl>
+
+                {errors?.responsible && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.responsible?.message as string}
+                  </Typography>
+                )}
+
+                {/* * QUANTITY */}
+                <div className="">
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="quantity"
+                      label="Grape weight (Kg)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: { min: 0, step: 0.01, max: 1_000_000 },
+                      }}
+                      {...register("quantity")}
+                    />
+                  </FormControl>
+                </div>
+
+                {errors?.quantity && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.quantity?.message as string}
+                  </Typography>
+                )}
+
+                {/* TODO */}
+                {/* * RECEIVING BAY */}
+                <FormControl>
+                  <Autocomplete
+                    options={[]}
+                    value={formData?.receivingBay?.id || ""}
+                    onChange={(_event, newValue) => {
+                      handleChange("receivingBay", newValue || "");
+                    }}
+                    onInputChange={(_event, newInputValue) => {
+                      handleChange("receivingBay", newInputValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={
+                          formData?.receivingBay?.id
+                            ? "Receiving bay"
+                            : "Select a receiving bay"
                         }
-                        label="Execution Date"
-                        disablePast
-                        views={["year", "month", "day"]}
-                        className="w-full"
-                        onChange={(date) => {
-                          if (date) {
-                            handleChange("executionDate", date);
-                          } else {
-                            handleChange("executionDate", undefined);
-                          }
-                        }}
+                        variant="outlined"
                       />
-                    </Stack>
-                    {/* * QUANTITY */}
-                    <div className="">
-                      <FormControl fullWidth>
-                        {/* <InputLabel id="quantity-select">
-                          Grape Quantity (Kg)
-                        </InputLabel> */}
-                        <TextField
-                          type="number"
-                          id="quantity-select"
-                          label="Grape Quantity (Kg)"
-                          variant="outlined"
-                          inputProps={{
-                            min: "0",
-                            step: "0.01",
-                          }}
-                          {...register("quantity")}
-                        />
-                      </FormControl>
-                    </div>
+                    )}
+                  />
+                </FormControl>
 
-                    {/* TODO */}
-                    {/* * RECEIVING BAY */}
-                    {/* * DESTEMMER */}
-                    {/* * PRESS */}
+                {errors?.receivingBay && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.receivingBay?.message as string}
+                  </Typography>
+                )}
 
-                    {/* * PRESS PERCENTAGE */}
-                    <Typography variant="body1">Press Percentage</Typography>
-                    {/* * Must Name */}
-                    <div className="">
-                      <FormControl fullWidth>
-                        {/* <InputLabel id="must-select">Must Name</InputLabel> */}
-                        <TextField
-                          id="pressPercentage.mustId"
-                          label="Must Name"
-                          variant="outlined"
-                          {...register("pressPercentage.mustId")}
-                        />
-                      </FormControl>
-                    </div>
-                    {/* * Input Quantity */}
-                    <div className="">
-                      <FormControl fullWidth>
-                        {/* <InputLabel id="must-select">Input Quantity</InputLabel> */}
-                        <TextField
-                          type="number"
-                          id="pressPercentage.inputQuantity"
-                          label="Input Quantity"
-                          variant="outlined"
-                          inputProps={{
-                            min: "0",
-                            step: "0.01",
-                          }}
-                          {...register("pressPercentage.inputQuantity")}
-                        />
-                      </FormControl>
-                    </div>
-                    {/* * Vessel */}
-                    <div>
-                      <FormControl fullWidth>
-                        <InputLabel id="vessel-select">Vessel</InputLabel>
-                        <Select
-                          name="pressPercentage.vessel"
-                          labelId="subject-select"
-                          id="vessel-select"
-                          value={
-                            (formData?.pressPercentage?.vessel as string) ||
-                            "No vessels"
-                          }
-                          label="Vessel"
-                          onChange={(e) => {
-                            handleChange(
-                              "pressPercentage.vessel",
-                              e.target.value
-                            );
-                          }}
-                        >
-                          {vessels &&
-                            vessels.length > 0 &&
-                            vessels.map((vessel) => (
-                              <MenuItem key={vessel.id} value={vessel.name}>
-                                {vessel.name}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                      </FormControl>
-                    </div>
-                    {/* * New Press % */}
-                    <div className="">
-                      <FormControl fullWidth>
-                        {/* <InputLabel id="must-select">New Press %</InputLabel> */}
-                        <TextField
-                          type="number"
-                          id="pressPercentage.newPressPercentage"
-                          label="New Press %"
-                          variant="outlined"
-                          inputProps={{
-                            min: "0",
-                            step: "0.01",
-                          }}
-                          {...register("pressPercentage.newPressPercentage")}
-                        />
-                      </FormControl>
-                    </div>
-                    {/* * New Press % */}
-                    <div className="">
-                      <FormControl fullWidth>
-                        {/* <InputLabel id="wasteQuantity-select">
+                {/* * DESTEMMER */}
+                <FormControl>
+                  <Autocomplete
+                    options={[]}
+                    value={formData?.destemmer?.id || ""}
+                    onChange={(_event, newValue) => {
+                      handleChange("destemmer", newValue || "");
+                    }}
+                    onInputChange={(_event, newInputValue) => {
+                      handleChange("destemmer", newInputValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={
+                          formData?.destemmer?.id
+                            ? "Destemmer"
+                            : "Select a destemmer"
+                        }
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                </FormControl>
+
+                {errors?.destemmer && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.destemmer?.message as string}
+                  </Typography>
+                )}
+
+                {/* * PRESS */}
+                <FormControl>
+                  <Autocomplete
+                    options={[]}
+                    value={formData?.press?.id || ""}
+                    onChange={(_event, newValue) => {
+                      handleChange("press", newValue || "");
+                    }}
+                    onInputChange={(_event, newInputValue) => {
+                      handleChange("press", newInputValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={formData?.press?.id ? "Press" : "Select a press"}
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                </FormControl>
+
+                {errors?.press && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.press?.message as string}
+                  </Typography>
+                )}
+
+                <div className="">
+                  <FormControl fullWidth>
+                    {/* <InputLabel id="wasteQuantity-select">
                           Waste Quantity
                         </InputLabel> */}
+                    <TextField
+                      type="number"
+                      id="wasteQuantity"
+                      label="Waste Quantity (Kg)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: { min: 0, step: 0.01, max: 1_000_000 },
+                      }}
+                      {...register("wasteQuantity")}
+                    />
+                  </FormControl>
+                </div>
+
+                {/* * PRESS PERCENTAGE */}
+                <Stack
+                  direction="row"
+                  sx={{ alignItems: "center", justifyContent: "space-between" }}
+                >
+                  <Typography variant="body1">
+                    Press Percentage ({totalPressPercentage}%)
+                  </Typography>
+
+                  <Button
+                    variant="text"
+                    startIcon={<Add />}
+                    onClick={handleAddPressPercentage}
+                    disabled={totalPressPercentage > 100}
+                  >
+                    Add
+                  </Button>
+                </Stack>
+
+                {errors?.pressPercentage && (
+                  <Typography variant="body2" color="error" className="mt-1">
+                    {errors?.pressPercentage?.message as string}
+                  </Typography>
+                )}
+              </Stack>
+
+              {formData.pressPercentage?.map((item, index) => (
+                <Accordion
+                  key={index}
+                  disableGutters={true}
+                  defaultExpanded={true}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls={`press-percentage${item.id}-content`}
+                    id={`press-percentage${item.id}--header`}
+                  >
+                    <Typography component="span">
+                      {item.newPressPercentage}%
+                    </Typography>
+                  </AccordionSummary>
+
+                  <AccordionDetails>
+                    <div className="flex flex-col gap-4">
+                      <FormControl fullWidth>
                         <TextField
-                          type="number"
-                          id="wasteQuantity"
-                          label="Waste Quantity"
+                          id="pressPercentage.newPressPercentage"
+                          label={
+                            item.newPressPercentage
+                              ? "New Press %"
+                              : "Enter a % of press"
+                          }
                           variant="outlined"
-                          inputProps={{
-                            min: "0",
-                            step: "0.01",
+                          type="number"
+                          slotProps={{
+                            htmlInput: { min: 0, step: 0.01, max: 100 },
                           }}
-                          {...register("wasteQuantity")}
+                          value={item.newPressPercentage || ""}
+                          onChange={(e) => {
+                            const updated = [
+                              ...(formData.pressPercentage || []),
+                            ];
+
+                            updated[index].newPressPercentage = Number(
+                              e.target.value
+                            );
+
+                            handleChange("pressPercentage", updated);
+                          }}
                         />
                       </FormControl>
-                    </div>
-                  </Box>
-                </div>
-              </div>
-            </div>
 
-            <Box display={"flex"} justifyContent={"end"}>
-              <FormControl>
-                <Button type="submit" variant="contained" className="mt-8">
-                  Submit
-                </Button>
-              </FormControl>
-            </Box>
-          </form>
-        </div>
-      )}
-    </>
+                      <Typography
+                        key={`newPressPercentage-${index}`}
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.pressPercentage &&
+                          Array.isArray(errors?.pressPercentage) &&
+                          (errors?.pressPercentage[index]?.newPressPercentage
+                            ?.message as string)}
+                      </Typography>
+
+                      <FormControl fullWidth>
+                        <TextField
+                          id="pressPercentage.mustId"
+                          label="Must ID"
+                          variant="outlined"
+                          value={item.mustId || ""}
+                          onChange={(e) => {
+                            const updated = [
+                              ...(formData.pressPercentage || []),
+                            ];
+
+                            updated[index].mustId = e.target.value;
+
+                            handleChange("pressPercentage", updated);
+                          }}
+                        />
+                      </FormControl>
+
+                      <Typography
+                        key={`mustId-${index}`}
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.pressPercentage &&
+                          Array.isArray(errors?.pressPercentage) &&
+                          (errors?.pressPercentage[index]?.mustId
+                            ?.message as string)}
+                      </Typography>
+
+                      <FormControl fullWidth>
+                        <TextField
+                          id="pressPercentage.inputQuantity"
+                          label="Must quantity (Kg)"
+                          variant="outlined"
+                          type="number"
+                          slotProps={{
+                            htmlInput: { min: 0, step: 0.01, max: 1_000_000 },
+                          }}
+                          value={item.inputQuantity || ""}
+                          onChange={(e) => {
+                            const updated = [
+                              ...(formData.pressPercentage || []),
+                            ];
+
+                            updated[index].inputQuantity = Number(
+                              e.target.value
+                            );
+
+                            handleChange("pressPercentage", updated);
+                          }}
+                        />
+                      </FormControl>
+
+                      <Typography
+                        key={`inputQuantity-${index}`}
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.pressPercentage &&
+                          Array.isArray(errors?.pressPercentage) &&
+                          (errors?.pressPercentage[index]?.inputQuantity
+                            ?.message as string)}
+                      </Typography>
+
+                      <Stack gap={1}>
+                        <Autocomplete
+                          multiple
+                          noOptionsText="No vessels available"
+                          options={filteredVessels.filter(
+                            (vessel) =>
+                              !item?.vessels?.some(({ id }) => id === vessel.id)
+                          )}
+                          value={[]}
+                          getOptionLabel={(option) => option.name}
+                          filterSelectedOptions
+                          onChange={(_event, newValue) => {
+                            const added = newValue.at(-1);
+
+                            console.log("newValue:", newValue);
+                            console.log("added:", added);
+
+                            if (!added) return;
+
+                            const updatedVessels = [
+                              ...(item?.vessels ?? []),
+                              {
+                                id: added.id,
+                                name: added.name,
+                                type: added.type,
+                                location: added.location,
+                                qty: 1,
+                              },
+                            ];
+                            const updated = [
+                              ...(formData.pressPercentage || []),
+                            ];
+
+                            updated[index].vessels = updatedVessels;
+
+                            handleChange("pressPercentage", updated);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              variant="outlined"
+                              label="Select vessel(s) for the must"
+                            />
+                          )}
+                        />
+
+                        {(item?.vessels || []).length > 0 && (
+                          <>
+                            <InputLabel className="text-sm text-muted-foreground">
+                              Vessel(s):
+                            </InputLabel>
+
+                            <Stack
+                              p={2}
+                              pb={1}
+                              gap={1}
+                              sx={{
+                                border: "1px solid var(--mui-palette-divider)",
+                              }}
+                            >
+                              {item?.vessels?.map(
+                                ({ id, name, qty = "" }, vesselsIndex) => (
+                                  <Fragment key={id}>
+                                    <Stack
+                                      gap={1}
+                                      key={id}
+                                      direction="row"
+                                      alignItems="center"
+                                    >
+                                      <Typography
+                                        variant="body2"
+                                        component="div"
+                                        sx={{ flex: 1 }}
+                                      >
+                                        {name}
+                                      </Typography>
+
+                                      <FormControl>
+                                        <TextField
+                                          id="qty"
+                                          size="small"
+                                          label="Qty"
+                                          type="number"
+                                          variant="outlined"
+                                          value={qty}
+                                          slotProps={{
+                                            htmlInput: {
+                                              min: 0,
+                                              step: 0.1,
+                                              max: 1_000_000,
+                                            },
+                                          }}
+                                          sx={{ width: "80px" }}
+                                          onChange={(e) => {
+                                            const updatedVessels = [
+                                              ...(item.vessels || []),
+                                            ];
+
+                                            updatedVessels[vesselsIndex].qty =
+                                              Number(e.target.value);
+
+                                            const updated = [
+                                              ...(formData.pressPercentage ||
+                                                []),
+                                            ];
+
+                                            updated[index].vessels =
+                                              updatedVessels;
+
+                                            handleChange(
+                                              "pressPercentage",
+                                              updated
+                                            );
+                                          }}
+                                        />
+                                      </FormControl>
+
+                                      <IconButton
+                                        size="small"
+                                        disabled={false}
+                                        onClick={() => {
+                                          const updatedVessels =
+                                            item.vessels?.filter(
+                                              (vessel) => vessel.id !== id
+                                            );
+
+                                          const updated = [
+                                            ...(formData.pressPercentage || []),
+                                          ];
+
+                                          updated[index].vessels =
+                                            updatedVessels;
+
+                                          handleChange(
+                                            "pressPercentage",
+                                            updated
+                                          );
+                                        }}
+                                      >
+                                        <ClearIcon fontSize="small" />
+                                      </IconButton>
+                                    </Stack>
+
+                                    <Typography
+                                      key={`vessels-${index}-${vesselsIndex}`}
+                                      variant="body2"
+                                      color="error"
+                                      className="mt-1"
+                                    >
+                                      {errors?.pressPercentage &&
+                                        Array.isArray(
+                                          errors?.pressPercentage
+                                        ) &&
+                                        Array.isArray(
+                                          errors?.pressPercentage[index]
+                                            ?.vessels
+                                        ) &&
+                                        (errors?.pressPercentage[index]
+                                          ?.vessels[vesselsIndex]
+                                          ?.message as string)}
+                                    </Typography>
+                                  </Fragment>
+                                )
+                              )}
+                            </Stack>
+                          </>
+                        )}
+                      </Stack>
+
+                      <Typography
+                        key={`vessels-${index}`}
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.pressPercentage &&
+                          Array.isArray(errors?.pressPercentage) &&
+                          (errors?.pressPercentage[index]?.vessels
+                            ?.message as string)}
+                      </Typography>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+            </div>
+          </div>
+        </Box>
+
+        <Box p={2} gap={2} display="flex" justifyContent="end">
+          <FormControl>
+            <Button
+              disabled={isSubmitting}
+              type="submit"
+              variant="contained"
+              className="mt-8"
+            >
+              Submit
+            </Button>
+          </FormControl>
+        </Box>
+      </form>
+    </div>
   );
 }

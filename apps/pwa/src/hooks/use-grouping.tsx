@@ -7,13 +7,13 @@ export function useGrouping<T extends DashboardEntity>(data: T[]) {
         !!group && (rowType === "group" || group.length > 1)
     )
     .map(({ group, rowType }) =>
-      rowType === "group" ? group : group?.slice(0, -1)
+      rowType === "group" ? group : group.slice(0, -1)
     );
 
   const uniqueGroups = [
     ...new Set(
       groups.reduce((acc, group) => {
-        const joinedGroups = group?.map((_: string, index: number) =>
+        const joinedGroups = group.map((_: string, index: number) =>
           group.slice(0, index + 1).join(" > ")
         );
 
