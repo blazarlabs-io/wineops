@@ -35,6 +35,7 @@ const generateItems = (total: number) => {
       variation: Math.random() * 20 - 10, //random  value between -10 and 10
       unit: "g/dm3",
       responsible: {
+        id: crypto.randomUUID(),
         name: `Responsible ${i}`,
         email: `responsible${i}@email.com`,
       },
@@ -88,6 +89,7 @@ export const generateDummyDocs = (count: number) => {
       name: generateRandomFilenameWithWords("png", "_", 3),
       fileUrl: "",
       owner: {
+        id: crypto.randomUUID(),
         name: "John Doe",
         email: "2Tb3T@example.com",
       },
