@@ -11,9 +11,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Icon, IconifyIcon } from "@iconify/react";
 import { ActionsEntity } from "@/models/types/actions";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { Grape, GrapeStatus } from "@/models/types/db";
+import { useGrape } from "@/context/grape";
 
 export interface QuickActionsWidgetStepOneProps<T extends ActionsEntity> {
   actions?: T;
@@ -26,6 +29,25 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
 }: QuickActionsWidgetStepOneProps<T>) {
   const [actionsList, setActionsList] = useState<any>([]);
   const [selectedAction, setSelectedAction] = useState<string>("");
+
+  const { grapes } = useGrape();
+  const { selected, entityName } = useSelectedEntitiesStore((state) => state);
+
+  const updatedSelected = useMemo(
+    () =>
+      entityName === "grape"
+        ? selected.map(
+            (selected) => grapes.find((g) => g.id === selected.id) ?? selected
+          )
+        : [],
+    [entityName, grapes, selected]
+  );
+
+  const enableIntake =
+    updatedSelected.length === 0 ||
+    (updatedSelected as Grape[]).some(
+      ({ status }) => status === GrapeStatus.IN_TRANSIT
+    );
 
   const handleActionClick = (action: string) => {
     onClick(action);
@@ -97,6 +119,7 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
                     borderColor: "divider",
                     width: "100%",
                   }}
+                  disabled={action === "grape intake" && !enableIntake}
                 >
                   <Stack
                     direction="row"
