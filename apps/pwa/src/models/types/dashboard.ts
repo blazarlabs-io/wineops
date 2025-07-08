@@ -5,7 +5,6 @@ import {
   GrapeStatus,
   Must,
   Priority,
-  TeamMember,
   Vessel,
   Vineyard,
   VineyardStatus,
@@ -16,7 +15,6 @@ export type DashboardEntity =
   | Vineyard
   | Grape
   | Must
-  | TeamMember
   | Wine
   | Vessel
   | Chemistry
