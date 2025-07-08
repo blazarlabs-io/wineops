@@ -147,6 +147,7 @@ export type LabReport = {
 };
 
 export type ResponsibleTeamMember = {
+  id: string;
   name: string;
   email: string;
 };

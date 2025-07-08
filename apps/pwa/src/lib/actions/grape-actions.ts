@@ -7,13 +7,17 @@ import {
 } from "@/models/types/db";
 import { db } from "../firebase/services";
 import { enqueueSnackbar } from "notistack";
-import { ActionRelation, PressPercentage } from "@/models/types/actions";
+import {
+  ActionRelation,
+  GrapeIntakeAction,
+  PressPercentage,
+} from "@/models/types/actions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const grapeIntakeAction = async (
   uid: string,
-  actionData: any,
-  grape: any
+  actionData: GrapeIntakeAction,
+  grape: Grape
 ) => {
   console.log("grapeIntakeAction", uid, actionData, grape);
 
@@ -29,16 +33,48 @@ export const grapeIntakeAction = async (
 
   // * 2. update grape object into DB
 
+  const {
+    id,
+    qualityCharacteristics,
+    labTechnicianName = "",
+    labCertificateId = "",
+    mass,
+  } = actionData;
+
   const grapeRes = await db.grape.update(uid, grape.id, {
     actions: [
       ...(grape.actions || ([] as ActionRelation[])),
       {
-        id: actionData.id,
+        id,
         name: "grape-intake",
       },
     ],
     status: GrapeStatus.RECEIVED,
-    metrics: { ...grape.metrics, actual: actionData.mass.net },
+    metrics: { ...grape.metrics, actual: mass?.net },
+    labData: {
+      id: crypto.randomUUID(),
+      sugar: {
+        unit: "g/dm³",
+        value: qualityCharacteristics?.sugar,
+      },
+      acidity: {
+        unit: "g/dm³",
+        value: qualityCharacteristics?.acidity || "",
+      },
+      density: {
+        unit: "kg/L",
+        value: qualityCharacteristics?.density,
+      },
+      temperature: {
+        unit: "°C",
+        value: qualityCharacteristics?.temperature,
+      },
+      spoiledGrapesPercentage: qualityCharacteristics?.massFractionSpoiled,
+      crushedGrapesPercentage: qualityCharacteristics?.massFractionCrushed,
+      addedGrapesVarietiesPercentage: qualityCharacteristics?.massFractionMixed,
+      labTechnicianName: labTechnicianName,
+      labCertificateID: labCertificateId,
+    },
   });
 
   if (grapeRes.status === 200) {

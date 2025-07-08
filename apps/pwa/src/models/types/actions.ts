@@ -7,6 +7,7 @@ import {
   Must,
   MustWineVessel,
   ResponsibleTeamMember,
+  Supplier,
   TeamMember,
   Vineyard,
 } from "./db";
@@ -54,8 +55,8 @@ export type GrapeIntakeAction = {
   type: GrapeActionType;
   subjectGrape?: Subject;
   executionDate: string | Timestamp;
-  supplier?: string;
-  grapeVariety?: string;
+  supplier: Partial<Supplier>;
+  grapeVariety: string;
   weigherName?: ResponsibleTeamMember;
   mass?: {
     gross?: number;
@@ -74,16 +75,18 @@ export type GrapeIntakeAction = {
   labCertificateId?: string;
   certificateDeInofensiviate?: string;
   labTechnicianName?: string;
+  processingLocation?: string;
   transportInfo?: {
     vehicleId?: string;
     companyName?: string;
     driverId?: string;
   };
   invoiceNumber?: string;
-  supportingDocument?: {
+  supportingDocuments?: Array<{
     name: string;
     url: string;
-  };
+  }>;
+  additionalInfo?: string;
 };
 
 export type PressPercentage = {
