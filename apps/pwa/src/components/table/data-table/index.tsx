@@ -204,18 +204,22 @@ export const DataTable = <T extends DashboardEntity>({
 
     const updatedRows = selectedRows.map((row) => {
       const groupPrefix = newGroup?.group ?? group;
-      const foundGroupIndex = row?.group?.findIndex((item) =>
+      const foundGroupIndex = row.group.findIndex((item) =>
         fullySelectedGroups.includes(item)
       );
 
       const hierarchyGroup =
         foundGroupIndex !== undefined && foundGroupIndex > -1
-          ? [...groupPrefix, ...(row?.group?.slice(foundGroupIndex, -1) ?? [])]
+          ? [...groupPrefix, ...(row.group.slice(foundGroupIndex, -1) ?? [])]
           : groupPrefix;
 
       const newHierarchyGroup = createNewGroup(hierarchyGroup);
 
-      if (newHierarchyGroup && newHierarchyGroup?.group?.length > 0) {
+      if (
+        isGrouping &&
+        newHierarchyGroup &&
+        newHierarchyGroup?.group?.length > 0
+      ) {
         if (
           !newGroups.find(
             (newGroup) =>
@@ -235,11 +239,8 @@ export const DataTable = <T extends DashboardEntity>({
               ? groupPrefix
               : [...(newHierarchyGroup?.group ?? hierarchyGroup), row.name]
             : row.rowType === "group"
-              ? [
-                  ...(row?.group as string[])?.slice(0, -2),
-                  row?.group?.[row.group?.length - 1],
-                ]
-              : [...(row?.group as string[]), row.name],
+              ? [...row.group.slice(0, -2), row.group[row.group.length - 1]]
+              : [...row.group.slice(0, -2), row.name],
       };
     });
 
@@ -250,6 +251,12 @@ export const DataTable = <T extends DashboardEntity>({
     );
 
     const unusedGroups = getUnusedGroups(allRows);
+
+    console.log("newGroup:", newGroup);
+    console.log("newGroups:", newGroups);
+    console.log("updatedMap:", updatedMap);
+    console.log("allRows:", allRows);
+    console.log("unusedGroups:", unusedGroups);
 
     const unusedGroupsIds = unusedGroups.map(({ id }) => id);
 
