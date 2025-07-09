@@ -86,7 +86,7 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
                         <Typography
                           variant="body2"
                           color="primary"
-                          className="leading-[1] lowercase m-[0px] p-[0px] text-muted-foreground underline cursor-pointer"
+                          className="leading-[1] lowercase m-[0px] p-[0px] text-muted-foreground cursor-pointer"
                         >
                           + {uniqueValues.length - 2} more
                         </Typography>

@@ -21,7 +21,7 @@ import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useState, MouseEvent } from "react";
+import { useState, MouseEvent, useEffect } from "react";
 import { useGridStore } from "@/store/grid";
 import { GroupBy } from "@/models/types/dashboard";
 
@@ -109,6 +109,12 @@ export default function ToolsBar(props: ToolsBarProps) {
     updateOpen(true);
     updateType(type as QuickDrawerType);
   };
+
+  useEffect(() => {
+    return () => {
+      setGroupedField(undefined);
+    };
+  }, [setGroupedField]);
 
   return (
     <>

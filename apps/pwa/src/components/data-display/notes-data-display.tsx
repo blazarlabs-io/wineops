@@ -85,7 +85,7 @@ export default function NotesDataDisplay({
             <Typography
               color="primary"
               variant="body2"
-              className="text-xs underline lowercase"
+              className="text-xs lowercase"
             >
               + {notes.length - 1} more
             </Typography>

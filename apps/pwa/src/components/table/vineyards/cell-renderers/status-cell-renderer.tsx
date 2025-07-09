@@ -2,10 +2,14 @@ import VineyardMultiStatusDataDisplay from "@/components/data-display/multi-stat
 import StatusDataDisplaySelect from "@/components/data-display/status-data-display-select";
 import StatusDialog from "@/components/dialogs/status-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { useSortVineyardStatuses } from "@/hooks/use-sort-vineyard-statuses";
+import {
+  SortedVineyardStatus,
+  useSortVineyardStatuses,
+} from "@/hooks/use-sort-vineyard-statuses";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { EntityStatus } from "@/models/types/dashboard";
+import { VineyardStatus } from "@/models/types/db";
 import { Box } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { enqueueSnackbar } from "notistack";
@@ -16,6 +20,20 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 ) => {
   const { vineyardStatuses } = useSortVineyardStatuses(
     params?.node?.aggData?.status
+  );
+
+  const sortedStatuses = Object.values(VineyardStatus).reduce(
+    (acc: Array<SortedVineyardStatus>, status: string) => {
+      const { name = "", count = 0 } =
+        vineyardStatuses.find(({ name }) => name === status) || {};
+
+      if (name && count > 0) {
+        acc = [...acc, { name, count }];
+      }
+
+      return acc;
+    },
+    [] as unknown as Array<SortedVineyardStatus>
   );
 
   const { user } = useAuth();
@@ -60,11 +78,12 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
           <StatusDialog
             open={open}
             onClose={handleClose}
-            data={vineyardStatuses}
+            data={sortedStatuses}
           />
-          {vineyardStatuses && vineyardStatuses.length > 0 && (
+
+          {sortedStatuses.length > 0 && (
             <VineyardMultiStatusDataDisplay
-              status={vineyardStatuses}
+              status={sortedStatuses}
               onOpen={handleOpen}
             />
           )}

@@ -81,6 +81,8 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
   const [cadastral, setCadastral] = useState<string>("");
   const btnRef = useRef<HTMLButtonElement>(null);
 
+  const [identificatorUnicParcela, setIdentificatorUnicParcela] = useState("");
+
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
     const _path = "info.location.map";
     setValue(_path, data);
@@ -91,40 +93,42 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
   };
 
   const handleArrayChange = (name: string, value: string) => {
-    const path = name;
-    const data: string[] = (formData?.cadastralNumber as string[]) || [];
+    if (!value) return;
+
+    const data: string[] =
+      (formData?.[name as keyof Vineyard] as string[]) || [];
     data.push(value);
-    setValue(path, data);
+    setValue(name, data);
     setFormData((prevData) => {
       if (!prevData) {
         return null;
       }
       const result = {
         ...prevData,
-        cadastralNumber: data,
+        [name]: data,
       };
-      console.log("result", result);
+
       return result;
     });
   };
 
-  const handleDeleteCadastral = (name: string, value: any) => {
-    const path = name;
-    const data: string[] = (formData?.cadastralNumber as string[]) || [];
+  const handleDeleteFromArray = (name: string, value: any) => {
+    const data: string[] =
+      (formData?.[name as keyof Vineyard] as string[]) || [];
     const index = data.indexOf(value);
     if (index > -1) {
       data.splice(index, 1);
     }
-    setValue(path, data);
+    setValue(name, data);
     setFormData((prevData) => {
       if (!prevData) {
         return null;
       }
       const result = {
         ...prevData,
-        cadastralNumber: data,
+        [name]: data,
       };
-      console.log("result", result);
+
       return result;
     });
   };
@@ -283,7 +287,10 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
         notes: [],
         cadastralNumber: [],
         rowType: "item",
+        identificatorUnicParcela: [],
       }),
+      identificatorUnicParcela:
+        existingVineyard?.identificatorUnicParcela || [],
     } as Vineyard;
 
     setFormData(formatted);
@@ -450,6 +457,96 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
                       )}
                     </div>
 
+                    <div className="flex flex-col gap-2">
+                      <InputLabel className="text-sm text-muted-foreground">
+                        Enter the Identificatorul unic al parcelei viticole
+                      </InputLabel>
+
+                      <FormControl>
+                        <Controller
+                          name="identificatorUnicParcela"
+                          control={control}
+                          render={({ field }) => {
+                            if (
+                              field.value !== undefined &&
+                              field.value.length > 0
+                            ) {
+                              return (
+                                <Stack
+                                  direction={"row"}
+                                  marginBottom={2}
+                                  flexWrap={"wrap"}
+                                  gap={1}
+                                >
+                                  {field.value.map(
+                                    (identificator: string, index: number) => (
+                                      <Chip
+                                        key={identificator + index}
+                                        label={identificator}
+                                        onDelete={() => {
+                                          handleDeleteFromArray(
+                                            "identificatorUnicParcela",
+                                            field.value[field.value.length - 1]
+                                          );
+                                        }}
+                                      />
+                                    )
+                                  )}
+                                </Stack>
+                              );
+                            } else {
+                              return <></>;
+                            }
+                          }}
+                        />
+                        <Stack
+                          spacing={2}
+                          direction="column"
+                          alignItems="center"
+                          width="100%"
+                        >
+                          <Input
+                            id="identificatorUnicParcela"
+                            type="text"
+                            label="Identificatorul unic al parcelei viticole"
+                            variant="outlined"
+                            fullWidth
+                            value={identificatorUnicParcela}
+                            onChange={(e) =>
+                              setIdentificatorUnicParcela(e.target.value)
+                            }
+                          />
+                          <Button
+                            type="button"
+                            variant="outlined"
+                            color="primary"
+                            fullWidth
+                            disabled={identificatorUnicParcela.length < 2}
+                            onClick={() => {
+                              handleArrayChange(
+                                "identificatorUnicParcela",
+                                identificatorUnicParcela
+                              );
+                              setIdentificatorUnicParcela("");
+                            }}
+                            startIcon={<Add />}
+                          >
+                            Add
+                          </Button>
+                        </Stack>
+                      </FormControl>
+
+                      {errors?.identificatorUnicParcela && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.identificatorUnicParcela?.message as string}
+                        </Typography>
+                      )}
+                    </div>
+
                     {/* * CADASTRAL NUMBER */}
                     <div className="flex flex-col gap-2">
                       {/* <Label htmlFor="cadastralNumber">Cadastral Number</Label> */}
@@ -478,7 +575,7 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
                                         key={cadastral + index}
                                         label={cadastral}
                                         onDelete={() => {
-                                          handleDeleteCadastral(
+                                          handleDeleteFromArray(
                                             "cadastralNumber",
                                             field.value[field.value.length - 1]
                                           );
@@ -513,6 +610,7 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
                             variant="outlined"
                             color="primary"
                             fullWidth
+                            disabled={cadastral.length < 2}
                             onClick={() => {
                               handleArrayChange("cadastralNumber", cadastral);
                               setCadastral("");
