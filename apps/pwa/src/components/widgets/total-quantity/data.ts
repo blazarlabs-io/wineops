@@ -387,18 +387,10 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
 
   return {
     relatedData: {
-      ...(sur > 0 && {
-        sur,
-      }),
-      ...(def > 0 && {
-        def,
-      }),
-      ...(ar > 0 && {
-        ar,
-      }),
-      ...(co > 0 && {
-        co,
-      }),
+      sur,
+      def,
+      ar,
+      co,
     },
     valueFormatter,
     muiDataset: dataset,

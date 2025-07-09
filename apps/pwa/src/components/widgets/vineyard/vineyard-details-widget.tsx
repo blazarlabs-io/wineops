@@ -159,7 +159,7 @@ export default function VineyardDetailsWidget({
               />
               <CadastralDataDisplay
                 label="Cadastral Number"
-                value={localVineyard.cadastralNumber || "N/A"}
+                value={localVineyard.cadastralNumber}
               />
               <SimpleDataDisplay
                 label="Country"

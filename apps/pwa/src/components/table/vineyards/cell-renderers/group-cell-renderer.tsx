@@ -37,7 +37,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   return (
     <Box
       display={"flex"}
-      flexDirection={"column"}
+      //flexDirection={"column"}
       justifyContent={"center"}
       gap={1}
       justifyItems={"flex-start"}
@@ -51,15 +51,13 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
       }}
       className="w-full flex flex-col items-start gap-2"
     >
-      <GroupBadge content={node?.allChildrenCount} />
-
       <Box
         display={"flex"}
         flexDirection={"row"}
         alignItems={"center"}
         justifyItems={"flex-between"}
         gap={0}
-        className="w-full"
+        className="w-full pr-8"
       >
         <Box>
           {!isGroup && (
@@ -161,6 +159,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
             </div>
           )}
         </Box>
+        <GroupBadge content={node?.allChildrenCount} />
       </Box>
       {node.data &&
         node.data !== undefined &&

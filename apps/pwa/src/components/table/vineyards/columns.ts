@@ -13,28 +13,14 @@ export const vineyardColumns: ColDef[] = [
     minWidth: 164,
     flex: 1,
     cellRenderer: GrapeVarietyCellRenderer,
-    aggFunc: (params: any) => {
-      const grapes = params.values.map((value: any) => {
-        return value;
-      });
-
-      return grapes;
-    },
+    aggFunc: ({ values }: any) => values,
   },
   {
     field: "status",
     minWidth: 184,
     flex: 1,
     cellRenderer: StatusCellRenderer,
-    cellRendererParams: (params: any) => {
-      return params;
-    },
-    aggFunc: (params: any) => {
-      const statuses = params.values.map((value: any) => {
-        return value;
-      });
-      return statuses;
-    },
+    aggFunc: ({ values }: any) => values,
   },
   {
     headerName: "Quantity Overview",
@@ -54,9 +40,7 @@ export const vineyardColumns: ColDef[] = [
     minWidth: 124,
     flex: 1,
     cellRenderer: TasksCellRenderer,
-    aggFunc: (params: any) => {
-      return params.values;
-    },
+    aggFunc: ({ values }: any) => values,
   },
   {
     field: "notes",
@@ -67,8 +51,6 @@ export const vineyardColumns: ColDef[] = [
   {
     field: "cadastralNumber",
     hide: true,
-    aggFunc: (params: any) => {
-      return params.values;
-    },
+    aggFunc: ({ values }: any) => values,
   },
 ];

@@ -28,24 +28,24 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 
   return (
     <>
-      <Stack
-        gap={1}
-        justifyContent="center"
-        height={ROW_HEIGHT_DEFAULT}
-        sx={{
-          borderLeft: node.level > 0 ? "8px" : "",
-          borderStyle: "solid",
-          borderColor: "var(--mui-palette-divider)",
-          pl: isGroup ? 2 : 0,
-          ml: 2,
-        }}
-      >
+      <Stack gap={1} justifyContent="center" height={ROW_HEIGHT_DEFAULT}>
         {isGroup ? (
-          <Stack justifyContent="center">
+          <Stack
+            flexDirection="row"
+            sx={{
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "-4px",
+              paddingRight: 4,
+            }}
+          >
             <Typography variant="body1" sx={{ whiteSpace: "normal" }}>
               {value ? value : <i>Unknown</i>}
-              <GroupBadge content={node?.allChildrenCount} />
             </Typography>
+
+            <Stack sx={{ marginTop: "2px" }}>
+              <GroupBadge content={node?.allChildrenCount} />
+            </Stack>
           </Stack>
         ) : (
           <Stack direction="row" justifyContent="center">

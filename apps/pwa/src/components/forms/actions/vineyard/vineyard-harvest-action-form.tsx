@@ -45,6 +45,7 @@ import { Timestamp } from "firebase/firestore";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
+import { parseToDate } from "@/utils/date-format";
 
 const equipment: ActionRelation[] = [];
 
@@ -162,9 +163,11 @@ export default function VineyardHarvestActionForm({
   const handleChange = useCallback(
     (name: string, value: any) => {
       if (name.startsWith("executionDate")) {
-        // value = Timestamp.fromDate(value.toDate());
-        value = new Date(value).toDateString();
-        console.log("DATE", value);
+        setValue(name, value);
+        setFormData((prev) => ({
+          ...(prev as VineyardHarvestAction),
+          [name]: value,
+        }));
       }
 
       if (name === "subject.name") {
@@ -361,20 +364,6 @@ export default function VineyardHarvestActionForm({
         selected?.labData?.some((ld) => ld.id === l.id)
       )[0];
 
-      let sugar, acidity, date;
-
-      if (labReport?.results?.sugar.value === undefined) {
-        sugar = 0;
-      } else {
-        sugar = labReport?.results?.sugar.value;
-      }
-
-      if (labReport?.results?.acidity.value === undefined) {
-        acidity = 0;
-      } else {
-        acidity = labReport?.results?.acidity.value;
-      }
-
       vineyardHarvestActionSample.sugar = {
         id: labReport?.id,
         name: "",
@@ -407,7 +396,7 @@ export default function VineyardHarvestActionForm({
         0
       );
 
-      vineyardHarvestActionSample.weight = totalWeight;
+      vineyardHarvestActionSample.weight = totalWeight > 0 ? totalWeight : "";
 
       const result = {
         ...formData,
@@ -426,8 +415,8 @@ export default function VineyardHarvestActionForm({
     vineyardHarvestActionSample.id = Date.now().toString();
     vineyardHarvestActionSample.batchId = `BatchID_${grapes?.length + 1}`;
     vineyardHarvestActionSample.type = "harvest";
-    vineyardHarvestActionSample.weight = 0;
-    vineyardHarvestActionSample.executionDate = new Date().toDateString();
+    vineyardHarvestActionSample.weight = "";
+    vineyardHarvestActionSample.executionDate = Timestamp.fromDate(new Date());
     vineyardHarvestActionSample.equipment = [];
     vineyardHarvestActionSample.consumables = [];
     vineyardHarvestActionSample.sugar.value = 0;
@@ -492,7 +481,7 @@ export default function VineyardHarvestActionForm({
       );
 
       // * We set the total weight
-      vineyardHarvestActionSample.weight = totalWeight;
+      vineyardHarvestActionSample.weight = totalWeight > 0 ? totalWeight : "";
 
       console.log(
         "vineyardHarvestActionSample",
@@ -626,14 +615,21 @@ export default function VineyardHarvestActionForm({
                       <DatePicker
                         name="executionDate"
                         value={
-                          formData.executionDate instanceof Timestamp
-                            ? dayjs(formData.executionDate.toDate())
-                            : dayjs(formData.executionDate)
+                          formData?.executionDate
+                            ? dayjs(parseToDate(formData?.executionDate))
+                            : null
                         }
                         label="Execution Date"
                         views={["year", "month", "day"]}
                         className="w-full"
                         onChange={(date) => {
+                          handleChange(
+                            "executionDate",
+                            date ? Timestamp.fromDate(date.toDate()) : null
+                          );
+
+                          return;
+
                           if (date) {
                             handleChange("executionDate", date);
                           } else {
@@ -668,9 +664,12 @@ export default function VineyardHarvestActionForm({
                           id="outlined-basic"
                           label="Weight (Kg)"
                           variant="outlined"
-                          inputProps={{
-                            min: "0",
-                            step: "0.01",
+                          slotProps={{
+                            htmlInput: {
+                              min: 0,
+                              step: 0.01,
+                              max: 1_000_000_000,
+                            },
                           }}
                           {...register("weight")}
                         />

@@ -58,7 +58,10 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
     id: Joi.string().allow("").required(),
     name: Joi.string().allow("").required(),
   }),
-  executionDate: Joi.date().required(),
+  executionDate: TimestampOrString.required().messages({
+    "any.required": "Please select a date",
+    "alternatives.types": "Date must be a valid date.",
+  }),
   batchId: Joi.string().optional().allow(""),
   weight: Joi.number().optional(),
   responsible: teamMemberSchema.optional(),

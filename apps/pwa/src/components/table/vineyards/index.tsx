@@ -25,7 +25,7 @@ export default function VineyardsTable() {
       data={normalizedVineyards}
       columns={vineyardColumns}
       groupColumnDef={{
-        headerName: "Name",
+        headerName: "Vineyard Name",
         rowDrag: true,
         cellRendererParams: {
           innerRenderer: GroupCellRenderer,
