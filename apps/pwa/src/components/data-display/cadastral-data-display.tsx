@@ -28,20 +28,26 @@ export default function CadastralDataDisplay({
         <Typography variant="body2" color="textDisabled">
           {label}
         </Typography>
-        {value && value !== undefined && (
-          <Button
-            size="small"
-            variant="text"
-            component="span"
-            className="lowercase!"
-            sx={{
-              padding: "0px 0px !important",
-              maxWidth: "fit-content",
-            }}
-            onClick={() => setOpenCadastrals(true)}
-          >
-            {value?.length} cadastral numbers
-          </Button>
+        {value && Array.isArray(value) && value.length > 0 ? (
+          value.length === 1 ? (
+            value[0]
+          ) : (
+            <Button
+              size="small"
+              variant="text"
+              component="span"
+              className="lowercase!"
+              sx={{
+                padding: "0px 0px !important",
+                maxWidth: "fit-content",
+              }}
+              onClick={() => setOpenCadastrals(true)}
+            >
+              {value?.length} cadastral numbers
+            </Button>
+          )
+        ) : (
+          "N/A"
         )}
       </Card>
     </>

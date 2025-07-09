@@ -42,7 +42,15 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
         }}
       >
         {isGroup ? (
-          <Stack justifyContent="center">
+          <Stack
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              marginTop: "-4px",
+              paddingRight: 4,
+            }}
+          >
             <Typography variant="body1" sx={{ whiteSpace: "normal" }}>
               {value ? (
                 groupField === "type" ? (
@@ -50,15 +58,20 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                     {node?.allChildrenCount} {value}(s)
                   </>
                 ) : (
-                  <>
-                    {value}
-                    <GroupBadge content={node?.allChildrenCount} />
-                  </>
+                  <>{value}</>
                 )
               ) : (
-                <i>Unknown</i>
+                <>
+                  {node?.allChildrenCount} <i>Unknown(s)</i>
+                </>
               )}
             </Typography>
+
+            {value && groupField !== "type" && (
+              <Stack sx={{ marginTop: "2px" }}>
+                <GroupBadge content={node?.allChildrenCount} />
+              </Stack>
+            )}
           </Stack>
         ) : (
           <Stack direction="row" justifyContent="center">

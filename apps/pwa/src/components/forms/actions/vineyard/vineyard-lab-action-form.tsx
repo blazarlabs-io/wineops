@@ -365,7 +365,7 @@ export default function VineyardLabActionForm({
                         // labelId="subject-select"
                         id="inUseVineyard.name"
                         value={(formData.inUseVineyard?.name as string) || ""}
-                        label="Vineyard"
+                        label="Selected vineyard"
                         onChange={(e) => {
                           handleInUseVineyardChange(e.target.value);
                         }}

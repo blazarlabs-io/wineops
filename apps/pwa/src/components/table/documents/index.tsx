@@ -33,9 +33,25 @@ export default function DocumentsTable({ docs }: DocumentProps) {
             },
           }}
           showToolbar
-          style={{
+          sx={{
             border: "none",
             overflowY: "auto",
+            background: "transparent",
+            "& .MuiDataGrid-columnHeaders": {
+              background: "transparent",
+              "& *": {
+                background: "transparent",
+              },
+              "& .MuiDataGrid-row--borderBottom": {
+                background: "transparent",
+              },
+            },
+            "& .MuiDataGrid-columnHeader": {
+              background: "transparent",
+              "& *": {
+                background: "transparent",
+              },
+            },
           }}
         />
       )}

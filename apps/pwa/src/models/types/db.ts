@@ -329,6 +329,7 @@ export type Vineyard = Entity & {
   equipment?: ActionRelation[];
   actions?: ActionRelation[];
   labData?: ActionRelation[];
+  identificatorUnicParcela?: string[];
 };
 
 export type Winery = {

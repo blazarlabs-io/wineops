@@ -64,7 +64,9 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   value
                 )
               ) : (
-                <i>Unknown</i>
+                <>
+                  {node?.allChildrenCount} <i>Unknown(s)</i>
+                </>
               )}
             </Typography>
           </Stack>

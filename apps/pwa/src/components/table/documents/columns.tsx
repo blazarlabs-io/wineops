@@ -37,6 +37,7 @@ export const documentsColumns: GridColDef[] = [
           height: "100%",
           width: "100%",
           alignItems: "center",
+          backgroundColor: "transparent",
         }}
       >
         <Typography variant="body2" color="textSecondary" className="truncate">

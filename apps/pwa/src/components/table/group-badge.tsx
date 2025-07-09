@@ -11,9 +11,8 @@ export default function GroupBadge({ content }: GroupBadgeProps) {
       overlap="circular"
       badgeContent={content}
       sx={{
-        position: "absolute",
-        top: "calc(50% + 2px)",
-        right: 32,
+        top: "-1px",
+        left: "16px",
         "& .MuiBadge-badge": {
           border: `1px solid ${"var(--mui-palette-text-secondary)"}`,
           color: "var(--mui-palette-text-secondary)",

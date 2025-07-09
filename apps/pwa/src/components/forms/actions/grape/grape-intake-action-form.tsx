@@ -446,11 +446,6 @@ export default function GrapeIntakeActionForm({
                           "executionDate",
                           date ? Timestamp.fromDate(date.toDate()) : null
                         );
-                        console.log("date:", date);
-                        console.log(
-                          "date2:",
-                          date ? Timestamp.fromDate(date.toDate()) : null
-                        );
 
                         return;
                         if (date) {

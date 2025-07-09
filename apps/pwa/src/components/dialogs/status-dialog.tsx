@@ -9,7 +9,6 @@ import {
   DialogTitle,
   IconButton,
 } from "@mui/material";
-import { Grape } from "lucide-react";
 
 export interface StatusDialogProps {
   open: boolean;
@@ -28,11 +27,11 @@ export default function StatusDialog({
         aria-label="close"
         onClick={onClose}
         size="small"
-        sx={(theme) => ({
+        sx={({ palette }) => ({
           position: "absolute",
           right: 8,
           top: 8,
-          color: theme.palette.grey[500],
+          color: palette.grey[500],
         })}
       >
         <Close fontSize="small" />
@@ -42,7 +41,7 @@ export default function StatusDialog({
         className="flex items-center gap-2"
       >
         <ModeStandby />
-        Vineyard Status
+        Vineyards Statuses
       </DialogTitle>
 
       <DialogContent className="min-w-[400px] px-8! py-2!">
@@ -54,20 +53,33 @@ export default function StatusDialog({
             borderColor: "var(--mui-palette-divider)",
           }}
         >
-          {data.map((variety) => (
-            <div key={variety.name} className="flex items-center gap-2 w-full">
-              <DialogContentText
-                sx={{
-                  display: "flex",
-                  gap: 2,
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <span>{variety.name}</span>
-                <span>{variety.count}</span>
-              </DialogContentText>
-            </div>
+          <DialogContentText
+            sx={{
+              display: "flex",
+              gap: 2,
+              justifyContent: "space-between",
+              width: "100%",
+              fontWeight: 700,
+            }}
+          >
+            <span>Status</span>
+            <span>Vineyards</span>
+          </DialogContentText>
+
+          {data.map(({ name, count }) => (
+            <DialogContentText
+              key={name}
+              sx={{
+                display: "flex",
+                gap: 2,
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>{name}</span>
+              <span>{count}</span>
+            </DialogContentText>
           ))}
         </div>
       </DialogContent>

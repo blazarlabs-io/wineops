@@ -191,8 +191,16 @@ export const vineyardSchema = Joi.object<Vineyard>().keys({
     "string.max": `Grape color cannot be longer than 50 characters`,
   }),
   cadastralNumber: Joi.array().items(
-    Joi.string().max(50).optional().allow("").messages({
+    Joi.string().min(2).max(50).optional().allow("").messages({
+      "string.min": "Cadastral number must be at least 2 characters long",
       "string.max": `Cadastral number cannot be longer than 50 characters`,
+    })
+  ),
+  identificatorUnicParcela: Joi.array().items(
+    Joi.string().min(2).max(50).optional().allow("").messages({
+      "string.min":
+        "Identificatorul unic al parcelei viticole must be at least 2 characters long",
+      "string.max": `Identificatorul unic al parcelei viticole cannot be longer than 50 characters`,
     })
   ),
   rowType: Joi.string().optional(),
