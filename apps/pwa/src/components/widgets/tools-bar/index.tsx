@@ -15,15 +15,17 @@ import { Search } from "lucide-react";
 import { ButtonType, ButtonProps } from "./constants";
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { useQuickDrawer } from "@/context/quick-drawer";
-import { QuickDrawerType } from "@/models/types/db";
+import { EntityName, QuickDrawerType } from "@/models/types/db";
 import { useColorScheme } from "@mui/material";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useState, MouseEvent, useEffect } from "react";
+import { useState, MouseEvent, useEffect, useCallback } from "react";
 import { useGridStore } from "@/store/grid";
 import { GroupBy } from "@/models/types/dashboard";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
@@ -64,11 +66,14 @@ type GroupByButtons = {
 export type ToolsBarProps = {
   buttons?: Partial<Record<ButtonType, ButtonProps>>;
   groupByButtons?: GroupByButtons[];
+  entityName?: EntityName;
 };
 
 export default function ToolsBar(props: ToolsBarProps) {
   const { mode } = useColorScheme();
   const { updateOpen, updateType } = useQuickDrawer();
+  const { selected } = useSelectedEntitiesStore();
+  const { setPinned } = usePinnedEntitiesStore();
 
   const buttons = { ...ALL_BUTTONS, ...props.buttons };
   const groupByButtons = props.groupByButtons || [];
@@ -79,6 +84,7 @@ export default function ToolsBar(props: ToolsBarProps) {
     enableUngrouping,
     enableEdit,
     enableDelete,
+    enablePinning,
   } = useSortToolsBarStates();
 
   const open = useDialogDrawerStore(({ open }) => open);
@@ -110,11 +116,21 @@ export default function ToolsBar(props: ToolsBarProps) {
     updateType(type as QuickDrawerType);
   };
 
+  const handleIsRowPinned = (entityName: EntityName) => {
+    setPinned(selected, entityName);
+  };
+
   useEffect(() => {
     return () => {
       setGroupedField(undefined);
     };
   }, [setGroupedField]);
+
+  useEffect(() => {
+    if (selected.length === 0) {
+      setPinned([], props.entityName);
+    }
+  }, [props.entityName, selected, setPinned]);
 
   return (
     <>
@@ -151,8 +167,16 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="default"
               aria-label="pin"
-              disabled={!buttons[ButtonType.PIN]?.enabled}
-              onClick={buttons[ButtonType.PIN]?.onClick}
+              disabled={!enablePinning}
+              onClick={() => {
+                if (typeof buttons[ButtonType.PIN]?.onClick === "function") {
+                  buttons[ButtonType.PIN]!.onClick!();
+                  console.log("PINNEDXXX");
+                } else {
+                  console.log("PINNEDYYY");
+                  handleIsRowPinned(props.entityName!);
+                }
+              }}
             >
               <PushPinOutlined className="" />
             </IconButton>

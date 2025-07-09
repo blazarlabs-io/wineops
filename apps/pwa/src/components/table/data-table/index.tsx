@@ -43,6 +43,8 @@ import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import { db } from "@/lib/firebase/services";
 import getUnusedGroups from "@/utils/get-unused-groups";
 import { useGridStore } from "@/store/grid";
+import { ButtonType } from "@/components/widgets/tools-bar/constants";
+import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -79,7 +81,7 @@ export const DataTable = <T extends DashboardEntity>({
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
-
+  const { pinned } = usePinnedEntitiesStore();
   const { enqueueSnackbar } = useSnackbar();
 
   // * Main Data Grid Ref
@@ -91,7 +93,9 @@ export const DataTable = <T extends DashboardEntity>({
   // * Row Data
   const [rowData, setRowData] = useState<T[]>(data);
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
+  const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [potentialParent, setPotentialParent] = useState<any>(null);
+  const enableRowPinning = true;
 
   // * Get Data Path ["group", "item name"]
   const getDataPath = useCallback<GetDataPath>((data) => {
@@ -153,6 +157,7 @@ export const DataTable = <T extends DashboardEntity>({
   }, [isDarkMode]);
 
   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
@@ -160,6 +165,8 @@ export const DataTable = <T extends DashboardEntity>({
       // * Selected items in an array format, Only list of items grouping is ignored
       const entities = nodesToEntities<T>(selectedNodes);
       setSelected(entities, entityName);
+      setSelectedRows(entities);
+      console.log("SELECTED ROWS:", entities);
     },
     [entityName, setSelected]
   );
@@ -471,6 +478,35 @@ export const DataTable = <T extends DashboardEntity>({
     [autoGroupColumnDef?.headerName, groupedField]
   );
 
+  // const isRowPinned = useCallback(
+  //   (rowNode: any, node: any) => {
+  //     console.log("IS ROW PINNED", pinned);
+  //     // const res = selectedRows.find((row) => row.id === rowNode.data?.id);
+  //     // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXX");
+  //     // console.log("isRowPinned", rowNode);
+  //     // console.log("RES", res);
+  //     // console.log("SELECTED", selectedRows);
+  //     // console.log("BUTTON TYPE", [ButtonType.PIN]);
+  //     // console.log("XXXXXXXXXXXXXXXXXXXXXXX\n\n");
+  //     // return selectedRows.filter((row) => row.id === rowNode.data?.id).length >
+  //     //   0
+  //     //   ? "top"
+  //     //   : undefined; // res !== undefined;
+  //     return pinned.includes(rowNode.data?.id) ? "top" : undefined;
+  //   },
+  //   [pinned]
+  // );
+
+  const isRowPinned = useCallback(
+    (params: any) => {
+      const rowNode = params.node;
+      const data = params.data;
+      console.log("PINNED", pinned, rowNode, data);
+      return pinned.includes(data) ? "top" : undefined;
+    },
+    [pinned]
+  );
+
   useEffect(() => {
     handleGroupBy(groupedField);
   }, [groupedField, handleGroupBy]);
@@ -541,6 +577,9 @@ export const DataTable = <T extends DashboardEntity>({
             suppressGroupChangesColumnVisibility={columns.some(({ field }) =>
               field?.startsWith("groupBy")
             )}
+            //  * ROW PINNING
+            enableRowPinning={enableRowPinning}
+            isRowPinned={isRowPinned}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
