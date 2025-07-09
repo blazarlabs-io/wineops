@@ -23,12 +23,9 @@ export default function VineyardsDashboard() {
         }}
       >
         <Typography variant="h4">Vineyards Management</Typography>
-
         <ToolsBar />
-
         <VineyardsTable />
       </Stack>
-
       <VineyardFormDrawer />
     </Box>
   );

@@ -91,7 +91,9 @@ export const DataTable = <T extends DashboardEntity>({
   // * Row Data
   const [rowData, setRowData] = useState<T[]>(data);
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
+  const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [potentialParent, setPotentialParent] = useState<any>(null);
+  const enableRowPinning = true;
 
   // * Get Data Path ["group", "item name"]
   const getDataPath = useCallback<GetDataPath>((data) => {
@@ -160,6 +162,8 @@ export const DataTable = <T extends DashboardEntity>({
       // * Selected items in an array format, Only list of items grouping is ignored
       const entities = nodesToEntities<T>(selectedNodes);
       setSelected(entities, entityName);
+      setSelectedRows(entities);
+      console.log("SELECTED ROWS:", entities);
     },
     [entityName, setSelected]
   );
@@ -471,6 +475,21 @@ export const DataTable = <T extends DashboardEntity>({
     [autoGroupColumnDef?.headerName, groupedField]
   );
 
+  const isRowPinned = useCallback(
+    (rowNode: any) => {
+      const res = selectedRows.find((row) => row.id === rowNode.data?.id);
+
+      console.log("\n\nXXXXXXXXXXXXXXXXXXXXXX");
+      console.log("isRowPinned", rowNode);
+      console.log("RES", res);
+      console.log("SELECTED", selectedRows);
+      console.log("XXXXXXXXXXXXXXXXXXXXXXX\n\n");
+
+      return null; // res !== undefined;
+    },
+    [selectedRows]
+  );
+
   useEffect(() => {
     handleGroupBy(groupedField);
   }, [groupedField, handleGroupBy]);
@@ -541,6 +560,9 @@ export const DataTable = <T extends DashboardEntity>({
             suppressGroupChangesColumnVisibility={columns.some(({ field }) =>
               field?.startsWith("groupBy")
             )}
+            //  * ROW PINNING
+            enableRowPinning={enableRowPinning}
+            isRowPinned={isRowPinned}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

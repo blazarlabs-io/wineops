@@ -129,9 +129,12 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                 node.data.cadastralNumber.length > 0 &&
                 node.data.cadastralNumber?.map(
                   (cadastralNumber: string, index: number) => (
-                    <>
+                    <div
+                      key={index + cadastralNumber}
+                      className="flex p-[0px]! m-[0px]! items-center"
+                    >
                       {node.data.cadastralNumber.length === 1 ? (
-                        <Typography variant="caption" key={index}>
+                        <Typography variant="caption">
                           {cadastralNumber}
                         </Typography>
                       ) : (
@@ -153,7 +156,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                           )}
                         </>
                       )}
-                    </>
+                    </div>
                   )
                 )}
             </div>
