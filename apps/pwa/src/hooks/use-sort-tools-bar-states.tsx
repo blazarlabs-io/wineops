@@ -7,6 +7,7 @@ export const useSortToolsBarStates = () => {
   const [enableGrouping, setEnableGrouping] = useState<boolean>(false);
   const [enableDelete, setEnableDelete] = useState<boolean>(false);
   const [enableUngrouping, setEnableUngrouping] = useState<boolean>(false);
+  const [enablePinning, setEnablePinning] = useState<boolean>(false);
 
   const selected = useSelectedEntitiesStore(({ selected }) => selected);
 
@@ -15,6 +16,7 @@ export const useSortToolsBarStates = () => {
     setEnableEdit(selected?.length === 1);
     setEnableGrouping(selected?.length > 0);
     setEnableDelete(selected?.length > 0);
+    setEnablePinning(selected?.length > 0);
 
     const isDataGrouped = selected?.some(
       ({ group }) => Array.isArray(group) && group.length > 1
@@ -29,5 +31,6 @@ export const useSortToolsBarStates = () => {
     enableGrouping,
     enableDelete,
     enableUngrouping,
+    enablePinning,
   };
 };

@@ -3,6 +3,7 @@
 import VineyardFormDrawer from "@/components/drawers/vineyard-form-drawer";
 import VineyardsTable from "@/components/table/vineyards";
 import ToolsBar from "@/components/widgets/tools-bar";
+import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { Box, Stack, Typography } from "@mui/material";
 
 export default function VineyardsDashboard() {

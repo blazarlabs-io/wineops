@@ -43,6 +43,8 @@ import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import { db } from "@/lib/firebase/services";
 import getUnusedGroups from "@/utils/get-unused-groups";
 import { useGridStore } from "@/store/grid";
+import { ButtonType } from "@/components/widgets/tools-bar/constants";
+import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -79,7 +81,7 @@ export const DataTable = <T extends DashboardEntity>({
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
-
+  const { pinned } = usePinnedEntitiesStore();
   const { enqueueSnackbar } = useSnackbar();
 
   // * Main Data Grid Ref
@@ -155,6 +157,7 @@ export const DataTable = <T extends DashboardEntity>({
   }, [isDarkMode]);
 
   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
@@ -475,19 +478,33 @@ export const DataTable = <T extends DashboardEntity>({
     [autoGroupColumnDef?.headerName, groupedField]
   );
 
+  // const isRowPinned = useCallback(
+  //   (rowNode: any, node: any) => {
+  //     console.log("IS ROW PINNED", pinned);
+  //     // const res = selectedRows.find((row) => row.id === rowNode.data?.id);
+  //     // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXX");
+  //     // console.log("isRowPinned", rowNode);
+  //     // console.log("RES", res);
+  //     // console.log("SELECTED", selectedRows);
+  //     // console.log("BUTTON TYPE", [ButtonType.PIN]);
+  //     // console.log("XXXXXXXXXXXXXXXXXXXXXXX\n\n");
+  //     // return selectedRows.filter((row) => row.id === rowNode.data?.id).length >
+  //     //   0
+  //     //   ? "top"
+  //     //   : undefined; // res !== undefined;
+  //     return pinned.includes(rowNode.data?.id) ? "top" : undefined;
+  //   },
+  //   [pinned]
+  // );
+
   const isRowPinned = useCallback(
-    (rowNode: any) => {
-      const res = selectedRows.find((row) => row.id === rowNode.data?.id);
-
-      console.log("\n\nXXXXXXXXXXXXXXXXXXXXXX");
-      console.log("isRowPinned", rowNode);
-      console.log("RES", res);
-      console.log("SELECTED", selectedRows);
-      console.log("XXXXXXXXXXXXXXXXXXXXXXX\n\n");
-
-      return null; // res !== undefined;
+    (params: any) => {
+      const rowNode = params.node;
+      const data = params.data;
+      console.log("PINNED", pinned, rowNode, data);
+      return pinned.includes(data) ? "top" : undefined;
     },
-    [selectedRows]
+    [pinned]
   );
 
   useEffect(() => {
