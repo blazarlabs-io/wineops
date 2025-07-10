@@ -14,6 +14,7 @@ import {
   DbResponse,
   FormMode,
   Vineyard,
+  VineyardStatus,
   WineColor,
 } from "@/models/types/db";
 import { useDialogDrawerStore } from "@/store/dialogs";
@@ -43,16 +44,28 @@ import Select from "@mui/material/Select";
 import { Timestamp } from "firebase/firestore";
 import { Leaf, MapPin } from "lucide-react";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export type VineyardFormProps = {
   children?: React.ReactNode;
   onSave?: (data: Vineyard) => void;
   clicked?: boolean;
+  setIsSubmitting: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
+export default function VineyardForm({
+  onSave,
+  clicked,
+  setIsSubmitting,
+}: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { mode } = useColorScheme();
@@ -169,7 +182,10 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
     async (uid: string, data: any) => {
       console.log("DATA", formType, data);
 
-      if (formType === "create") data.group = [data.name];
+      if (formType === "create") {
+        data.group = [data.name];
+        data.status = VineyardStatus.MAINTENANCE;
+      }
 
       data.createdAt = Timestamp.now();
 
@@ -182,11 +198,17 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
           getOneRes.data !== null &&
           getOneRes.data !== undefined
         ) {
-          const { id, name, group = formData?.group } = data;
+          const {
+            id,
+            name,
+            group = formData?.group,
+            status = VineyardStatus.MAINTENANCE,
+          } = data;
 
           const newData = {
             ...data,
             group: [...(group ?? []).slice(0, -1), name ?? id],
+            status,
           };
 
           const updateRes: DbResponse = await db.vineyard.update(
@@ -238,13 +260,20 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
     [closeDrawer, enqueueSnackbar, formData?.group, formType]
   );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = async (data: any, e: any) => {
     console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     console.log("[VINEYARD FORM SUBMIT]", data);
     console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
     e.stopPropagation();
     e.preventDefault();
-    handleCreateVineyard(user?.uid || "", data);
+
+    setIsSubmitting(true);
+
+    try {
+      await handleCreateVineyard(user?.uid || "", data);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   /*useEffect(() => {
@@ -1395,7 +1424,11 @@ export default function VineyardForm({ onSave, clicked }: VineyardFormProps) {
             </div>
             <Box display={"flex"} justifyContent={"end"} visibility={"hidden"}>
               <FormControl>
-                <Button ref={btnRef} type="submit" variant="contained">
+                <Button
+                  ref={btnRef}
+                  type="submit"
+                  variant="contained"
+                >
                   Save
                 </Button>
               </FormControl>

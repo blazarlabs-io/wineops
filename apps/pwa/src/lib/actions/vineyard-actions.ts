@@ -161,24 +161,43 @@ export const vineyardLabAction = async (
 
   const labReportId = Date.now().toString();
 
+  const {
+    id,
+    inUseVineyard,
+    labDataToDeleteIds = [],
+    responsible,
+    executionDate,
+    supportingDocuments,
+    inputData,
+  } = actionData;
+
+  // 0. Delete lab reports results for the same date
+  if (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0) {
+    const deleteRes = await db.labReport.deleteMany(uid, labDataToDeleteIds);
+
+    if (deleteRes.status === 200) {
+      console.log(`DELETED[]:`, labDataToDeleteIds);
+    }
+  }
+
   // * 1. write new lab object into DB andreference it in the vineyard
   const labRes = await db.labReport.create(uid, {
     id: labReportId,
     units: CONCENTRATION_UNITS,
-    responsible: {
-      name: actionData?.responsible?.name,
-      email: actionData?.responsible?.email,
-    },
-    date: actionData.executionDate,
-    supportingDocuments: actionData.supportingDocuments,
+    ...(responsible && {
+      responsible: {
+        name: responsible?.name,
+        email: responsible?.email,
+      },
+    }),
+    date: executionDate,
+    supportingDocuments,
     results: {
       sugar: {
-        value: actionData.inputData?.sugar,
-        variation: (Math.random() * 2 - 1).toFixed(2),
+        value: inputData?.sugar,
       },
       acidity: {
-        value: actionData.inputData?.acidity,
-        variation: (Math.random() * 2 - 1).toFixed(2),
+        value: inputData?.acidity,
       },
     },
   });
@@ -199,26 +218,32 @@ export const vineyardLabAction = async (
   }
 
   // * 3. Update Vineyard
-  const vineyardRes = await db.vineyard.update(
-    uid,
-    actionData.inUseVineyard.id,
-    {
-      actions: [
-        ...(vineyard.actions || ([] as ActionRelation[])),
-        {
-          id: actionData.id,
-          name: "lab-reports",
-        },
-      ],
-      labData: [
-        ...(vineyard.labData || ([] as ActionRelation[])),
-        {
-          id: labReportId,
-          name: "lab-reports",
-        },
-      ],
-    }
-  );
+
+  const filteredLabData =
+    (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0
+      ? vineyard.labData?.filter(
+          (labData) => !labDataToDeleteIds?.includes(labData.id)
+        )
+      : vineyard.labData) || ([] as ActionRelation[]);
+
+  const vineyardRes = await db.vineyard.update(uid, inUseVineyard.id, {
+    actions: [
+      ...(vineyard.actions || ([] as ActionRelation[])),
+      {
+        id,
+        name: "lab-reports",
+        date: executionDate,
+      },
+    ],
+    labData: [
+      ...filteredLabData,
+      {
+        id: labReportId,
+        name: "lab-reports",
+        date: executionDate,
+      },
+    ],
+  });
 
   if (vineyardRes.status === 200) {
     enqueueSnackbar("Vineyard status updated", { variant: "success" });

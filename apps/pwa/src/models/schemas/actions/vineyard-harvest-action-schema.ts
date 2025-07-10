@@ -88,5 +88,11 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
     "string.max":
       "Description must be less than or equal to 250 characters long",
   }),
+  supportingDocuments: Joi.array()
+    .items({
+      name: Joi.string().optional().allow(""),
+      url: Joi.string().optional().allow(""),
+    })
+    .optional(),
   harvestEnded: Joi.boolean().default(false).optional(),
 });

@@ -15,7 +15,11 @@ export default function VineyardsTable() {
     () =>
       vineyards.map((vineyard) => ({
         ...vineyard,
-        ...(vineyard.rowType !== "group" && {}),
+        ...(vineyard.rowType !== "group" && {
+          forcastedYield: {
+            status: vineyard?.status || "",
+          },
+        }),
       })),
     [vineyards]
   );

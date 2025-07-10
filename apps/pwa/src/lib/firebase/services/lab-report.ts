@@ -1,6 +1,12 @@
 import { DbResponse, LabReport } from "@/models/types/db";
 import { cleanUndefined } from "@/utils/clean-undefined";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  writeBatch,
+} from "firebase/firestore";
 import { db as fdb } from "../../firebase/client";
 import { LAB_REPORTS, WINERY } from "../config";
 
@@ -43,6 +49,33 @@ const labReport = {
       };
     } catch (error) {
       console.log("error", error);
+      return {
+        data: null,
+        error,
+        status: 500,
+      };
+    }
+  },
+  deleteMany: async (uid: string, rows: string[]) => {
+    try {
+      const batch = writeBatch(fdb);
+
+      rows.forEach((id) => {
+        const docRef = doc(fdb, WINERY, uid, LAB_REPORTS, id);
+
+        batch.delete(docRef);
+      });
+
+      await batch.commit();
+
+      return {
+        data: null,
+        error: null,
+        status: 200,
+      };
+    } catch (error) {
+      console.error("Error deleting many:", error);
+
       return {
         data: null,
         error,

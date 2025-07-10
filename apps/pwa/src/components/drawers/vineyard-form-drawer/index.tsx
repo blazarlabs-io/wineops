@@ -6,6 +6,7 @@ import EntityFormDrawer from "../entity-form-drawer";
 
 export default function VineyardFormDrawer() {
   const [clicked, setClicked] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClick = () => {
     console.log("clicked");
@@ -20,7 +21,7 @@ export default function VineyardFormDrawer() {
   return (
     <EntityFormDrawer entityName="vineyard">
       <Box sx={{ flexGrow: 1, overflowY: "auto" }} className="">
-        <VineyardCreateEditForm onSave={handleOnSave} clicked={clicked} />
+        <VineyardCreateEditForm onSave={handleOnSave} clicked={clicked} setIsSubmitting={setIsSubmitting} />
       </Box>
 
       <Box display={"flex"} px={2} pb={4} pt={1}>
@@ -31,6 +32,7 @@ export default function VineyardFormDrawer() {
           fullWidth
           sx={{ mt: 2 }}
           onClick={handleClick}
+          disabled={isSubmitting}
         >
           Save
         </Button>

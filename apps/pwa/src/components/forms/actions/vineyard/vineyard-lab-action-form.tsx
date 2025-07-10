@@ -44,7 +44,7 @@ export default function VineyardLabActionForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { vineyards, actions } = useVineyard();
+  const { vineyards, actions, labReports } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
     ({ selected }) => selected
@@ -252,10 +252,25 @@ export default function VineyardLabActionForm({
 
     setIsSubmitting(true);
 
+    const labDataToDelete = (
+      subjectVineyard || { labData: [] }
+    ).labData?.filter((lab) => {
+      const rawLabDate =
+        lab.date || labReports.find(({ id }) => id === lab.id)?.date;
+      const labDate = rawLabDate ? toDateSafe(rawLabDate) : "";
+      const execDate = formData.executionDate
+        ? toDateSafe(formData.executionDate)
+        : "";
+
+      return labDate && execDate && isSameDay(labDate, execDate);
+    });
+
+    const labDataToDeleteIds = labDataToDelete?.map(({ id }) => id);
+
     try {
       await actions?.["lab-report"].exec(
         user?.uid as string,
-        data,
+        { ...data, labDataToDeleteIds },
         subjectVineyard
       );
     } finally {
@@ -441,10 +456,12 @@ export default function VineyardLabActionForm({
                           id="outlined-basic"
                           label="Sugar (g/dm³)"
                           variant="outlined"
-                          inputProps={{
-                            min: "0.01",
-                            max: "10000",
-                            step: "0.01",
+                          slotProps={{
+                            htmlInput: {
+                              min: 0,
+                              step: 0.01,
+                              max: 10_000,
+                            },
                           }}
                           {...register("inputData.sugar")}
                         />
@@ -470,10 +487,12 @@ export default function VineyardLabActionForm({
                           id="outlined-basic"
                           label="Acidity (g/dm³)"
                           variant="outlined"
-                          inputProps={{
-                            min: "0.01",
-                            max: "10000",
-                            step: "0.01",
+                          slotProps={{
+                            htmlInput: {
+                              min: 0,
+                              step: 0.01,
+                              max: 10_000,
+                            },
                           }}
                           {...register("inputData.acidity")}
                         />
@@ -575,3 +594,17 @@ export default function VineyardLabActionForm({
     </>
   );
 }
+
+const isSameDay = (date1: Date, date2: Date) => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+};
+
+const toDateSafe = (input: string | Timestamp | undefined) => {
+  if (!input) return undefined;
+  if (typeof input === "string") return new Date(input);
+  return input.toDate();
+};
