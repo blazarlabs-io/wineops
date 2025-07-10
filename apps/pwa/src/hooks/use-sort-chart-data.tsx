@@ -16,17 +16,23 @@ export const useSortChartData = (data: LabDataChart) => {
       const sugar: number[] = [];
       const acidity: number[] = [];
       const labels: string[] = [];
-      data.items.forEach((item) => {
-        if (item.results?.sugar?.value) sugar.push(item.results.sugar.value);
+      data.items.forEach(({ date, results = {} }) => {
+        if (results?.sugar?.value) sugar.push(results.sugar.value);
 
-        if (item.results?.acidity?.value)
-          acidity.push(item.results.acidity.value);
+        if (results?.acidity?.value) acidity.push(results.acidity.value);
 
         labels.push(
-          `${new Date((item.date as Timestamp).seconds * 1000).toDateString()}`
+          `${new Date((date as Timestamp).seconds * 1000).toDateString()}`
         );
       });
-      setLabData({ sugar, acidity, labels: labels.sort((a, b) => +a - +b) });
+
+      setLabData({
+        sugar,
+        acidity,
+        labels: labels.sort(
+          (a, b) => new Date(a).getTime() - new Date(b).getTime()
+        ),
+      });
     }
   }, [data]);
 

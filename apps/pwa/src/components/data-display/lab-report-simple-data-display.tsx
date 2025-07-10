@@ -1,16 +1,28 @@
 import { LabReport } from "@/models/types/db";
-import { Avatar, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 export type LabSimpleDataDisplayProps = {
   data: LabReport;
+  prevData?: LabReport;
 };
 
 export default function LabReportSimpleDataDisplay({
   data,
+  prevData,
 }: LabSimpleDataDisplayProps) {
   if (!data) return;
+
+  const sugar = data?.results?.sugar?.value;
+  const acidity = data?.results?.acidity?.value;
+
+  const prevSugar = prevData?.results?.sugar?.value;
+  const prevAcidity = prevData?.results?.acidity?.value;
+
+  const sugarVariation = sugar && prevSugar ? sugar - prevSugar : undefined;
+  const acidityVariation =
+    acidity && prevAcidity ? acidity - prevAcidity : undefined;
 
   return (
     <>
@@ -29,7 +41,7 @@ export default function LabReportSimpleDataDisplay({
           )}
 
           <div className="flex items-center gap-4 mt-1">
-            {data?.results?.sugar?.value && (
+            {sugar && (
               <div className="flex flex-col gap-3">
                 <div className="flex items-start gap-1">
                   <p className=" text-muted-foreground leading-[0.8]">Sugar</p>
@@ -37,28 +49,23 @@ export default function LabReportSimpleDataDisplay({
                 </div>
                 <div className="flex items-start gap-1">
                   <p className="text-muted-foreground leading-[0.8]">
-                    {data.results.sugar.value.toFixed(2)}
+                    {sugar.toFixed(2)}
                   </p>
-                  {data.results?.sugar?.variation && (
+                  {sugarVariation && (
                     <div
                       className="flex items-start gap-[1px]"
                       style={{
-                        color:
-                          data.results.sugar.variation.toString().charAt(0) ===
-                          "-"
-                            ? "#FF7878"
-                            : "#00C950",
+                        color: sugarVariation < 0 ? "#FF7878" : "#00C950",
                       }}
                     >
-                      {data.results.sugar.variation.toString().charAt(0) ===
-                      "-" ? (
+                      {sugarVariation < 0 ? (
                         <ArrowDown className="w-3 h-3" />
                       ) : (
                         <ArrowUp className="w-3 h-3" />
                       )}
 
                       <p className="text-[10px] leading-[0.8]">
-                        {data.results.sugar.variation.toString()}
+                        {sugarVariation.toFixed(2)}
                       </p>
                     </div>
                   )}
@@ -66,7 +73,7 @@ export default function LabReportSimpleDataDisplay({
               </div>
             )}
 
-            {data?.results?.acidity?.value && (
+            {acidity && (
               <div className="flex flex-col gap-3">
                 <div className="flex items-start gap-1">
                   <p className="text-muted-foreground leading-[0.8]">Acidity</p>
@@ -76,29 +83,23 @@ export default function LabReportSimpleDataDisplay({
                 </div>
                 <div className="flex items-start gap-1">
                   <p className="text-muted-foreground leading-[0.8]">
-                    {data.results.acidity.value.toFixed(2)}
+                    {acidity.toFixed(2)}
                   </p>
-                  {data.results?.acidity?.variation && (
+                  {acidityVariation && (
                     <div
                       className="flex items-start gap-[1px]"
                       style={{
-                        color:
-                          data.results.acidity.variation
-                            .toString()
-                            .charAt(0) === "-"
-                            ? "#FF7878"
-                            : "#00C950",
+                        color: acidityVariation < 0 ? "#FF7878" : "#00C950",
                       }}
                     >
-                      {data.results.acidity.variation.toString().charAt(0) ===
-                      "-" ? (
+                      {acidityVariation < 0 ? (
                         <ArrowDown className="w-3 h-3" />
                       ) : (
                         <ArrowUp className="w-3 h-3" />
                       )}
 
                       <p className="text-[10px] leading-[0.8]">
-                        {data.results.acidity.variation.toString()}
+                        {acidityVariation.toFixed(2)}
                       </p>
                     </div>
                   )}

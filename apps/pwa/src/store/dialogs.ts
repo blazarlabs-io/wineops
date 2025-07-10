@@ -4,7 +4,8 @@ type DialogKey =
   | "group-entities"
   | "ungroup-entities"
   | "delete-entities"
-  | "form-drawer";
+  | "form-drawer"
+  | "delete-entity-data";
 
 type DialogFn = (key: DialogKey) => void;
 
@@ -21,6 +22,7 @@ export const useDialogDrawerStore = create<DialogDrawerStore>((set) => ({
     "ungroup-entities": false,
     "delete-entities": false,
     "form-drawer": false,
+    "delete-entity-data": false,
   },
   open: (key) =>
     set(({ dialogs }) => ({ dialogs: { ...dialogs, [key]: true } })),

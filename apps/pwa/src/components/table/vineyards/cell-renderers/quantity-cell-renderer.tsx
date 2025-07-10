@@ -68,7 +68,7 @@ export const QuantityCellRenderer: FunctionComponent<
           actual={actual}
           supply={supply}
           demand={demand}
-          status={node.data?.status}
+          status={value?.status || node.data?.status}
           unit={unit}
         />
       )}

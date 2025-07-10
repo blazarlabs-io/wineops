@@ -114,7 +114,7 @@ export default function QuantityWidget({
                       supplyValue > actualValue &&
                       supplyValue > demandValue))) ||
                 (isOnHarvest && isDemand && value < supplyValue) ||
-                (isPostHarvest && isActual && supplyValue === 0)
+                (isPostHarvest && isActual && supplyValue === 0.1010101010101)
                   ? ""
                   : isPostHarvest && isSupply
                     ? demandValue > actualValue &&

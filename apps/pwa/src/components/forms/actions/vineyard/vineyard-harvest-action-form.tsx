@@ -20,7 +20,7 @@ import { countries } from "@/data/countries";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { cleanUndefined } from "@/utils/clean-undefined";
-import { ExpandMore } from "@mui/icons-material";
+import { Attachment, DeleteOutline, ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -33,6 +33,7 @@ import {
   IconButton,
   TextField as Input,
   InputLabel,
+  LinearProgress,
   Stack,
   TextareaAutosize,
   TextField,
@@ -42,10 +43,12 @@ import { useColorScheme } from "@mui/material/styles";
 import { ClearIcon, DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 import { parseToDate } from "@/utils/date-format";
+import { File } from "lucide-react";
+import { db } from "@/lib/firebase/services";
 
 const equipment: ActionRelation[] = [];
 
@@ -69,6 +72,8 @@ export default function VineyardHarvestActionForm({
     reset,
     setValue,
     formState: { errors },
+    setError,
+    clearErrors,
   } = useForm({
     resolver: joiResolver(vineyardHarvestActionSchema),
   });
@@ -84,6 +89,12 @@ export default function VineyardHarvestActionForm({
   const [disableSubject, setDisableSubject] = useState<boolean>(false);
   const [localVineyard, setLocalVineyard] = useState<Vineyard | null>(null);
   const [harvestEnded, setHarvestEnded] = useState<boolean>(false);
+
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const supportingDocumentsRef = useRef<HTMLInputElement | null>(null);
 
   // ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -319,6 +330,144 @@ export default function VineyardHarvestActionForm({
     [consumables, formData, setValue, vineyards]
   );
 
+  const handleDetailsExpansion = () => {
+    setDetailsExpanded((prevExpanded) => !prevExpanded);
+  };
+
+  const handleNewUpload = useCallback(
+    (name: string, url: string, file: File) => {
+      const filesUrls = formData.supportingDocuments || [];
+
+      filesUrls.push({
+        name: file.name,
+        url,
+      });
+
+      setFormData((prev) => ({
+        ...(prev as VineyardHarvestAction),
+        supportingDocuments: filesUrls,
+      }));
+
+      setValue(name, filesUrls);
+    },
+    [formData.supportingDocuments, setValue]
+  );
+
+  const scrollIntoView = useCallback(
+    () =>
+      setTimeout(
+        () =>
+          supportingDocumentsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          }),
+        detailsExpanded ? 0 : 1000
+      ),
+    [detailsExpanded]
+  );
+
+  const handleFile = useCallback(
+    (e: any) => {
+      const file = e.target.files[0];
+
+      if (!detailsExpanded) setDetailsExpanded(true);
+      scrollIntoView();
+
+      if (!file) {
+        if (!detailsExpanded) setDetailsExpanded(true);
+        scrollIntoView();
+
+        setError(`supportingDocuments`, {
+          type: "manual",
+          message: `Missing file`,
+        });
+
+        return;
+      }
+
+      if (
+        (formData.supportingDocuments || [])
+          .map(({ name }) => name)
+          .includes(file.name)
+      ) {
+        if (!detailsExpanded) setDetailsExpanded(true);
+        scrollIntoView();
+
+        setError(`supportingDocuments`, {
+          type: "manual",
+          message: `File ${file.name} has already been uploaded`,
+        });
+
+        return;
+      }
+
+      clearErrors("supportingDocuments");
+
+      db.storage.uploadFile(
+        file,
+        user?.uid,
+        "grapeIntake",
+        (progress: number) => {
+          setIsUploading(true);
+          setUploadProgress(progress);
+        },
+        (complete: string) => {
+          setIsUploading(false);
+          setUploadProgress(0);
+          console.log(complete);
+          handleNewUpload("supportingDocuments", complete, file);
+
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        },
+        (error: Error) => {
+          setIsUploading(false);
+          setUploadProgress(0);
+          console.log(error);
+
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+      );
+    },
+    [
+      clearErrors,
+      detailsExpanded,
+      formData.supportingDocuments,
+      handleNewUpload,
+      scrollIntoView,
+      setError,
+      user?.uid,
+    ]
+  );
+
+  const handleDeleteFile = useCallback(
+    async (name: string, index: number) => {
+      const filesUrls = formData.supportingDocuments || [];
+      filesUrls.splice(index, 1);
+
+      setFormData((prev) => ({
+        ...(prev as VineyardHarvestAction),
+        supportingDocuments: filesUrls,
+      }));
+
+      setValue("supportingDocuments", filesUrls);
+      clearErrors("supportingDocuments");
+
+      const deleteFileRes = await db.storage.deleteFile(
+        user?.uid,
+        "grapeIntake",
+        name
+      );
+
+      if (deleteFileRes.status == 200) {
+        console.log("File deleted");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } else {
+        console.log("Error deleting file");
+      }
+    },
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
+  );
+
   const onSubmit = useCallback(
     async (data: any, e: any) => {
       e.stopPropagation();
@@ -397,6 +546,8 @@ export default function VineyardHarvestActionForm({
       );
 
       vineyardHarvestActionSample.weight = totalWeight > 0 ? totalWeight : "";
+
+      vineyardHarvestActionSample.supportingDocuments = [];
 
       const result = {
         ...formData,
@@ -1094,7 +1245,9 @@ export default function VineyardHarvestActionForm({
                     borderBottom:
                       "1px solid var(--mui-palette-divider) !important",
                   }}
-                  disableGutters
+                  disableGutters={true}
+                  expanded={detailsExpanded}
+                  onChange={handleDetailsExpansion}
                 >
                   <AccordionSummary
                     expandIcon={<ExpandMore />}
@@ -1124,6 +1277,63 @@ export default function VineyardHarvestActionForm({
                         padding: "16px 8px",
                       }}
                     />
+
+                    <Stack gap={1}>
+                      <Typography variant="body2" color="text.secondary">
+                        Supporting Documents
+                      </Typography>
+
+                      {isUploading && (
+                        <LinearProgress
+                          variant="determinate"
+                          value={uploadProgress}
+                        />
+                      )}
+
+                      {formData.supportingDocuments &&
+                        formData.supportingDocuments.length > 0 &&
+                        formData.supportingDocuments.map((doc, index) => (
+                          <Stack
+                            key={doc.name}
+                            gap={1}
+                            display={"flex"}
+                            alignItems={"center"}
+                            direction={"row"}
+                            justifyContent={"space-between"}
+                          >
+                            <Stack
+                              gap={1}
+                              display={"flex"}
+                              alignItems={"center"}
+                              direction={"row"}
+                            >
+                              <File width={16} height={16} />
+                              <Typography variant="body2">
+                                {doc.name}
+                              </Typography>
+                            </Stack>
+                            <IconButton
+                              size="small"
+                              className="max-w-[24px] max-h-[24px]"
+                              color="error"
+                              onClick={() => handleDeleteFile(doc.name, index)}
+                            >
+                              <DeleteOutline className="max-w-4 max-h-4" />
+                            </IconButton>
+                          </Stack>
+                        ))}
+
+                      {errors?.supportingDocuments && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.supportingDocuments?.message as string}
+                        </Typography>
+                      )}
+                      <div ref={supportingDocumentsRef}></div>
+                    </Stack>
                   </AccordionDetails>
                 </Accordion>
               </div>
@@ -1148,16 +1358,39 @@ export default function VineyardHarvestActionForm({
                   Harvest ended
                 </Typography>
               </Stack>
-              <FormControl>
+
+              <Stack
+                gap={2}
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+              >
                 <Button
-                  disabled={isSubmitting}
-                  type="submit"
-                  variant="contained"
-                  className="mt-8"
+                  variant="outlined"
+                  component="label"
+                  className="w-auto flex items-center gap-2"
+                  sx={{ pb: 0.75 }}
                 >
-                  Submit
+                  <Attachment className="w-4 h-4" />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    hidden
+                    onChange={handleFile}
+                  />
                 </Button>
-              </FormControl>
+
+                <FormControl>
+                  <Button
+                    disabled={isSubmitting}
+                    type="submit"
+                    variant="contained"
+                    className="mt-8"
+                  >
+                    Submit
+                  </Button>
+                </FormControl>
+              </Stack>
             </Box>
           </form>
         </div>

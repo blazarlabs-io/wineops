@@ -8,13 +8,26 @@ import LabReportResponsibleDataDisplay from "@/components/data-display/lab-repor
 import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
 import DocumentsTable from "@/components/table/documents";
 import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
-import { Add } from "@mui/icons-material";
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { Add, DeleteOutline } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import { useEffect, useRef, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
+import DeleteLabReportDialog from "@/components/dialogs/delete-lab-report-dialog";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { DashboardEntity } from "@/models/types/dashboard";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { db } from "@/lib/firebase/services";
+import { useAuth } from "@/lib/firebase/auth";
 
 export type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
@@ -29,6 +42,8 @@ export default function VineyardDetailsWidget({
   const [localVineyard, setLocalVineyard] = useState<Vineyard>(vineyard);
   const [docs, setDocs] = useState<any[]>([]);
   const mountRef = useRef<boolean>(false);
+
+  const { user } = useAuth();
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -61,6 +76,29 @@ export default function VineyardDetailsWidget({
   const sx = {
     padding: "8px 16px !important",
     minHeight: "fit-content !important",
+  };
+
+  const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  const open = useDialogDrawerStore(({ open }) => open);
+  const openDeleteEntityDataDialog = () => open("delete-entity-data");
+
+  const handleDeleteClick = (labReport: LabReport) => {
+    openDeleteEntityDataDialog();
+    setSelected([labReport as unknown as DashboardEntity], "labReport");
+  };
+
+  const onDeleteLabReport = async (data: any[]) => {
+    const labReportId = data[0].id;
+
+    if (!user?.uid || !vineyard.id || !labReportId) return;
+
+    const filteredLabData = vineyard.labData?.filter(
+      ({ id }) => id !== labReportId
+    );
+
+    await db.vineyard.update(user?.uid, vineyard.id, {
+      labData: filteredLabData,
+    });
   };
 
   return (
@@ -292,8 +330,23 @@ export default function VineyardDetailsWidget({
                       }}
                     >
                       {/* {index < 3 && ( */}
-                      <div className="flex items-center min-w-fit max-w-fit gap-8 px-2 py-1 h-full ">
-                        <LabReportResponsibleDataDisplay data={item} />
+                      <div className="flex items-center min-w-fit w-full gap-1 px-2 py-1 h-full ">
+                        <LabReportResponsibleDataDisplay
+                          data={item}
+                          prevData={
+                            index < labReports?.length - 1
+                              ? labReports[index + 1]
+                              : undefined
+                          }
+                        />
+                        <IconButton
+                          size="small"
+                          className="max-w-[24px] max-h-[24px]"
+                          color="error"
+                          onClick={() => handleDeleteClick(item)}
+                        >
+                          <DeleteOutline className="max-w-4 max-h-4" />
+                        </IconButton>
                       </div>
                       {/* )} */}
                     </div>
@@ -335,6 +388,8 @@ export default function VineyardDetailsWidget({
           <DocumentsTable docs={docs} />
         </div>
       </TabPanel>
+
+      <DeleteLabReportDialog onDelete={onDeleteLabReport} />
     </Box>
   );
 }
