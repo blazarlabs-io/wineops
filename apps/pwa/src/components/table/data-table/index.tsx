@@ -1,17 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
+import { db } from "@/lib/firebase/services";
 import { DashboardEntity, GroupBy } from "@/models/types/dashboard";
 import { DbResponse, EntityName } from "@/models/types/db";
+import { useGridStore } from "@/store/grid";
+import { usePinnedEntitiesStore } from "@/store/pinned-entities";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import getUnusedGroups from "@/utils/get-unused-groups";
 import { nodesToEntities } from "@/utils/notes-to-entities";
-import { Button, Stack, Typography, useColorScheme } from "@mui/material";
+import {
+  Button,
+  Stack,
+  TextField,
+  Typography,
+  useColorScheme,
+} from "@mui/material";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
   ColDef,
   ExcelExportModule,
+  FindChangedEvent,
   GetDataPath,
   GetRowIdFunc,
   GridApi,
@@ -29,22 +42,27 @@ import {
   RowSelectionOptions,
   SelectionChangedEvent,
   SetFilterModule,
+  SideBarModule,
   StatusBarModule,
   themeBalham,
   TreeDataModule,
+  FindModule,
+  ValidationModule,
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
-import { db } from "@/lib/firebase/services";
-import getUnusedGroups from "@/utils/get-unused-groups";
-import { useGridStore } from "@/store/grid";
-import { ButtonType } from "@/components/widgets/tools-bar/constants";
-import { usePinnedEntitiesStore } from "@/store/pinned-entities";
+import { useToolsbar } from "@/context/tools-bar";
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -57,6 +75,9 @@ ModuleRegistry.registerModules([
   StatusBarModule,
   TreeDataModule,
   RowDragModule,
+  SideBarModule,
+  FindModule,
+  ValidationModule,
 ]);
 
 interface DataTableProps<T extends DashboardEntity> {
@@ -157,7 +178,7 @@ export const DataTable = <T extends DashboardEntity>({
   }, [isDarkMode]);
 
   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
-  const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
+  // const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
@@ -478,25 +499,6 @@ export const DataTable = <T extends DashboardEntity>({
     [autoGroupColumnDef?.headerName, groupedField]
   );
 
-  // const isRowPinned = useCallback(
-  //   (rowNode: any, node: any) => {
-  //     console.log("IS ROW PINNED", pinned);
-  //     // const res = selectedRows.find((row) => row.id === rowNode.data?.id);
-  //     // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXX");
-  //     // console.log("isRowPinned", rowNode);
-  //     // console.log("RES", res);
-  //     // console.log("SELECTED", selectedRows);
-  //     // console.log("BUTTON TYPE", [ButtonType.PIN]);
-  //     // console.log("XXXXXXXXXXXXXXXXXXXXXXX\n\n");
-  //     // return selectedRows.filter((row) => row.id === rowNode.data?.id).length >
-  //     //   0
-  //     //   ? "top"
-  //     //   : undefined; // res !== undefined;
-  //     return pinned.includes(rowNode.data?.id) ? "top" : undefined;
-  //   },
-  //   [pinned]
-  // );
-
   const isRowPinned = useCallback(
     (params: any) => {
       const rowNode = params.node;
@@ -506,6 +508,17 @@ export const DataTable = <T extends DashboardEntity>({
     },
     [pinned]
   );
+
+  const onFindChanged = useCallback((event: FindChangedEvent) => {
+    const { api, activeMatch, totalMatches, findSearchValue } = event;
+
+    if (findSearchValue && totalMatches > 0 && !activeMatch) {
+      api.findNext();
+    }
+
+    const activeNum = activeMatch?.numOverall ?? "-";
+    setActiveMatchNum(`${activeNum}/${totalMatches}`);
+  }, []);
 
   useEffect(() => {
     handleGroupBy(groupedField);
@@ -520,6 +533,36 @@ export const DataTable = <T extends DashboardEntity>({
       setSelected([]);
     };
   }, [setSelected]);
+
+  const [findSearchValue, setFindSearchValue] = useState<string>("e");
+  const [activeMatchNum, setActiveMatchNum] = useState<string>();
+
+  const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setFindSearchValue(event.target.value);
+  }, []);
+
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const backwards = event.shiftKey;
+        if (backwards) {
+          previous();
+        } else {
+          next();
+        }
+      }
+    },
+    []
+  );
+
+  const next = useCallback(() => {
+    gridRef.current!.api.findNext();
+  }, []);
+
+  const previous = useCallback(() => {
+    gridRef.current!.api.findPrevious();
+  }, []);
 
   return (
     <>
@@ -543,6 +586,30 @@ export const DataTable = <T extends DashboardEntity>({
       )}
 
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
+        <div className="flex items-center gap-2 mb-[16px]">
+          <TextField
+            size="small"
+            type="text"
+            defaultValue="e"
+            onInput={onInput}
+            onKeyDown={onKeyDown}
+          />
+          <Button
+            variant="outlined"
+            onClick={previous}
+            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
+          >
+            <NavigateBefore className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={next}
+            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
+          >
+            <NavigateNext className="w-4 h-4" />
+          </Button>
+          <span>{activeMatchNum}</span>
+        </div>
         {filteredData?.length > 0 ? (
           <AgGridReact
             theme={myTheme}
@@ -580,6 +647,9 @@ export const DataTable = <T extends DashboardEntity>({
             //  * ROW PINNING
             enableRowPinning={enableRowPinning}
             isRowPinned={isRowPinned}
+            // * SEARCH
+            findSearchValue={findSearchValue}
+            onFindChanged={onFindChanged}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

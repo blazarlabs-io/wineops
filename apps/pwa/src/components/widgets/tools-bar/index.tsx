@@ -1,3 +1,12 @@
+import QuickActionsIcon from "@/components/icons/quick-actions-icon";
+import { useQuickDrawer } from "@/context/quick-drawer";
+import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
+import { GroupBy } from "@/models/types/dashboard";
+import { EntityName, QuickDrawerType } from "@/models/types/db";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { useGridStore } from "@/store/grid";
+import { usePinnedEntitiesStore } from "@/store/pinned-entities";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import {
   Add,
   DeleteOutline,
@@ -10,22 +19,18 @@ import {
   SwapVert,
   Tune,
 } from "@mui/icons-material";
-import { Box, IconButton, ListItemText, Stack } from "@mui/material";
-import { Search } from "lucide-react";
-import { ButtonType, ButtonProps } from "./constants";
-import QuickActionsIcon from "@/components/icons/quick-actions-icon";
-import { useQuickDrawer } from "@/context/quick-drawer";
-import { EntityName, QuickDrawerType } from "@/models/types/db";
-import { useColorScheme } from "@mui/material";
-import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
-import { useDialogDrawerStore } from "@/store/dialogs";
+import {
+  Box,
+  IconButton,
+  ListItemText,
+  Stack,
+  useColorScheme,
+} from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useState, MouseEvent, useEffect, useCallback } from "react";
-import { useGridStore } from "@/store/grid";
-import { GroupBy } from "@/models/types/dashboard";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { usePinnedEntitiesStore } from "@/store/pinned-entities";
+import { Search } from "lucide-react";
+import { MouseEvent, useEffect, useState } from "react";
+import { ButtonProps, ButtonType } from "./constants";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
@@ -75,6 +80,8 @@ export default function ToolsBar(props: ToolsBarProps) {
   const { selected } = useSelectedEntitiesStore();
   const { setPinned } = usePinnedEntitiesStore();
 
+  const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
+
   const buttons = { ...ALL_BUTTONS, ...props.buttons };
   const groupByButtons = props.groupByButtons || [];
 
@@ -98,6 +105,9 @@ export default function ToolsBar(props: ToolsBarProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openPivot = Boolean(anchorEl);
 
+  // const [findSearchValue, setFindSearchValue] = useState<string>("e");
+  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
+
   const handleClickPivot = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -118,6 +128,10 @@ export default function ToolsBar(props: ToolsBarProps) {
 
   const handleIsRowPinned = (entityName: EntityName) => {
     setPinned(selected, entityName);
+  };
+
+  const handleOpenSearchBox = () => {
+    setOpenSearchBox(!openSearchBox);
   };
 
   useEffect(() => {
@@ -289,15 +303,16 @@ export default function ToolsBar(props: ToolsBarProps) {
             >
               <SwapVert />
             </IconButton>
-            <IconButton
-              color="inherit"
-              aria-label="filter"
-              onClick={() => {}}
-              className=""
-              disabled
-            >
-              <Search />
-            </IconButton>
+            <div className="flex gap-2 items-center">
+              <IconButton
+                color="inherit"
+                aria-label="filter"
+                onClick={handleOpenSearchBox}
+                className=""
+              >
+                <Search />
+              </IconButton>
+            </div>
           </Box>
           <div
             className="w-[1px] h-6"

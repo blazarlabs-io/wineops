@@ -58,6 +58,7 @@ const grape = {
       };
     }
   },
+
   update: async (uid: string, id: string, data: Grape): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, GRAPES, id);
