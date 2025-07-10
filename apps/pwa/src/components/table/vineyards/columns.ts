@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
+import { TasksCellRenderer } from "../tasks-cell-renderer";
 import { GrapeVarietyCellRenderer } from "./cell-renderers/grape-variety-cell-renderer";
 import { LabDataCellRenderer } from "./cell-renderers/lab-data-cell-renderer";
 import { NotesCellRenderer } from "./cell-renderers/notes-cell-renderer";
 import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";
 import { StatusCellRenderer } from "./cell-renderers/status-cell-renderer";
-import { TasksCellRenderer } from "../tasks-cell-renderer";
 
 export const vineyardColumns: ColDef[] = [
   {
@@ -14,6 +14,7 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: GrapeVarietyCellRenderer,
     aggFunc: ({ values }: any) => values,
+    filter: "agSetColumnFilter",
   },
   {
     field: "status",
@@ -21,6 +22,7 @@ export const vineyardColumns: ColDef[] = [
     flex: 1,
     cellRenderer: StatusCellRenderer,
     aggFunc: ({ values }: any) => values,
+    filter: "agSetColumnFilter",
   },
   {
     headerName: "Quantity Overview",
@@ -28,12 +30,24 @@ export const vineyardColumns: ColDef[] = [
     minWidth: 240,
     flex: 1,
     cellRenderer: QuantityCellRenderer,
+    // filter: "agSetColumnFilter",
+    // filterValueGetter: async(params: any) => {
+    //   console.log("FILTER VALUE GETTER params", params);
+    //   params?.data?.batches?.map((b: any) => b.id);
+
+    // },
   },
   {
     field: "labData",
     minWidth: 196,
     flex: 1,
     cellRenderer: LabDataCellRenderer,
+    // filter: "agSetColumnFilter",
+    // filterValueGetter: (params: any) => {
+    //   if (params?.data?.labData?.length > 0) {
+    //     params?.data?.labData?.map((b: any) => {});
+    //   }
+    // },
   },
   {
     field: "tasks",

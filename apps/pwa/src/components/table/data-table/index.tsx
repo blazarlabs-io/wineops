@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
+import { db } from "@/lib/firebase/services";
 import { DashboardEntity, GroupBy } from "@/models/types/dashboard";
 import { DbResponse, EntityName } from "@/models/types/db";
+import { useGridStore } from "@/store/grid";
+import { usePinnedEntitiesStore } from "@/store/pinned-entities";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import getUnusedGroups from "@/utils/get-unused-groups";
 import { nodesToEntities } from "@/utils/notes-to-entities";
 import { Button, Stack, Typography, useColorScheme } from "@mui/material";
 import {
@@ -29,6 +35,7 @@ import {
   RowSelectionOptions,
   SelectionChangedEvent,
   SetFilterModule,
+  SideBarModule,
   StatusBarModule,
   themeBalham,
   TreeDataModule,
@@ -38,13 +45,6 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
-import { db } from "@/lib/firebase/services";
-import getUnusedGroups from "@/utils/get-unused-groups";
-import { useGridStore } from "@/store/grid";
-import { ButtonType } from "@/components/widgets/tools-bar/constants";
-import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -57,6 +57,7 @@ ModuleRegistry.registerModules([
   StatusBarModule,
   TreeDataModule,
   RowDragModule,
+  SideBarModule,
 ]);
 
 interface DataTableProps<T extends DashboardEntity> {
@@ -157,7 +158,7 @@ export const DataTable = <T extends DashboardEntity>({
   }, [isDarkMode]);
 
   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
-  const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
+  // const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
@@ -477,25 +478,6 @@ export const DataTable = <T extends DashboardEntity>({
     },
     [autoGroupColumnDef?.headerName, groupedField]
   );
-
-  // const isRowPinned = useCallback(
-  //   (rowNode: any, node: any) => {
-  //     console.log("IS ROW PINNED", pinned);
-  //     // const res = selectedRows.find((row) => row.id === rowNode.data?.id);
-  //     // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXX");
-  //     // console.log("isRowPinned", rowNode);
-  //     // console.log("RES", res);
-  //     // console.log("SELECTED", selectedRows);
-  //     // console.log("BUTTON TYPE", [ButtonType.PIN]);
-  //     // console.log("XXXXXXXXXXXXXXXXXXXXXXX\n\n");
-  //     // return selectedRows.filter((row) => row.id === rowNode.data?.id).length >
-  //     //   0
-  //     //   ? "top"
-  //     //   : undefined; // res !== undefined;
-  //     return pinned.includes(rowNode.data?.id) ? "top" : undefined;
-  //   },
-  //   [pinned]
-  // );
 
   const isRowPinned = useCallback(
     (params: any) => {
