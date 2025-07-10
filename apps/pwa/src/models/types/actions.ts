@@ -143,6 +143,10 @@ export interface VineyardHarvestAction {
   // * ADDITIONAL INFO
   description?: string;
   harvestEnded?: boolean;
+  supportingDocuments?: Array<{
+    name: string;
+    url: string;
+  }>;
 }
 
 export interface VineyardGlobalAction {
@@ -159,6 +163,7 @@ export interface VineyardGlobalAction {
     qty: number;
   }[];
   equipment?: ActionRelation[];
+  labDataToDeleteIds?: string[];
 }
 
 export const MUST_ACTION_TYPES = ["must-decant"] as const;
@@ -201,6 +206,7 @@ export type MustDecantAction = {
 export type ActionRelation = {
   id: string;
   name: string;
+  date?: string | Timestamp;
 };
 
 export type ActionsEntity = VineyardActions | GrapeActions | MustActions;
