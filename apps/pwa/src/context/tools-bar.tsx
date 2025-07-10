@@ -1,6 +1,5 @@
 "use client";
 
-import { QuickDrawerType } from "@/models/types/db";
 import { AgGridReact } from "ag-grid-react";
 import { createContext, ReactNode, useContext, useState } from "react";
 
