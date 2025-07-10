@@ -1,4 +1,5 @@
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useEffect, useState } from "react";
 
 export const useSortToolsBarStates = () => {
@@ -8,8 +9,12 @@ export const useSortToolsBarStates = () => {
   const [enableDelete, setEnableDelete] = useState<boolean>(false);
   const [enableUngrouping, setEnableUngrouping] = useState<boolean>(false);
   const [enablePinning, setEnablePinning] = useState<boolean>(false);
+  const [pinningState, setPinningState] = useState<"pin" | "unpin" | null>(
+    null
+  );
 
   const selected = useSelectedEntitiesStore(({ selected }) => selected);
+  const pinned = usePinnedEntitiesStore(({ pinned }) => pinned);
 
   useEffect(() => {
     setEnableAdd(selected?.length === 0);
@@ -23,6 +28,27 @@ export const useSortToolsBarStates = () => {
     );
 
     setEnableUngrouping(isDataGrouped);
+
+    const selectedPinnedCount = selected.filter((item) =>
+      pinned.includes(item)
+    ).length;
+    const selectedUnpinnedCount = selected.length - selectedPinnedCount;
+
+    if (selectedPinnedCount === 0 && selectedUnpinnedCount > 0) {
+      setPinningState("pin");
+    } else if (selectedPinnedCount > 0 && selectedUnpinnedCount === 0) {
+      setPinningState("unpin");
+    } else if (selectedPinnedCount > 0 && selectedUnpinnedCount > 0) {
+      setPinningState("pin");
+    } else {
+      setPinningState(null);
+    }
+
+    console.log(
+      "SELECTED PINNED COUNT",
+      selectedPinnedCount,
+      selectedUnpinnedCount
+    );
   }, [selected]);
 
   return {
@@ -32,5 +58,6 @@ export const useSortToolsBarStates = () => {
     enableDelete,
     enableUngrouping,
     enablePinning,
+    pinningState,
   };
 };

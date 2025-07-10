@@ -21,7 +21,7 @@ export const LabDataCellRenderer: FunctionComponent<
   const descSortedLabData = labData
     ? labData.sort(
         (a: any, b: any) =>
-          b.date.toDate().getTime() - a.date.toDate().getTime()
+          b.date?.toDate()?.getTime() - a.date?.toDate()?.getTime()
       )
     : [];
 

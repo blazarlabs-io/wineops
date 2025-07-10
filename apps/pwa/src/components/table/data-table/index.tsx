@@ -48,6 +48,8 @@ import {
   TreeDataModule,
   FindModule,
   ValidationModule,
+  PinnedRowModule,
+  RowSelectionModule,
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { useSnackbar } from "notistack";
@@ -78,6 +80,8 @@ ModuleRegistry.registerModules([
   SideBarModule,
   FindModule,
   ValidationModule,
+  PinnedRowModule,
+  RowSelectionModule,
 ]);
 
 interface DataTableProps<T extends DashboardEntity> {
@@ -136,11 +140,15 @@ export const DataTable = <T extends DashboardEntity>({
       headerRowBorder: true,
       wrapperBorderRadius: "8px",
       rowHeight: rowHeight,
+      pinnedRowBorder: {
+        width: 4,
+      },
     })
     .withParams(
       {
         backgroundColor: "#121212",
         foregroundColor: "#FFFFFFCC",
+        pinnedRowBackgroundColor: "#121212",
         browserColorScheme: "dark",
       },
       "dark"
@@ -164,7 +172,7 @@ export const DataTable = <T extends DashboardEntity>({
     return {
       mode: "multiRow",
       groupSelects: "descendants",
-      checkboxLocation: "autoGroupColumn",
+      // checkboxLocation: "autoGroupColumn",
     };
   }, []);
 
@@ -187,7 +195,6 @@ export const DataTable = <T extends DashboardEntity>({
       const entities = nodesToEntities<T>(selectedNodes);
       setSelected(entities, entityName);
       setSelectedRows(entities);
-      console.log("SELECTED ROWS:", entities);
     },
     [entityName, setSelected]
   );
@@ -501,24 +508,33 @@ export const DataTable = <T extends DashboardEntity>({
 
   const isRowPinned = useCallback(
     (params: any) => {
-      const rowNode = params.node;
       const data = params.data;
-      console.log("PINNED", pinned, rowNode, data);
-      return pinned.includes(data) ? "top" : undefined;
+      // console.log("\n\n****************************");
+      // console.log("PINNED", params, pinned);
+      // console.log("ROW DATA", data);
+      // console.log("SIBLING", typeof params?.pinnedSibling);
+      // console.log("ALL ROWS", rowData);
+      // const result = [
+      //   ...pinned.filter((x) => !rowData.includes(x)),
+      //   ...rowData.filter((x) => !pinned.includes(x)),
+      // ];
+      // console.log("RESULT", result);
+      // console.log("****************************\n\n");
+      return pinned && pinned?.includes(data) ? "top" : undefined;
     },
     [pinned]
   );
 
-  const onFindChanged = useCallback((event: FindChangedEvent) => {
-    const { api, activeMatch, totalMatches, findSearchValue } = event;
+  // const onFindChanged = useCallback((event: FindChangedEvent) => {
+  //   const { api, activeMatch, totalMatches, findSearchValue } = event;
 
-    if (findSearchValue && totalMatches > 0 && !activeMatch) {
-      api.findNext();
-    }
+  //   if (findSearchValue && totalMatches > 0 && !activeMatch) {
+  //     api.findNext();
+  //   }
 
-    const activeNum = activeMatch?.numOverall ?? "-";
-    setActiveMatchNum(`${activeNum}/${totalMatches}`);
-  }, []);
+  //   const activeNum = activeMatch?.numOverall ?? "-";
+  //   setActiveMatchNum(`${activeNum}/${totalMatches}`);
+  // }, []);
 
   useEffect(() => {
     handleGroupBy(groupedField);
@@ -534,35 +550,35 @@ export const DataTable = <T extends DashboardEntity>({
     };
   }, [setSelected]);
 
-  const [findSearchValue, setFindSearchValue] = useState<string>("e");
-  const [activeMatchNum, setActiveMatchNum] = useState<string>();
+  // const [findSearchValue, setFindSearchValue] = useState<string>("e");
+  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
 
-  const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setFindSearchValue(event.target.value);
-  }, []);
+  // const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+  //   setFindSearchValue(event.target.value);
+  // }, []);
 
-  const onKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        const backwards = event.shiftKey;
-        if (backwards) {
-          previous();
-        } else {
-          next();
-        }
-      }
-    },
-    []
-  );
+  // const onKeyDown = useCallback(
+  //   (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //     if (event.key === "Enter") {
+  //       event.preventDefault();
+  //       const backwards = event.shiftKey;
+  //       if (backwards) {
+  //         previous();
+  //       } else {
+  //         next();
+  //       }
+  //     }
+  //   },
+  //   []
+  // );
 
-  const next = useCallback(() => {
-    gridRef.current!.api.findNext();
-  }, []);
+  // const next = useCallback(() => {
+  //   gridRef.current!.api.findNext();
+  // }, []);
 
-  const previous = useCallback(() => {
-    gridRef.current!.api.findPrevious();
-  }, []);
+  // const previous = useCallback(() => {
+  //   gridRef.current!.api.findPrevious();
+  // }, []);
 
   return (
     <>
@@ -586,7 +602,7 @@ export const DataTable = <T extends DashboardEntity>({
       )}
 
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-        <div className="flex items-center gap-2 mb-[16px]">
+        {/* <div className="flex items-center gap-2 mb-[16px]">
           <TextField
             size="small"
             type="text"
@@ -609,7 +625,7 @@ export const DataTable = <T extends DashboardEntity>({
             <NavigateNext className="w-4 h-4" />
           </Button>
           <span>{activeMatchNum}</span>
-        </div>
+        </div> */}
         {filteredData?.length > 0 ? (
           <AgGridReact
             theme={myTheme}
@@ -630,6 +646,7 @@ export const DataTable = <T extends DashboardEntity>({
                 groupByButtons?.find(
                   ({ columnName }) => columnName === groupedField
                 )?.name || autoGroupColumnDef.headerName,
+              checkboxSelection: false,
             }}
             rowSelection={rowSelection}
             onSelectionChanged={handleOnSelectionChanged}
@@ -648,8 +665,8 @@ export const DataTable = <T extends DashboardEntity>({
             enableRowPinning={enableRowPinning}
             isRowPinned={isRowPinned}
             // * SEARCH
-            findSearchValue={findSearchValue}
-            onFindChanged={onFindChanged}
+            // findSearchValue={findSearchValue}
+            // onFindChanged={onFindChanged}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

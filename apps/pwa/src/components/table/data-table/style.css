@@ -1,3 +1,15 @@
 .hover-over {
   background-color: var(--ag-accent-color);
 }
+
+.ag-row.ag-row-pinned {
+  background-color: #25262c !important;
+}
+
+.ag-row.ag-row-pinned.ag-row-selected {
+  background-color: transparent !important;
+}
+
+/* .ag-row.ag-row-last {
+  background-color: #cc333344;
+} */

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
@@ -29,7 +30,7 @@ import {
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Search } from "lucide-react";
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { ButtonProps, ButtonType } from "./constants";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
@@ -78,7 +79,7 @@ export default function ToolsBar(props: ToolsBarProps) {
   const { mode } = useColorScheme();
   const { updateOpen, updateType } = useQuickDrawer();
   const { selected } = useSelectedEntitiesStore();
-  const { setPinned } = usePinnedEntitiesStore();
+  const { setPinned, pinned } = usePinnedEntitiesStore();
 
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
 
@@ -92,6 +93,7 @@ export default function ToolsBar(props: ToolsBarProps) {
     enableEdit,
     enableDelete,
     enablePinning,
+    pinningState,
   } = useSortToolsBarStates();
 
   const open = useDialogDrawerStore(({ open }) => open);
@@ -126,9 +128,21 @@ export default function ToolsBar(props: ToolsBarProps) {
     updateType(type as QuickDrawerType);
   };
 
-  const handleIsRowPinned = (entityName: EntityName) => {
-    setPinned(selected, entityName);
-  };
+  const handleIsRowPinned = useCallback(() => {
+    let result: any = [];
+
+    if (pinningState === null) return;
+
+    if (pinningState === "pin") {
+      result = [...new Set([...selected, ...pinned])];
+    } else if (pinningState === "unpin") {
+      result = pinned.filter((p) => {
+        return !selected.includes(p);
+      });
+    }
+
+    setPinned(result, props.entityName);
+  }, [pinned, pinningState, selected]);
 
   const handleOpenSearchBox = () => {
     setOpenSearchBox(!openSearchBox);
@@ -139,12 +153,6 @@ export default function ToolsBar(props: ToolsBarProps) {
       setGroupedField(undefined);
     };
   }, [setGroupedField]);
-
-  useEffect(() => {
-    if (selected.length === 0) {
-      setPinned([], props.entityName);
-    }
-  }, [props.entityName, selected, setPinned]);
 
   return (
     <>
@@ -185,10 +193,8 @@ export default function ToolsBar(props: ToolsBarProps) {
               onClick={() => {
                 if (typeof buttons[ButtonType.PIN]?.onClick === "function") {
                   buttons[ButtonType.PIN]!.onClick!();
-                  console.log("PINNEDXXX");
                 } else {
-                  console.log("PINNEDYYY");
-                  handleIsRowPinned(props.entityName!);
+                  handleIsRowPinned();
                 }
               }}
             >

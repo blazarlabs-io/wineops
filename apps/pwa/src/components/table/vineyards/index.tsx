@@ -31,6 +31,7 @@ export default function VineyardsTable() {
       groupColumnDef={{
         headerName: "Vineyard Name",
         rowDrag: true,
+
         cellRendererParams: {
           innerRenderer: GroupCellRenderer,
           suppressCount: true,

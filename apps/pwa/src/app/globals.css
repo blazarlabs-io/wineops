@@ -32,12 +32,15 @@
 @theme {
   --color-background: #ffffff;
   --color-background-dark: #121212;
+  --color-background-muted: #cccccc;
+  --color-background-muted-dark: #000000;
   --color-foreground: var(--muy-palette-text-primary);
   --color-status-error: var(--mui-palette-error-main);
   --color-status-error-dark: var(--mui-palette-error-light);
   --color-on-surface: var(--mui-palette-text-primary);
   --color-on-surface-dark: var(--mui-palette-text-dark);
   --color-text-error: var(--mui-palette-error-main);
+  --color-background-main: var(--mui-palette-background-default);
 }
 
 .debug-red {
