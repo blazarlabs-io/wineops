@@ -64,7 +64,9 @@ import {
 import { shiftGroups } from "../utils";
 import "./style.css";
 import { useToolsbar } from "@/context/tools-bar";
-import { NavigateBefore, NavigateNext } from "@mui/icons-material";
+import { Add, NavigateBefore, NavigateNext } from "@mui/icons-material";
+import { usePathname } from "next/navigation";
+import { useDialogDrawerStore } from "@/store/dialogs";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -97,7 +99,7 @@ interface DataTableProps<T extends DashboardEntity> {
 
 export const DataTable = <T extends DashboardEntity>({
   gridTheme = "ag-theme-quartz",
-  data = [],
+  data,
   columns,
   groupColumnDef,
   groupByButtons,
@@ -116,7 +118,7 @@ export const DataTable = <T extends DashboardEntity>({
   const colDefs = useMemo(() => columns, [columns]);
 
   // * Row Data
-  const [rowData, setRowData] = useState<T[]>(data);
+  const [rowData, setRowData] = useState<T[]>();
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [potentialParent, setPotentialParent] = useState<any>(null);
@@ -224,7 +226,14 @@ export const DataTable = <T extends DashboardEntity>({
   };
 
   const updateRowsGroup = async (selectedRows: T[], group: string[] = []) => {
-    if (!entityName || !db[entityName] || !uid || selectedRows.length === 0)
+    if (
+      !rowData ||
+      !data ||
+      !entityName ||
+      !db[entityName] ||
+      !uid ||
+      selectedRows.length === 0
+    )
       return;
 
     const isGrouping = group.length > 0;
@@ -580,6 +589,10 @@ export const DataTable = <T extends DashboardEntity>({
   //   gridRef.current!.api.findPrevious();
   // }, []);
 
+  const pathname = usePathname();
+  const open = useDialogDrawerStore(({ open }) => open);
+  const openAddVineyard = () => open("form-drawer");
+
   return (
     <>
       {groupByButtons && groupByButtons.length > 0 && (
@@ -626,7 +639,7 @@ export const DataTable = <T extends DashboardEntity>({
           </Button>
           <span>{activeMatchNum}</span>
         </div> */}
-        {filteredData?.length > 0 ? (
+        {filteredData && filteredData.length > 0 ? (
           <AgGridReact
             theme={myTheme}
             ref={gridRef}
@@ -670,9 +683,29 @@ export const DataTable = <T extends DashboardEntity>({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Typography color="textSecondary" className="">
-              Nothing to show.
-            </Typography>
+            {pathname.includes("vineyards") ? (
+              !filteredData ? (
+                <>Loading...</>
+              ) : filteredData.length === 0 ? (
+                <>
+                  <Button
+                    variant="text"
+                    startIcon={<Add />}
+                    onClick={openAddVineyard}
+                  >
+                    Add vineyard
+                  </Button>
+                </>
+              ) : (
+                <Typography color="textSecondary" className="">
+                  Nothing to show.
+                </Typography>
+              )
+            ) : (
+              <Typography color="textSecondary" className="">
+                Nothing to show.
+              </Typography>
+            )}
           </div>
         )}
       </div>

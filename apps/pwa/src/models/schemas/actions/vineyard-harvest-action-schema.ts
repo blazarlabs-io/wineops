@@ -27,6 +27,7 @@ const sugarSchema = Joi.object({
   variation: Joi.number().precision(2).optional(),
   unit: Joi.string().optional().allow(""),
   responsible: Joi.object({
+    id: Joi.string().optional().allow(""),
     name: Joi.string().optional().allow(""),
     email: Joi.string().optional().allow(""),
   }),

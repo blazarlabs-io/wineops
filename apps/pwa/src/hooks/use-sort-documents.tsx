@@ -18,12 +18,11 @@ export const useSortDocuments = (docs: any) => {
       mountRef.current = true;
       docs.map((doc: any, index: number) => {
         console.log(index);
-        const name = doc.name.split(".").slice(0, -1).join(".");
-        const type = doc.name.split(".").pop();
+        const name = doc.name; //.split(".").slice(0, -1).join(".");
         const newDoc: DocumentType = {
           id: Date.now().toString(),
-          name: name,
-          type: type,
+          name,
+          type: doc.type,
           date: doc.date.toDate().toDateString(),
           ownerNameAndEmail: doc.responsible.name,
         };

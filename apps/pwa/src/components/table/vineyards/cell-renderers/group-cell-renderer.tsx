@@ -15,7 +15,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  const { labReports, vineyards } = useVineyard();
+  const { labReports, vineyards = [] } = useVineyard();
   const { labData } = useGetLabData(
     value,
     node.data?.labData,

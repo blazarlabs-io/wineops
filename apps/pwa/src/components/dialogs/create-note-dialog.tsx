@@ -28,7 +28,7 @@ export default function CreateNoteDialog({
   teamMembers,
   onClose,
 }: CreateNoteDialogProps) {
-  const { vineyards } = useVineyard();
+  const { vineyards = [] } = useVineyard();
 
   const handleCreateNewNote = async (data: any) => {
     // * 1. Create note in DB

@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useVineyard } from "@/context/vineyard";
-import { db } from "@/lib/firebase/services";
 import { Backup } from "@mui/icons-material";
 import {
   Button,
@@ -10,15 +8,16 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { enqueueSnackbar } from "notistack";
 import FileUploaderField from "../forms/custom-fields/file-uploader-field";
-import { useWinery } from "@/context/winery";
+import { useCallback, useEffect, useState } from "react";
 
 export interface CreateNoteDialogProps {
   open: boolean;
   subject: string;
   uid: string;
   onClose: () => void;
+  uploadedDocuments?: any[];
+  onDocumentUpload?: (data: any) => Promise<void>;
 }
 
 export default function UploadDocumentsDialog({
@@ -27,49 +26,34 @@ export default function UploadDocumentsDialog({
   uid,
 
   onClose,
+  uploadedDocuments,
+  onDocumentUpload,
 }: CreateNoteDialogProps) {
-  const { vineyards } = useVineyard();
-  const { documents } = useWinery();
+  const [currentUploads, setCurrentUploads] = useState<any[]>([]);
 
-  const handleCreateNewNote = async (data: any) => {
-    // * 1. Create note in DB
-    const teamRes = await db.note.create(uid, data);
-    if (teamRes.status === 200) {
-      enqueueSnackbar("Note created successfully", {
-        variant: "success",
-      });
-    } else {
-      enqueueSnackbar("Error creating note", { variant: "error" });
-    }
+  const handleUploadDocuments = useCallback(
+    (file: { name: string; url: string }) => {
+      if (!file) return;
 
-    // * 2. Update vineyard or group to reference new note.
-    const subjectVineyard = vineyards.filter(
-      (vineyard) => vineyard.name === subject
-    )[0];
+      setCurrentUploads((prevFiles) => [...prevFiles, file]);
+    },
+    []
+  );
 
-    console.log("subjectVineyard", subjectVineyard, subject);
-
-    const vineyardRes = await db.vineyard.update(uid, subjectVineyard.id, {
-      ...subjectVineyard,
-      notes: [
-        ...subjectVineyard.notes,
-        {
-          id: data.id,
-          name: data.title,
-        },
-      ],
-    });
-
-    if (vineyardRes.status === 200) {
-      enqueueSnackbar("Vineyard updated successfully", {
-        variant: "success",
-      });
-    } else {
-      enqueueSnackbar("Error updating vineyard", { variant: "error" });
+  const onDoneClick = async () => {
+    if (currentUploads.length > 0 && !!onDocumentUpload) {
+      await onDocumentUpload(currentUploads);
     }
 
     onClose();
   };
+
+  useEffect(() => {
+    return () => {
+      setCurrentUploads([]);
+    };
+  }, []);
+
   return (
     <Dialog
       open={open}
@@ -90,7 +74,11 @@ export default function UploadDocumentsDialog({
           Upload documents to your winery operation.
         </DialogContentText>
 
-        <FileUploaderField path="documents" data={documents} />
+        <FileUploaderField
+          path="documents"
+          data={uploadedDocuments}
+          onDocumentUpload={handleUploadDocuments}
+        />
         {/* <CreateNoteForm
           teamMembers={teamMembers}
           uid={uid}
@@ -99,7 +87,7 @@ export default function UploadDocumentsDialog({
         /> */}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Done</Button>
+        <Button onClick={onDoneClick}>Done</Button>
       </DialogActions>
     </Dialog>
   );

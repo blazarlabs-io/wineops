@@ -44,7 +44,7 @@ export default function VineyardLabActionForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { vineyards, actions, labReports } = useVineyard();
+  const { vineyards = [], actions, labReports } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
     ({ selected }) => selected

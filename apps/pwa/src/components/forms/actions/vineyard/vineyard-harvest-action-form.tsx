@@ -58,7 +58,7 @@ export default function VineyardHarvestActionForm({
   onBackClick?: () => void;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { vineyards, actions } = useVineyard();
+  const { vineyards = [], actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
     ({ selected }) => selected
@@ -406,7 +406,7 @@ export default function VineyardHarvestActionForm({
       db.storage.uploadFile(
         file,
         user?.uid,
-        "grapeIntake",
+        "vineyardHarvest",
         (progress: number) => {
           setIsUploading(true);
           setUploadProgress(progress);
@@ -454,7 +454,7 @@ export default function VineyardHarvestActionForm({
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
-        "grapeIntake",
+        "vineyardHarvest",
         name
       );
 
@@ -642,6 +642,8 @@ export default function VineyardHarvestActionForm({
     } else {
       setDisableSubject(false);
     }
+
+    vineyardHarvestActionSample.supportingDocuments = [];
 
     setFormData(vineyardHarvestActionSample);
     reset(vineyardHarvestActionSample);
@@ -1048,6 +1050,7 @@ export default function VineyardHarvestActionForm({
                         </Typography>
                         <Autocomplete
                           id="location"
+                          freeSolo
                           options={countries.map((item) => item.name)}
                           value={formData?.location}
                           filterSelectedOptions
@@ -1057,8 +1060,11 @@ export default function VineyardHarvestActionForm({
                               label="Processing location"
                             />
                           )}
-                          onChange={(e, value) => {
-                            handleChange("location", value as string);
+                          onChange={(_e, value) => {
+                            handleChange("location", value);
+                          }}
+                          onInputChange={(_e, newInputValue) => {
+                            handleChange("location", newInputValue);
                           }}
                         />
                       </Stack>
