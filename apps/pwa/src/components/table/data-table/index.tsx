@@ -7,11 +7,13 @@ import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { DashboardEntity, GroupBy } from "@/models/types/dashboard";
 import { DbResponse, EntityName } from "@/models/types/db";
+import { useDialogDrawerStore } from "@/store/dialogs";
 import { useGridStore } from "@/store/grid";
 import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import getUnusedGroups from "@/utils/get-unused-groups";
 import { nodesToEntities } from "@/utils/notes-to-entities";
+import { Add } from "@mui/icons-material";
 import { Button, Stack, Typography, useColorScheme } from "@mui/material";
 import {
   AllCommunityModule,
@@ -45,14 +47,11 @@ import {
   ValidationModule,
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
+import { usePathname } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
-import { useToolsbar } from "@/context/tools-bar";
-import { Add, NavigateBefore, NavigateNext } from "@mui/icons-material";
-import { usePathname } from "next/navigation";
-import { useDialogDrawerStore } from "@/store/dialogs";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -559,36 +558,6 @@ export const DataTable = <T extends DashboardEntity>({
       setSelected([]);
     };
   }, [setSelected]);
-
-  // const [findSearchValue, setFindSearchValue] = useState<string>("e");
-  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
-
-  // const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-  //   setFindSearchValue(event.target.value);
-  // }, []);
-
-  // const onKeyDown = useCallback(
-  //   (event: React.KeyboardEvent<HTMLInputElement>) => {
-  //     if (event.key === "Enter") {
-  //       event.preventDefault();
-  //       const backwards = event.shiftKey;
-  //       if (backwards) {
-  //         previous();
-  //       } else {
-  //         next();
-  //       }
-  //     }
-  //   },
-  //   []
-  // );
-
-  // const next = useCallback(() => {
-  //   gridRef.current!.api.findNext();
-  // }, []);
-
-  // const previous = useCallback(() => {
-  //   gridRef.current!.api.findPrevious();
-  // }, []);
 
   const pathname = usePathname();
   const open = useDialogDrawerStore(({ open }) => open);

@@ -10,6 +10,7 @@ import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import {
   Add,
+  Clear,
   DeleteOutline,
   Deselect,
   Edit,
@@ -23,8 +24,10 @@ import {
 import {
   Box,
   IconButton,
+  InputAdornment,
   ListItemText,
   Stack,
+  TextField,
   useColorScheme,
 } from "@mui/material";
 import Menu from "@mui/material/Menu";
@@ -301,7 +304,7 @@ export default function ToolsBar(props: ToolsBarProps) {
             alignItems="center"
             justifyContent="flex-end"
           >
-            <IconButton
+            {/* <IconButton
               color="inherit"
               aria-label="filter"
               onClick={() => {}}
@@ -318,7 +321,7 @@ export default function ToolsBar(props: ToolsBarProps) {
               disabled
             >
               <SwapVert />
-            </IconButton>
+            </IconButton> */}
             <div className="flex gap-2 items-center">
               <IconButton
                 color="inherit"
@@ -328,6 +331,29 @@ export default function ToolsBar(props: ToolsBarProps) {
               >
                 <Search />
               </IconButton>
+              <TextField
+                size="small"
+                placeholder="Search"
+                style={{
+                  display: openSearchBox ? "block" : "none",
+                }}
+                // value={searchValue}
+                // onChange={(e) => updateSearchValue(e.target.value)}
+                // InputProps={{
+                //   endAdornment: (
+                //     <InputAdornment position="end">
+                //       <IconButton
+                //         color="inherit"
+                //         aria-label="filter"
+                //         // onClick={() => updateSearchValue("")}
+                //         className=""
+                //       >
+                //         <Clear />
+                //       </IconButton>
+                //     </InputAdornment>
+                //   ),
+                // }}
+              />
             </div>
           </Box>
           <div
