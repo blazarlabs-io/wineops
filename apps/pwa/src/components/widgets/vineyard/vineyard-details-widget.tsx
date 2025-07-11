@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import DeleteLabReportDialog from "@/components/dialogs/delete-lab-report-dialog";
@@ -28,6 +28,16 @@ import { DashboardEntity } from "@/models/types/dashboard";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
+import { db as dbClients } from "@/lib/firebase/client";
+import { ACTIONS, WINERY } from "@/lib/firebase/config";
+import {
+  collection,
+  getDocs,
+  query,
+  Timestamp,
+  where,
+} from "firebase/firestore";
+import { enqueueSnackbar } from "notistack";
 
 export type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
@@ -50,24 +60,78 @@ export default function VineyardDetailsWidget({
   };
 
   useEffect(() => {
-    if (labReports && !mountRef.current) {
+    if (!mountRef.current) {
       mountRef.current = true;
-      labReports.map((l: any) => {
-        if (l.supportingDocuments && l.supportingDocuments?.length > 0) {
-          console.log("l.supportingDocuments", l);
-          l.supportingDocuments.map((d: any) => {
-            const newDoc = {
-              name: d.name,
-              url: d.url,
-              responsible: l.responsible,
-              date: l.date,
-            };
-            setDocs((prev) => [...prev, newDoc]);
-          });
-        }
-      });
+
+      if (labReports) {
+        labReports.map((l: any) => {
+          if (l.supportingDocuments && l.supportingDocuments?.length > 0) {
+            console.log("l.supportingDocuments", l);
+            l.supportingDocuments.map((d: any) => {
+              const newDoc = {
+                name: d.name,
+                url: d.url,
+                responsible: l.responsible,
+                date: l.date,
+                type: "lab report",
+              };
+              setDocs((prev) => [...prev, newDoc]);
+            });
+          }
+        });
+      }
+
+      if (!user?.uid) return;
+
+      const fetchActions = async () => {
+        const filteredActions = (localVineyard?.actions || []).filter(
+          ({ name }) => name !== "lab-reports"
+        );
+
+        if (filteredActions.length === 0) return;
+
+        const actions = await getActionsByIds(
+          filteredActions.map(({ id }) => id),
+          user?.uid
+        );
+
+        if (actions.length === 0) return;
+
+        const actionDocs: any[] = actions.reduce(
+          (
+            acc,
+            { type, responsible, executionDate, supportingDocuments = [] }
+          ) => [
+            ...acc,
+            ...supportingDocuments.map((doc: any) => ({
+              name: doc.name,
+              url: doc.url,
+              responsible,
+              date: executionDate,
+              type: type.split("-").join(" "),
+            })),
+          ],
+          []
+        );
+
+        if (actionDocs.length === 0) return;
+
+        setDocs((prev) => [...prev, ...actionDocs]);
+      };
+
+      fetchActions();
+
+      setDocs((prev) => [
+        ...prev,
+        ...(localVineyard?.documents || []).map((doc) => ({
+          ...doc,
+          url: doc.fileUrl,
+          date: doc.uploadDate,
+          responsible: doc.owner,
+        })),
+      ]);
     }
-  }, [labReports]);
+  }, [labReports, user?.uid, localVineyard?.actions, localVineyard?.documents]);
 
   useEffect(() => {
     setLocalVineyard(vineyard);
@@ -101,6 +165,47 @@ export default function VineyardDetailsWidget({
     });
   };
 
+  const handleDocumentUpload = useCallback(
+    async (files: Array<{ name: string; url: string }>) => {
+      if (!user?.uid || !vineyard.id || !files) return;
+
+      const deletedNames = files
+        .filter((file) => !file.url)
+        .map((file) => file.name);
+
+      const newDocuments = files
+        ?.filter((file) => file.url)
+        ?.map(({ name, url }) => ({
+          id: crypto.randomUUID(),
+          name,
+          fileUrl: url,
+          owner: { email: user?.email },
+
+          uploadDate: Timestamp.now(),
+        }));
+
+      const oldDocuments =
+        localVineyard?.documents?.filter(
+          (document) => !deletedNames.includes(document.name)
+        ) || [];
+
+      const updatedDocuments = [...newDocuments, ...oldDocuments];
+
+      const vineyardRes = await db.vineyard.update(user?.uid, vineyard.id, {
+        documents: updatedDocuments,
+      });
+
+      if (vineyardRes.status === 200) {
+        enqueueSnackbar("Vineyard updated successfully", {
+          variant: "success",
+        });
+      } else {
+        enqueueSnackbar("Error updating vineyard", { variant: "error" });
+      }
+    },
+    [user?.email, user?.uid, localVineyard?.documents, vineyard.id]
+  );
+
   return (
     <Box
       sx={{
@@ -122,10 +227,11 @@ export default function VineyardDetailsWidget({
       >
         <Tab label="Details" {...a11yProps(0)} sx={sx} />
         <Tab label="Grape&nbsp;Variety" {...a11yProps(1)} sx={sx} />
-        <Tab label="Lab Results" {...a11yProps(2)} sx={sx} />
-        <Tab label="Tasks" {...a11yProps(3)} sx={sx} />
-        <Tab label="Weather" {...a11yProps(4)} sx={sx} />
-        <Tab label="Documents" {...a11yProps(5)} sx={sx} />
+        <Tab label="Timeline" {...a11yProps(2)} sx={sx} />
+        <Tab label="Lab Results" {...a11yProps(3)} sx={sx} />
+        <Tab label="Tasks" {...a11yProps(4)} sx={sx} />
+        <Tab label="Weather" {...a11yProps(5)} sx={sx} />
+        <Tab label="Documents" {...a11yProps(6)} sx={sx} />
       </Tabs>
       <TabPanel value={value} index={0}>
         {/* * GENERAL INFO */}
@@ -144,7 +250,7 @@ export default function VineyardDetailsWidget({
               />
             </div>
 
-            <div className="grid grid-cols-4 gap-8 w-full p-2 justify-between">
+            <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between">
               <SimpleDataDisplay
                 label="Surface"
                 value={
@@ -202,6 +308,11 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Country"
                 value={localVineyard.info?.location?.country || "N/A"}
+              />
+
+              <CadastralDataDisplay
+                label="Identificatorul unic al parcelei viticole"
+                value={localVineyard.identificatorUnicParcela || []}
               />
             </div>
           </>
@@ -299,6 +410,9 @@ export default function VineyardDetailsWidget({
         </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
+        <div className="flex gap-8 px-4">Timeline View</div>
+      </TabPanel>
+      <TabPanel value={value} index={3}>
         {labReports && labReports.length > 0 && (
           <Stack display={"flex"} direction={"column"} gap={0}>
             <div className="flex items-center justify-start gap-4 w-full">
@@ -369,13 +483,13 @@ export default function VineyardDetailsWidget({
           </Stack>
         )}
       </TabPanel>
-      <TabPanel value={value} index={3}>
+      <TabPanel value={value} index={4}>
         <Typography>Tasks</Typography>
       </TabPanel>
-      <TabPanel value={value} index={4}>
+      <TabPanel value={value} index={5}>
         <Typography>Weather</Typography>
       </TabPanel>
-      <TabPanel value={value} index={5}>
+      <TabPanel value={value} index={6}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
           {/* <div className="flex items-center justify-start w-full">
             <Button variant="text" className="">
@@ -385,11 +499,43 @@ export default function VineyardDetailsWidget({
               View All
             </Button>
           </div> */}
-          <DocumentsTable docs={docs} />
+          <DocumentsTable
+            docs={docs}
+            uploadedDocuments={localVineyard?.documents || []}
+            onDocumentUpload={handleDocumentUpload}
+          />
         </div>
       </TabPanel>
 
       <DeleteLabReportDialog onDelete={onDeleteLabReport} />
     </Box>
+  );
+}
+
+async function getActionsByIds(
+  actionIds: string[],
+  uid: string
+): Promise<any[]> {
+  if (actionIds.length === 0) return [];
+
+  const chunks = chunkArray(actionIds, 10);
+
+  const queries = chunks.map((idChunk) => {
+    const actionsRef = collection(dbClients, WINERY, uid, ACTIONS);
+    return query(actionsRef, where("__name__", "in", idChunk));
+  });
+
+  const results = await Promise.all(queries.map((q) => getDocs(q)));
+
+  const actions = results.flatMap((snapshot) =>
+    snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  );
+
+  return actions;
+}
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, i * size + size)
   );
 }

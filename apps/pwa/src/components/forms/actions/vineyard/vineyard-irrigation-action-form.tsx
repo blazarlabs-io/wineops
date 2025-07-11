@@ -59,7 +59,7 @@ export default function VineyardIrrigationActionForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { vineyards, actions } = useVineyard();
+  const { vineyards = [], actions } = useVineyard();
   const { user } = useAuth();
   const { consumables } = useConsumable();
   const { teamMembers } = useWinery();

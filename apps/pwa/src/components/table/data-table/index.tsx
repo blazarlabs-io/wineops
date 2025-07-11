@@ -49,6 +49,10 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
+import { useToolsbar } from "@/context/tools-bar";
+import { Add, NavigateBefore, NavigateNext } from "@mui/icons-material";
+import { usePathname } from "next/navigation";
+import { useDialogDrawerStore } from "@/store/dialogs";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -81,7 +85,7 @@ interface DataTableProps<T extends DashboardEntity> {
 
 export const DataTable = <T extends DashboardEntity>({
   gridTheme = "ag-theme-quartz",
-  data = [],
+  data,
   columns,
   groupColumnDef,
   groupByButtons,
@@ -101,7 +105,7 @@ export const DataTable = <T extends DashboardEntity>({
   const colDefs = useMemo(() => columns, [columns]);
 
   // * Row Data
-  const [rowData, setRowData] = useState<T[]>(data);
+  const [rowData, setRowData] = useState<T[]>();
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [potentialParent, setPotentialParent] = useState<any>(null);
   const enableRowPinning = true;
@@ -207,7 +211,14 @@ export const DataTable = <T extends DashboardEntity>({
   };
 
   const updateRowsGroup = async (selectedRows: T[], group: string[] = []) => {
-    if (!entityName || !db[entityName] || !uid || selectedRows.length === 0)
+    if (
+      !rowData ||
+      !data ||
+      !entityName ||
+      !db[entityName] ||
+      !uid ||
+      selectedRows.length === 0
+    )
       return;
 
     const isGrouping = group.length > 0;
@@ -549,6 +560,40 @@ export const DataTable = <T extends DashboardEntity>({
     };
   }, [setSelected]);
 
+  // const [findSearchValue, setFindSearchValue] = useState<string>("e");
+  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
+
+  // const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+  //   setFindSearchValue(event.target.value);
+  // }, []);
+
+  // const onKeyDown = useCallback(
+  //   (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //     if (event.key === "Enter") {
+  //       event.preventDefault();
+  //       const backwards = event.shiftKey;
+  //       if (backwards) {
+  //         previous();
+  //       } else {
+  //         next();
+  //       }
+  //     }
+  //   },
+  //   []
+  // );
+
+  // const next = useCallback(() => {
+  //   gridRef.current!.api.findNext();
+  // }, []);
+
+  // const previous = useCallback(() => {
+  //   gridRef.current!.api.findPrevious();
+  // }, []);
+
+  const pathname = usePathname();
+  const open = useDialogDrawerStore(({ open }) => open);
+  const openAddVineyard = () => open("form-drawer");
+
   return (
     <>
       {groupByButtons && groupByButtons.length > 0 && (
@@ -571,7 +616,31 @@ export const DataTable = <T extends DashboardEntity>({
       )}
 
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-        {filteredData?.length > 0 ? (
+        {/* <div className="flex items-center gap-2 mb-[16px]">
+          <TextField
+            size="small"
+            type="text"
+            defaultValue="e"
+            onInput={onInput}
+            onKeyDown={onKeyDown}
+          />
+          <Button
+            variant="outlined"
+            onClick={previous}
+            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
+          >
+            <NavigateBefore className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={next}
+            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
+          >
+            <NavigateNext className="w-4 h-4" />
+          </Button>
+          <span>{activeMatchNum}</span>
+        </div> */}
+        {filteredData && filteredData.length > 0 ? (
           <AgGridReact
             theme={myTheme}
             ref={gridRef}
@@ -612,9 +681,29 @@ export const DataTable = <T extends DashboardEntity>({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Typography color="textSecondary" className="">
-              Nothing to show.
-            </Typography>
+            {pathname.includes("vineyards") ? (
+              !filteredData ? (
+                <>Loading...</>
+              ) : filteredData.length === 0 ? (
+                <>
+                  <Button
+                    variant="text"
+                    startIcon={<Add />}
+                    onClick={openAddVineyard}
+                  >
+                    Add vineyard
+                  </Button>
+                </>
+              ) : (
+                <Typography color="textSecondary" className="">
+                  Nothing to show.
+                </Typography>
+              )
+            ) : (
+              <Typography color="textSecondary" className="">
+                Nothing to show.
+              </Typography>
+            )}
           </div>
         )}
       </div>
