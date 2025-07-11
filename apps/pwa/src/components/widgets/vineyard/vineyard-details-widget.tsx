@@ -250,7 +250,7 @@ export default function VineyardDetailsWidget({
               />
             </div>
 
-            <div className="grid grid-cols-4 gap-8 w-full p-2 justify-between">
+            <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between">
               <SimpleDataDisplay
                 label="Surface"
                 value={
@@ -308,6 +308,11 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Country"
                 value={localVineyard.info?.location?.country || "N/A"}
+              />
+
+              <CadastralDataDisplay
+                label="Identificatorul unic al parcelei viticole"
+                value={localVineyard.identificatorUnicParcela || []}
               />
             </div>
           </>
