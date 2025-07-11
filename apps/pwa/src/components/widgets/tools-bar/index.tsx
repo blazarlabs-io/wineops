@@ -32,6 +32,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { Search } from "lucide-react";
 import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { ButtonProps, ButtonType } from "./constants";
+import { Icon } from "@iconify/react";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
@@ -79,7 +80,10 @@ export default function ToolsBar(props: ToolsBarProps) {
   const { mode } = useColorScheme();
   const { updateOpen, updateType } = useQuickDrawer();
   const { selected } = useSelectedEntitiesStore();
-  const { setPinned, pinned } = usePinnedEntitiesStore();
+  const { pinned } = usePinnedEntitiesStore();
+
+  // const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
 
@@ -142,7 +146,8 @@ export default function ToolsBar(props: ToolsBarProps) {
     }
 
     setPinned(result, props.entityName);
-  }, [pinned, pinningState, selected]);
+    // setSelected([]);
+  }, [pinned, pinningState, props.entityName, selected, setPinned]);
 
   const handleOpenSearchBox = () => {
     setOpenSearchBox(!openSearchBox);
@@ -198,7 +203,12 @@ export default function ToolsBar(props: ToolsBarProps) {
                 }
               }}
             >
-              <PushPinOutlined className="" />
+              {/* <PushPinOutlined className="" /> */}
+              {pinningState === "pin" ? (
+                <Icon icon="octicon:pin-16" width="20" height="20" />
+              ) : (
+                <Icon icon="octicon:pin-slash-16" width="20" height="20" />
+              )}
             </IconButton>
           )}
 

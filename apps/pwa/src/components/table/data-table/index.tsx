@@ -12,19 +12,13 @@ import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import getUnusedGroups from "@/utils/get-unused-groups";
 import { nodesToEntities } from "@/utils/notes-to-entities";
-import {
-  Button,
-  Stack,
-  TextField,
-  Typography,
-  useColorScheme,
-} from "@mui/material";
+import { Button, Stack, Typography, useColorScheme } from "@mui/material";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
   ColDef,
   ExcelExportModule,
-  FindChangedEvent,
+  FindModule,
   GetDataPath,
   GetRowIdFunc,
   GridApi,
@@ -32,6 +26,7 @@ import {
   IsGroupOpenByDefaultParams,
   MasterDetailModule,
   ModuleRegistry,
+  PinnedRowModule,
   RefreshCellsParams,
   RichSelectModule,
   RowDragEndEvent,
@@ -39,6 +34,7 @@ import {
   RowDragModule,
   RowDragMoveEvent,
   RowGroupingModule,
+  RowSelectionModule,
   RowSelectionOptions,
   SelectionChangedEvent,
   SetFilterModule,
@@ -46,25 +42,13 @@ import {
   StatusBarModule,
   themeBalham,
   TreeDataModule,
-  FindModule,
   ValidationModule,
-  PinnedRowModule,
-  RowSelectionModule,
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { useSnackbar } from "notistack";
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
-import { useToolsbar } from "@/context/tools-bar";
-import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -106,6 +90,7 @@ export const DataTable = <T extends DashboardEntity>({
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
+  const { selected } = useSelectedEntitiesStore();
   const { pinned } = usePinnedEntitiesStore();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -118,7 +103,6 @@ export const DataTable = <T extends DashboardEntity>({
   // * Row Data
   const [rowData, setRowData] = useState<T[]>(data);
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
-  const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [potentialParent, setPotentialParent] = useState<any>(null);
   const enableRowPinning = true;
 
@@ -194,7 +178,6 @@ export const DataTable = <T extends DashboardEntity>({
       // * Selected items in an array format, Only list of items grouping is ignored
       const entities = nodesToEntities<T>(selectedNodes);
       setSelected(entities, entityName);
-      setSelectedRows(entities);
     },
     [entityName, setSelected]
   );
@@ -506,35 +489,51 @@ export const DataTable = <T extends DashboardEntity>({
     [autoGroupColumnDef?.headerName, groupedField]
   );
 
+  // TODO: FINISH PINNED GROUPS//////////////////////////////////////////////////
+
+  const pinSelectedGroup = (): any[] => {
+    // const api = gridRef.current?.api;
+    // const selectedNodes = selected;
+    const selectedNodes: IRowNode[] =
+      gridRef?.current?.api.getSelectedNodes() as IRowNode[];
+    // * Selected items in an array format, Only list of items grouping is ignored
+    const entities = nodesToEntities<T>(selectedNodes);
+
+    console.log("SELECTED NODES", selectedNodes, entities);
+
+    if (!selectedNodes) return [];
+
+    const pinnedRows: any[] = [];
+
+    for (const node of selectedNodes) {
+      if (node.data.group.length > 1) {
+        console.log("BELONGS TO A GROUP", node.data.name, node.data.group);
+        // TODO add group to pinnedRows
+      } else {
+        console.log("NOT A GROUP", node.data.name, node.data.group);
+      }
+    }
+
+    return pinnedRows;
+  };
+
   const isRowPinned = useCallback(
     (params: any) => {
       const data = params.data;
+      // const groupPinning = pinSelectedGroup();
       // console.log("\n\n****************************");
       // console.log("PINNED", params, pinned);
+      // console.log("GROUP PINNING", groupPinning);
       // console.log("ROW DATA", data);
       // console.log("SIBLING", typeof params?.pinnedSibling);
       // console.log("ALL ROWS", rowData);
-      // const result = [
-      //   ...pinned.filter((x) => !rowData.includes(x)),
-      //   ...rowData.filter((x) => !pinned.includes(x)),
-      // ];
-      // console.log("RESULT", result);
       // console.log("****************************\n\n");
       return pinned && pinned?.includes(data) ? "top" : undefined;
     },
     [pinned]
   );
 
-  // const onFindChanged = useCallback((event: FindChangedEvent) => {
-  //   const { api, activeMatch, totalMatches, findSearchValue } = event;
-
-  //   if (findSearchValue && totalMatches > 0 && !activeMatch) {
-  //     api.findNext();
-  //   }
-
-  //   const activeNum = activeMatch?.numOverall ?? "-";
-  //   setActiveMatchNum(`${activeNum}/${totalMatches}`);
-  // }, []);
+  // TODO ///////////////////////////////////////////////////////////
 
   useEffect(() => {
     handleGroupBy(groupedField);
@@ -549,36 +548,6 @@ export const DataTable = <T extends DashboardEntity>({
       setSelected([]);
     };
   }, [setSelected]);
-
-  // const [findSearchValue, setFindSearchValue] = useState<string>("e");
-  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
-
-  // const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-  //   setFindSearchValue(event.target.value);
-  // }, []);
-
-  // const onKeyDown = useCallback(
-  //   (event: React.KeyboardEvent<HTMLInputElement>) => {
-  //     if (event.key === "Enter") {
-  //       event.preventDefault();
-  //       const backwards = event.shiftKey;
-  //       if (backwards) {
-  //         previous();
-  //       } else {
-  //         next();
-  //       }
-  //     }
-  //   },
-  //   []
-  // );
-
-  // const next = useCallback(() => {
-  //   gridRef.current!.api.findNext();
-  // }, []);
-
-  // const previous = useCallback(() => {
-  //   gridRef.current!.api.findPrevious();
-  // }, []);
 
   return (
     <>
@@ -602,30 +571,6 @@ export const DataTable = <T extends DashboardEntity>({
       )}
 
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-        {/* <div className="flex items-center gap-2 mb-[16px]">
-          <TextField
-            size="small"
-            type="text"
-            defaultValue="e"
-            onInput={onInput}
-            onKeyDown={onKeyDown}
-          />
-          <Button
-            variant="outlined"
-            onClick={previous}
-            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
-          >
-            <NavigateBefore className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={next}
-            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
-          >
-            <NavigateNext className="w-4 h-4" />
-          </Button>
-          <span>{activeMatchNum}</span>
-        </div> */}
         {filteredData?.length > 0 ? (
           <AgGridReact
             theme={myTheme}
@@ -664,9 +609,6 @@ export const DataTable = <T extends DashboardEntity>({
             //  * ROW PINNING
             enableRowPinning={enableRowPinning}
             isRowPinned={isRowPinned}
-            // * SEARCH
-            // findSearchValue={findSearchValue}
-            // onFindChanged={onFindChanged}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
