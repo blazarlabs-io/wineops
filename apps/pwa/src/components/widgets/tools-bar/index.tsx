@@ -15,6 +15,8 @@ import {
   Deselect,
   Edit,
   FormatListBulleted,
+  NavigateBefore,
+  NavigateNext,
   PivotTableChartOutlined,
   PushPinOutlined,
   SelectAll,
@@ -33,9 +35,16 @@ import {
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Search } from "lucide-react";
-import { MouseEvent, useCallback, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { ButtonProps, ButtonType } from "./constants";
 import { Icon } from "@iconify/react";
+import { useToolsbar } from "@/context/tools-bar";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
@@ -84,6 +93,7 @@ export default function ToolsBar(props: ToolsBarProps) {
   const { updateOpen, updateType } = useQuickDrawer();
   const { selected } = useSelectedEntitiesStore();
   const { pinned } = usePinnedEntitiesStore();
+  const { updateSearchValue, gridRef, activeMatchNum } = useToolsbar();
 
   // const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
   const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
@@ -116,6 +126,30 @@ export default function ToolsBar(props: ToolsBarProps) {
 
   // const [findSearchValue, setFindSearchValue] = useState<string>("e");
   // const [activeMatchNum, setActiveMatchNum] = useState<string>();
+
+  const next = useCallback(() => {
+    gridRef?.api.findNext();
+  }, []);
+
+  const previous = useCallback(() => {
+    gridRef?.api.findPrevious();
+  }, []);
+
+  const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    updateSearchValue(event.target.value);
+  }, []);
+
+  const onKeyDown = useCallback((event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const backwards = event.shiftKey;
+      if (backwards) {
+        previous();
+      } else {
+        next();
+      }
+    }
+  }, []);
 
   const handleClickPivot = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -333,27 +367,27 @@ export default function ToolsBar(props: ToolsBarProps) {
               </IconButton>
               <TextField
                 size="small"
+                variant="outlined"
                 placeholder="Search"
+                type="text"
+                onInput={onInput}
+                onKeyDown={onKeyDown}
+                // value={searchTerm}
+                // onChange={(e) => setSearchTerm(e.target.value)}
+                className="pointer-events-auto"
                 style={{
                   display: openSearchBox ? "block" : "none",
                 }}
-                // value={searchValue}
-                // onChange={(e) => updateSearchValue(e.target.value)}
-                // InputProps={{
-                //   endAdornment: (
-                //     <InputAdornment position="end">
-                //       <IconButton
-                //         color="inherit"
-                //         aria-label="filter"
-                //         // onClick={() => updateSearchValue("")}
-                //         className=""
-                //       >
-                //         <Clear />
-                //       </IconButton>
-                //     </InputAdornment>
-                //   ),
-                // }}
               />
+              <IconButton onClick={previous}>
+                <NavigateBefore />
+              </IconButton>
+              <IconButton onClick={next}>
+                <NavigateNext />
+              </IconButton>
+              <span style={{ color: "var(--mui-palette-text-secondary)" }}>
+                {activeMatchNum}
+              </span>
             </div>
           </Box>
           <div

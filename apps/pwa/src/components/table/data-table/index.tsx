@@ -20,6 +20,7 @@ import {
   ClientSideRowModelModule,
   ColDef,
   ExcelExportModule,
+  FindChangedEvent,
   FindModule,
   GetDataPath,
   GetRowIdFunc,
@@ -43,6 +44,7 @@ import {
   SideBarModule,
   StatusBarModule,
   themeBalham,
+  themeMaterial,
   TreeDataModule,
   ValidationModule,
 } from "ag-grid-enterprise";
@@ -52,6 +54,7 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
+import { useToolsbar } from "@/context/tools-bar";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -96,6 +99,8 @@ export const DataTable = <T extends DashboardEntity>({
   const { selected } = useSelectedEntitiesStore();
   const { pinned } = usePinnedEntitiesStore();
   const { enqueueSnackbar } = useSnackbar();
+  const { updateActiveMatchNum, findSearchValue, updateGridRef } =
+    useToolsbar();
 
   // * Main Data Grid Ref
   const gridRef = useRef<AgGridReact>(null);
@@ -116,7 +121,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   // * Theming
   const themeClass = isDarkMode ? `${gridTheme}-dark` : gridTheme;
-  const myTheme = themeBalham
+  const myTheme = themeMaterial
     .withParams({
       fontFamily: "lato",
       headerFontFamily: "Lato",
@@ -137,6 +142,7 @@ export const DataTable = <T extends DashboardEntity>({
         foregroundColor: "#FFFFFFCC",
         pinnedRowBackgroundColor: "#121212",
         browserColorScheme: "dark",
+        headerBackgroundColor: "#212121aa",
       },
       "dark"
     )
@@ -145,6 +151,7 @@ export const DataTable = <T extends DashboardEntity>({
         backgroundColor: "#FFFFFFCC",
         foregroundColor: "#361008CC",
         browserColorScheme: "light",
+        headerBackgroundColor: "#FFFFFFCC",
       },
       "light"
     );
@@ -501,6 +508,11 @@ export const DataTable = <T extends DashboardEntity>({
 
   // TODO: FINISH PINNED GROUPS//////////////////////////////////////////////////
 
+  useEffect(() => {
+    if (!gridRef.current) return;
+    updateGridRef(gridRef.current);
+  }, [gridRef]);
+
   const pinSelectedGroup = (): any[] => {
     // const api = gridRef.current?.api;
     // const selectedNodes = selected;
@@ -544,6 +556,16 @@ export const DataTable = <T extends DashboardEntity>({
   );
 
   // TODO ///////////////////////////////////////////////////////////
+
+  const onFindChanged = useCallback((event: FindChangedEvent) => {
+    const { activeMatch, totalMatches, findSearchValue } = event;
+    updateActiveMatchNum(
+      findSearchValue?.length
+        ? `${activeMatch?.numOverall ?? 0}/${totalMatches}`
+        : ""
+    );
+    console.log("findChanged", event);
+  }, []);
 
   useEffect(() => {
     handleGroupBy(groupedField);
@@ -647,6 +669,9 @@ export const DataTable = <T extends DashboardEntity>({
             //  * ROW PINNING
             enableRowPinning={enableRowPinning}
             isRowPinned={isRowPinned}
+            // * SEARCH
+            findSearchValue={findSearchValue}
+            onFindChanged={onFindChanged}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
