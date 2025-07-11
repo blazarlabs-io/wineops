@@ -30,7 +30,7 @@ import {
 } from "react";
 
 interface VineyardContextType {
-  vineyards: Vineyard[];
+  vineyards?: Vineyard[];
   actions: VineyardActions;
   labReports: LabReport[];
   notes: Note[];
@@ -59,7 +59,7 @@ interface IAuthProvider {
 export const VineyardProvider = ({ children }: IAuthProvider) => {
   const { user } = useAuth();
 
-  const [vineyards, setVineyards] = useState<Vineyard[]>([]);
+  const [vineyards, setVineyards] = useState<Vineyard[]>();
 
   const [labReports, setLabReports] = useState<LabReport[]>([]);
   const [actions] = useState<VineyardActions>({
@@ -194,7 +194,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
       unsubLabReports();
       unsubNotes();
       unsubTasks();
-      setVineyards([]);
+      setVineyards(undefined);
     };
   }, [user]);
 

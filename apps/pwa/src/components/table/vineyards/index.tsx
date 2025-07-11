@@ -9,11 +9,11 @@ import { GroupCellRenderer } from "./cell-renderers/group-cell-renderer";
 import { vineyardColumns } from "./columns";
 
 export default function VineyardsTable() {
-  const { vineyards } = useVineyard();
+  const { vineyards = [] } = useVineyard();
 
   const normalizedVineyards = useMemo(
     () =>
-      vineyards.map((vineyard) => ({
+      vineyards?.map((vineyard) => ({
         ...vineyard,
         ...(vineyard.rowType !== "group" && {
           forcastedYield: {

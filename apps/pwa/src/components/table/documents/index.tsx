@@ -10,9 +10,15 @@ import DocumentsTableToolbar from "./tool-bar";
 
 export type DocumentProps = {
   docs: any;
+  uploadedDocuments?: any[];
+  onDocumentUpload?: (data: any) => Promise<void>;
 };
 
-export default function DocumentsTable({ docs }: DocumentProps) {
+export default function DocumentsTable({
+  docs,
+  uploadedDocuments,
+  onDocumentUpload,
+}: DocumentProps) {
   const { sortedDocs } = useSortDocuments(docs);
 
   const columns: GridColDef[] = useMemo(
@@ -26,7 +32,14 @@ export default function DocumentsTable({ docs }: DocumentProps) {
         <DataGrid
           rows={sortedDocs}
           columns={columns}
-          slots={{ toolbar: DocumentsTableToolbar }}
+          slots={{
+            toolbar: () => (
+              <DocumentsTableToolbar
+                uploadedDocuments={uploadedDocuments}
+                onDocumentUpload={onDocumentUpload}
+              />
+            ),
+          }}
           slotProps={{
             filterPanel: {
               sx: {},

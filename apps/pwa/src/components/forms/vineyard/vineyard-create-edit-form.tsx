@@ -77,7 +77,7 @@ export default function VineyardForm({
 
   const formType: FormMode = selected.length > 0 ? "edit" : "create";
 
-  const { vineyards } = useVineyard();
+  const { vineyards = [] } = useVineyard();
 
   const {
     register,

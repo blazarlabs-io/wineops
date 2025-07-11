@@ -67,7 +67,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
 
   const report = REPORTS.find(({ id }) => id === 1)!;
 
-  const { vineyards } = useVineyard();
+  const { vineyards = [] } = useVineyard();
   const { grapes } = useGrape();
   const { teamMembers } = useWinery();
 

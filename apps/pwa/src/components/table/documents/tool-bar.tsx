@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import UploadDocumentsDialog from "@/components/dialogs/upload-documents-dialog";
 import { Backup, FilterList } from "@mui/icons-material";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -40,7 +41,15 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   );
 }
 
-export default function DocumentsTableToolbar() {
+type DocumentsTableToolbarProps = {
+  uploadedDocuments?: any[];
+  onDocumentUpload?: (data: any) => Promise<void>;
+};
+
+export default function DocumentsTableToolbar({
+  uploadedDocuments,
+  onDocumentUpload,
+}: DocumentsTableToolbarProps) {
   const [openUploadDialog, setOpenUploadDialog] = useState<boolean>(false);
 
   return (
@@ -50,6 +59,8 @@ export default function DocumentsTableToolbar() {
         subject=""
         uid=""
         onClose={() => setOpenUploadDialog(false)}
+        uploadedDocuments={uploadedDocuments}
+        onDocumentUpload={onDocumentUpload}
       />
       <Toolbar
         className="gap-2! p-2! border-t-[1px]"
