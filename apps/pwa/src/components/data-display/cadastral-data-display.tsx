@@ -19,13 +19,18 @@ export default function CadastralDataDisplay({
           open={openCadastrals}
           onClose={() => setOpenCadastrals(false)}
           data={value}
+          title={label !== "Cadastral Number" ? label : undefined}
         />
       )}
       <Card
         variant="outlined"
         className="min-w-[168px] flex flex-col gap-1 w-full p-2"
       >
-        <Typography variant="body2" color="textDisabled">
+        <Typography
+          variant="body2"
+          color="textDisabled"
+          className="whitespace-normal"
+        >
           {label}
         </Typography>
         {value && Array.isArray(value) && value.length > 0 ? (
@@ -43,7 +48,8 @@ export default function CadastralDataDisplay({
               }}
               onClick={() => setOpenCadastrals(true)}
             >
-              {value?.length} cadastral numbers
+              {value?.length}{" "}
+              {label === "Cadastral Number" ? "cadastral numbers" : label === "Identificatorul unic al parcelei viticole" ? "Identificatori" : ""}
             </Button>
           )
         ) : (

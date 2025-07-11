@@ -3,6 +3,7 @@ import UploadDocumentsDialog from "@/components/dialogs/upload-documents-dialog"
 import { Backup, FilterList } from "@mui/icons-material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "@mui/icons-material/Search";
+import { useColorScheme } from "@mui/material/styles";
 import {
   FilterPanelTrigger,
   QuickFilter,
@@ -17,12 +18,13 @@ import * as React from "react";
 import { useState } from "react";
 
 function Button(props: React.HTMLAttributes<HTMLButtonElement>) {
+  const { mode } = useColorScheme();
   return (
     <button
       type="button"
       {...props}
       className={clsx(
-        "flex h-9 items-center justify-center rounded border border-neutral-200 cursor-pointer dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 px-2.5 text-sm font-bold text-neutral-700 dark:text-neutral-200 whitespace-nowrap select-none hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 active:bg-neutral-100 dark:active:bg-neutral-700",
+        `${mode === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:active:bg-neutral-700" : ""} flex h-9 items-center justify-center rounded border border-neutral-200 cursor-pointer bg-neutral-50 px-2.5 text-sm font-bold text-neutral-700 whitespace-nowrap select-none hover:bg-neutral-100 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 active:bg-neutral-100`,
         props.className
       )}
     />
@@ -30,11 +32,12 @@ function Button(props: React.HTMLAttributes<HTMLButtonElement>) {
 }
 
 function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  const { mode } = useColorScheme();
   return (
     <input
       {...props}
       className={clsx(
-        "h-9 w-full rounded border border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 px-2.5 text-base text-neutral-900 dark:text-neutral-200 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600",
+        `${mode === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200" : ""} h-9 w-full rounded border border-neutral-200 px-2.5 text-base text-neutral-900 focus:-outline-offset-2 focus:outline-blue-600`,
         props.className
       )}
     />

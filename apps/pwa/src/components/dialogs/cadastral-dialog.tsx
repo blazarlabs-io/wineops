@@ -9,17 +9,20 @@ import {
   IconButton,
 } from "@mui/material";
 import { Grape } from "lucide-react";
+import { ReactNode } from "react";
 
 export interface CadastralDialogProps {
   open: boolean;
   onClose: () => void;
   data: string[];
+  title?: ReactNode;
 }
 
 export default function CadastralDialog({
   open,
   onClose,
   data,
+  title = "Cadastrals",
 }: CadastralDialogProps) {
   return (
     <Dialog open={open} onClose={onClose}>
@@ -41,10 +44,10 @@ export default function CadastralDialog({
         className="flex items-center gap-2"
       >
         <Grape size={18} color={"var(--mui-palette-primary-main)"} />
-        Cadastrals
+        {title}
       </DialogTitle>
 
-      <DialogContent className="min-w-[400px]">
+      <DialogContent className="min-w-[440px]">
         <div
           className="border p-4 rounded-sm"
           style={{
