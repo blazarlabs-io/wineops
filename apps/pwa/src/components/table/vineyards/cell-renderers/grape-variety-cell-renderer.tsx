@@ -4,14 +4,39 @@ import { Box, Button, Tooltip, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useEffect, useMemo, useState, type FunctionComponent } from "react";
 
-export const GrapeVarietyCellRenderer: FunctionComponent<
-  CustomCellRendererProps
-> = ({ value }) => {
-  const uniqueValues = useMemo(() => {
-    return value && Array.isArray(value)
-      ? [...new Set(value.flat(Infinity))]
+function getParts({
+  api,
+  value,
+  valueFormatted,
+  column,
+  node,
+}: CustomCellRendererProps) {
+  const cellValue = valueFormatted ?? value?.toString();
+  if (cellValue == null || cellValue === "") {
+    return [];
+  }
+  const cellDisplayValue = cellValue; //.replace(",", "\n");
+  const parts =
+    column != null
+      ? api.findGetParts({
+          value: cellDisplayValue,
+          node,
+          column,
+        })
       : [];
-  }, [value]);
+  console.log("\n\n############################");
+  console.log("CELL VALUE", cellDisplayValue);
+  console.log("PARTS", parts);
+  console.log("############################\n\n");
+  return parts.length ? parts : [{ value: cellDisplayValue }];
+}
+
+export const GrapeVarietyCellRenderer = (params: CustomCellRendererProps) => {
+  const uniqueValues = useMemo(() => {
+    return params.value && Array.isArray(params.value)
+      ? [...new Set(params.value.flat(Infinity))]
+      : [];
+  }, [params]);
 
   const [tooltipText, setTooltipText] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
@@ -47,6 +72,26 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
         data={uniqueValues}
         onClose={handleClose}
       />
+      {/* <div className="">
+        {getParts(params).map((part, index) => {
+          if ("match" in part) {
+            console.log("PART", part);
+            const { value: partValue, match, activeMatch } = part;
+            return (
+              match && (
+                <mark
+                  key={index}
+                  className={`ag-find-match${activeMatch ? " ag-find-active-match" : ""} debug-red`}
+                >
+                  {partValue}
+                </mark>
+              )
+            );
+          } else {
+            return part.value;
+          }
+        })}
+      </div> */}
       {uniqueValues.length > 0 ? (
         <div
           style={{
@@ -107,7 +152,7 @@ export const GrapeVarietyCellRenderer: FunctionComponent<
             height: ROW_HEIGHT_DEFAULT,
           }}
         >
-          <p className="leading-[1] truncate">{value}</p>
+          <p className="leading-[1] truncate">{params.value}</p>
         </Box>
       )}
     </Box>

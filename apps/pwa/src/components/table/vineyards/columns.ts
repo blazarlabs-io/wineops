@@ -6,6 +6,7 @@ import { LabDataCellRenderer } from "./cell-renderers/lab-data-cell-renderer";
 import { NotesCellRenderer } from "./cell-renderers/notes-cell-renderer";
 import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";
 import { StatusCellRenderer } from "./cell-renderers/status-cell-renderer";
+import { TestRenderer } from "./cell-renderers/test-renderer";
 
 export const vineyardColumns: ColDef[] = [
   {
@@ -27,7 +28,7 @@ export const vineyardColumns: ColDef[] = [
   {
     headerName: "Quantity Overview",
     field: "forcastedYield",
-    minWidth: 240,
+    minWidth: 264,
     flex: 1,
     cellRenderer: QuantityCellRenderer,
     // filter: "agSetColumnFilter",

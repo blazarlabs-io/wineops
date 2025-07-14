@@ -10,10 +10,13 @@ import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import {
   Add,
+  Clear,
   DeleteOutline,
   Deselect,
   Edit,
   FormatListBulleted,
+  NavigateBefore,
+  NavigateNext,
   PivotTableChartOutlined,
   PushPinOutlined,
   SelectAll,
@@ -23,15 +26,27 @@ import {
 import {
   Box,
   IconButton,
+  InputAdornment,
   ListItemText,
   Stack,
+  TextField,
+  Typography,
   useColorScheme,
 } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Search } from "lucide-react";
-import { MouseEvent, useCallback, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { ButtonProps, ButtonType } from "./constants";
+import { Icon } from "@iconify/react";
+import { useToolsbar } from "@/context/tools-bar";
+import { on } from "events";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
@@ -79,7 +94,12 @@ export default function ToolsBar(props: ToolsBarProps) {
   const { mode } = useColorScheme();
   const { updateOpen, updateType } = useQuickDrawer();
   const { selected } = useSelectedEntitiesStore();
-  const { setPinned, pinned } = usePinnedEntitiesStore();
+  const { pinned } = usePinnedEntitiesStore();
+  const { updateSearchValue, activeMatchNum, onNext, onPrevious } =
+    useToolsbar();
+
+  // const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
 
@@ -109,6 +129,18 @@ export default function ToolsBar(props: ToolsBarProps) {
 
   // const [findSearchValue, setFindSearchValue] = useState<string>("e");
   // const [activeMatchNum, setActiveMatchNum] = useState<string>();
+
+  const next = useCallback(() => {
+    onNext();
+  }, [onNext]);
+
+  const previous = useCallback(() => {
+    onPrevious();
+  }, [onPrevious]);
+
+  const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    updateSearchValue(event.target.value);
+  }, []);
 
   const handleClickPivot = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -142,7 +174,8 @@ export default function ToolsBar(props: ToolsBarProps) {
     }
 
     setPinned(result, props.entityName);
-  }, [pinned, pinningState, selected]);
+    // setSelected([]);
+  }, [pinned, pinningState, props.entityName, selected, setPinned]);
 
   const handleOpenSearchBox = () => {
     setOpenSearchBox(!openSearchBox);
@@ -198,7 +231,12 @@ export default function ToolsBar(props: ToolsBarProps) {
                 }
               }}
             >
-              <PushPinOutlined className="" />
+              {/* <PushPinOutlined className="" /> */}
+              {pinningState === "pin" ? (
+                <Icon icon="octicon:pin-16" width="20" height="20" />
+              ) : (
+                <Icon icon="octicon:pin-slash-16" width="20" height="20" />
+              )}
             </IconButton>
           )}
 
@@ -291,12 +329,12 @@ export default function ToolsBar(props: ToolsBarProps) {
             alignItems="center"
             justifyContent="flex-end"
           >
-            <IconButton
+            {/*  <IconButton
               color="inherit"
               aria-label="filter"
-              onClick={() => {}}
+              onClick={handleFilters}
               className="ml-auto"
-              disabled
+              disabled={false}
             >
               <Tune />
             </IconButton>
@@ -308,8 +346,8 @@ export default function ToolsBar(props: ToolsBarProps) {
               disabled
             >
               <SwapVert />
-            </IconButton>
-            <div className="flex gap-2 items-center">
+            </IconButton> */}
+            <div className="flex gap-2 items-center w-full">
               <IconButton
                 color="inherit"
                 aria-label="filter"
@@ -318,6 +356,25 @@ export default function ToolsBar(props: ToolsBarProps) {
               >
                 <Search />
               </IconButton>
+              <div
+                className="flex gap-2 items-center w-full min-w-fit mr-4"
+                style={{
+                  display: openSearchBox ? "flex" : "none",
+                }}
+              >
+                <TextField size="small" type="text" onInput={onInput} />
+                <div className="flex items-center">
+                  <IconButton onClick={previous}>
+                    <NavigateBefore />
+                  </IconButton>
+                  <IconButton onClick={next}>
+                    <NavigateNext />
+                  </IconButton>
+                </div>
+                <Typography variant="body2" color="textDisabled">
+                  {activeMatchNum || "0/0"}
+                </Typography>
+              </div>
             </div>
           </Box>
           <div

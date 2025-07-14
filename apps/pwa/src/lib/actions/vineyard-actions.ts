@@ -293,3 +293,27 @@ export const vineyardIrrigationAction = async (
     enqueueSnackbar("Vineyard status update failed", { variant: "error" });
   }
 };
+
+export const vineyardPestInspectionAction = async (
+  uid: string,
+  actionData: VineyardGlobalAction,
+  vineyard: Vineyard
+) => {
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+};
+
+export const vineyardVinePruningAction = async (
+  uid: string,
+  actionData: VineyardGlobalAction,
+  vineyard: Vineyard
+) => {
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+};

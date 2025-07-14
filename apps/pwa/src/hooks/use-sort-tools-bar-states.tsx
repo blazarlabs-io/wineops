@@ -43,12 +43,6 @@ export const useSortToolsBarStates = () => {
     } else {
       setPinningState(null);
     }
-
-    console.log(
-      "SELECTED PINNED COUNT",
-      selectedPinnedCount,
-      selectedUnpinnedCount
-    );
   }, [selected]);
 
   return {

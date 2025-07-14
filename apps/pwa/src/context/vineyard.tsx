@@ -3,10 +3,14 @@
 import VineyardHarvestActionFormComposer from "@/components/forms/actions/vineyard/vineyard-harvest-action-form-composer";
 import VineyardIrrigationActionFormComposer from "@/components/forms/actions/vineyard/vineyard-irrigation-action-form-composer";
 import VineyardLabActionFormComposer from "@/components/forms/actions/vineyard/vineyard-lab-action-form-composer";
+import VineyardPestInspectionActionFormComposer from "@/components/forms/actions/vineyard/vineyard-pest-inspection-action-form-composer";
+import VinePruningActionFormComposer from "@/components/forms/actions/vineyard/vineyard-vine-pruning-action-form-composer";
 import {
   vineyardHarvestAction,
   vineyardIrrigationAction,
   vineyardLabAction,
+  vineyardPestInspectionAction,
+  vineyardVinePruningAction,
 } from "@/lib/actions/vineyard-actions";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
@@ -77,6 +81,16 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
       exec: vineyardIrrigationAction,
       form: VineyardIrrigationActionFormComposer,
       icon: "material-symbols:water-drop",
+    },
+    "pest-inspection": {
+      exec: vineyardPestInspectionAction,
+      form: VineyardPestInspectionActionFormComposer,
+      icon: "material-symbols:pest-control",
+    },
+    "vine-pruning": {
+      exec: vineyardVinePruningAction,
+      form: VinePruningActionFormComposer,
+      icon: "game-icons:gardening-shears",
     },
   });
   const [notes, setNotes] = useState<Note[]>([]);

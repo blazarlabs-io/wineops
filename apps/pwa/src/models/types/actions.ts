@@ -29,6 +29,8 @@ export type VineyardActions = {
   harvest: VineyardSingleAction;
   "lab-report": VineyardSingleAction;
   irrigation: VineyardSingleAction;
+  "pest-inspection": VineyardSingleAction;
+  "vine-pruning": VineyardSingleAction;
 };
 
 export type ActionIcons = {
@@ -164,6 +166,7 @@ export interface VineyardGlobalAction {
   }[];
   equipment?: ActionRelation[];
   labDataToDeleteIds?: string[];
+  aditionalInformation?: string;
 }
 
 export const MUST_ACTION_TYPES = ["must-decant"] as const;

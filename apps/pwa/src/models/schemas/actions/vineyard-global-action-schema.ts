@@ -32,4 +32,5 @@ export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
       url: Joi.string().optional().allow(""),
     })
     .optional(),
+  aditionalInformation: Joi.string().optional().allow(""),
 });
