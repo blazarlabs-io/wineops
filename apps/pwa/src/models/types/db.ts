@@ -28,7 +28,7 @@ export const EntitiesNames: Record<EntityName, string[]> = {
   task: ["task", "tasks"],
   team: ["team member", "team members"],
   anexa14: ["report", "reports"],
-  "labReport": ["lab report", "lab reports"],
+  labReport: ["lab report", "lab reports"],
 } as const;
 
 export const WineColor = {
@@ -332,6 +332,7 @@ export type Vineyard = Entity & {
   actions?: ActionRelation[];
   labData?: ActionRelation[];
   identificatorUnicParcela?: string[];
+  exists?: boolean;
 };
 
 export type Winery = {

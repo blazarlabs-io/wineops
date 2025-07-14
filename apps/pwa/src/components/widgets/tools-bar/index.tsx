@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { useQuickDrawer } from "@/context/quick-drawer";
+import { useToolsbar } from "@/context/tools-bar";
 import { useSortToolsBarStates } from "@/hooks/use-sort-tools-bar-states";
 import { GroupBy } from "@/models/types/dashboard";
 import { EntityName, QuickDrawerType } from "@/models/types/db";
@@ -8,9 +9,9 @@ import { useDialogDrawerStore } from "@/store/dialogs";
 import { useGridStore } from "@/store/grid";
 import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { Icon } from "@iconify/react";
 import {
   Add,
-  Clear,
   DeleteOutline,
   Deselect,
   Edit,
@@ -18,15 +19,11 @@ import {
   NavigateBefore,
   NavigateNext,
   PivotTableChartOutlined,
-  PushPinOutlined,
   SelectAll,
-  SwapVert,
-  Tune,
 } from "@mui/icons-material";
 import {
   Box,
   IconButton,
-  InputAdornment,
   ListItemText,
   Stack,
   TextField,
@@ -44,9 +41,6 @@ import {
   useState,
 } from "react";
 import { ButtonProps, ButtonType } from "./constants";
-import { Icon } from "@iconify/react";
-import { useToolsbar } from "@/context/tools-bar";
-import { on } from "events";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
