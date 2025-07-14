@@ -17,7 +17,7 @@ apps/pwa/.env.development
 apps/pwa/.env.production
 
 # Service accounts
-apps/pwa/src/lib/firebase/service-accounts/*.json
+apps/pwa/src/lib/firebase/service-accounts/womp-dev.json
 
 # Testing
 coverage
