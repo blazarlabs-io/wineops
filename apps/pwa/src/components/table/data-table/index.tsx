@@ -2,6 +2,7 @@
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
+import { useToolsbar } from "@/context/tools-bar";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
@@ -13,8 +14,20 @@ import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import getUnusedGroups from "@/utils/get-unused-groups";
 import { nodesToEntities } from "@/utils/notes-to-entities";
-import { Add } from "@mui/icons-material";
-import { Button, Stack, Typography, useColorScheme } from "@mui/material";
+import {
+  Add,
+  ConstructionOutlined,
+  NavigateBefore,
+  NavigateNext,
+} from "@mui/icons-material";
+import {
+  Button,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+  useColorScheme,
+} from "@mui/material";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
@@ -43,7 +56,6 @@ import {
   SetFilterModule,
   SideBarModule,
   StatusBarModule,
-  themeBalham,
   themeMaterial,
   TreeDataModule,
   ValidationModule,
@@ -51,10 +63,9 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { usePathname } from "next/navigation";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
-import { useToolsbar } from "@/context/tools-bar";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -96,14 +107,16 @@ export const DataTable = <T extends DashboardEntity>({
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
-  const { selected } = useSelectedEntitiesStore();
   const { pinned } = usePinnedEntitiesStore();
   const { enqueueSnackbar } = useSnackbar();
-  const { updateActiveMatchNum, findSearchValue, updateGridRef } =
-    useToolsbar();
+  const { gridRef, updateActiveMatchNum, findSearchValue } = useToolsbar();
+
+  // const [findSearchValue, setFindSearchValue] = useState<string>();
+
+  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
 
   // * Main Data Grid Ref
-  const gridRef = useRef<AgGridReact>(null);
+  // const gridRef = useRef<AgGridReact>(null);
 
   // * Column Definitions
   const colDefs = useMemo(() => columns, [columns]);
@@ -112,6 +125,7 @@ export const DataTable = <T extends DashboardEntity>({
   const [rowData, setRowData] = useState<T[]>();
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [potentialParent, setPotentialParent] = useState<any>(null);
+  const [dragOverRowId, setDragOverRowId] = useState<string | null>(null);
   const enableRowPinning = true;
 
   // * Get Data Path ["group", "item name"]
@@ -133,16 +147,18 @@ export const DataTable = <T extends DashboardEntity>({
       wrapperBorderRadius: "8px",
       rowHeight: rowHeight,
       pinnedRowBorder: {
-        width: 4,
+        width: 2,
       },
     })
     .withParams(
       {
         backgroundColor: "#121212",
         foregroundColor: "#FFFFFFCC",
-        pinnedRowBackgroundColor: "#121212",
+        // pinnedRowBackgroundColor: "#121212",
+        selectedRowBackgroundColor: "#99C3FF22",
         browserColorScheme: "dark",
         headerBackgroundColor: "#212121aa",
+        checkboxCheckedBackgroundColor: "#99C3FF",
       },
       "dark"
     )
@@ -150,8 +166,11 @@ export const DataTable = <T extends DashboardEntity>({
       {
         backgroundColor: "#FFFFFFCC",
         foregroundColor: "#361008CC",
+        // pinnedRowBackgroundColor: "#FFFFFFCC",
+        selectedRowBackgroundColor: "#99C3FF22",
         browserColorScheme: "light",
         headerBackgroundColor: "#FFFFFFCC",
+        checkboxCheckedBackgroundColor: "#1565C0",
       },
       "light"
     );
@@ -160,6 +179,13 @@ export const DataTable = <T extends DashboardEntity>({
   const autoGroupColumnDef = useMemo<ColDef>(() => {
     return { ...groupColumnDef };
   }, [groupColumnDef]);
+
+  const selectionColumnDef = useMemo<ColDef>(() => {
+    return {
+      pinned: "left",
+      width: 72,
+    };
+  }, []);
 
   // * Row Selection Options
   const rowSelection = useMemo<RowSelectionOptions>(() => {
@@ -173,11 +199,13 @@ export const DataTable = <T extends DashboardEntity>({
   // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
+      document.documentElement.classList.add("dark");
       document.body.dataset.agThemeMode = "dark";
     } else {
+      document.documentElement.classList.remove("dark");
       document.body.dataset.agThemeMode = "light";
     }
-  }, [isDarkMode]);
+  }, [gridTheme, isDarkMode]);
 
   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
   // const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
@@ -392,6 +420,7 @@ export const DataTable = <T extends DashboardEntity>({
   // * DRAGGING EVENTS
   const onRowDragMove = useCallback(
     (event: RowDragMoveEvent) => {
+      setDragOverRowId(event.node.id as string);
       setPotentialParentForNode(event.api, event.overNode);
     },
     [setPotentialParentForNode]
@@ -406,6 +435,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   const onRowDragEnd = useCallback(
     async (event: RowDragEndEvent) => {
+      setDragOverRowId(null);
       const target = event.overNode?.data;
       if (!potentialParent && target) {
         return; // no move
@@ -452,6 +482,7 @@ export const DataTable = <T extends DashboardEntity>({
     [
       enqueueSnackbar,
       entityName,
+      gridRef,
       potentialParent,
       setPotentialParentForNode,
       setSelected,
@@ -482,7 +513,8 @@ export const DataTable = <T extends DashboardEntity>({
       const allCols = api.getColumns() || [];
 
       const columnsToToggleVisibility = allCols.filter(
-        (col) => col?.getColDef()?.headerName === autoGroupColumnDef?.headerName
+        (col: any) =>
+          col?.getColDef()?.headerName === autoGroupColumnDef?.headerName
       );
 
       if (columnsToToggleVisibility.length > 0) {
@@ -506,57 +538,15 @@ export const DataTable = <T extends DashboardEntity>({
     [autoGroupColumnDef?.headerName, groupedField]
   );
 
-  // TODO: FINISH PINNED GROUPS//////////////////////////////////////////////////
-
-  useEffect(() => {
-    if (!gridRef.current) return;
-    updateGridRef(gridRef.current);
-  }, [gridRef]);
-
-  const pinSelectedGroup = (): any[] => {
-    // const api = gridRef.current?.api;
-    // const selectedNodes = selected;
-    const selectedNodes: IRowNode[] =
-      gridRef?.current?.api.getSelectedNodes() as IRowNode[];
-    // * Selected items in an array format, Only list of items grouping is ignored
-    const entities = nodesToEntities<T>(selectedNodes);
-
-    console.log("SELECTED NODES", selectedNodes, entities);
-
-    if (!selectedNodes) return [];
-
-    const pinnedRows: any[] = [];
-
-    for (const node of selectedNodes) {
-      if (node.data.group.length > 1) {
-        console.log("BELONGS TO A GROUP", node.data.name, node.data.group);
-        // TODO add group to pinnedRows
-      } else {
-        console.log("NOT A GROUP", node.data.name, node.data.group);
-      }
-    }
-
-    return pinnedRows;
-  };
-
   const isRowPinned = useCallback(
     (params: any) => {
       const data = params.data;
-      // const groupPinning = pinSelectedGroup();
-      // console.log("\n\n****************************");
-      // console.log("PINNED", params, pinned);
-      // console.log("GROUP PINNING", groupPinning);
-      // console.log("ROW DATA", data);
-      // console.log("SIBLING", typeof params?.pinnedSibling);
-      // console.log("ALL ROWS", rowData);
-      // console.log("****************************\n\n");
       return pinned && pinned?.includes(data) ? "top" : undefined;
     },
     [pinned]
   );
 
-  // TODO ///////////////////////////////////////////////////////////
-
+  // ? /////////////////////////////////////////////////
   const onFindChanged = useCallback((event: FindChangedEvent) => {
     const { activeMatch, totalMatches, findSearchValue } = event;
     updateActiveMatchNum(
@@ -564,8 +554,13 @@ export const DataTable = <T extends DashboardEntity>({
         ? `${activeMatch?.numOverall ?? 0}/${totalMatches}`
         : ""
     );
-    console.log("findChanged", event);
+    // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    // console.log("activeMatch", activeMatch);
+    // console.log("totalMatches", totalMatches);
+    // console.log("findSearchValue", findSearchValue);
+    // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
   }, []);
+  // TODO ///////////////////////////////////////////////////////////
 
   useEffect(() => {
     handleGroupBy(groupedField);
@@ -607,30 +602,6 @@ export const DataTable = <T extends DashboardEntity>({
       )}
 
       <div className={`${themeClass} w-full h-[calc(100vh-180px)]`}>
-        {/* <div className="flex items-center gap-2 mb-[16px]">
-          <TextField
-            size="small"
-            type="text"
-            defaultValue="e"
-            onInput={onInput}
-            onKeyDown={onKeyDown}
-          />
-          <Button
-            variant="outlined"
-            onClick={previous}
-            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
-          >
-            <NavigateBefore className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={next}
-            className="min-w-[40px] min-h-[40px] max-w-[40px] max-h-[40px]"
-          >
-            <NavigateNext className="w-4 h-4" />
-          </Button>
-          <span>{activeMatchNum}</span>
-        </div> */}
         {filteredData && filteredData.length > 0 ? (
           <AgGridReact
             theme={myTheme}
@@ -669,9 +640,19 @@ export const DataTable = <T extends DashboardEntity>({
             //  * ROW PINNING
             enableRowPinning={enableRowPinning}
             isRowPinned={isRowPinned}
+            rowClassRules={{
+              "pinned-row": (params) => !!params.node.rowPinned,
+              "row-dragging": (params) => {
+                return !!(params.node as any)?.dragging;
+              },
+              "cell-drag-over": (params) => params.node.id === dragOverRowId,
+            }}
             // * SEARCH
             findSearchValue={findSearchValue}
             onFindChanged={onFindChanged}
+            // * OTHER
+            enableCellTextSelection={true}
+            selectionColumnDef={selectionColumnDef}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

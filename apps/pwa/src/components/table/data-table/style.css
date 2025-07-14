@@ -2,14 +2,29 @@
   background-color: var(--ag-accent-color);
 }
 
-.ag-row.ag-row-pinned {
-  background-color: #25262c !important;
+/* Default (light mode) */
+.pinned-row {
+  background-color: #f6f6ff !important;
+}
+
+/* Dark mode override */
+html.dark .pinned-row {
+  background-color: #1c1d24 !important;
+}
+
+.row-dragging {
+  background-color: #2fbe42 !important;
+}
+
+html.dark .row-dragging {
+  background-color: #374e77 !important;
+}
+
+.cell-drag-over {
+  background-color: #ffe58f !important;
+  transition: background-color 0.2s;
 }
 
 .ag-row.ag-row-pinned.ag-row-selected {
   background-color: transparent !important;
 }
-
-/* .ag-row.ag-row-last {
-  background-color: #cc333344;
-} */

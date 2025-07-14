@@ -1,15 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { AgGridReact } from "ag-grid-react";
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 interface ToolsbarContextInterface {
   findSearchValue: string;
   updateSearchValue: (value: string) => void;
+  onNext: () => void;
+  onPrevious: () => void;
   activeMatchNum: string;
   updateActiveMatchNum: (value: string) => void;
-  gridRef: AgGridReact | null;
-  updateGridRef: (ref: AgGridReact) => void;
+  gridRef: any;
 }
 
 const ToolsbarContext = createContext<ToolsbarContextInterface | null>(null);
@@ -29,8 +38,8 @@ interface IQuickDrawerProvider {
 }
 
 export const ToolsbarProvider = ({ children }: IQuickDrawerProvider) => {
-  const [gridRef, setGridRef] = useState<AgGridReact | null>(null);
-  const [findSearchValue, setFindSearchValue] = useState<string>("e");
+  const gridRef = useRef<AgGridReact>(null);
+  const [findSearchValue, setFindSearchValue] = useState<string>("");
   const [activeMatchNum, setActiveMatchNum] = useState<string>("");
 
   const updateSearchValue = (value: string) => {
@@ -40,9 +49,15 @@ export const ToolsbarProvider = ({ children }: IQuickDrawerProvider) => {
     setActiveMatchNum(() => value);
   };
 
-  const updateGridRef = (ref: AgGridReact) => {
-    setGridRef(() => ref);
-  };
+  const onNext = useCallback(() => {
+    console.log("NEXT", gridRef);
+    gridRef?.current?.api.findNext();
+  }, [gridRef]);
+
+  const onPrevious = useCallback(() => {
+    console.log("PREVIOUS", gridRef);
+    gridRef?.current?.api.findPrevious();
+  }, [gridRef]);
 
   return (
     <ToolsbarContext
@@ -52,7 +67,8 @@ export const ToolsbarProvider = ({ children }: IQuickDrawerProvider) => {
         activeMatchNum,
         updateActiveMatchNum,
         gridRef,
-        updateGridRef,
+        onNext,
+        onPrevious,
       }}
     >
       {children}

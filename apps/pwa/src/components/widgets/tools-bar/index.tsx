@@ -30,6 +30,7 @@ import {
   ListItemText,
   Stack,
   TextField,
+  Typography,
   useColorScheme,
 } from "@mui/material";
 import Menu from "@mui/material/Menu";
@@ -45,6 +46,7 @@ import {
 import { ButtonProps, ButtonType } from "./constants";
 import { Icon } from "@iconify/react";
 import { useToolsbar } from "@/context/tools-bar";
+import { on } from "events";
 
 const ALL_BUTTONS: Record<ButtonType, ButtonProps> = {
   [ButtonType.ADD]: {
@@ -93,7 +95,8 @@ export default function ToolsBar(props: ToolsBarProps) {
   const { updateOpen, updateType } = useQuickDrawer();
   const { selected } = useSelectedEntitiesStore();
   const { pinned } = usePinnedEntitiesStore();
-  const { updateSearchValue, gridRef, activeMatchNum } = useToolsbar();
+  const { updateSearchValue, activeMatchNum, onNext, onPrevious } =
+    useToolsbar();
 
   // const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
   const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
@@ -128,27 +131,15 @@ export default function ToolsBar(props: ToolsBarProps) {
   // const [activeMatchNum, setActiveMatchNum] = useState<string>();
 
   const next = useCallback(() => {
-    gridRef?.api.findNext();
-  }, []);
+    onNext();
+  }, [onNext]);
 
   const previous = useCallback(() => {
-    gridRef?.api.findPrevious();
-  }, []);
+    onPrevious();
+  }, [onPrevious]);
 
   const onInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     updateSearchValue(event.target.value);
-  }, []);
-
-  const onKeyDown = useCallback((event: any) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      const backwards = event.shiftKey;
-      if (backwards) {
-        previous();
-      } else {
-        next();
-      }
-    }
   }, []);
 
   const handleClickPivot = (event: MouseEvent<HTMLButtonElement>) => {
@@ -338,12 +329,12 @@ export default function ToolsBar(props: ToolsBarProps) {
             alignItems="center"
             justifyContent="flex-end"
           >
-            {/* <IconButton
+            {/*  <IconButton
               color="inherit"
               aria-label="filter"
-              onClick={() => {}}
+              onClick={handleFilters}
               className="ml-auto"
-              disabled
+              disabled={false}
             >
               <Tune />
             </IconButton>
@@ -356,7 +347,7 @@ export default function ToolsBar(props: ToolsBarProps) {
             >
               <SwapVert />
             </IconButton> */}
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center w-full">
               <IconButton
                 color="inherit"
                 aria-label="filter"
@@ -365,29 +356,25 @@ export default function ToolsBar(props: ToolsBarProps) {
               >
                 <Search />
               </IconButton>
-              <TextField
-                size="small"
-                variant="outlined"
-                placeholder="Search"
-                type="text"
-                onInput={onInput}
-                onKeyDown={onKeyDown}
-                // value={searchTerm}
-                // onChange={(e) => setSearchTerm(e.target.value)}
-                className="pointer-events-auto"
+              <div
+                className="flex gap-2 items-center w-full min-w-fit mr-4"
                 style={{
-                  display: openSearchBox ? "block" : "none",
+                  display: openSearchBox ? "flex" : "none",
                 }}
-              />
-              <IconButton onClick={previous}>
-                <NavigateBefore />
-              </IconButton>
-              <IconButton onClick={next}>
-                <NavigateNext />
-              </IconButton>
-              <span style={{ color: "var(--mui-palette-text-secondary)" }}>
-                {activeMatchNum}
-              </span>
+              >
+                <TextField size="small" type="text" onInput={onInput} />
+                <div className="flex items-center">
+                  <IconButton onClick={previous}>
+                    <NavigateBefore />
+                  </IconButton>
+                  <IconButton onClick={next}>
+                    <NavigateNext />
+                  </IconButton>
+                </div>
+                <Typography variant="body2" color="textDisabled">
+                  {activeMatchNum || "0/0"}
+                </Typography>
+              </div>
             </div>
           </Box>
           <div
