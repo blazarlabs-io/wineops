@@ -4,6 +4,7 @@ import {
   Grape,
   GrapeStatus,
   Must,
+  MustWithVessel,
   Priority,
   Vessel,
   Vineyard,
@@ -18,7 +19,8 @@ export type DashboardEntity =
   | Wine
   | Vessel
   | Chemistry
-  | Consumable;
+  | Consumable
+  | MustWithVessel;
 
 export type EntityStatus = VineyardStatus | GrapeStatus | Priority;
 
@@ -28,4 +30,6 @@ export type GroupBy =
   | "groupByStatus"
   | "groupByVesselType"
   | "groupByLocation"
-  | "type";
+  | "type"
+  | "groupByMustName"
+  | "groupByWineName";

@@ -49,7 +49,7 @@ export const wineColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
   {
     headerName: "Status",
     field: "statusData",
-    minWidth: 100,
+    minWidth: 150,
     flex: 1,
     editable: false,
     cellRenderer: StatusCellRenderer,
@@ -70,7 +70,7 @@ export const wineColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
   {
     headerName: "Wine Qty (tonns)",
     field: "qty",
-    minWidth: 100,
+    minWidth: 160,
     flex: 1,
     editable: false,
     cellRenderer: DefaultCellRenderer,

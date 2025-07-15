@@ -191,7 +191,7 @@ export default function ToolsBar(props: ToolsBarProps) {
         justifyContent="space-between"
       >
         <Box display="flex" gap={1} alignItems="center">
-          {buttons[ButtonType.ADD] && (
+          {!buttons[ButtonType.ADD].hide && (
             <IconButton
               color="default"
               aria-label="add"
@@ -201,7 +201,7 @@ export default function ToolsBar(props: ToolsBarProps) {
               <Add className="" />
             </IconButton>
           )}
-          {buttons[ButtonType.EDIT] && (
+          {!buttons[ButtonType.EDIT].hide && (
             <IconButton
               color="default"
               aria-label="edit"
@@ -234,7 +234,7 @@ export default function ToolsBar(props: ToolsBarProps) {
             </IconButton>
           )}
 
-          {buttons[ButtonType.DELETE] && (
+          {!buttons[ButtonType.DELETE].hide && (
             <IconButton
               color="error"
               aria-label="delete"

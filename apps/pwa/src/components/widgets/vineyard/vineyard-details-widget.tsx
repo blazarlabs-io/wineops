@@ -28,16 +28,9 @@ import { DashboardEntity } from "@/models/types/dashboard";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
-import { db as dbClients } from "@/lib/firebase/client";
-import { ACTIONS, WINERY } from "@/lib/firebase/config";
-import {
-  collection,
-  getDocs,
-  query,
-  Timestamp,
-  where,
-} from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
+import { getActionsByIds } from "./utils";
 
 export type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
@@ -509,33 +502,5 @@ export default function VineyardDetailsWidget({
 
       <DeleteLabReportDialog onDelete={onDeleteLabReport} />
     </Box>
-  );
-}
-
-async function getActionsByIds(
-  actionIds: string[],
-  uid: string
-): Promise<any[]> {
-  if (actionIds.length === 0) return [];
-
-  const chunks = chunkArray(actionIds, 10);
-
-  const queries = chunks.map((idChunk) => {
-    const actionsRef = collection(dbClients, WINERY, uid, ACTIONS);
-    return query(actionsRef, where("__name__", "in", idChunk));
-  });
-
-  const results = await Promise.all(queries.map((q) => getDocs(q)));
-
-  const actions = results.flatMap((snapshot) =>
-    snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-  );
-
-  return actions;
-}
-
-function chunkArray<T>(arr: T[], size: number): T[][] {
-  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-    arr.slice(i * size, i * size + size)
   );
 }

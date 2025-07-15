@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTable } from "@/components/table/data-table";
-import { MustWineVessel, Wine } from "@/models/types/db";
+import { MustWineVessel, Wine, WineStatus } from "@/models/types/db";
 import { useMemo } from "react";
 import { GroupCellRenderer } from "./GroupCellRenderer";
 import { useWine } from "@/context/wine";
@@ -13,32 +13,43 @@ export default function WinesTable() {
 
   const normalizedWines = useMemo(
     () =>
-      wines.flatMap((wine) =>
-        (wine.vessels ?? [{} as MustWineVessel]).map((vessel) => ({
-          ...wine,
-          ...(wine.rowType !== "group" && {
-            metrics: {
-              ...wine.metrics,
-              actual: wine?.vessels?.reduce((sum, { qty = 0 }) => sum + qty, 0),
-              status: wine.status,
-            },
-            statusData: { status: wine?.status, date: wine?.date },
-            wineName: {
-              name: wine?.name,
-              grapeVariety: wine?.grapeVariety,
-            },
-            vesselId: vessel.id,
-            vesselType: vessel.type,
-            vesselName: vessel.name,
-            vesselLocation: vessel.location,
-            qty: vessel.qty ?? 0,
-            group: [
-              ...(wine?.group as string[]).slice(0, -1),
-              `${wine.name}-${vessel?.name}`,
-            ],
-          }),
-        }))
-      ),
+      wines
+        .flatMap((wine) =>
+          (wine.vessels ?? [{} as MustWineVessel]).map((vessel) => ({
+            ...wine,
+            ...(wine.rowType !== "group" && {
+              metrics: {
+                ...wine.metrics,
+                actual: wine?.vessels?.reduce(
+                  (sum, { qty = 0 }) => sum + qty,
+                  0
+                ),
+                status: wine.status,
+              },
+              statusData: { status: wine?.status, date: wine?.date },
+              wineName: {
+                name: wine?.name,
+                grapeVariety: wine?.grapeVariety,
+              },
+              vesselId: vessel.id,
+              vesselType: vessel.type,
+              vesselName: vessel.name,
+              vesselLocation: vessel.location,
+              qty: vessel.qty ?? 0,
+              group: [
+                ...(wine?.group as string[]).slice(0, -1),
+                `${wine.name}-${vessel?.name}`,
+              ],
+            }),
+          }))
+        )
+        .sort((a, b) => {
+          if (a.status === WineStatus.STORED && b.status !== WineStatus.STORED)
+            return 1;
+          if (a.status !== WineStatus.STORED && b.status === WineStatus.STORED)
+            return -1;
+          return 0;
+        }),
     [wines]
   );
 
