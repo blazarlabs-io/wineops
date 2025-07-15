@@ -31,6 +31,10 @@ export type VineyardActions = {
   irrigation: VineyardSingleAction;
   "pest-inspection": VineyardSingleAction;
   "vine-pruning": VineyardSingleAction;
+  "weed-removal": VineyardSingleAction;
+  "soil-monitoring": VineyardSingleAction;
+  "green-harvest": VineyardSingleAction;
+  "fertilizer-application": VineyardSingleAction;
 };
 
 export type ActionIcons = {

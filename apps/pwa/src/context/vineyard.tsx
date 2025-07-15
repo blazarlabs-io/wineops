@@ -1,16 +1,24 @@
 "use client";
 
+import VineyardFertilizerApplicationActionFormComposer from "@/components/forms/actions/vineyard/vineyard-fertilizer-application-action-form-composer";
+import VineyardGreenHarvestActionFormComposer from "@/components/forms/actions/vineyard/vineyard-green-harvest-action-form-composer";
 import VineyardHarvestActionFormComposer from "@/components/forms/actions/vineyard/vineyard-harvest-action-form-composer";
+import VineyardSoilMonitoringActionFormComposer from "@/components/forms/actions/vineyard/vineyard-irrigation-action-form-composer";
 import VineyardIrrigationActionFormComposer from "@/components/forms/actions/vineyard/vineyard-irrigation-action-form-composer";
 import VineyardLabActionFormComposer from "@/components/forms/actions/vineyard/vineyard-lab-action-form-composer";
 import VineyardPestInspectionActionFormComposer from "@/components/forms/actions/vineyard/vineyard-pest-inspection-action-form-composer";
 import VinePruningActionFormComposer from "@/components/forms/actions/vineyard/vineyard-vine-pruning-action-form-composer";
+import VineyardWeedRemovalActionFormComposer from "@/components/forms/actions/vineyard/vineyard-weed-removal-action-form-composer";
 import {
+  vineyardFertilizerApplicationAction,
+  vineyardGreenHarvestAction,
   vineyardHarvestAction,
   vineyardIrrigationAction,
   vineyardLabAction,
   vineyardPestInspectionAction,
+  vineyardSoilMonitoringAction,
   vineyardVinePruningAction,
+  vineyardWeedRemovalAction,
 } from "@/lib/actions/vineyard-actions";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
@@ -91,6 +99,26 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
       exec: vineyardVinePruningAction,
       form: VinePruningActionFormComposer,
       icon: "game-icons:gardening-shears",
+    },
+    "weed-removal": {
+      exec: vineyardWeedRemovalAction,
+      form: VineyardWeedRemovalActionFormComposer,
+      icon: "mdi:grass",
+    },
+    "soil-monitoring": {
+      exec: vineyardSoilMonitoringAction,
+      form: VineyardSoilMonitoringActionFormComposer,
+      icon: "carbon:soil-temperature",
+    },
+    "green-harvest": {
+      exec: vineyardGreenHarvestAction,
+      form: VineyardGreenHarvestActionFormComposer,
+      icon: "material-symbols:eco-outline-rounded",
+    },
+    "fertilizer-application": {
+      exec: vineyardFertilizerApplicationAction,
+      form: VineyardFertilizerApplicationActionFormComposer,
+      icon: "game-icons:fertilizer-bag",
     },
   });
   const [notes, setNotes] = useState<Note[]>([]);

@@ -317,3 +317,51 @@ export const vineyardVinePruningAction = async (
   console.log("Vineyard", vineyard);
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 };
+
+export const vineyardWeedRemovalAction = async (
+  uid: string,
+  actionData: VineyardGlobalAction,
+  vineyard: Vineyard
+) => {
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+};
+
+export const vineyardSoilMonitoringAction = async (
+  uid: string,
+  actionData: VineyardGlobalAction,
+  vineyard: Vineyard
+) => {
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+};
+
+export const vineyardGreenHarvestAction = async (
+  uid: string,
+  actionData: VineyardGlobalAction,
+  vineyard: Vineyard
+) => {
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+};
+
+export const vineyardFertilizerApplicationAction = async (
+  uid: string,
+  actionData: VineyardGlobalAction,
+  vineyard: Vineyard
+) => {
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+};
