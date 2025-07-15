@@ -347,7 +347,6 @@ export default function VineyardForm({
       }),
       identificatorUnicParcela:
         existingVineyard?.identificatorUnicParcela || [],
-      exists: false,
     } as Vineyard;
 
     setFormData(formatted);

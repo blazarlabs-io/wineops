@@ -15,6 +15,7 @@ import {
   vineyardHarvestAction,
   vineyardIrrigationAction,
   vineyardLabAction,
+  vineyardPesticideApplicationAction,
   vineyardPestInspectionAction,
   vineyardSoilMonitoringAction,
   vineyardVinePruningAction,
@@ -119,6 +120,11 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
       exec: vineyardFertilizerApplicationAction,
       form: VineyardFertilizerApplicationActionFormComposer,
       icon: "game-icons:fertilizer-bag",
+    },
+    "pesticide-application": {
+      exec: vineyardPesticideApplicationAction,
+      form: VineyardFertilizerApplicationActionFormComposer,
+      icon: "lucide-lab:bottle-spray",
     },
   });
   const [notes, setNotes] = useState<Note[]>([]);

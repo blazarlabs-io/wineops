@@ -2,6 +2,7 @@ import { VineyardGlobalAction } from "@/models/types/actions";
 import Joi from "joi";
 import { teamMemberSchema } from "../vineyard-schema";
 import { relationSchema } from "./vineyard-harvest-action-schema";
+import chemistry from "@/lib/firebase/services/chemistry";
 
 export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
   id: Joi.string().required(),
@@ -33,4 +34,5 @@ export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
     })
     .optional(),
   aditionalInformation: Joi.string().optional().allow(""),
+  chemistry: Joi.array().items(relationSchema).optional(),
 });

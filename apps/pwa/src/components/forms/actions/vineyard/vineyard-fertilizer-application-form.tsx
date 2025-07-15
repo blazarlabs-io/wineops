@@ -5,18 +5,18 @@ import { vineyardGlobalActionSample } from "@/data/actions-samples";
 import { ActionRelation, VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import { useChemistry } from "@/context/chemistry";
 import { useConsumable } from "@/context/consumable";
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
+import { useAuth } from "@/lib/firebase/auth";
 import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
 import {
-  Autocomplete,
   Box,
   Button,
   Chip,
   FormControl,
-  IconButton,
   TextField as Input,
   InputLabel,
   MenuItem,
@@ -25,19 +25,18 @@ import {
   SelectChangeEvent,
   Stack,
   TextareaAutosize,
-  TextField,
   Theme,
   Typography,
   useTheme,
 } from "@mui/material";
-import { ClearIcon, DatePicker } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import AutocompleteWithQuantity from "../../custom-fields/autocomplete-with-value-and-quantity";
 import FileUploaderField from "../../custom-fields/file-uploader-field";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
-import { useAuth } from "@/lib/firebase/auth";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -63,6 +62,7 @@ export default function VineyardFertilizerApplicationActionForm({
   const { vineyards = [], actions } = useVineyard();
   const { user } = useAuth();
   const { consumables } = useConsumable();
+  const { chemistry } = useChemistry();
   const { teamMembers } = useWinery();
   const theme = useTheme();
   const {
@@ -85,8 +85,8 @@ export default function VineyardFertilizerApplicationActionForm({
       if (name.startsWith("consumables")) {
         const data = consumables?.filter((v) => v.consumableID === value[0]);
         const newValue = {
-          id: data[0]?.id,
-          name: data[0]?.consumableID as string,
+          id: data[0]?.consumableID as string,
+          name: data[0]?.category as string,
           qty: data[0]?.qty as number,
         };
         if (formData.consumables === undefined) formData.consumables = [];
@@ -99,13 +99,37 @@ export default function VineyardFertilizerApplicationActionForm({
           }[]),
           newValue,
         ];
+
         setFormData((prev) => ({
           ...(prev as VineyardGlobalAction),
           consumables: _consumables,
         }));
 
         setValue("consumables", _consumables);
-
+        return;
+      }
+      if (name.startsWith("chemistry")) {
+        const data = chemistry?.filter((v) => v.chemistryID === value[0]);
+        const newValue = {
+          id: data[0]?.chemistryID as string,
+          name: data[0]?.type as string,
+          qty: data[0]?.qty as number,
+        };
+        if (formData.chemistry === undefined) formData.chemistry = [];
+        // formData?.consumables?.push(newValue);
+        const _chemistry = [
+          ...(formData.chemistry as {
+            name: string;
+            id: string;
+            qty: number;
+          }[]),
+          newValue,
+        ];
+        setFormData((prev) => ({
+          ...(prev as VineyardGlobalAction),
+          chemistry: _chemistry,
+        }));
+        setValue("chemistry", _chemistry);
         return;
       }
       setFormData((prev) => ({
@@ -113,23 +137,27 @@ export default function VineyardFertilizerApplicationActionForm({
         [name]: value,
       }));
     },
-    [consumables, formData]
+    [chemistry, consumables, formData, setValue]
   );
 
   function removeByIndex<T>(array: T[], index: number): T[] {
     if (index < 0 || index >= array.length) return array; // index out of bounds
     const result = [...array.slice(0, index), ...array.slice(index + 1)];
-    console.log("result", result);
     return result;
   }
 
   const handleDeleteFromList = useCallback(
     (value: string, index: number) => {
-      console.log("VALUE", value, index);
       if (formData?.consumables && formData?.consumables?.length > 0) {
         setFormData((prev) => ({
           ...(prev as VineyardGlobalAction),
           consumables: removeByIndex(formData.consumables as any, index),
+        }));
+      }
+      if (formData?.chemistry && formData?.chemistry?.length > 0) {
+        setFormData((prev) => ({
+          ...(prev as VineyardGlobalAction),
+          chemistry: removeByIndex(formData.chemistry as any, index),
         }));
       }
     },
@@ -210,12 +238,7 @@ export default function VineyardFertilizerApplicationActionForm({
   };
 
   useEffect(() => {
-    if (
-      vineyards &&
-      vineyards.length > 0 &&
-      consumables &&
-      consumables.length > 0
-    ) {
+    if (vineyards && vineyards.length > 0) {
       vineyardGlobalActionSample.id = Date.now().toString();
       vineyardGlobalActionSample.type = "irrigation";
       vineyardGlobalActionSample.executionDate = new Date().toDateString();
@@ -231,10 +254,24 @@ export default function VineyardFertilizerApplicationActionForm({
         vineyardGlobalActionSample.equipment = [];
       }
 
+      if (
+        vineyardGlobalActionSample.consumables &&
+        vineyardGlobalActionSample.consumables.length > 0
+      ) {
+        vineyardGlobalActionSample.consumables = [];
+      }
+
+      if (
+        vineyardGlobalActionSample.chemistry &&
+        vineyardGlobalActionSample.chemistry.length > 0
+      ) {
+        vineyardGlobalActionSample.chemistry = [];
+      }
+
       reset(vineyardGlobalActionSample);
       setFormData(vineyardGlobalActionSample);
     }
-  }, [vineyards, consumables]);
+  }, [vineyards]);
 
   useEffect(() => {
     if (errors) {
@@ -348,125 +385,28 @@ export default function VineyardFertilizerApplicationActionForm({
                         />
                       </Stack>
                     </FormControl>
-                    {/* ! CONSUMABLES */}
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter the consumables used
-                      </InputLabel>
-
-                      <Autocomplete
-                        multiple
-                        noOptionsText="No vessels available"
-                        options={consumables?.map((v) => v.consumableID)}
-                        value={[]}
-                        filterSelectedOptions
-                        onChange={(_event, newValue) => {
-                          handleChange("consumables", newValue);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            label="Consumables used"
-                          />
-                        )}
-                      />
-
-                      {(formData.consumables || []).length > 0 && (
-                        <Stack
-                          p={2}
-                          pb={1}
-                          gap={1}
-                          sx={{
-                            border: "1px solid var(--mui-palette-divider)",
-                          }}
-                        >
-                          {formData.consumables?.map(
-                            ({ id, name = "", qty }, index) => (
-                              <Fragment key={id}>
-                                <Stack
-                                  gap={1}
-                                  key={id}
-                                  direction="row"
-                                  alignItems="center"
-                                >
-                                  <Typography
-                                    variant="body2"
-                                    component="div"
-                                    sx={{ flex: 1 }}
-                                  >
-                                    {name}
-                                  </Typography>
-
-                                  <FormControl>
-                                    <Input
-                                      id="qty"
-                                      size="small"
-                                      label="Qty"
-                                      type="number"
-                                      variant="outlined"
-                                      value={qty || 0}
-                                      slotProps={{
-                                        htmlInput: { min: 1, step: "any" },
-                                      }}
-                                      sx={{ width: "80px" }}
-                                      onChange={(e) => {
-                                        const updated: VineyardGlobalAction["consumables"] =
-                                          [...(formData.consumables || [])];
-                                        updated[index].qty = Number(
-                                          e.target.value
-                                        );
-                                        console.log("UPDATED", e.target.value);
-                                        handleQtyChange(
-                                          index,
-                                          Number(e.target.value)
-                                        );
-                                      }}
-                                    />
-                                  </FormControl>
-
-                                  <IconButton
-                                    size="small"
-                                    disabled={false}
-                                    onClick={() => {
-                                      handleDeleteFromList(
-                                        "consumables",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <ClearIcon fontSize="small" />
-                                  </IconButton>
-                                </Stack>
-
-                                <Typography
-                                  key={index}
-                                  variant="body2"
-                                  color="error"
-                                  className="mt-1"
-                                >
-                                  {errors?.vessels &&
-                                    Array.isArray(errors?.vessels) &&
-                                    (errors?.vessels[index]?.qty
-                                      ?.message as string)}
-                                </Typography>
-                              </Fragment>
-                            )
-                          )}
-                        </Stack>
-                      )}
-
-                      {errors?.vessels && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.vessels?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
+                    {/* * CHEMISTRY */}
+                    <AutocompleteWithQuantity
+                      label="chemistry"
+                      title="Enter the chemistry used"
+                      items={chemistry}
+                      currentItems={formData.chemistry as ActionRelation[]}
+                      onChange={handleChange}
+                      handleQtyChange={handleQtyChange}
+                      handleDelete={handleDeleteFromList}
+                      errors={errors}
+                    />
+                    {/* * CONSUMABLES */}
+                    <AutocompleteWithQuantity
+                      label="consumables"
+                      title="Enter the consumables used"
+                      items={consumables}
+                      currentItems={formData.consumables as any}
+                      onChange={handleChange}
+                      handleQtyChange={handleQtyChange}
+                      handleDelete={handleDeleteFromList}
+                      errors={errors}
+                    />
                     {/* * EQUIPMENT */}
                     <FormControl fullWidth>
                       <InputLabel id="equipment-select-label">

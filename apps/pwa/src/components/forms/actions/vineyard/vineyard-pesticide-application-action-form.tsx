@@ -55,7 +55,7 @@ const MenuProps = {
 const equipment: ActionRelation[] = [];
 // const consumables: ActionRelation[] = [];
 
-export default function VineyardPestInspectionActionForm({
+export default function VineyardPesticideApplicationActionForm({
   onBackClick,
 }: {
   onBackClick?: () => void;
@@ -226,7 +226,7 @@ export default function VineyardPestInspectionActionForm({
     setIsSubmitting(true);
 
     try {
-      await actions?.["pest-inspection"].exec(
+      await actions?.["pesticide-application"].exec(
         user?.uid as string,
         data,
         subjectVineyard
@@ -379,7 +379,16 @@ export default function VineyardPestInspectionActionForm({
                         />
                       </Stack>
                     </FormControl>
-
+                    <AutoCompleteWithValueAndQuantityField
+                      label="chemistry"
+                      title="Enter the chemistry used"
+                      items={chemistry}
+                      currentItems={formData.chemistry as ActionRelation[]}
+                      onChange={handleChange}
+                      handleQtyChange={handleQtyChange}
+                      handleDelete={handleDeleteFromList}
+                      errors={errors}
+                    />
                     {/* * CONSUMABLES */}
                     <AutoCompleteWithValueAndQuantityField
                       label="consumables"
@@ -391,6 +400,125 @@ export default function VineyardPestInspectionActionForm({
                       handleDelete={handleDeleteFromList}
                       errors={errors}
                     />
+                    {/* ! CONSUMABLES
+                    <div className="flex flex-col gap-2">
+                      <InputLabel className="text-sm text-muted-foreground">
+                        Enter the consumables used
+                      </InputLabel>
+
+                      <Autocomplete
+                        multiple
+                        noOptionsText="No vessels available"
+                        options={consumables?.map((v) => v.consumableID)}
+                        value={[]}
+                        filterSelectedOptions
+                        onChange={(_event, newValue) => {
+                          handleChange("consumables", newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            variant="outlined"
+                            label="Consumables used"
+                          />
+                        )}
+                      />
+
+                      {(formData.consumables || []).length > 0 && (
+                        <Stack
+                          p={2}
+                          pb={1}
+                          gap={1}
+                          sx={{
+                            border: "1px solid var(--mui-palette-divider)",
+                          }}
+                        >
+                          {formData.consumables?.map(
+                            ({ id, name = "", qty }, index) => (
+                              <Fragment key={id}>
+                                <Stack
+                                  gap={1}
+                                  key={id}
+                                  direction="row"
+                                  alignItems="center"
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    component="div"
+                                    sx={{ flex: 1 }}
+                                  >
+                                    {name}
+                                  </Typography>
+
+                                  <FormControl>
+                                    <Input
+                                      id="qty"
+                                      size="small"
+                                      label="Qty"
+                                      type="number"
+                                      variant="outlined"
+                                      value={qty || 0}
+                                      slotProps={{
+                                        htmlInput: { min: 1, step: "any" },
+                                      }}
+                                      sx={{ width: "80px" }}
+                                      onChange={(e) => {
+                                        const updated: VineyardGlobalAction["consumables"] =
+                                          [...(formData.consumables || [])];
+                                        updated[index].qty = Number(
+                                          e.target.value
+                                        );
+                                        console.log("UPDATED", e.target.value);
+                                        handleQtyChange(
+                                          index,
+                                          Number(e.target.value)
+                                        );
+                                      }}
+                                    />
+                                  </FormControl>
+
+                                  <IconButton
+                                    size="small"
+                                    disabled={false}
+                                    onClick={() => {
+                                      handleDeleteFromList(
+                                        "consumables",
+                                        index
+                                      );
+                                    }}
+                                  >
+                                    <ClearIcon fontSize="small" />
+                                  </IconButton>
+                                </Stack>
+
+                                <Typography
+                                  key={index}
+                                  variant="body2"
+                                  color="error"
+                                  className="mt-1"
+                                >
+                                  {errors?.vessels &&
+                                    Array.isArray(errors?.vessels) &&
+                                    (errors?.vessels[index]?.qty
+                                      ?.message as string)}
+                                </Typography>
+                              </Fragment>
+                            )
+                          )}
+                        </Stack>
+                      )}
+
+                      {errors?.vessels && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.vessels?.message as string}
+                        </Typography>
+                      )}
+                    </div> */}
+
                     {/* * EQUIPMENT */}
                     <FormControl fullWidth>
                       <InputLabel id="equipment-select-label">

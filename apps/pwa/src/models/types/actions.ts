@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import {
+  Chemistry,
   EntityConsumable,
   Grape,
   LabElement,
@@ -35,6 +36,7 @@ export type VineyardActions = {
   "soil-monitoring": VineyardSingleAction;
   "green-harvest": VineyardSingleAction;
   "fertilizer-application": VineyardSingleAction;
+  "pesticide-application": VineyardSingleAction;
 };
 
 export type ActionIcons = {
@@ -171,6 +173,7 @@ export interface VineyardGlobalAction {
   equipment?: ActionRelation[];
   labDataToDeleteIds?: string[];
   aditionalInformation?: string;
+  chemistry?: ActionRelation[];
 }
 
 export const MUST_ACTION_TYPES = ["must-decant"] as const;

@@ -365,3 +365,15 @@ export const vineyardFertilizerApplicationAction = async (
   console.log("Vineyard", vineyard);
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 };
+
+export const vineyardPesticideApplicationAction = async (
+  uid: string,
+  actionData: VineyardGlobalAction,
+  vineyard: Vineyard
+) => {
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("Action Data", actionData);
+  console.log("Vineyard", vineyard);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+};
