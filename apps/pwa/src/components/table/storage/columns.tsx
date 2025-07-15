@@ -1,44 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef, ColGroupDef } from "ag-grid-enterprise";
-import { Must, Vessel } from "@/models/types/db";
+import { Must, MustWineVessel, Vessel } from "@/models/types/db";
 import { VesselIDCellRenderer } from "./VesselIDCellRenderer";
-import { QuantityCellRenderer } from "../QuantityCellRenderer";
-import { LabDataCellRenderer } from "./LabDataCellRenderer";
 import { NotesCellRenderer } from "../NotesCellRenderer";
-import { StatusCellRenderer } from "./StatusCellRenderer";
 import { TasksCellRenderer } from "../tasks-cell-renderer";
-import { MustIDCellRenderer } from "./MustIDCellRenderer";
+import { QtyCellRenderer } from "./QtyCellRenderer";
+import { ActionRelation } from "@/models/types/actions";
+import { DateCellRenderer } from "./date-cell-renderer";
 
 type MultiCol = Record<keyof Must, any>;
 type Data = Must & {
   statusData: MultiCol;
-  groupByStatus: Must["status"];
-  groupByDate: Must["date"];
+  groupByMustName: Vessel["name"];
   groupByVesselType: Vessel["type"];
   groupByLocation: Vessel["location"];
   mustID: MultiCol;
+  vessel: Partial<Data>;
   vesselId: Vessel["id"];
   vesselType: Vessel["type"];
   vesselLocation: Vessel["location"];
+  vesselQty: MustWineVessel["qty"];
+  storageDate: ActionRelation["date"];
+  groupByWineName: Vessel["name"];
+  field?: any;
 };
 
-export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
+export const storageColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
   {
     headerName: "Vessel ID",
-    field: "vesselId",
+    field: "vessel",
     minWidth: 200,
     flex: 1,
     editable: false,
     cellRenderer: VesselIDCellRenderer,
-  },
-  {
-    headerName: "Must ID",
-    field: "mustID",
-    hide: true,
-    minWidth: 200,
-    flex: 1,
-    editable: false,
-    cellRenderer: MustIDCellRenderer,
   },
   {
     headerName: "Group: Vessel Type",
@@ -47,6 +41,24 @@ export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
     enableRowGroup: true,
     rowGroup: false,
     valueGetter: ({ data }) => data?.vesselType,
+    keyCreator: (params) => params?.value,
+  },
+  {
+    headerName: "Group: Must Name",
+    field: "groupByMustName",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: ({ data }) => data?.name,
+    keyCreator: (params) => params?.value,
+  },
+  {
+    headerName: "Group: Wine Name",
+    field: "groupByWineName",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: ({ data }) => data?.name,
     keyCreator: (params) => params?.value,
   },
   {
@@ -59,40 +71,12 @@ export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
     keyCreator: (params) => params?.value,
   },
   {
-    headerName: "Status",
-    field: "statusData",
-    minWidth: 150,
+    headerName: "Quantity Overview",
+    field: "vesselQty",
+    minWidth: 170,
     flex: 1,
     editable: false,
-    cellRenderer: StatusCellRenderer,
-    cellRendererParams: {
-      alignItems: "center",
-    },
-    enableRowGroup: true,
-  },
-  {
-    headerName: "Group: Status",
-    field: "groupByStatus",
-    hide: true,
-    enableRowGroup: true,
-    rowGroup: false,
-    valueGetter: (params) => params.data?.statusData?.status,
-    keyCreator: (params) => params?.value,
-  },
-  {
-    headerName: "Quantity",
-    field: "metrics",
-    minWidth: 240,
-    flex: 1,
-    editable: false,
-    cellRenderer: QuantityCellRenderer,
-  },
-  {
-    headerName: "Labs",
-    field: "labData",
-    minWidth: 250,
-    flex: 1,
-    cellRenderer: LabDataCellRenderer,
+    cellRenderer: QtyCellRenderer,
   },
   {
     headerName: "Tasks",
@@ -100,6 +84,13 @@ export const mustColumns: (ColDef<Data, any> | ColGroupDef<Data>)[] = [
     minWidth: 150,
     flex: 1,
     cellRenderer: TasksCellRenderer,
+  },
+  {
+    headerName: "Start Date",
+    field: "storageDate",
+    minWidth: 100,
+    flex: 1,
+    cellRenderer: DateCellRenderer,
   },
   {
     headerName: "Notes",

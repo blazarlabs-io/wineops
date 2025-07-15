@@ -467,6 +467,7 @@ export const MustStatus = {
   PRESSED: "Pressed",
   FERMENTING: "Fermenting",
   DECANTED: "Decanted",
+  STORED: "Stored",
 } as const;
 
 export type MustStatus = (typeof MustStatus)[keyof typeof MustStatus];
@@ -514,6 +515,13 @@ export type Must = Entity & {
 };
 
 export type MustWithVessel = Must & {
+  vesselId?: Vessel["id"];
+  vesselType?: Vessel["type"];
+  vesselName?: Vessel["name"];
+  vesselLocation?: Vessel["location"];
+};
+
+export type WineWithVessel = Wine & {
   vesselId?: Vessel["id"];
   vesselType?: Vessel["type"];
   vesselName?: Vessel["name"];
@@ -685,6 +693,7 @@ export type WineInfo = {
 export const WineStatus = {
   NEW_WINE: "New Wine",
   BARICARE: "Baricare",
+  STORED: "Stored",
 } as const;
 
 export type WineStatus = (typeof WineStatus)[keyof typeof WineStatus];
@@ -723,4 +732,15 @@ export type Wine = Entity & {
   notes?: Note[];
   tasks?: Task[];
   consumables?: EntityConsumable[];
+  actions?: ActionRelation[];
+};
+
+export type StorageCondition = {
+  id: string;
+  date?: string | Timestamp;
+  temperature?: number;
+  humidity?: number;
+  lightLevel?: number;
+  vibrationLevel?: number;
+  iotRoom?: string;
 };

@@ -59,6 +59,7 @@ import {
   themeMaterial,
   TreeDataModule,
   ValidationModule,
+  GridReadyEvent,
 } from "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { usePathname } from "next/navigation";
@@ -94,6 +95,7 @@ interface DataTableProps<T extends DashboardEntity> {
   groupByButtons?: any[];
   getRowId?: GetRowIdFunc<any> | undefined;
   entityName?: EntityName;
+  defaultGroupedBy?: GroupBy;
 }
 
 export const DataTable = <T extends DashboardEntity>({
@@ -104,6 +106,7 @@ export const DataTable = <T extends DashboardEntity>({
   groupByButtons,
   getRowId,
   entityName,
+  defaultGroupedBy,
 }: DataTableProps<T>) => {
   const { mode } = useColorScheme();
   const isDarkMode = mode === "dark";
@@ -315,12 +318,6 @@ export const DataTable = <T extends DashboardEntity>({
 
     const unusedGroups = getUnusedGroups(allRows);
 
-    console.log("newGroup:", newGroup);
-    console.log("newGroups:", newGroups);
-    console.log("updatedMap:", updatedMap);
-    console.log("allRows:", allRows);
-    console.log("unusedGroups:", unusedGroups);
-
     const unusedGroupsIds = unusedGroups.map(({ id }) => id);
 
     const updatedRowsWithUnused = [
@@ -348,16 +345,6 @@ export const DataTable = <T extends DashboardEntity>({
       });
     }
   };
-
-  useEffect(() => {
-    if (groupColumnDef) {
-      groupColumnDef.cellClassRules = {
-        "hover-over": (params) => {
-          return params.node === potentialParent;
-        },
-      };
-    }
-  }, [groupColumnDef]);
 
   useEffect(() => {
     setRowData(data);
@@ -492,7 +479,7 @@ export const DataTable = <T extends DashboardEntity>({
 
   const treeData = gridRef.current?.api?.getGridOption("treeData");
 
-  const { groupedField } = useGridStore();
+  const { groupedField, setGroupedField } = useGridStore();
 
   const handleGroupBy = useCallback(
     (field?: GroupBy) => {
@@ -514,7 +501,8 @@ export const DataTable = <T extends DashboardEntity>({
 
       const columnsToToggleVisibility = allCols.filter(
         (col: any) =>
-          col?.getColDef()?.headerName === autoGroupColumnDef?.headerName
+          col?.getColDef()?.headerName === autoGroupColumnDef?.headerName ||
+          col?.getColDef()?.headerName === groupColumnDef?.headerName
       );
 
       if (columnsToToggleVisibility.length > 0) {
@@ -523,19 +511,24 @@ export const DataTable = <T extends DashboardEntity>({
 
       api.setColumnsVisible(
         ["vesselId"],
-        (isAlreadyGrouped &&
+        isAlreadyGrouped &&
           ["groupByVesselType", "groupByLocation"].includes(
             groupedField || ""
-          )) ||
-          !["groupByVesselType", "groupByLocation"].includes(field ?? "")
+          ) /*|| !["groupByVesselType", "groupByLocation"].includes(field ?? "")*/
       );
 
       api.setColumnsVisible(
         ["statusData"],
-        groupedField === "groupByStatus" || field !== "groupByStatus"
+        groupedField !== "groupByStatus"
+        //groupedField === "groupByStatus" || field !== "groupByStatus"
       );
     },
-    [autoGroupColumnDef?.headerName, groupedField]
+    [
+      autoGroupColumnDef?.headerName,
+      gridRef,
+      groupColumnDef?.headerName,
+      groupedField,
+    ]
   );
 
   const isRowPinned = useCallback(
@@ -580,6 +573,11 @@ export const DataTable = <T extends DashboardEntity>({
   const open = useDialogDrawerStore(({ open }) => open);
   const openAddVineyard = () => open("form-drawer");
 
+  const handleOnGridReady = (_params: GridReadyEvent) => {
+    if (!defaultGroupedBy || groupedField === defaultGroupedBy) return;
+    setGroupedField(defaultGroupedBy);
+  };
+
   return (
     <>
       {groupByButtons && groupByButtons.length > 0 && (
@@ -621,7 +619,9 @@ export const DataTable = <T extends DashboardEntity>({
               headerName:
                 groupByButtons?.find(
                   ({ columnName }) => columnName === groupedField
-                )?.name || autoGroupColumnDef.headerName,
+                )?.name ||
+                groupedField?.replace("groupBy", "") ||
+                autoGroupColumnDef.headerName,
               checkboxSelection: false,
             }}
             rowSelection={rowSelection}
@@ -653,6 +653,7 @@ export const DataTable = <T extends DashboardEntity>({
             // * OTHER
             enableCellTextSelection={true}
             selectionColumnDef={selectionColumnDef}
+            onGridReady={handleOnGridReady}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
