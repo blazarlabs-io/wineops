@@ -5,6 +5,12 @@
 /* Default (light mode) */
 .pinned-row {
   background-color: #f6f6ff !important;
+  font-weight: 400 !important;
+}
+
+p,
+span {
+  font-weight: 400 !important;
 }
 
 /* Dark mode override */

@@ -6,6 +6,7 @@ import { useVineyard } from "@/context/vineyard";
 import { countries } from "@/data/countries";
 import { orientations, rowOrientations } from "@/data/system-variables";
 import { setNestedValue } from "@/helpers/form-helpers";
+import { useVineyardNameExists } from "@/hooks/use-vineyard-name-exists";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { vineyardSchema } from "@/models/schemas/vineyard-schema";
@@ -59,12 +60,14 @@ export type VineyardFormProps = {
   onSave?: (data: Vineyard) => void;
   clicked?: boolean;
   setIsSubmitting: Dispatch<SetStateAction<boolean>>;
+  onNameError?: (isError: boolean) => void;
 };
 
 export default function VineyardForm({
   onSave,
   clicked,
   setIsSubmitting,
+  onNameError,
 }: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -92,9 +95,35 @@ export default function VineyardForm({
 
   const [formData, setFormData] = useState<Vineyard | null>();
   const [cadastral, setCadastral] = useState<string>("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
 
   const [identificatorUnicParcela, setIdentificatorUnicParcela] = useState("");
+
+  const { resolveName, checkIfNameExists } = useVineyardNameExists();
+
+  const handleNameChange = useCallback(
+    (event: any) => {
+      console.log("handleNameChange", event.target.value);
+      const nameIsValid = checkIfNameExists(event.target.value);
+      console.log("Validating", nameIsValid);
+
+      if (nameIsValid) {
+        // * we generate the joi error message
+        setNameError("Vineyard name already exists");
+        onNameError?.(true);
+      } else {
+        setNameError(null);
+        onNameError?.(false);
+      }
+
+      setFormData((prevData: any) => {
+        const path = ["name"];
+        return setNestedValue(prevData, path, event.target.value);
+      });
+    },
+    [checkIfNameExists]
+  );
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
     const _path = "info.location.map";
@@ -276,31 +305,29 @@ export default function VineyardForm({
     }
   };
 
-  /*useEffect(() => {
-    if (selected.length > 0 && vineyards.length > 0) {
-      const existingVineyard = vineyards.find(
-        ({ id }) => id === selected[0]?.id
-      );
-
-      if (!existingVineyard) return;
-
-      setWorkingVineyard(existingVineyard);
-    } else {
-      setWorkingVineyard({
-        id: Date.now().toString(),
-        labData: [],
-        tasks: [],
-        documents: [],
-        notes: [],
-        rowType: "item",
-      } as unknown as Vineyard);
-    }
-  }, [vineyards, selected]);*/
-
   const existingVineyard = vineyards?.find(({ id }) => id === selected[0]?.id);
 
   useEffect(() => {
-    const name = `Vineyard ${vineyards?.length + 1}`;
+    let name = `Vineyard ${vineyards?.length + 1}`;
+
+    const check = async (n: string) => {
+      const validName = resolveName(n);
+
+      try {
+        name = validName;
+        if (formData) {
+          formData.name = name;
+        }
+        setValue("name", name);
+      } catch (err: any) {
+        console.error("❌ Error:", err);
+      }
+    };
+
+    // * Check if name already exists
+    check(name);
+
+    console.log("NEW NAME", name);
 
     const formatted: Vineyard = {
       ...existingVineyard,
@@ -320,6 +347,7 @@ export default function VineyardForm({
       }),
       identificatorUnicParcela:
         existingVineyard?.identificatorUnicParcela || [],
+      exists: false,
     } as Vineyard;
 
     setFormData(formatted);
@@ -399,9 +427,30 @@ export default function VineyardForm({
                           label="Vineyard Name"
                           type="text"
                           variant="outlined"
-                          {...register("name")}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              "&.Mui-focused fieldset": {
+                                borderColor: nameError
+                                  ? "#ff3511aa"
+                                  : "#inherit", // your custom color here
+                              },
+                              color: nameError ? "#f44336" : "#inherit",
+                            },
+                          }}
+                          value={(formData?.name as string) || ""}
+                          onChange={handleNameChange}
+                          // {...register("name")}
                         />
                       </FormControl>
+                      {nameError && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {nameError}
+                        </Typography>
+                      )}
                       {errors?.name && (
                         <Typography
                           variant="body2"
@@ -1424,11 +1473,7 @@ export default function VineyardForm({
             </div>
             <Box display={"flex"} justifyContent={"end"} visibility={"hidden"}>
               <FormControl>
-                <Button
-                  ref={btnRef}
-                  type="submit"
-                  variant="contained"
-                >
+                <Button ref={btnRef} type="submit" variant="contained">
                   Save
                 </Button>
               </FormControl>
