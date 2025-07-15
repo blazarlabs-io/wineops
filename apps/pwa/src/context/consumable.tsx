@@ -67,6 +67,7 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
         });
 
         setConsumables(consumables);
+        console.log("Consumables", consumables);
       });
     }
 

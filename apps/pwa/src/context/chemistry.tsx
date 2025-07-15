@@ -39,7 +39,6 @@ export const ChemistryProvider = ({ children }: IChemistryProvider) => {
 
   const [chemistry, setChemistry] = useState<Chemistry[]>([]);
 
-
   useEffect(() => {
     let unsubChemistry = () => {};
 
@@ -66,7 +65,6 @@ export const ChemistryProvider = ({ children }: IChemistryProvider) => {
 
           chemistry.push({ ...data, id: data?.id ?? id } as Chemistry);
         });
-
         setChemistry(chemistry);
       });
     }
@@ -82,7 +80,7 @@ export const ChemistryProvider = ({ children }: IChemistryProvider) => {
   return (
     <ChemistryContext
       value={{
-        chemistry: memoizedChemistry
+        chemistry: memoizedChemistry,
       }}
     >
       {children}

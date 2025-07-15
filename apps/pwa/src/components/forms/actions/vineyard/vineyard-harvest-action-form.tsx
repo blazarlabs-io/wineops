@@ -782,12 +782,6 @@ export default function VineyardHarvestActionForm({
                           );
 
                           return;
-
-                          if (date) {
-                            handleChange("executionDate", date);
-                          } else {
-                            handleChange("executionDate", undefined);
-                          }
                         }}
                       />
                     </Stack>
@@ -853,18 +847,27 @@ export default function VineyardHarvestActionForm({
                       <Autocomplete
                         multiple
                         noOptionsText="No vessels available"
-                        options={consumables?.map((v) => v.consumableID)}
+                        getOptionLabel={(option) => option || ""}
+                        options={
+                          consumables && consumables !== undefined
+                            ? consumables?.map((v) => v.consumableID)
+                            : []
+                        }
                         value={[]}
                         filterSelectedOptions
                         onChange={(_event, newValue) => {
                           handleChange("consumables", newValue);
                         }}
                         renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            label="Consumables used"
-                          />
+                          <>
+                            {params && (
+                              <TextField
+                                {...params}
+                                variant="outlined"
+                                label="Consumables used"
+                              />
+                            )}
+                          </>
                         )}
                       />
 

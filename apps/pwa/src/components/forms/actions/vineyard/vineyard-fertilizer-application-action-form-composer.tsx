@@ -1,9 +1,9 @@
-import VineyardGreenHarvestActionForm from "./vineyard-green-harvest-action-form";
+import VineyardFertilizerApplicationActionForm from "./vineyard-fertilizer-application-form";
 
 export default function VineyardFertilizerApplicationActionFormComposer({
   onBackClick,
 }: {
   onBackClick?: () => void;
 }) {
-  return <VineyardGreenHarvestActionForm onBackClick={onBackClick} />;
+  return <VineyardFertilizerApplicationActionForm onBackClick={onBackClick} />;
 }
