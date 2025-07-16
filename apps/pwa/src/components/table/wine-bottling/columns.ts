@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
+import { LotIdAndStatusCellRenderer } from "./cell-renderers/lot-id-and-status-cell-renderer";
+import { QuantityCellRenderer } from "../QuantityCellRenderer";
+import { LocationCellRenderer } from "./cell-renderers/location-cell-renderer";
 
 export const columns: ColDef[] = [
   {
@@ -7,23 +10,23 @@ export const columns: ColDef[] = [
     field: "lotId",
     minWidth: 224,
     flex: 1,
-    cellRenderer: "agCellRenderer",
+    cellRenderer: LotIdAndStatusCellRenderer,
     aggFunc: ({ values }: any) => values,
     filter: "agSetColumnFilter",
   },
   {
     headerName: "Quantity Overview",
     field: "qty",
-    minWidth: 184,
+    minWidth: 264,
     flex: 1,
-    cellRenderer: "agCellRenderer",
+    cellRenderer: QuantityCellRenderer,
     aggFunc: ({ values }: any) => values,
     filter: "agSetColumnFilter",
   },
   {
     headerName: "Bottling Date",
     field: "bottlingDate",
-    minWidth: 196,
+    minWidth: 156,
     flex: 1,
     cellRenderer: "agCellRenderer",
     // filter: "agSetColumnFilter",
@@ -36,9 +39,9 @@ export const columns: ColDef[] = [
   {
     headerName: "Collection Location",
     field: "collectionLocation",
-    minWidth: 124,
+    minWidth: 172,
     flex: 1,
-    cellRenderer: "agCellRenderer",
+    cellRenderer: LocationCellRenderer,
     aggFunc: ({ values }: any) => values,
   },
   {

@@ -12,7 +12,7 @@ export const wineBottlingDataSample: Bottle[] = [
     lotId: "123456789",
     lotStatus: LotStatus.PLANNED,
     qty: 10,
-    collectionLocation: "",
+    collectionLocation: "San Diego",
   },
   {
     id: Date.now().toString() + "1",
@@ -25,7 +25,7 @@ export const wineBottlingDataSample: Bottle[] = [
     lotId: "123456789",
     lotStatus: LotStatus.PLANNED,
     qty: 10,
-    collectionLocation: "",
+    collectionLocation: "Santa Barbara",
   },
   {
     id: Date.now().toString() + "2",
@@ -38,7 +38,7 @@ export const wineBottlingDataSample: Bottle[] = [
     lotId: "123456789",
     lotStatus: LotStatus.PLANNED,
     qty: 10,
-    collectionLocation: "",
+    collectionLocation: "Prague",
   },
   {
     id: Date.now().toString() + "3",
@@ -57,7 +57,7 @@ export const wineBottlingDataSample: Bottle[] = [
     lotId: "123456789",
     lotStatus: LotStatus.PLANNED,
     qty: 10,
-    collectionLocation: "",
+    collectionLocation: "Bogota",
   },
   {
     id: Date.now().toString() + "4",
@@ -70,7 +70,7 @@ export const wineBottlingDataSample: Bottle[] = [
     lotId: "123456789",
     lotStatus: LotStatus.PLANNED,
     qty: 10,
-    collectionLocation: "",
+    collectionLocation: "Cordova",
   },
   {
     id: Date.now().toString() + "5",
@@ -83,7 +83,7 @@ export const wineBottlingDataSample: Bottle[] = [
     lotId: "123456789",
     lotStatus: LotStatus.PLANNED,
     qty: 10,
-    collectionLocation: "",
+    collectionLocation: "Santiago de Chile",
   },
   {
     id: Date.now().toString() + "6",
@@ -96,6 +96,6 @@ export const wineBottlingDataSample: Bottle[] = [
     lotId: "123456789",
     lotStatus: LotStatus.PLANNED,
     qty: 10,
-    collectionLocation: "",
+    collectionLocation: "Paris",
   },
 ];
