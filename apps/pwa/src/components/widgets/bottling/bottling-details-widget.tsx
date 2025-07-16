@@ -1,55 +1,29 @@
-import { default as LabResultsChart } from "@/components/charts/lab-results";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import { LabReport, Bottle } from "@/models/types/db";
+import { Bottle } from "@/models/types/db";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/base/tabs';
-import CadastralDataDisplay from "@/components/data-display/cadastral-data-display";
-import LabReportResponsibleDataDisplay from "@/components/data-display/lab-report-responsible-data-display";
-import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
+import ResponsibleTeamMemberDataDisplay from "@/components/data-display/responsible-team-member-data-display";
 import DocumentsTable from "@/components/table/documents";
-import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
-import { Add, DeleteOutline } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { ROW_HEIGHT_EXPANDED_BOTTLING } from "@/data/constants";
+import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import { useCallback, useEffect, useRef, useState } from "react";
-import a11yProps from "../utils/a11y-props";
+import { useEffect, useState } from "react";
 import TabPanel from "../components/tab-panel";
-import DeleteLabReportDialog from "@/components/dialogs/delete-lab-report-dialog";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { DashboardEntity } from "@/models/types/dashboard";
-import { useDialogDrawerStore } from "@/store/dialogs";
-import { db } from "@/lib/firebase/services";
-import { useAuth } from "@/lib/firebase/auth";
-import { Timestamp } from "firebase/firestore";
-import { enqueueSnackbar } from "notistack";
-import ResponsibleTeamMemberDataDisplay from "@/components/data-display/responsible-team-member-data-display";
 import TasksView from "../components/tasks-view";
-import {
-  ROW_HEIGHT_EXPANDED_BOTTLING,
-  ROW_HEIGHT_EXPANDED_GRAPE,
-} from "@/data/constants";
+import a11yProps from "../utils/a11y-props";
 
 export type BottlingDetailsWidgetProps = {
   bottle: Bottle;
-  labReports: LabReport[];
 };
 
 export default function BottlingDetailsWidget({
   bottle,
-  labReports,
 }: BottlingDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
   const [localBottle, setLocalBottle] = useState<Bottle>(bottle);
-  const mountRef = useRef<boolean>(false);
-
-  const { user } = useAuth();
+  const [wineQuantity, setWineQuantity] = useState<number>(0);
+  //   const mountRef = useRef<boolean>(false);
+  //   const { user } = useAuth();
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -57,6 +31,11 @@ export default function BottlingDetailsWidget({
 
   useEffect(() => {
     setLocalBottle(bottle);
+    if (bottle.wines && bottle.wines.length > 0) {
+      setWineQuantity(
+        bottle.wines.map((wine) => wine.quantity).reduce((a, b) => a + b, 0)
+      );
+    }
   }, [bottle]);
 
   const sx = {
@@ -64,9 +43,9 @@ export default function BottlingDetailsWidget({
     minHeight: "fit-content !important",
   };
 
-  const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
-  const open = useDialogDrawerStore(({ open }) => open);
-  const openDeleteEntityDataDialog = () => open("delete-entity-data");
+  //   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  //   const open = useDialogDrawerStore(({ open }) => open);
+  //   const openDeleteEntityDataDialog = () => open("delete-entity-data");
 
   //   const handleDeleteClick = (labReport: LabReport) => {
   //     openDeleteEntityDataDialog();
@@ -165,7 +144,7 @@ export default function BottlingDetailsWidget({
           <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
             <SimpleDataDisplay
               label="Wine Supply"
-              value={localBottle?.qty?.toString() + " Kg" || "N/A"}
+              value={wineQuantity.toString() + " Kg" || "N/A"}
             />
             <ResponsibleTeamMemberDataDisplay
               label="Responsible Team Member"

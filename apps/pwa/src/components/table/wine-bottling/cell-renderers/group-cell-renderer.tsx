@@ -80,7 +80,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                   style={{ borderColor: "var(--mui-palette-divider)" }}
                   className="fixed bottom-0 border-t flex items-center justify-center left-0 w-full h-[300px] bg-transparent z-[9999]"
                 >
-                  <BottlingDetailsWidget bottle={node.data} labReports={[]} />
+                  <BottlingDetailsWidget bottle={node.data} />
                 </div>
               )}
             </>

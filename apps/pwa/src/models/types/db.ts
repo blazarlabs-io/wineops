@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
-import { ActionRelation, BottleWineAction } from "./actions";
+import {
+  ActionRelation,
+  BottleSize,
+  BottleWineAction,
+  PackagingType,
+  Recipe,
+  Subject,
+  WineActionType,
+} from "./actions";
 
 export type EntityName =
   | "UNKNOWN"
@@ -745,17 +753,62 @@ export type StorageCondition = {
   iotRoom?: string;
 };
 
-export type Bottle = Entity &
-  BottleWineAction & {
-    vintage?: number;
-    lotId?: string;
-    lotStatus?: LotStatus;
-    qty?: number;
-    bottlingDate?: string | Timestamp;
-    collectionLocation?: string;
-    tasks?: ActionRelation[];
-    notes?: ActionRelation[];
-  };
+export type Bottle = Entity & {
+  id: string;
+  vintage?: number;
+  lotId?: string;
+  lotStatus?: LotStatus;
+  collectionLocation?: string;
+  tasks?: ActionRelation[];
+  notes?: ActionRelation[];
+  //
+  type: WineActionType;
+  collectionName?: string;
+  executionDate: string | Timestamp;
+  subjectRecipe?: Subject<Recipe>;
+  wines: Array<{
+    id: Wine["id"];
+    name: Wine["name"];
+    qty: Wine["qty"];
+    quantity: number;
+    actions: ActionRelation[];
+  }>;
+  responsible?: TeamMember;
+  bottlingLine?: string;
+
+  // Bottle specs
+  bottleType: string; // Consumable["id"] with category Bottle
+  bottleSize: BottleSize;
+  closureType: string; // "Screw cap" | Consumable["id"] with category Cork
+  capsuleType?: string; // Consumable["id"] with category Capsule
+  labelType?: string; // Consumable["id"] with category Label
+  bottleWeight?: number; // gramms
+  labData?: ActionRelation[];
+
+  // Packaging details
+  packagingType?: PackagingType;
+  bottlesPerBox?: number;
+  packagingMaterial?: string;
+  palletId?: string;
+
+  // Final Lab Results
+  alcohol: number;
+  sugar: number;
+  pH: number;
+  totalSO2: number;
+  freeSO2: number;
+  turbidity?: number;
+  labCertificateId?: string;
+
+  // Quantity & Losses
+  numberOfBottles: number;
+  losses: number;
+
+  supportingDocuments?: Array<{
+    name: string;
+    url: string;
+  }>;
+};
 
 export const LotStatus = {
   PLANNED: "Planned",
