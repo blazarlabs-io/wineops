@@ -13,6 +13,7 @@ import GroupBadge from "../../group-badge";
 import CadastralDialog from "@/components/dialogs/cadastral-dialog";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import CollectionsDialog from "@/components/dialogs/collections-dialog";
+import BottlingDetailsWidget from "@/components/widgets/bottling/bottling-details-widget";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
@@ -79,10 +80,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                   style={{ borderColor: "var(--mui-palette-divider)" }}
                   className="fixed bottom-0 border-t flex items-center justify-center left-0 w-full h-[300px] bg-transparent z-[9999]"
                 >
-                  {/* <VineyardDetailsWidget
-                    vineyard={node.data}
-                    labReports={labData as LabReport[]}
-                  /> */}
+                  <BottlingDetailsWidget bottle={node.data} labReports={[]} />
                 </div>
               )}
             </>
@@ -98,21 +96,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                 node?.allLeafChildren?.length > 0 &&
                 node?.allLeafChildren?.map((child, index) => (
                   <div key={child.key} className="flex items-center gap-1">
-                    {/* {index < 1 ? (
-                      <Typography variant="body2">
-                        {child.data?.collectionName}
-                      </Typography>
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        className="max-h-fit"
-                        style={{
-                          display: index === 2 ? "block" : "none",
-                        }}
-                      >
-                        {`${(node?.allLeafChildren?.length as number) - 1} collections more`}
-                      </Typography>
-                    )} */}
                     {node?.allLeafChildren?.length === 1 ? (
                       <Typography variant="caption">
                         {child.data?.collectionName}

@@ -25,11 +25,6 @@ export const QuantityCellRenderer: FunctionComponent<
   //   if (grape?.id === node.data?.batch?.id) return grape;
   // });
 
-  const actualArr = result.map((item) => item.metrics?.actual || 0); //result[0]?.metrics?.actual || 0;
-  const actual = actualArr.reduce(
-    (accumulator, currentValue) => accumulator + currentValue,
-    0
-  );
   const supply = 0;
   const demand = 0;
 
@@ -51,6 +46,15 @@ export const QuantityCellRenderer: FunctionComponent<
     })
   );
 
+  // const isGroup = node?.group || node?.data?.rowType === "group";
+
+  // console.log("\n\n+++++++++++++++++++++++++++++++++++");
+  // console.log("value", value);
+  // console.log("node", node);
+  // console.log("result", result);
+  // console.log("metrics", metrics);
+  // console.log("+++++++++++++++++++++++++++++++++++\n\n");
+
   return (
     <Box
       display={"flex"}
@@ -65,7 +69,7 @@ export const QuantityCellRenderer: FunctionComponent<
         </Stack>
       ) : (
         <QuantityWidget
-          actual={actual}
+          actual={value}
           supply={supply}
           demand={demand}
           status={value?.status || node.data?.status}

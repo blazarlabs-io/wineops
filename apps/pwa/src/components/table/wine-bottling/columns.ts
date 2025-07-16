@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
 import { LotIdAndStatusCellRenderer } from "./cell-renderers/lot-id-and-status-cell-renderer";
-import { QuantityCellRenderer } from "../QuantityCellRenderer";
+import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";
 import { LocationCellRenderer } from "./cell-renderers/location-cell-renderer";
+import { BottlingDateCellRenderer } from "./cell-renderers/bottling-date-cell-renderer";
+import { NotesCellRenderer } from "./cell-renderers/notes-cell-renderer";
 
 export const columns: ColDef[] = [
   {
@@ -24,17 +26,20 @@ export const columns: ColDef[] = [
     filter: "agSetColumnFilter",
   },
   {
+    field: "lotStatus",
+    minWidth: 224,
+    flex: 1,
+    cellRenderer: LotIdAndStatusCellRenderer,
+    aggFunc: ({ values }: any) => values,
+    hide: true,
+  },
+  {
     headerName: "Bottling Date",
     field: "bottlingDate",
     minWidth: 156,
     flex: 1,
-    cellRenderer: "agCellRenderer",
-    // filter: "agSetColumnFilter",
-    // filterValueGetter: (params: any) => {
-    //   if (params?.data?.labData?.length > 0) {
-    //     params?.data?.labData?.map((b: any) => {});
-    //   }
-    // },
+    cellRenderer: BottlingDateCellRenderer,
+    aggFunc: ({ values }: any) => values,
   },
   {
     headerName: "Collection Location",
@@ -46,7 +51,7 @@ export const columns: ColDef[] = [
   },
   {
     field: "tasks",
-    minWidth: 224,
+    minWidth: 124,
     flex: 1,
     cellRenderer: "agCellRenderer",
   },
@@ -54,6 +59,6 @@ export const columns: ColDef[] = [
     field: "notes",
     minWidth: 224,
     flex: 1,
-    cellRenderer: "agCellRenderer",
+    cellRenderer: NotesCellRenderer,
   },
 ];

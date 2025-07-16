@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
-import { ActionRelation } from "./actions";
+import { ActionRelation, BottleWineAction } from "./actions";
 
 export type EntityName =
   | "UNKNOWN"
@@ -745,18 +745,17 @@ export type StorageCondition = {
   iotRoom?: string;
 };
 
-export type Bottle = Entity & {
-  collectionName?: string;
-  vintage?: number;
-  lotId?: string;
-  lotStatus?: LotStatus;
-  qty?: number;
-  bottlingDate?: string | Timestamp;
-  collectionLocation?: string;
-  tasks?: ActionRelation[];
-  notes?: ActionRelation[];
-  labData?: ActionRelation[];
-};
+export type Bottle = Entity &
+  BottleWineAction & {
+    vintage?: number;
+    lotId?: string;
+    lotStatus?: LotStatus;
+    qty?: number;
+    bottlingDate?: string | Timestamp;
+    collectionLocation?: string;
+    tasks?: ActionRelation[];
+    notes?: ActionRelation[];
+  };
 
 export const LotStatus = {
   PLANNED: "Planned",
