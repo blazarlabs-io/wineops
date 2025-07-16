@@ -12,9 +12,9 @@ export const LocationCellRenderer: FunctionComponent<
   const isGroup = node?.group || node?.data?.rowType === "group";
 
   if (isGroup) {
-    console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXX");
+    console.log("\n\nXXXXXXXXXXXXXXXXXXXXXX");
     console.log(node, value);
-    console.log("XXXXXXXXXXXXXXXXXXXXXXX\n\n");
+    console.log("XXXXXXXXXXXXXXXXXXXXXX\n\n");
   }
 
   return (
