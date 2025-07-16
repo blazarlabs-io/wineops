@@ -1107,7 +1107,7 @@ export default function GrapeIntakeActionForm({
             component="label"
             className="w-auto flex items-center gap-2"
           >
-            <Attachment className="w-4 h-4" />
+            <Attachment className="w-4 h-4 rotate-90" />
             Upload File
             <input
               type="file"

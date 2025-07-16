@@ -31,6 +31,7 @@ import { Timestamp } from "firebase/firestore";
 import { ExpandMore } from "@mui/icons-material";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { hasKeyFromArray } from "../utils";
 
 export default function GrapeForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1255,6 +1256,3 @@ export default function GrapeForm() {
     </>
   );
 }
-
-const hasKeyFromArray = (errorKeys: string[], errorsObj: any) =>
-  errorKeys.some((element) => Object.keys(errorsObj).includes(element));

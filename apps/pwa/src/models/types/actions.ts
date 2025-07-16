@@ -11,13 +11,15 @@ import {
   Supplier,
   TeamMember,
   Vineyard,
+  Wine,
 } from "./db";
+import { DashboardEntity } from "./dashboard";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export interface Subject {
-  id: string;
-  name: string;
+export interface Subject<T extends DashboardEntity | Recipe = DashboardEntity> {
+  id: T["id"];
+  name: T["name"];
 }
 
 export type VineyardSingleAction = {
@@ -219,6 +221,87 @@ export type ActionRelation = {
   date?: string | Timestamp;
 };
 
-export type ActionsEntity = VineyardActions | GrapeActions | MustActions;
+export type ActionsEntity =
+  | VineyardActions
+  | GrapeActions
+  | MustActions
+  | WineActions;
 
-export type SingleActionEntity = VineyardSingleAction | GrapeSingleAction;
+export type SingleActionEntity =
+  | VineyardSingleAction
+  | GrapeSingleAction
+  | WineSingleAction;
+
+export type WineSingleAction = {
+  exec: (uid: string, actionData: any, recipe: Recipe) => void;
+  form: any;
+  icon: string;
+  title?: string;
+};
+
+export type WineActions = {
+  "bottle-a-wine": WineSingleAction;
+};
+
+export type WineActionType = "bottle-a-wine" | null;
+
+export type Recipe = Record<string, any>;
+
+export type BottleSize = 0.375 | 0.75;
+
+export const PackagingType = {
+  SIX_PACK: "6-pack Box",
+  TWELVE_PACK: "12-pack Box",
+  MAGNUM_CASE: "Magnum Case",
+} as const;
+
+export type PackagingType = (typeof PackagingType)[keyof typeof PackagingType];
+
+export type BottleWineAction = {
+  id: string;
+  type: WineActionType;
+  collectionName?: string;
+  executionDate: string | Timestamp;
+  subjectRecipe?: Subject<Recipe>;
+  wines: Array<{
+    id: Wine["id"];
+    name: Wine["name"];
+    qty: Wine["qty"];
+    quantity: number;
+    actions: ActionRelation[];
+  }>;
+  responsible?: TeamMember;
+  bottlingLine?: string;
+
+  // Bottle specs
+  bottleType: string; // Consumable["id"] with category Bottle
+  bottleSize: BottleSize;
+  closureType: string; // "Screw cap" | Consumable["id"] with category Cork
+  capsuleType?: string; // Consumable["id"] with category Capsule
+  labelType?: string; // Consumable["id"] with category Label
+  bottleWeight?: number; // gramms
+
+  // Packaging details
+  packagingType?: PackagingType;
+  bottlesPerBox?: number;
+  packagingMaterial?: string;
+  palletId?: string;
+
+  // Final Lab Results
+  alcohol: number;
+  sugar: number;
+  pH: number;
+  totalSO2: number;
+  freeSO2: number;
+  turbidity?: number;
+  labCertificateId?: string;
+
+  // Quantity & Losses
+  numberOfBottles: number;
+  losses: number;
+
+  supportingDocuments?: Array<{
+    name: string;
+    url: string;
+  }>;
+};

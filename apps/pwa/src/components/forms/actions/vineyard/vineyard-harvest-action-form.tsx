@@ -1380,7 +1380,7 @@ export default function VineyardHarvestActionForm({
                   className="w-auto flex items-center gap-2"
                   sx={{ pb: 0.75 }}
                 >
-                  <Attachment className="w-4 h-4" />
+                  <Attachment className="w-4 h-4 rotate-90" />
                   <input
                     type="file"
                     ref={fileInputRef}

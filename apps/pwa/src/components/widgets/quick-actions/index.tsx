@@ -3,6 +3,8 @@ import {
   GrapeActions,
   VineyardActions,
   VineyardSingleAction,
+  WineActions,
+  WineSingleAction,
 } from "@/models/types/actions";
 import { useCallback, useEffect, useState } from "react";
 import QuickActionsWidgetStepOne from "./step-one";
@@ -75,6 +77,12 @@ export default function QuickActionsWidget({
               onClick={handleActionClick}
             />
           )}
+          {dashboard === "secondary-vinification" && (
+            <QuickActionsWidgetStepOne<WineActions>
+              actions={actions}
+              onClick={handleActionClick}
+            />
+          )}
         </>
       )}
       {step === 2 && (
@@ -95,6 +103,13 @@ export default function QuickActionsWidget({
           )}
           {dashboard === "primary-vinification" && (
             <QuickActionsWidgetStepTwo<VineyardSingleAction>
+              title={formTitle}
+              selectedAction={selectedAction}
+              onBackClick={handleBackClick}
+            />
+          )}
+          {dashboard === "secondary-vinification" && (
+            <QuickActionsWidgetStepTwo<WineSingleAction>
               title={formTitle}
               selectedAction={selectedAction}
               onBackClick={handleBackClick}

@@ -14,6 +14,7 @@ import {
   GrapeActions,
   MustActions,
   VineyardActions,
+  WineActions,
 } from "@/models/types/actions";
 import { QuickDrawerType } from "@/models/types/db";
 import { Box } from "@mui/material";
@@ -28,6 +29,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useGrape } from "@/context/grape";
 import { useMust } from "@/context/must";
 import QuickTasksDrawer from "../drawers/quick-tasks-drawer";
+import { useWine } from "@/context/wine";
 
 interface MainProps {
   window?: () => Window;
@@ -42,6 +44,7 @@ export default function WorkspaceLayout(props: MainProps) {
   const { actions: vineyardActions } = useVineyard();
   const { actions: grapeActions } = useGrape();
   const { actions: mustActions } = useMust();
+  const { actions: wineActions } = useWine();
 
   const pathname = usePathname();
   const router = useDemoRouter("/workspace");
@@ -176,6 +179,14 @@ export default function WorkspaceLayout(props: MainProps) {
               <QuickActionsDrawer<MustActions>
                 open={open && type === "actions"}
                 actions={mustActions}
+                onOpenChange={() => handleOpenChange("actions", false)}
+                dashboard={currentDashboard}
+              />
+            )}
+            {currentDashboard === "secondary-vinification" && (
+              <QuickActionsDrawer<WineActions>
+                open={open && type === "actions"}
+                actions={wineActions}
                 onOpenChange={() => handleOpenChange("actions", false)}
                 dashboard={currentDashboard}
               />
