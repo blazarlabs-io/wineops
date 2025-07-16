@@ -1,4 +1,5 @@
 import {
+  Bottle,
   Chemistry,
   Consumable,
   Grape,
@@ -20,6 +21,7 @@ export type DashboardEntity =
   | Vessel
   | Chemistry
   | Consumable
+  | Bottle
   | MustWithVessel;
 
 export type EntityStatus = VineyardStatus | GrapeStatus | Priority;
