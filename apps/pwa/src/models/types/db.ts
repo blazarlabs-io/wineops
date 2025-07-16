@@ -743,3 +743,25 @@ export type StorageCondition = {
   vibrationLevel?: number;
   iotRoom?: string;
 };
+
+export type Bottle = Entity & {
+  collectionName?: string;
+  vintage?: number;
+  lotId?: string;
+  lotStatus?: LotStatus;
+  qty?: number;
+  bottlingDate?: string | Timestamp;
+  collectionLocation?: string;
+  tasks?: ActionRelation[];
+  notes?: ActionRelation[];
+  labData?: ActionRelation[];
+};
+
+export const LotStatus = {
+  PLANNED: "Planned",
+  IN_PROGRESS: "In Progress",
+  COMPLETED: "Completed",
+  STORED: "Stored",
+} as const;
+
+export type LotStatus = (typeof LotStatus)[keyof typeof LotStatus];
