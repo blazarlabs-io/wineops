@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import BottlingDateDialog from "@/components/dialogs/bottling-date-dialog";
 import LocationDialog from "@/components/dialogs/location-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { CalendarMonth } from "@mui/icons-material";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { Box, Button, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useState, type FunctionComponent } from "react";
 
-export const LocationCellRenderer: FunctionComponent<
+export const BottlingDateCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ node, value }) => {
   const [openLocations, setOpenLocations] = useState<boolean>(false);
@@ -22,8 +24,8 @@ export const LocationCellRenderer: FunctionComponent<
       height={ROW_HEIGHT_DEFAULT}
     >
       {!isGroup ? (
-        <div className="flex items-center justify-start gap-[2px]! ">
-          <LocationOnOutlinedIcon
+        <div className="flex items-center justify-start gap-[4px]! ">
+          <CalendarMonth
             sx={({ typography }) => ({
               width: typography.body1.fontSize,
               height: typography.body1.fontSize,
@@ -40,12 +42,12 @@ export const LocationCellRenderer: FunctionComponent<
             value.map((item: any, index: number) => (
               <div key={index} className="max-w-fit max-h-fit! leading-0!">
                 <div
-                  className="flex fle-row items-center gap-[2px]! w-full"
+                  className="flex fle-row items-center gap-[4px]! w-full"
                   style={{
                     display: index < 2 ? "flex" : "none",
                   }}
                 >
-                  <LocationOnOutlinedIcon
+                  <CalendarMonth
                     sx={({ typography }) => ({
                       width: typography.body1.fontSize,
                       height: typography.body1.fontSize,
@@ -75,12 +77,12 @@ export const LocationCellRenderer: FunctionComponent<
                   >
                     {node?.allLeafChildren?.length &&
                       node?.allLeafChildren?.length - 2}{" "}
-                    more locations
+                    more dates
                   </Button>
                 )}
               </div>
             ))}
-          <LocationDialog
+          <BottlingDateDialog
             open={openLocations}
             onClose={() => setOpenLocations(false)}
             data={value}

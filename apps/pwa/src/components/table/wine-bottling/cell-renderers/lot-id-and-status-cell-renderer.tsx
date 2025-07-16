@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import LotIdAndLotStatusDialog from "@/components/dialogs/lot-id-lot-status-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { Box, Chip, Typography } from "@mui/material";
+import { Box, Button, Chip, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import { useState, type FunctionComponent } from "react";
+import { useEffect, useState, type FunctionComponent } from "react";
 
 export const LotIdAndStatusCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ node, value }) => {
-  const [openCollections, setOpenCollections] = useState<boolean>(false);
-
+  const [openLots, setOpenLots] = useState<boolean>(false);
   const isGroup = node?.group || node?.data?.rowType === "group";
 
   return (
@@ -18,18 +19,75 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
       width={"100%"}
       height={ROW_HEIGHT_DEFAULT}
     >
-      {!isGroup && (
-        <div className="flex flex-col items-start justify-start gap-[4px]! ">
+      {!isGroup ? (
+        <div className="flex flex-col items-start justify-start gap-[4px]!">
           <Typography variant="body2" className="font-semibold max-h-fit!">
             {value}
           </Typography>
           <Chip
-            label={node.data.lotStatus}
+            label={node.data?.lotStatus}
             variant="outlined"
-            className="m-0! p-0! max-h-fit"
+            className="m-0! p-1! max-h-fit text-xs! max-w-fit"
           />
         </div>
+      ) : (
+        <div className="flex flex-col items-start justify-start gap-[4px]!">
+          {node.allLeafChildren &&
+            node.allLeafChildren.length > 0 &&
+            node.allLeafChildren.map((_node: any, index: number) => (
+              <div
+                key={_node.id + node.data?.lotId + index}
+                className="leading-8!"
+                style={{
+                  display: index === 1 ? "block" : "none",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  className="font-semibold max-h-fit!"
+                >
+                  {_node.data.lotId}
+                </Typography>
+                <Chip
+                  label={_node.data.lotStatus}
+                  variant="outlined"
+                  size="small"
+                  className="m-0! p-1! max-h-fit text-xs!"
+                />
+              </div>
+            ))}
+          <div className="max-w-fit max-h-fit! leading-0!">
+            <Button
+              type="button"
+              variant="text"
+              size="small"
+              color="primary"
+              className="lowercase!"
+              sx={{
+                maxWidth: "fit-content",
+                padding: "0px !important",
+                maxHeight: "fit-content !important",
+              }}
+              onClick={() => setOpenLots(true)}
+            >
+              {node?.allLeafChildren?.length &&
+                node?.allLeafChildren?.length - 1}{" "}
+              lots more
+            </Button>
+          </div>
+        </div>
       )}
+      <LotIdAndLotStatusDialog
+        open={openLots}
+        onClose={() => setOpenLots(false)}
+        ids={
+          node?.allLeafChildren?.map((_node: any) => _node.data?.lotId) || []
+        }
+        statuses={
+          node?.allLeafChildren?.map((_node: any) => _node.data?.lotStatus) ||
+          []
+        }
+      />
     </Box>
   );
 };
