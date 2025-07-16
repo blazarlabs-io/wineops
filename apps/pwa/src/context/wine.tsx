@@ -15,9 +15,13 @@ import {
   useMemo,
 } from "react";
 import { useVessel } from "./vessel";
+import { WineActions } from "@/models/types/actions";
+import BottleWineActionForm from "@/components/forms/actions/wine/bottle-wine-action-form";
+import { bottleWineAction } from "@/lib/actions/wine-actions";
 
 interface WineContextType {
   wines: Wine[];
+  actions: WineActions;
 }
 
 const WineContext = createContext<WineContextType | null>(null);
@@ -40,6 +44,14 @@ export const WineProvider = ({ children }: IWineProvider) => {
   const { user } = useAuth();
 
   const [wines, setWines] = useState<Wine[]>([]);
+  const [actions] = useState<WineActions>({
+    "bottle-a-wine": {
+      exec: bottleWineAction,
+      form: BottleWineActionForm,
+      icon: "mdi:bottle-wine-outline",
+      title: "Bottle a wine",
+    },
+  });
 
   useEffect(() => {
     let unsubWines = () => {};
@@ -103,6 +115,7 @@ export const WineProvider = ({ children }: IWineProvider) => {
     <WineContext
       value={{
         wines: hydratedWines,
+        actions,
       }}
     >
       {children}

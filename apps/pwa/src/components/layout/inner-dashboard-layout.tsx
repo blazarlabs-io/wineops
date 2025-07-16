@@ -9,6 +9,7 @@ import {
   GrapeActions,
   MustActions,
   VineyardActions,
+  WineActions,
 } from "@/models/types/actions";
 import { QuickDrawerType } from "@/models/types/db";
 import Box from "@mui/material/Box";
@@ -17,6 +18,7 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
+import { useWine } from "@/context/wine";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -60,6 +62,8 @@ export default function QickTasksWrapper({
   const { actions: vineyardActions } = useVineyard();
   const { actions: grapeActions } = useGrape();
   const { actions: mustActions } = useMust();
+  const { actions: wineActions } = useWine();
+
   const pn = usePathname();
   const router = useRouter();
   const [currentDashboard, setCurrentDashboard] = useState<string>("");
@@ -130,6 +134,13 @@ export default function QickTasksWrapper({
             <QuickActionsDrawer<MustActions>
               open={open && type === "actions"}
               actions={mustActions}
+              onOpenChange={() => handleOpenChange("actions")}
+            />
+          )}
+          {currentDashboard === "secondary-vinification" && (
+            <QuickActionsDrawer<WineActions>
+              open={open && type === "actions"}
+              actions={wineActions}
               onOpenChange={() => handleOpenChange("actions")}
             />
           )}

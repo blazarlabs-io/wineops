@@ -606,6 +606,7 @@ export const ConsumableCategory = {
   CORK: "Cork",
   BOTTLE: "Bottle",
   FILTER: "Filter",
+  CAPSULE: "Capsule",
 } as const;
 
 export type ConsumableCategory =
