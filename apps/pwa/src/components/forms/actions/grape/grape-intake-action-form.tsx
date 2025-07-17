@@ -528,20 +528,20 @@ export default function GrapeIntakeActionForm({
                   <div className="flex flex-col gap-2">
                     <FormControl fullWidth>
                       <TextField
-                        id="certificateDeInofensiviate"
+                        id="certificatDeInofensivitate"
                         label="Certificate de Inofensivitate"
                         variant="outlined"
-                        {...register("certificateDeInofensiviate")}
+                        {...register("certificatDeInofensivitate")}
                       />
                     </FormControl>
 
-                    {errors?.certificateDeInofensiviate && (
+                    {errors?.certificatDeInofensivitate && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.certificateDeInofensiviate?.message as string}
+                        {errors?.certificatDeInofensivitate?.message as string}
                       </Typography>
                     )}
                   </div>
