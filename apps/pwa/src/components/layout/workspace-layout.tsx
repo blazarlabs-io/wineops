@@ -65,20 +65,15 @@ export default function WorkspaceLayout(props: MainProps) {
   );
 
   useEffect(() => {
-    console.log("\n\n==========================");
-    console.log("ROUTER PATHNAME", router.pathname);
-    console.log("PATHNAME", pathname);
-    console.log("==========================\n\n");
-
     if (router.pathname.startsWith("/workspace")) {
       const splitedPathname = pathname.split(
         "/workspace/wine-production/"
       ) as unknown as ActionsEntity[];
       setCurrentDashboard(splitedPathname[1] as unknown as string);
-      console.log(
-        "\n\nCURRENT DASHBOARD",
-        splitedPathname[1] as unknown as string
-      );
+      // console.log(
+      //   "\n\nCURRENT DASHBOARD",
+      //   splitedPathname[1] as unknown as string
+      // );
       return;
     }
 
@@ -92,7 +87,7 @@ export default function WorkspaceLayout(props: MainProps) {
       ] as unknown as string;
 
       setCurrentDashboard(current);
-      console.log("\n\nCURRENT DASHBOARD", current);
+      // console.log("\n\nCURRENT DASHBOARD", current);
       navRouter.push(`/workspace/${router.pathname}`);
     }
   }, [router.pathname]);

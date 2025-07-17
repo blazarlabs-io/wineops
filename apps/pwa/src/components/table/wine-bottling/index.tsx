@@ -1,16 +1,15 @@
 "use client";
 
 import { DataTable } from "@/components/table/data-table";
-import { useVineyard } from "@/context/vineyard";
+import { useBottle } from "@/context/bottle";
 import { GROUP_COLUMN_WIDTH } from "@/data/constants";
-import { Bottle, Vineyard } from "@/models/types/db";
+import { Bottle } from "@/models/types/db";
 import { useMemo } from "react";
 import { GroupCellRenderer } from "./cell-renderers/group-cell-renderer";
 import { columns } from "./columns";
-import { wineBottlingDataSample } from "@/data/wine-bottling-data-sample";
 
 export default function WineBottlingTable() {
-  const { vineyards = [] } = useVineyard();
+  const { bottles } = useBottle();
 
   //   const normalizedBottles = useMemo(
   //     () =>
@@ -26,7 +25,7 @@ export default function WineBottlingTable() {
   //     [vineyards]
   //   );
 
-  const normalizedBottles = useMemo(() => wineBottlingDataSample, []);
+  const normalizedBottles = useMemo(() => bottles, [bottles]);
   console.log("normalizedBottles", normalizedBottles);
   return (
     <DataTable<Bottle>
@@ -45,7 +44,7 @@ export default function WineBottlingTable() {
         lockPosition: true,
         suppressMovable: true,
       }}
-      entityName="vineyard"
+      entityName="bottle"
     />
   );
 }

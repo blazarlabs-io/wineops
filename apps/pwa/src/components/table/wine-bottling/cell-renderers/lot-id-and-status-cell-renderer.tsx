@@ -18,6 +18,12 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
     // TODO: update lot status in db
   };
 
+  console.log("\n\n==========================");
+  console.log("IS GROUP", isGroup);
+  console.log("NODE", node);
+  console.log("VALUE", value);
+  console.log("==========================\n\n");
+
   return (
     <Box
       display={"flex"}
@@ -29,10 +35,10 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
       {!isGroup ? (
         <div className="flex flex-col items-start justify-start gap-[4px]!">
           <Typography variant="body2" className="font-semibold max-h-fit!">
-            {value}
+            {value || "Lot ID N/A"}
           </Typography>
           <BottlingStatusDataDisplaySelect
-            status={node.data?.lotStatus}
+            status={node.data?.lotStatus || LotStatus.PLANNED}
             onSelect={handleStatusChange}
           />
         </div>
@@ -52,10 +58,10 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
                   variant="body2"
                   className="font-semibold max-h-fit!"
                 >
-                  {_node.data.lotId}
+                  {_node.data.lotId || "N/A"}
                 </Typography>
                 <Chip
-                  label={_node.data.lotStatus}
+                  label={_node.data.lotStatus || LotStatus.PLANNED}
                   variant="outlined"
                   size="small"
                   className="m-0! p-1! max-h-fit text-xs!"
@@ -93,11 +99,16 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
         open={openLots}
         onClose={() => setOpenLots(false)}
         ids={
-          node?.allLeafChildren?.map((_node: any) => _node.data?.lotId) || []
+          node?.allLeafChildren?.map((_node: any) =>
+            _node.data?.lotId?.length > 0 ? _node.data?.lotId : ["Lot ID N/A"]
+          ) || []
         }
         statuses={
-          node?.allLeafChildren?.map((_node: any) => _node.data?.lotStatus) ||
-          []
+          node?.allLeafChildren?.map((_node: any) =>
+            _node.data?.lotStatus?.length > 0
+              ? _node.data?.lotStatus
+              : [LotStatus.PLANNED]
+          ) || []
         }
       />
     </Box>

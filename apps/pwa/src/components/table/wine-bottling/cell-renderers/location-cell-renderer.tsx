@@ -38,7 +38,7 @@ export const LocationCellRenderer: FunctionComponent<
             })}
           />
           <Typography variant="body2" className="font-semibold max-h-fit!">
-            {value}
+            {value || "N/A"}
           </Typography>
         </div>
       ) : (
@@ -63,7 +63,7 @@ export const LocationCellRenderer: FunctionComponent<
                     variant="body2"
                     className="font-semibold max-h-fit!"
                   >
-                    {item}
+                    {item || "N/A"}
                   </Typography>
                 </div>
                 {index === 2 && (

@@ -22,7 +22,8 @@ export type EntityName =
   | "task"
   | "team"
   | "anexa14"
-  | "labReport";
+  | "labReport"
+  | "bottle";
 
 export const EntitiesNames: Record<EntityName, string[]> = {
   UNKNOWN: ["UNKNOWN", "UNKNOWNS"],
@@ -37,6 +38,7 @@ export const EntitiesNames: Record<EntityName, string[]> = {
   team: ["team member", "team members"],
   anexa14: ["report", "reports"],
   labReport: ["lab report", "lab reports"],
+  bottle: ["bottle", "bottles"],
 } as const;
 
 export const WineColor = {
@@ -805,6 +807,10 @@ export type Bottle = Entity & {
     name: string;
     url: string;
   }>;
+
+  tasks?: Task[];
+  notes?: Note[];
+  labData?: ActionRelation[];
 };
 
 export const LotStatus = {

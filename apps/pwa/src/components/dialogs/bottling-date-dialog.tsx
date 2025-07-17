@@ -64,8 +64,8 @@ export default function BottlingDateDialog({
           }}
         >
           {data.map((d: any, index: number) => (
-            <DialogContentText key={index + d.toDate().toLocaleDateString()}>
-              {d.toDate().toLocaleDateString()}
+            <DialogContentText key={index + d?.toDate().toLocaleDateString()}>
+              {d?.toDate().toLocaleDateString()}
             </DialogContentText>
           ))}
         </div>
