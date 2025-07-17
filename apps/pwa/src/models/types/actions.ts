@@ -83,7 +83,7 @@ export type GrapeIntakeAction = {
     massFractionMixed?: number;
   };
   labCertificateId?: string;
-  certificateDeInofensiviate?: string;
+  certificatDeInofensivitate?: string;
   labTechnicianName?: string;
   processingLocation?: string;
   transportInfo?: {

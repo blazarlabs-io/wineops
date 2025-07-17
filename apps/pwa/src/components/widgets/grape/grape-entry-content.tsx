@@ -25,7 +25,7 @@ export default function GrapeEntryContent({
   } = entry;
 
   return (
-    <div className="grid grid-cols-5 w-full p-0 py-2">
+    <div className="grid grid-cols-4 w-full p-0 py-2">
       <SimpleDataDisplay
         label="Gross weight"
         value={
@@ -61,10 +61,6 @@ export default function GrapeEntryContent({
       <SimpleDataDisplay
         label="Press (used)"
         value={processingInfo.pressUsed || "N/A"}
-      />
-      <SimpleDataDisplay
-        label="Vessel Used"
-        value={processingInfo.vesselUsed || "N/A"}
       />
     </div>
   );

@@ -28,26 +28,25 @@ export default function SupplierContent({
         </Link>
       </Stack>
 
-      <div className="grid grid-cols-5 w-full py-2 items-center justify-center">
+      <div className="grid grid-cols-4 w-full py-2 items-center justify-center">
         <SimpleDataDisplay
           label="Vehicle ID Number"
           value={vehicleIdNo ?? "N/A"}
         />
-        <SimpleDataDisplay label="Company Name" value={companyName ?? "N/A"} />
+        <SimpleDataDisplay
+          label="Transportation Company"
+          value={companyName ?? "N/A"}
+        />
         <SimpleDataDisplay label="Driver ID/Name" value={driverIdNo ?? "N/A"} />
         <SimpleDataDisplay
           label="Certificat de Inofensivitate"
           value={certificate ?? "N/A"}
         />
-        <SimpleDataDisplay
-          label="Acquisition Invoice Number"
-          value={acquisitionInvoiceNo ?? "N/A"}
-        />
 
         {transportationInfo && (
           <>
             <SimpleDataDisplay
-              label="Company Name"
+              label="Supplier Name"
               value={supplier.companyName ?? "N/A"}
             />
             <SimpleDataDisplay
@@ -56,7 +55,7 @@ export default function SupplierContent({
             />
             <SimpleDataDisplay
               label="Invoice No"
-              value={supplier.invoiceNo ?? "N/A"}
+              value={acquisitionInvoiceNo ?? "N/A"}
             />
             <SimpleDataDisplay
               label="Vineyard Name"
