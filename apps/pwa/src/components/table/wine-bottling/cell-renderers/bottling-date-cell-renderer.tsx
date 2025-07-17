@@ -32,7 +32,7 @@ export const BottlingDateCellRenderer: FunctionComponent<
             })}
           />
           <Typography variant="body2" className="font-semibold max-h-fit!">
-            {value}
+            {value.toDate().toLocaleString()}
           </Typography>
         </div>
       ) : (
@@ -57,7 +57,7 @@ export const BottlingDateCellRenderer: FunctionComponent<
                     variant="body2"
                     className="font-semibold max-h-fit!"
                   >
-                    {item}
+                    {item.toDate().toLocaleDateString()}
                   </Typography>
                 </div>
                 {index === 2 && (

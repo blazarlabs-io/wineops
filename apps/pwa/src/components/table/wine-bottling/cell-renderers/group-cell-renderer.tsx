@@ -1,19 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import CertificationsDataDisplay from "@/components/data-display/certifications-data-display";
-import VineyardDetailsWidget from "@/components/widgets/vineyard/vineyard-details-widget";
+import CollectionsDialog from "@/components/dialogs/collections-dialog";
+import BottlingDetailsWidget from "@/components/widgets/bottling/bottling-details-widget";
 import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED } from "@/data/constants";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { ExpandMore } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useCallback, useState, type FunctionComponent } from "react";
-import { useVineyard } from "@/context/vineyard";
-import { useGetLabData } from "@/hooks/use-get-lab-data";
-import { LabReport } from "@/models/types/db";
-import GroupBadge from "../../group-badge";
-import CadastralDialog from "@/components/dialogs/cadastral-dialog";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import CollectionsDialog from "@/components/dialogs/collections-dialog";
-import BottlingDetailsWidget from "@/components/widgets/bottling/bottling-details-widget";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
@@ -30,8 +23,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   }, [node]);
 
   const isGroup = node?.group || node?.data?.rowType === "group";
-
-  if (isGroup) console.log(node);
 
   return (
     <Box
@@ -98,7 +89,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                   <div key={child.key} className="flex items-center gap-1">
                     {node?.allLeafChildren?.length === 1 ? (
                       <Typography variant="caption">
-                        {child.data?.collectionName}
+                        {child.data?.name}
                       </Typography>
                     ) : (
                       <>
@@ -124,7 +115,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
           ) : (
             <>
               <Typography variant="body1" className="max-h-fit">
-                {node?.data?.collectionName}
+                {node?.data?.name}
               </Typography>
               <div className="flex items-center gap-1">
                 <Icon icon="formkit:date" width="12" height="12" />

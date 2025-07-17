@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import TabPanel from "../components/tab-panel";
 import TasksView from "../components/tasks-view";
 import a11yProps from "../utils/a11y-props";
+import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 
 export type BottlingDetailsWidgetProps = {
   bottle: Bottle;
@@ -144,7 +145,10 @@ export default function BottlingDetailsWidget({
           <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
             <SimpleDataDisplay
               label="Wine Supply"
-              value={wineQuantity.toString() + " Kg" || "N/A"}
+              value={
+                formatNumberWithLowerCaseUnitAndSpace(wineQuantity, "kg") ||
+                "N/A"
+              }
             />
             <ResponsibleTeamMemberDataDisplay
               label="Responsible Team Member"
@@ -153,11 +157,16 @@ export default function BottlingDetailsWidget({
             />
             <SimpleDataDisplay
               label="Bottling Line"
-              value={localBottle?.bottlingLine?.toString() || "N/A"}
+              value={localBottle?.bottlingLine || "N/A"}
             />
             <SimpleDataDisplay
               label="Losses"
-              value={localBottle?.losses?.toString() || "N/A"}
+              value={
+                formatNumberWithLowerCaseUnitAndSpace(
+                  localBottle?.losses,
+                  "l"
+                ) || "N/A"
+              }
             />
           </div>
         </div>
@@ -169,7 +178,7 @@ export default function BottlingDetailsWidget({
               label="Bottle Type"
               value={
                 localBottle?.bottleType !== undefined
-                  ? localBottle?.bottleType?.toString() + " Kg"
+                  ? localBottle?.bottleType?.toString()
                   : "N/A"
               }
             />
@@ -177,7 +186,10 @@ export default function BottlingDetailsWidget({
               label="Bottle Size"
               value={
                 localBottle?.bottleSize !== undefined
-                  ? localBottle?.bottleSize?.toString() + " Ml"
+                  ? formatNumberWithLowerCaseUnitAndSpace(
+                      localBottle?.bottleSize,
+                      "ml"
+                    )
                   : "N/A"
               }
             />
@@ -209,7 +221,10 @@ export default function BottlingDetailsWidget({
               label="Bottle Weight"
               value={
                 localBottle?.bottleWeight !== undefined
-                  ? localBottle?.bottleWeight?.toString() + " Kg"
+                  ? formatNumberWithLowerCaseUnitAndSpace(
+                      localBottle?.bottleWeight,
+                      "kg"
+                    )
                   : "N/A"
               }
             />
@@ -222,7 +237,7 @@ export default function BottlingDetailsWidget({
             label="Packaging Type"
             value={
               localBottle?.packagingType !== undefined
-                ? localBottle?.packagingType?.toString() + " Kg"
+                ? localBottle?.packagingType
                 : "N/A"
             }
           />
@@ -230,7 +245,10 @@ export default function BottlingDetailsWidget({
             label="Bottles Per Box"
             value={
               localBottle?.bottlesPerBox !== undefined
-                ? localBottle?.bottlesPerBox?.toString() + " Kg"
+                ? formatNumberWithLowerCaseUnitAndSpace(
+                    localBottle?.bottlesPerBox,
+                    "kg"
+                  )
                 : "N/A"
             }
           />
@@ -238,7 +256,7 @@ export default function BottlingDetailsWidget({
             label="Packaging Material"
             value={
               localBottle?.packagingMaterial !== undefined
-                ? localBottle?.packagingMaterial?.toString() + " Kg"
+                ? localBottle?.packagingMaterial
                 : "N/A"
             }
           />
@@ -246,7 +264,7 @@ export default function BottlingDetailsWidget({
             label="Pallet ID"
             value={
               localBottle?.palletId !== undefined
-                ? localBottle?.palletId?.toString() + " Kg"
+                ? localBottle?.palletId
                 : "N/A"
             }
           />

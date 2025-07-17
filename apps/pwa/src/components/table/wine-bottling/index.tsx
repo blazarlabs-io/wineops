@@ -27,7 +27,7 @@ export default function WineBottlingTable() {
   //   );
 
   const normalizedBottles = useMemo(() => wineBottlingDataSample, []);
-
+  console.log("normalizedBottles", normalizedBottles);
   return (
     <DataTable<Bottle>
       data={normalizedBottles}
@@ -35,7 +35,6 @@ export default function WineBottlingTable() {
       groupColumnDef={{
         headerName: "Collection Name & Vintage",
         rowDrag: true,
-
         cellRendererParams: {
           innerRenderer: GroupCellRenderer,
           suppressCount: true,

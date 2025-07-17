@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CalendarMonth, Close } from "@mui/icons-material";
 import {
   Button,
@@ -14,7 +15,7 @@ import { ReactNode } from "react";
 export interface BottlingDateDialogProps {
   open: boolean;
   onClose: () => void;
-  data: string[];
+  data: any;
   title?: ReactNode;
 }
 
@@ -62,8 +63,10 @@ export default function BottlingDateDialog({
             borderColor: "var(--mui-palette-divider)",
           }}
         >
-          {data.map((d, index) => (
-            <DialogContentText key={index + d}>{d}</DialogContentText>
+          {data.map((d: any, index: number) => (
+            <DialogContentText key={index + d.toDate().toLocaleDateString()}>
+              {d.toDate().toLocaleDateString()}
+            </DialogContentText>
           ))}
         </div>
       </DialogContent>

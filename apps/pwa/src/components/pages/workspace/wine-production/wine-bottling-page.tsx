@@ -1,4 +1,4 @@
-import WineBottlingDashboard from "@/components/dashboards/vineyards/wine-bottling-dashboard";
+import WineBottlingDashboard from "@/components/dashboards/wine-bottling/wine-bottling-dashboard";
 
 export default function WineBottlingPage() {
   return <WineBottlingDashboard />;
