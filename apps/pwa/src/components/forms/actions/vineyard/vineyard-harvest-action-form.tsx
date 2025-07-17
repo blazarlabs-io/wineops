@@ -533,20 +533,6 @@ export default function VineyardHarvestActionForm({
 
       setHarvestEnded(selected.status === VineyardStatus.HARVEST_ENDED);
 
-      //  * We get all batches data belonging to the selected vineyard
-      const withBatches = grapes.filter((g) =>
-        selected?.batches?.some((b: ActionRelation) => b.id === g.id)
-      );
-
-      // * We calculate the total weight
-      const totalWeight = withBatches.reduce(
-        (accumulator, currentValue) =>
-          accumulator + (currentValue.metrics?.actual || 0),
-        0
-      );
-
-      vineyardHarvestActionSample.weight = totalWeight > 0 ? totalWeight : "";
-
       vineyardHarvestActionSample.supportingDocuments = [];
 
       const result = {
@@ -617,28 +603,7 @@ export default function VineyardHarvestActionForm({
 
       console.log("LAB REPORT", vineyardHarvestActionSample);
 
-      //  * We get all batches data belonging to the selected vineyard
-      const withBatches = grapes.filter((g) =>
-        selectedVineyards[0]?.batches?.some(
-          (b: ActionRelation) => b.id === g.id
-        )
-      );
-
-      // * We calculate the total weight
-      const totalWeight = withBatches.reduce(
-        (accumulator, currentValue) =>
-          accumulator + (currentValue.metrics?.actual || 0),
-        0
-      );
-
-      // * We set the total weight
-      vineyardHarvestActionSample.weight = totalWeight > 0 ? totalWeight : "";
-
-      console.log(
-        "vineyardHarvestActionSample",
-        withBatches,
-        vineyardHarvestActionSample
-      );
+      console.log("vineyardHarvestActionSample", vineyardHarvestActionSample);
     } else {
       setDisableSubject(false);
     }
