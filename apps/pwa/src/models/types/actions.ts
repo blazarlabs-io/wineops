@@ -83,7 +83,7 @@ export type GrapeIntakeAction = {
     massFractionMixed?: number;
   };
   labCertificateId?: string;
-  certificateDeInofensiviate?: string;
+  certificatDeInofensivitate?: string;
   labTechnicianName?: string;
   processingLocation?: string;
   transportInfo?: {
@@ -260,7 +260,8 @@ export type PackagingType = (typeof PackagingType)[keyof typeof PackagingType];
 export type BottleWineAction = {
   id: string;
   type: WineActionType;
-  collectionName?: string;
+  collectionName: string;
+  vintage: string;
   executionDate: string | Timestamp;
   subjectRecipe?: Subject<Recipe>;
   wines: Array<{

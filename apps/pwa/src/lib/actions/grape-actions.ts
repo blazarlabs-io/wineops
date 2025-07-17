@@ -39,7 +39,16 @@ export const grapeIntakeAction = async (
     labTechnicianName = "",
     labCertificateId = "",
     mass,
+    weigherName,
+    executionDate,
+    invoiceNumber,
+    transportInfo,
+    certificatDeInofensivitate,
+    supplier,
   } = actionData;
+
+  const { gross = "", tare = "", net = "" } = mass || {};
+  const { companyName, vehicleId, driverId } = transportInfo || {};
 
   const grapeRes = await db.grape.update(uid, grape.id, {
     actions: [
@@ -50,8 +59,31 @@ export const grapeIntakeAction = async (
       },
     ],
     status: GrapeStatus.RECEIVED,
-    metrics: { ...grape.metrics, actual: mass?.net },
+    metrics: { ...grape.metrics, actual: net },
+    entry: {
+      ...grape?.entry,
+      ...(gross && { grossWeight: gross }),
+      ...(tare && { tareWeight: tare }),
+      ...(net && { netWeight: net }),
+      ...(weigherName?.name && { weigherName: weigherName?.name }),
+      ...(executionDate && { intakeDate: executionDate }),
+    },
+    transportationInfo: {
+      ...grape?.transportationInfo,
+      ...(companyName && { companyName }),
+      ...(vehicleId && { vehicleIdNo: vehicleId }),
+      ...(driverId && { driverIdNo: driverId }),
+      ...(certificatDeInofensivitate && {
+        certificate: certificatDeInofensivitate,
+      }),
+    },
+    supplier: {
+      ...grape?.supplier,
+      ...(invoiceNumber && { dispatchInvoice: invoiceNumber }),
+      ...(supplier?.companyName && { companyName: supplier?.companyName }),
+    },
     labData: {
+      ...grape?.labData,
       id: crypto.randomUUID(),
       sugar: {
         unit: "g/dm³",
@@ -72,8 +104,8 @@ export const grapeIntakeAction = async (
       spoiledGrapesPercentage: qualityCharacteristics?.massFractionSpoiled,
       crushedGrapesPercentage: qualityCharacteristics?.massFractionCrushed,
       addedGrapesVarietiesPercentage: qualityCharacteristics?.massFractionMixed,
-      labTechnicianName: labTechnicianName,
-      labCertificateID: labCertificateId,
+      ...(labTechnicianName && { labTechnicianName: labTechnicianName }),
+      ...(labCertificateId && { labCertificateID: labCertificateId }),
     },
   });
 

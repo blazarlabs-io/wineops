@@ -26,6 +26,7 @@ export const bottleWineAction = async (
     id,
     type,
     collectionName,
+    vintage,
     executionDate,
     subjectRecipe,
     wines,
@@ -57,9 +58,10 @@ export const bottleWineAction = async (
 
   const newCollection = {
     id: newId,
-    name: newId,
-    bottlingDate: executionDate,
-    group: [newId],
+    name: collectionName,
+    vintage,
+    executionDate,
+    group: [collectionName],
     rowType: RowType.ITEM,
     wines,
     ...otherData,

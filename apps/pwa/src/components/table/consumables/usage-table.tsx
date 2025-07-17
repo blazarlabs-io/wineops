@@ -1,4 +1,4 @@
-import { ExpandableUsage } from "@/models/types/db";
+import { ExpendableUsage } from "@/models/types/db";
 import { parseToDate } from "@/utils/date-format";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -10,7 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
 export type UsageTableProps = {
-  data: ExpandableUsage[];
+  data: ExpendableUsage[];
 };
 
 export default function UsageTable({ data }: UsageTableProps) {
@@ -113,7 +113,7 @@ const Header = ({ label = "In use" }: { label?: string }) => (
 const Body = ({
   data,
 }: {
-  data: (Omit<ExpandableUsage, "inUseToday" | "inUseThisWeek"> & {
+  data: (Omit<ExpendableUsage, "inUseToday" | "inUseThisWeek"> & {
     value?: number;
   })[];
 }) => (
@@ -137,6 +137,6 @@ const Body = ({
   </TableBody>
 );
 
-const sortByDate = (a: ExpandableUsage, b: ExpandableUsage) =>
+const sortByDate = (a: ExpendableUsage, b: ExpendableUsage) =>
   (parseToDate(a.createdAt)?.getTime() ?? 0) -
   (parseToDate(b.createdAt)?.getTime() ?? 0);

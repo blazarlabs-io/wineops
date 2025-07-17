@@ -22,7 +22,7 @@
      massFractionMixed?: number;
    };
    labCertificateId?: string;
-   certificateDeInofensiviate?: string;
+   certificatDeInofensivitate?: string;
    labTechnicianName?: string;
    transportInfo?: {
      vehicleId?: string;
@@ -71,7 +71,7 @@ export const grapeIntakeActionSchema = Joi.object<GrapeIntakeAction>({
     "string.max":
       "Grape variety must be less than or equal to 50 characters long",
   }),
-  certificateDeInofensiviate: Joi.string().min(2).max(50).required().messages({
+  certificatDeInofensivitate: Joi.string().min(2).max(50).required().messages({
     "any.required": "Please enter the certificat de inofensivitate ID",
     "string.empty": "Please enter the certificat de inofensivitate ID",
     "string.min":
