@@ -5,6 +5,7 @@ import {
   Grape,
   LabElement,
   LabReport,
+  LotStatus,
   Must,
   MustWineVessel,
   ResponsibleTeamMember,
@@ -272,6 +273,10 @@ export type BottleWineAction = {
     actions: ActionRelation[];
   }>;
   responsible?: TeamMember;
+  //
+  lotId?: string;
+  lotStatus?: LotStatus;
+  //
   bottlingLine?: string;
 
   // Bottle specs

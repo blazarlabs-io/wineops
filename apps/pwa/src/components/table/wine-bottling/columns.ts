@@ -18,7 +18,7 @@ export const columns: ColDef[] = [
   },
   {
     headerName: "Quantity Overview",
-    field: "qty",
+    field: "numberOfBottles",
     minWidth: 264,
     flex: 1,
     cellRenderer: QuantityCellRenderer,
@@ -35,7 +35,7 @@ export const columns: ColDef[] = [
   },
   {
     headerName: "Bottling Date",
-    field: "bottlingDate",
+    field: "executionDate",
     minWidth: 156,
     flex: 1,
     cellRenderer: BottlingDateCellRenderer,
@@ -43,7 +43,7 @@ export const columns: ColDef[] = [
   },
   {
     headerName: "Collection Location",
-    field: "collectionLocation",
+    field: "bottlingLine",
     minWidth: 172,
     flex: 1,
     cellRenderer: LocationCellRenderer,

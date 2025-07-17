@@ -1,15 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import BottlingStatusDataDisplaySelect from "@/components/data-display/bottling-status-data-display-select";
 import LotIdAndLotStatusDialog from "@/components/dialogs/lot-id-lot-status-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { LotStatus } from "@/models/types/db";
 import { Box, Button, Chip, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import { useEffect, useState, type FunctionComponent } from "react";
+import { useState, type FunctionComponent } from "react";
 
 export const LotIdAndStatusCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ node, value }) => {
   const [openLots, setOpenLots] = useState<boolean>(false);
   const isGroup = node?.group || node?.data?.rowType === "group";
+
+  const handleStatusChange = async (status: LotStatus) => {
+    console.log("LOT STATUS", status);
+    // TODO: update lot status in db
+  };
+
+  console.log("\n\n==========================");
+  console.log("IS GROUP", isGroup);
+  console.log("NODE", node);
+  console.log("VALUE", value);
+  console.log("==========================\n\n");
 
   return (
     <Box
@@ -22,12 +35,11 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
       {!isGroup ? (
         <div className="flex flex-col items-start justify-start gap-[4px]!">
           <Typography variant="body2" className="font-semibold max-h-fit!">
-            {value}
+            {value || "Lot ID N/A"}
           </Typography>
-          <Chip
-            label={node.data?.lotStatus}
-            variant="outlined"
-            className="m-0! p-1! max-h-fit text-xs! max-w-fit"
+          <BottlingStatusDataDisplaySelect
+            status={node.data?.lotStatus || LotStatus.PLANNED}
+            onSelect={handleStatusChange}
           />
         </div>
       ) : (
@@ -39,17 +51,17 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
                 key={_node.id + node.data?.lotId + index}
                 className="leading-8!"
                 style={{
-                  display: index === 1 ? "block" : "none",
+                  display: index === 0 ? "block" : "none",
                 }}
               >
                 <Typography
                   variant="body2"
                   className="font-semibold max-h-fit!"
                 >
-                  {_node.data.lotId}
+                  {_node.data.lotId || "N/A"}
                 </Typography>
                 <Chip
-                  label={_node.data.lotStatus}
+                  label={_node.data.lotStatus || LotStatus.PLANNED}
                   variant="outlined"
                   size="small"
                   className="m-0! p-1! max-h-fit text-xs!"
@@ -71,8 +83,14 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
               onClick={() => setOpenLots(true)}
             >
               {node?.allLeafChildren?.length &&
-                node?.allLeafChildren?.length - 1}{" "}
-              lots more
+                node?.allLeafChildren?.length - 1 > 0 && (
+                  <Typography
+                    variant="body2"
+                    className="font-semibold max-h-fit!"
+                  >
+                    {node?.allLeafChildren?.length - 1} more lots
+                  </Typography>
+                )}
             </Button>
           </div>
         </div>
@@ -81,11 +99,16 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
         open={openLots}
         onClose={() => setOpenLots(false)}
         ids={
-          node?.allLeafChildren?.map((_node: any) => _node.data?.lotId) || []
+          node?.allLeafChildren?.map((_node: any) =>
+            _node.data?.lotId?.length > 0 ? _node.data?.lotId : ["Lot ID N/A"]
+          ) || []
         }
         statuses={
-          node?.allLeafChildren?.map((_node: any) => _node.data?.lotStatus) ||
-          []
+          node?.allLeafChildren?.map((_node: any) =>
+            _node.data?.lotStatus?.length > 0
+              ? _node.data?.lotStatus
+              : [LotStatus.PLANNED]
+          ) || []
         }
       />
     </Box>

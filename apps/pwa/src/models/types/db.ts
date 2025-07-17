@@ -22,7 +22,8 @@ export type EntityName =
   | "task"
   | "team"
   | "anexa14"
-  | "labReport";
+  | "labReport"
+  | "bottle";
 
 export const EntitiesNames: Record<EntityName, string[]> = {
   UNKNOWN: ["UNKNOWN", "UNKNOWNS"],
@@ -37,6 +38,7 @@ export const EntitiesNames: Record<EntityName, string[]> = {
   team: ["team member", "team members"],
   anexa14: ["report", "reports"],
   labReport: ["lab report", "lab reports"],
+  bottle: ["bottle", "bottles"],
 } as const;
 
 export const WineColor = {
@@ -755,19 +757,12 @@ export type StorageCondition = {
 };
 
 export type Bottle = Entity & {
-  id: string;
-  vintage?: number;
-  lotId?: string;
-  lotStatus?: LotStatus;
-  collectionLocation?: string;
-  tasks?: ActionRelation[];
-  notes?: ActionRelation[];
-  //
-  type: WineActionType;
+  type?: WineActionType;
   collectionName?: string;
-  executionDate: string | Timestamp;
+  vintage?: string;
+  executionDate?: string | Timestamp;
   subjectRecipe?: Subject<Recipe>;
-  wines: Array<{
+  wines?: Array<{
     id: Wine["id"];
     name: Wine["name"];
     qty: Wine["qty"];
@@ -775,16 +770,19 @@ export type Bottle = Entity & {
     actions: ActionRelation[];
   }>;
   responsible?: TeamMember;
+  //
+  lotId?: string;
+  lotStatus?: LotStatus;
+  //
   bottlingLine?: string;
 
   // Bottle specs
-  bottleType: string; // Consumable["id"] with category Bottle
-  bottleSize: BottleSize;
-  closureType: string; // "Screw cap" | Consumable["id"] with category Cork
+  bottleType?: string; // Consumable["id"] with category Bottle
+  bottleSize?: BottleSize;
+  closureType?: string; // "Screw cap" | Consumable["id"] with category Cork
   capsuleType?: string; // Consumable["id"] with category Capsule
   labelType?: string; // Consumable["id"] with category Label
   bottleWeight?: number; // gramms
-  labData?: ActionRelation[];
 
   // Packaging details
   packagingType?: PackagingType;
@@ -793,22 +791,26 @@ export type Bottle = Entity & {
   palletId?: string;
 
   // Final Lab Results
-  alcohol: number;
-  sugar: number;
-  pH: number;
-  totalSO2: number;
-  freeSO2: number;
+  alcohol?: number;
+  sugar?: number;
+  pH?: number;
+  totalSO2?: number;
+  freeSO2?: number;
   turbidity?: number;
   labCertificateId?: string;
 
   // Quantity & Losses
-  numberOfBottles: number;
-  losses: number;
+  numberOfBottles?: number;
+  losses?: number;
 
   supportingDocuments?: Array<{
     name: string;
     url: string;
   }>;
+
+  tasks?: Task[];
+  notes?: Note[];
+  labData?: ActionRelation[];
 };
 
 export const LotStatus = {

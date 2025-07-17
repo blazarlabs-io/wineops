@@ -19,11 +19,11 @@ export const QuantityCellRenderer: FunctionComponent<
     batches.some((b: ActionRelation) => b.id === item.id)
   );
 
-  // const batch = grapes.filter((grape) => {
-  //   console.log("grape", grape.id, node.data);
-  //   if (!node.data?.batch?.id || !grape) return null;
-  //   if (grape?.id === node.data?.batch?.id) return grape;
-  // });
+  const batch = grapes.filter((grape) => {
+    // console.log("grape", grape.id, node.data);
+    if (!node.data?.batch?.id || !grape) return null;
+    if (grape?.id === node.data?.batch?.id) return grape;
+  });
 
   const supply = 0;
   const demand = 0;
@@ -46,7 +46,7 @@ export const QuantityCellRenderer: FunctionComponent<
     })
   );
 
-  // const isGroup = node?.group || node?.data?.rowType === "group";
+  const isGroup = node?.group || node?.data?.rowType === "group";
 
   // console.log("\n\n+++++++++++++++++++++++++++++++++++");
   // console.log("value", value);

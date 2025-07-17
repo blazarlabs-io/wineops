@@ -15,6 +15,7 @@ import { WineProvider } from "./wine";
 import { QuickDrawerProvider } from "./quick-drawer";
 import { Anexa14Provider } from "./anexa14";
 import { ToolsbarProvider } from "./tools-bar";
+import { BottleProvider } from "./bottle";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -22,34 +23,36 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <SidebarProvider>
         <ToolsbarProvider>
           <QuickDrawerProvider>
-            <WineryProvider>
-              <VineyardProvider>
-                <GrapeProvider>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <VesselProvider>
-                      <ConsumableProvider>
-                        <MustProvider>
-                          <ChemistryProvider>
-                            <WineProvider>
-                              <Anexa14Provider>
-                                <APIProvider
-                                  apiKey={
-                                    process.env
-                                      .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
-                                  }
-                                >
-                                  {children}
-                                </APIProvider>
-                              </Anexa14Provider>
-                            </WineProvider>
-                          </ChemistryProvider>
-                        </MustProvider>
-                      </ConsumableProvider>
-                    </VesselProvider>
-                  </LocalizationProvider>
-                </GrapeProvider>
-              </VineyardProvider>
-            </WineryProvider>
+            <BottleProvider>
+              <WineryProvider>
+                <VineyardProvider>
+                  <GrapeProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <VesselProvider>
+                        <ConsumableProvider>
+                          <MustProvider>
+                            <ChemistryProvider>
+                              <WineProvider>
+                                <Anexa14Provider>
+                                  <APIProvider
+                                    apiKey={
+                                      process.env
+                                        .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+                                    }
+                                  >
+                                    {children}
+                                  </APIProvider>
+                                </Anexa14Provider>
+                              </WineProvider>
+                            </ChemistryProvider>
+                          </MustProvider>
+                        </ConsumableProvider>
+                      </VesselProvider>
+                    </LocalizationProvider>
+                  </GrapeProvider>
+                </VineyardProvider>
+              </WineryProvider>
+            </BottleProvider>
           </QuickDrawerProvider>
         </ToolsbarProvider>
       </SidebarProvider>

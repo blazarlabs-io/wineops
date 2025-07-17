@@ -121,6 +121,7 @@ export default function VineyardForm({
         const path = ["name"];
         return setNestedValue(prevData, path, event.target.value);
       });
+      setValue("name", event.target.value);
     },
     [checkIfNameExists]
   );

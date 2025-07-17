@@ -63,7 +63,7 @@ export default function CollectionsDialog({
           {data.map((_data: any, index: number) => (
             <div key={index + _data.id} className="flex items-center gap-4">
               <DialogContentText color="textPrimary">
-                {_data.collectionName}
+                {_data.name}
               </DialogContentText>
               <div className="flex items-center gap-1">
                 <Icon icon="formkit:date" width="12" height="12" />

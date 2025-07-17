@@ -13,6 +13,14 @@ export const LocationCellRenderer: FunctionComponent<
 
   const isGroup = node?.group || node?.data?.rowType === "group";
 
+  if (isGroup) console.log(node);
+
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXx");
+  console.log("IS GROUP", isGroup);
+  console.log("VALUE", value);
+  console.log("NODE", node);
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXx");
+
   return (
     <Box
       display={"flex"}
@@ -30,7 +38,7 @@ export const LocationCellRenderer: FunctionComponent<
             })}
           />
           <Typography variant="body2" className="font-semibold max-h-fit!">
-            {value}
+            {value || "N/A"}
           </Typography>
         </div>
       ) : (
@@ -55,7 +63,7 @@ export const LocationCellRenderer: FunctionComponent<
                     variant="body2"
                     className="font-semibold max-h-fit!"
                   >
-                    {item}
+                    {item || "N/A"}
                   </Typography>
                 </div>
                 {index === 2 && (
