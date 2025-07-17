@@ -9,6 +9,19 @@ export const bottleWineActionSchema = Joi.object<BottleWineAction>({
     "any.required": "Please select a date",
     "alternatives.types": "Date must be a valid date",
   }),
+  collectionName: Joi.string().min(2).max(50).required().messages({
+    "any.required": "Please enter a collection name",
+    "string.empty": "Please enter a collection name",
+    "string.min": "Collection name must be at least 2 characters long",
+    "string.max":
+      "Collection name must be less than or equal to 50 characters long",
+  }),
+  vintage: Joi.number().min(1900).required().messages({
+    "any.required": "Please select a vintage",
+    "number.empty": "Please select a vintage",
+    "number.base": "Please select a vintage",
+    "number.min": "Please select a vintage",
+  }),
   subjectRecipe: Joi.object().optional(),
   wines: Joi.array().items().required().messages({
     "any.required": "At least one wine must be provided",

@@ -323,6 +323,32 @@ export default function MustForm() {
 
                   <div className="flex flex-col gap-2">
                     <InputLabel className="text-sm text-muted-foreground">
+                      Enter quantity
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="qty"
+                        label="Quantity (dal)"
+                        type="number"
+                        variant="outlined"
+                        {...register("qty")}
+                      />
+                    </FormControl>
+
+                    {errors?.qty && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.qty?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
                       Select vessels used:
                     </InputLabel>
 

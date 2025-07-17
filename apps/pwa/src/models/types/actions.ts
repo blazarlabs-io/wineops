@@ -260,7 +260,8 @@ export type PackagingType = (typeof PackagingType)[keyof typeof PackagingType];
 export type BottleWineAction = {
   id: string;
   type: WineActionType;
-  collectionName?: string;
+  collectionName: string;
+  vintage: string;
   executionDate: string | Timestamp;
   subjectRecipe?: Subject<Recipe>;
   wines: Array<{
