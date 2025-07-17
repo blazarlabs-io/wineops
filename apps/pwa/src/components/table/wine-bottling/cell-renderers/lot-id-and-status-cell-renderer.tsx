@@ -2,27 +2,34 @@
 import BottlingStatusDataDisplaySelect from "@/components/data-display/bottling-status-data-display-select";
 import LotIdAndLotStatusDialog from "@/components/dialogs/lot-id-lot-status-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { db } from "@/lib/firebase/services";
 import { LotStatus } from "@/models/types/db";
 import { Box, Button, Chip, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useState, type FunctionComponent } from "react";
+import { useAuth } from "@/lib/firebase/auth";
+import { enqueueSnackbar } from "notistack";
 
 export const LotIdAndStatusCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ node, value }) => {
+  const { user } = useAuth();
   const [openLots, setOpenLots] = useState<boolean>(false);
   const isGroup = node?.group || node?.data?.rowType === "group";
 
   const handleStatusChange = async (status: LotStatus) => {
     console.log("LOT STATUS", status);
-    // TODO: update lot status in db
-  };
+    // * update lot status in db
+    const statusRes = await db.bottle.update(user?.uid, node.data.id, {
+      lotStatus: status,
+    });
 
-  console.log("\n\n==========================");
-  console.log("IS GROUP", isGroup);
-  console.log("NODE", node);
-  console.log("VALUE", value);
-  console.log("==========================\n\n");
+    if (statusRes.status === 200) {
+      enqueueSnackbar("Lot status updated", { variant: "success" });
+    } else {
+      enqueueSnackbar("Error updating lot status", { variant: "error" });
+    }
+  };
 
   return (
     <Box
