@@ -70,6 +70,10 @@ export const mustSchema = Joi.object({
     vineyardName: Joi.string().optional().allow(""),
   }).optional(),
   grapeVariety: Joi.string().optional().allow(""),
+  qty: Joi.number().required().messages({
+    "any.required": "Quantity is required.",
+    "number.base": "Quantity must be a number",
+  }),
   vessels: Joi.array().items(mustVesselSchema).required().messages({
     "any.required": "At least one vessel must be provided.",
   }),

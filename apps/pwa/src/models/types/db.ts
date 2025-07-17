@@ -508,6 +508,7 @@ export type Must = Entity & {
   date?: string | Timestamp;
   supplier?: Supplier;
   grapeVariety?: string;
+  qty?: number;
   vessels?: MustWineVessel[];
   safetyCertificateNo?: string;
   invoicePurchaseNo?: string;
@@ -620,7 +621,7 @@ export const ConsumableCategory = {
 export type ConsumableCategory =
   (typeof ConsumableCategory)[keyof typeof ConsumableCategory];
 
-export type ExpandableUsage = {
+export type ExpendableUsage = {
   id?: string;
   inUseToday?: number;
   inUseThisWeek?: number;
@@ -644,7 +645,7 @@ export type Consumable = Entity & {
   expiryDate?: string | Timestamp;
   organicBiodynamicStatus?: boolean;
   compatibleEquipment?: string;
-  usage?: ExpandableUsage[];
+  usage?: ExpendableUsage[];
   labData?: ActionRelation[];
 };
 
@@ -677,7 +678,7 @@ export type Chemistry = Entity & {
   type?: ChemistryType;
   qty?: number;
   dosage?: string;
-  usage?: ExpandableUsage[];
+  usage?: ExpendableUsage[];
   stageOfProduction: StageOfProduction;
   recommendedDosage?: number;
   maxDosage?: number;

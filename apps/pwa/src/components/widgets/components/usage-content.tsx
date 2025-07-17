@@ -1,9 +1,9 @@
 import UsageTable from "@/components/table/consumables/usage-table";
-import { ExpandableUsage } from "@/models/types/db";
+import { ExpendableUsage } from "@/models/types/db";
 import Stack from "@mui/material/Stack";
 
 type UsageProps = {
-  usage: ExpandableUsage[];
+  usage: ExpendableUsage[];
 };
 
 export default function UsageContent({ usage }: UsageProps) {

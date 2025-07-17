@@ -39,7 +39,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useWine } from "@/context/wine";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { Wine, Consumable, ConsumableCategory } from "@/models/types/db";
@@ -121,6 +121,7 @@ export default function BottleWineActionForm({
     formState: { errors },
     setError,
     clearErrors,
+    control,
   } = useForm({
     resolver: joiResolver(bottleWineActionSchema),
   });
@@ -453,7 +454,6 @@ export default function BottleWineActionForm({
                           ? "Execution Date"
                           : "Select execution date"
                       }
-                      disablePast
                       views={["year", "month", "day"]}
                       className="w-full"
                       onChange={(date) => {
@@ -461,13 +461,6 @@ export default function BottleWineActionForm({
                           "executionDate",
                           date ? Timestamp.fromDate(date.toDate()) : null
                         );
-
-                        return;
-                        if (date) {
-                          handleChange("executionDate", date);
-                        } else {
-                          handleChange("executionDate", undefined);
-                        }
                       }}
                     />
 
@@ -481,6 +474,67 @@ export default function BottleWineActionForm({
                       </Typography>
                     )}
                   </Stack>
+
+                  <div className="flex flex-col gap-2">
+                    <FormControl>
+                      <Input
+                        id="collectionName"
+                        label="Collection Name"
+                        type="text"
+                        variant="outlined"
+                        {...register("collectionName")}
+                      />
+                    </FormControl>
+
+                    {errors?.collectionName && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.collectionName?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Controller
+                      name="vintage"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          views={["year"]}
+                          label="Vintage"
+                          value={
+                            field.value && !isNaN(parseInt(field.value))
+                              ? dayjs()
+                                  .year(parseInt(field.value))
+                                  .startOf("year")
+                              : null
+                          }
+                          onChange={(newValue) => {
+                            field.onChange(newValue ? newValue?.year() : null);
+                          }}
+                          slotProps={{
+                            textField: {
+                              variant: "outlined",
+                              fullWidth: true,
+                            },
+                          }}
+                        />
+                      )}
+                    />
+
+                    {errors?.vintage && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.vintage?.message as string}
+                      </Typography>
+                    )}
+                  </div>
 
                   <div className="flex flex-col gap-2">
                     <Autocomplete<Recipe, false, false, false>
@@ -684,7 +738,11 @@ export default function BottleWineActionForm({
                       <ResponsibleTeamMemberField
                         teamMembers={teamMembers}
                         onChange={(value) => {
-                          handleChange("responsible", value);
+                          const responsible = teamMembers.find(
+                            ({ name }) => name === value
+                          );
+
+                          handleChange("responsible", responsible);
                         }}
                       />
                     </FormControl>

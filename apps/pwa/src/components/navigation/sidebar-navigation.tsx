@@ -72,10 +72,10 @@ export const NAVIGATION: Navigation = [
     icon: <OilBarrel />,
   },
   {
-    segment: "expandables",
-    title: "Expandables",
+    segment: "expendables",
+    title: "Expendables",
     icon: <Inventory />,
-    pattern: "workspace/expandables/",
+    pattern: "workspace/expendables/",
     children: [
       {
         segment: "chemistry",
