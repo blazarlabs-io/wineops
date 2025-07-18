@@ -63,7 +63,7 @@ export default function BottlingDateDialog({
             borderColor: "var(--mui-palette-divider)",
           }}
         >
-          {data.map((d: any, index: number) => (
+          {data?.map((d: any, index: number) => (
             <DialogContentText key={index + d?.toDate().toLocaleDateString()}>
               {d?.toDate().toLocaleDateString()}
             </DialogContentText>

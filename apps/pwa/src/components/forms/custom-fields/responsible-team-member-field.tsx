@@ -12,24 +12,31 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type ResponsibleTeamMemberFieldProps = {
   teamMembers: TeamMember[];
   onChange: (value: any) => void;
+  currentValue?: any;
 };
 
 export default function ResponsibleTeamMemberField({
   teamMembers,
   onChange,
+  currentValue,
 }: ResponsibleTeamMemberFieldProps) {
   const { sortedTeamMembers } = useSortTeamMembersNames(teamMembers);
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<string | null>(currentValue);
 
   const handleChange = useCallback((event: any, newValue: any) => {
     setValue(newValue);
     onChange(newValue);
   }, []);
+
+  useEffect(() => {
+    setValue(currentValue);
+    console.log("currentValue", currentValue);
+  }, [currentValue]);
 
   const handleRenderOption = useCallback(
     (props: { [x: string]: any; key: any }, option: string) => {

@@ -798,12 +798,12 @@ export default function VineyardForm({
                           </Typography>
                           <Autocomplete
                             id="info.location.country"
-                            options={countries.map((country) => country.name)}
+                            options={countries.map((country) => country?.name)}
                             filterSelectedOptions
                             renderInput={(params) => (
                               <TextField {...params} label="Select a country" />
                             )}
-                            value={formData?.info?.location.country as string}
+                            value={formData?.info?.location?.country as string}
                             onChange={(e, value) => {
                               handleSelectChange(
                                 "info.location.country",

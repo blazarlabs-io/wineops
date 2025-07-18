@@ -763,7 +763,7 @@ export type Bottle = Entity & {
   collectionName?: string;
   vintage?: string;
   executionDate?: string | Timestamp;
-  subjectRecipe?: Subject<Recipe>;
+  subjectRecipe?: string;
   wines?: Array<{
     id: Wine["id"];
     name: Wine["name"];

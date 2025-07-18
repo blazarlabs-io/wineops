@@ -61,7 +61,10 @@ export default function CollectionsDialog({
           }}
         >
           {data.map((_data: any, index: number) => (
-            <div key={index + _data.id} className="flex items-center gap-4">
+            <div
+              key={index + _data.id}
+              className="grid grid-cols-2 items-center"
+            >
               <DialogContentText color="textPrimary">
                 {_data.name}
               </DialogContentText>

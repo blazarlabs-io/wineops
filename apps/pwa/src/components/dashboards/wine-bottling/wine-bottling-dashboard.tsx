@@ -1,5 +1,6 @@
 "use client";
 
+import BottleFormDrawer from "@/components/drawers/bottle-form-drawer";
 // import VineyardFormDrawer from "@/components/drawers/vineyard-form-drawer";
 import WineBottlingTable from "@/components/table/wine-bottling";
 import ToolsBar from "@/components/widgets/tools-bar";
@@ -26,8 +27,7 @@ export default function WineBottlingDashboard() {
         <ToolsBar />
         <WineBottlingTable />
       </Stack>
-      {/* <VineyardFormDrawer /> */}
-      {/* TODO: Add form drawer */}
+      <BottleFormDrawer />
     </Box>
   );
 }

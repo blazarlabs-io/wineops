@@ -40,12 +40,18 @@ export const BottlingDateCellRenderer: FunctionComponent<
           {value &&
             value.length > 0 &&
             value.map((item: any, index: number) => (
-              <div key={index} className="max-w-fit max-h-fit! leading-0!">
+              <div
+                key={index}
+                className="max-w-fit max-h-fit! leading-0!"
+                style={{
+                  display: index <= 2 ? "flex" : "none",
+                }}
+              >
                 <div
-                  className="flex fle-row items-center gap-[4px]! w-full"
                   style={{
                     display: index < 2 ? "flex" : "none",
                   }}
+                  className="flex fle-row items-center gap-[4px]! w-full"
                 >
                   <CalendarMonth
                     sx={({ typography }) => ({

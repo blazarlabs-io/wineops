@@ -173,14 +173,6 @@ export default function VineyardHarvestActionForm({
 
   const handleChange = useCallback(
     (name: string, value: any) => {
-      if (name.startsWith("executionDate")) {
-        setValue(name, value);
-        setFormData((prev) => ({
-          ...(prev as VineyardHarvestAction),
-          [name]: value,
-        }));
-      }
-
       if (name === "subject.name") {
         //value = Timestamp.fromDate(value.toDate());
         const selected = vineyards.filter((v) => v.name === value)[0];
@@ -195,7 +187,13 @@ export default function VineyardHarvestActionForm({
         setValue(name as string, value as ActionRelation[]);
         setFormData({ ...formData, subject: value });
         setLocalVineyard(selected as Vineyard);
-
+        return;
+      } else if (name.startsWith("executionDate")) {
+        setValue(name, value);
+        setFormData((prev) => ({
+          ...(prev as VineyardHarvestAction),
+          [name]: value,
+        }));
         return;
       } else if (name === "consumables") {
         const data = consumables?.filter((v) => v.consumableID === value[0]);
@@ -220,7 +218,6 @@ export default function VineyardHarvestActionForm({
         }));
 
         setValue("consumables", _consumables);
-
         return;
         // const prevConsumables =
         //   (formData.consumables as ActionRelation[]) || [];
@@ -728,7 +725,6 @@ export default function VineyardHarvestActionForm({
                       </FormControl>
                     </Stack>
                     {/* * EXECUTION DATE */}
-                    {/* TODO allow past dates */}
                     <Stack gap={1} className="w-full">
                       <DatePicker
                         name="executionDate"

@@ -1,8 +1,10 @@
 import { BottleWineAction } from "@/models/types/actions";
 import Joi from "joi";
-import { TimestampOrString } from "../grape-schema";
+import { TimestampOrString } from "../../models/schemas/grape-schema";
+import { Bottle } from "../types/db";
+import { teamMemberSchema } from "./vineyard-schema";
 
-export const bottleWineActionSchema = Joi.object<BottleWineAction>({
+export const wineBottlingSchema = Joi.object<Bottle>({
   id: Joi.string().required(),
   type: Joi.string().required(),
   executionDate: TimestampOrString.required().messages({
@@ -28,11 +30,7 @@ export const bottleWineActionSchema = Joi.object<BottleWineAction>({
     "array.base": "At least one wine must be provided",
     "array.includesRequiredUnknowns": "At least one wine must be provided",
   }),
-  responsible: Joi.object({
-    id: Joi.string().required(),
-    name: Joi.string().optional(),
-    email: Joi.string().optional(),
-  }).optional(),
+  responsible: teamMemberSchema.optional(),
   bottlingLine: Joi.string().optional().min(2).max(50).messages({
     "string.min": "Bottling line must be at least 2 characters long",
     "string.max":
@@ -151,4 +149,5 @@ export const bottleWineActionSchema = Joi.object<BottleWineAction>({
       url: Joi.string().optional().allow(""),
     })
     .optional(),
+  group: Joi.array().items(Joi.string().optional().allow("")),
 });
