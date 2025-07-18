@@ -42,6 +42,7 @@ export const grapeProcessingActionSchema = Joi.object<GrapeProcessingAction>({
     units: Joi.string().allow("").optional(),
     supportingDocs: Joi.array().items(Joi.string()).optional(),
     responsible: Joi.object({
+      id: Joi.string().optional().allow(""),
       name: Joi.string().optional().allow(""),
       email: Joi.string().optional().allow(""),
     }).optional(),
@@ -64,7 +65,18 @@ export const grapeProcessingActionSchema = Joi.object<GrapeProcessingAction>({
       Joi.object({
         id: Joi.string().required(),
         mustId: Joi.string().allow("").optional(),
-        inputQuantity: Joi.number().precision(2).optional(),
+        inputQuantity: Joi.number()
+          .min(0)
+          .max(1_000_000)
+          .precision(2)
+          .optional()
+          .messages({
+            "any.required": "Please enter a valid number",
+            "number.empty": "Please enter a valid number",
+            "number.base": "Please enter a valid number",
+            "number.min": "Please enter a valid number",
+            "number.max": "Press percentage cannot exceed 1 000 000.",
+          }),
         newPressPercentage: Joi.number()
           .min(0)
           .max(100)
@@ -92,7 +104,7 @@ export const grapeProcessingActionSchema = Joi.object<GrapeProcessingAction>({
                   "number.empty": "Please enter a valid number",
                   "number.base": "Please enter a valid number",
                   "number.min": "Please enter a valid number",
-                  "number.max": "Press percentage cannot exceed 100.",
+                  "number.max": "Press percentage cannot exceed 1 000 000.",
                 }),
               location: Joi.string().allow("").optional(),
               type: Joi.string().allow("").optional(),
@@ -103,4 +115,9 @@ export const grapeProcessingActionSchema = Joi.object<GrapeProcessingAction>({
     )
     .optional(),
   wasteQuantity: Joi.number().optional(),
+  responsible: Joi.object({
+    id: Joi.string().optional().allow(""),
+    name: Joi.string().optional().allow(""),
+    email: Joi.string().optional().allow(""),
+  }).optional(),
 });

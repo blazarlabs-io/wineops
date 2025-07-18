@@ -96,6 +96,44 @@ export type Anexa14Data = {
   date?: string | Timestamp;
 };
 
+export const StockProductCategory = {
+  BULK_WINE: "Vin în Vrac",
+  BOTTLED_WINE: "Vin Îmbuteliat",
+} as const;
+
+export type StockProductCategory =
+  (typeof StockProductCategory)[keyof typeof StockProductCategory];
+
+export type Anexa7StockProduct = {
+  id: string;
+  category?: StockProductCategory;
+  externalId?: string; // Must["id"], Wine["id"], Bottle["id"]
+  name: string; // Bottle["collectionName"] & Bottle["vintage"]
+  unit?: "dal" | "sticle" | string;
+  total?: number;
+  red?: number;
+  rose?: number;
+  white?: number;
+};
+
+export type Anexa7Data = {
+  id: string;
+  numarInregistrareBDUV?: string;
+  identificatorUnicUnitateVinicola?: string;
+  declarant: {
+    name?: string;
+    idno_idnp?: string;
+    name2?: string;
+  };
+  stockProducts?: Array<Anexa7StockProduct>;
+  modifications?: Array<Partial<Pick<Anexa7Data, "declarant">>>;
+  createdAt: string | Timestamp;
+  createdBy?: TeamMember["id"] | TeamMember["email"];
+  modifiedAt?: string | Timestamp;
+  modifiedBy?: TeamMember["id"] | TeamMember["email"];
+  date?: string | Timestamp;
+};
+
 export interface ReducedVineyard {
   id: string;
   vineyardId: Vineyard["id"];

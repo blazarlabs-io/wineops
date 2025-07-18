@@ -23,7 +23,8 @@ export type EntityName =
   | "team"
   | "anexa14"
   | "labReport"
-  | "bottle";
+  | "bottle"
+  | "anexa7";
 
 export const EntitiesNames: Record<EntityName, string[]> = {
   UNKNOWN: ["UNKNOWN", "UNKNOWNS"],
@@ -39,6 +40,7 @@ export const EntitiesNames: Record<EntityName, string[]> = {
   anexa14: ["report", "reports"],
   labReport: ["lab report", "lab reports"],
   bottle: ["bottle", "bottles"],
+  anexa7: ["report", "reports"],
 } as const;
 
 export const WineColor = {

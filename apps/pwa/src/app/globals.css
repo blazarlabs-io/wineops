@@ -2,14 +2,14 @@
 @import "tailwindcss";
 
 :root {
-  --anexa14-border-color: #000;
+  --reports-table-border-color: #000;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--mui-palette-background-default);
     --foreground: #ededed;
-    --anexa14-border-color: #555;
+    --reports-table-border-color: #555;
 
     body {
       scrollbar-color: var(--mui-palette-divider)
@@ -56,9 +56,19 @@
 }
 
 table#anexa14 thead tr th,
-table#anexa14 tbody tr td {
-  border: 1px solid var(--anexa14-border-color) !important;
+table#anexa14 tbody tr td,
+table.anexa7 thead tr th,
+table.anexa7 tbody tr td,
+table.anexa7 tfoot tr td {
+  border: 1px solid var(--reports-table-border-color) !important;
   padding: 1px;
+}
+
+table.anexa7 thead tr th,
+table.anexa7 tbody tr td,
+table.anexa7 tfoot tr td {
+  font-weight: normal;
+  padding: 1px 4px;
 }
 
 @media print {
