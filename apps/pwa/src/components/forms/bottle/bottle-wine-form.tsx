@@ -9,10 +9,26 @@ import {
 } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import AutocompleteWithTextField from "@/components/forms/custom-fields/autocomplete-with-text-field";
+import ResponsibleTeamMemberField from "@/components/forms/custom-fields/responsible-team-member-field";
+import { hasKeyFromArray } from "@/components/forms/utils";
+import { useBottle } from "@/context/bottle";
+import { useConsumable } from "@/context/consumable";
+import { useWine } from "@/context/wine";
 import { useWinery } from "@/context/winery";
 import { useAuth } from "@/lib/firebase/auth";
-import { bottleWineActionSchema } from "@/models/schemas/actions/bottle-wine-action-schema";
+import { db } from "@/lib/firebase/services";
+import { wineBottlingSchema } from "@/models/schemas/wine-bottling-form-schema";
+import {
+  Bottle,
+  Consumable,
+  ConsumableCategory,
+  Wine,
+} from "@/models/types/db";
+import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { parseToDate } from "@/utils/date-format";
 import { Attachment, DeleteOutline, ExpandMore } from "@mui/icons-material";
+import ClearIcon from "@mui/icons-material/Clear";
 import {
   Accordion,
   AccordionDetails,
@@ -31,6 +47,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
+import { File } from "lucide-react";
 import {
   Fragment,
   useCallback,
@@ -40,24 +57,11 @@ import {
   useState,
 } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useWine } from "@/context/wine";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { Wine, Consumable, ConsumableCategory } from "@/models/types/db";
-import { parseToDate } from "@/utils/date-format";
-import { File } from "lucide-react";
-import { db } from "@/lib/firebase/services";
-import ClearIcon from "@mui/icons-material/Clear";
-import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
-import { useConsumable } from "@/context/consumable";
-import { hasKeyFromArray } from "../../utils";
-import AutocompleteWithTextField from "../../custom-fields/autocomplete-with-text-field";
-import { setNestedValue } from "@/helpers/form-helpers";
+import { enqueueSnackbar } from "notistack";
+import { log } from "console";
 
-export default function BottleWineActionForm({
-  onBackClick,
-}: {
-  onBackClick?: () => void;
-}) {
+export default function BottleWineForm() {
+  const { bottles } = useBottle();
   const [generalExpanded, setGeneralExpanded] = useState(true);
   const [bottleSpecsExpanded, setBottleSpecsExpanded] = useState(false);
   const [finalLabExpanded, setFinalLabExpanded] = useState(false);
@@ -101,17 +105,17 @@ export default function BottleWineActionForm({
     ({ category }) => category === ConsumableCategory.LABEL
   );
 
-  const selectedWines = useSelectedEntitiesStore(
-    ({ selected }) => selected
-  ) as Wine[];
+  //   const selectedWines = useSelectedEntitiesStore(
+  //     ({ selected }) => selected
+  //   ) as Wine[];
 
-  const updatedSelectedWines = useMemo(
-    () =>
-      selectedWines.map(
-        (selected) => wines.find((g) => g.id === selected.id) ?? selected
-      ),
-    [wines, selectedWines]
-  );
+  //   const updatedSelectedWines = useMemo(
+  //     () =>
+  //       selectedWines.map(
+  //         (selected) => wines.find((g) => g.id === selected.id) ?? selected
+  //       ),
+  //     [wines, selectedWines]
+  //   );
 
   const { teamMembers } = useWinery();
   const { user } = useAuth();
@@ -125,23 +129,11 @@ export default function BottleWineActionForm({
     clearErrors,
     control,
   } = useForm({
-    resolver: joiResolver(bottleWineActionSchema),
+    resolver: joiResolver(wineBottlingSchema),
   });
 
   const filteredRecipes = useMemo(() => [] as Recipe[], []);
-
-  const filteredWines = useMemo(
-    () =>
-      (updatedSelectedWines.length > 0 ? updatedSelectedWines : wines).filter(
-        ({ rowType }) => rowType === "item"
-      ),
-    [wines, updatedSelectedWines]
-  );
-
-  const [formData, setFormData] = useState<BottleWineAction>(
-    {} as BottleWineAction
-  );
-  const [disableSubject, setDisableSubject] = useState<boolean>(false);
+  const [formData, setFormData] = useState<Bottle>({} as Bottle);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -152,27 +144,38 @@ export default function BottleWineActionForm({
       setValue(name, value);
       setFormData((prev) => ({ ...prev, [name]: value }));
 
+      console.log("\n\n\n\n+++++++++++++++++++++++++++++++++++");
+      console.log(name);
+      console.log(value);
+      console.log("+++++++++++++++++++++++++++++++++++\n\n\n\n");
+
       if (name === "subjectRecipe") {
-        const id = filteredWines.filter(({ name }) => name === value)[0].id;
-        setValue("subjectRecipe.id", id);
-        formData.subjectRecipe = {
-          name: name,
-          id: id,
-        };
-      }
-
-      setValue(name, value);
-
-      if (name.startsWith("executionDate")) {
+        setValue("subjectRecipe", value);
+        formData.subjectRecipe = value;
+        setFormData((prev) => ({ ...prev, subjectRecipe: value }));
+      } else if (name === "responsible") {
+        setValue("responsible.name", value.name);
+        setValue("responsible.email", value.email);
+        formData.responsible = value;
+        setFormData((prev) => ({ ...prev, responsible: value }));
+      } else if (name.startsWith("executionDate")) {
+        setValue("executionDate", value);
         setFormData((prev) => ({
-          ...(prev as BottleWineAction),
+          ...(prev as Bottle),
           [name]: value,
         }));
       } else {
-        const path = name.split(".");
-        const newFormData = setNestedValue(formData, path, value);
-        setFormData(newFormData);
+        // const path = name.split(".");
+        // const newFormData = setNestedValue(formData, path, value);
+        // setFormData(newFormData as Bottle);
+        setValue(name, value);
+        setFormData((prev) => ({
+          ...(prev as Bottle),
+          [name]: value,
+        }));
       }
+
+      // setValue(name, value);
     },
     [setValue]
   );
@@ -187,7 +190,7 @@ export default function BottleWineActionForm({
       });
 
       setFormData((prev) => ({
-        ...(prev as BottleWineAction),
+        ...(prev as Bottle),
         supportingDocuments: filesUrls,
       }));
 
@@ -269,7 +272,7 @@ export default function BottleWineActionForm({
       filesUrls.splice(index, 1);
 
       setFormData((prev) => ({
-        ...(prev as BottleWineAction),
+        ...(prev as Bottle),
         supportingDocuments: filesUrls,
       }));
 
@@ -298,55 +301,64 @@ export default function BottleWineActionForm({
     console.log("SUBMIT", data);
     console.log("ERRORS:", errors);
 
-    const subjectRecipe = filteredRecipes.filter(
-      ({ name }) => name === data.subjectRecipe.name
-    )[0];
+    // const subjectRecipe = filteredRecipes.filter(
+    //   ({ name }) => name === data.subjectRecipe.name
+    // )[0];
 
     setIsSubmitting(true);
 
     try {
-      await actions?.["bottle-a-wine"].exec(
-        user?.uid as string,
-        data,
-        subjectRecipe
-      );
+      //   await actions?.["bottle-a-wine"].exec(
+      //     user?.uid as string,
+      //     data,
+      //     subjectRecipe
+      //   );
+      const res = await db.bottle.create(user?.uid, data);
+
+      if (res.status == 200) {
+        console.log("Bottle created");
+        enqueueSnackbar("Bottle created successfully", { variant: "success" });
+      } else {
+        console.log("Error creating bottle");
+        enqueueSnackbar("Error creating bottle", { variant: "error" });
+      }
     } finally {
       setIsSubmitting(false);
     }
 
     setFormData(data);
-
-    onBackClick?.();
   };
 
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+  const existingBottle = bottles?.find(({ id }) => id === selected[0]?.id);
+
   useEffect(() => {
-    const bottleWineActionSample: BottleWineAction = {
+    console.log("\n\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    console.log("BOTTLES", bottles);
+    console.log("SELECTED", selected);
+    console.log("EXISTING BOTTLE", existingBottle);
+    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n\n");
+
+    console.log("EXISTING BOTTLE", selected, existingBottle);
+
+    if (existingBottle && existingBottle !== undefined) {
+      reset(existingBottle);
+      setFormData(() => existingBottle);
+      return;
+    }
+
+    const bottleWineSample: Bottle = {
       id: crypto.randomUUID(),
       type: "bottle-a-wine",
       executionDate: Timestamp.fromDate(new Date()),
-    } as BottleWineAction;
+      collectionName: `Collection ${bottles.length + 1}`,
+      group: [`Collection ${bottles.length + 1}`],
+      // Add other required properties here
+    } as Bottle;
 
-    if (
-      filteredRecipes &&
-      filteredRecipes.length === 1 &&
-      bottleWineActionSample.subjectRecipe !== undefined
-    ) {
-      setDisableSubject(true);
-      bottleWineActionSample.subjectRecipe.name = filteredRecipes[0]?.name;
-      bottleWineActionSample.subjectRecipe.id = filteredRecipes[0]?.id;
-    } else if (
-      filteredRecipes &&
-      filteredRecipes.length > 0 &&
-      bottleWineActionSample.subjectRecipe !== undefined
-    ) {
-      setDisableSubject(false);
-      bottleWineActionSample.subjectRecipe.name = filteredRecipes[0]?.name;
-      bottleWineActionSample.subjectRecipe.id = filteredRecipes[0]?.id;
-    }
-
-    reset(bottleWineActionSample);
-    setFormData(bottleWineActionSample);
-  }, [filteredRecipes, reset, teamMembers]);
+    reset(bottleWineSample);
+    setFormData(bottleWineSample);
+  }, [bottles.length, existingBottle, filteredRecipes, reset, teamMembers]);
 
   useEffect(() => {
     if (errors) {
@@ -480,7 +492,7 @@ export default function BottleWineActionForm({
                   <div className="flex flex-col gap-2">
                     <FormControl>
                       <Input
-                        id="collectionName"
+                        id={"collectionName"}
                         label="Collection Name"
                         type="text"
                         variant="outlined"
@@ -541,16 +553,17 @@ export default function BottleWineActionForm({
                   {/* TODO: Start here */}
                   <AutocompleteWithTextField
                     key="subjectRecipe"
-                    label="Subject Recipe"
+                    label="Wine Recipe"
                     errors={errors}
+                    value={formData?.subjectRecipe || ""}
                     options={[]}
-                    onValueChange={(name, value) => {
-                      console.log("onValueChange", name, value);
+                    onValueChange={(name: any, value: any) => {
+                      console.log("subjectRecipe", name, value);
                       // handleChange(name, value);
                     }}
-                    onTextChange={(name, value) => {
-                      console.log("onTextChange", name, value);
-                      // handleChange(name, value);
+                    onTextChange={(name: any, value: any) => {
+                      console.log("subjectRecipe", name, value);
+                      handleChange("subjectRecipe", value);
                     }}
                   />
 
@@ -755,13 +768,18 @@ export default function BottleWineActionForm({
                     <FormControl fullWidth>
                       <ResponsibleTeamMemberField
                         teamMembers={teamMembers}
-                        onChange={(value) => {
-                          const responsible = teamMembers.find(
-                            ({ name }) => name === value
+                        onChange={(value: any) => {
+                          const responsible = teamMembers.find(({ name }) =>
+                            value.startsWith(name)
                           );
-
                           handleChange("responsible", responsible);
                         }}
+                        currentValue={
+                          formData?.responsible?.name !== undefined &&
+                          formData?.responsible?.lastName !== undefined
+                            ? `${formData?.responsible?.name} ${formData?.responsible?.lastName}`
+                            : ""
+                        }
                       />
                     </FormControl>
 
@@ -1063,43 +1081,8 @@ export default function BottleWineActionForm({
                       console.log("onTextChange", name, value);
                       // handleChange("packagingType", value);
                     }}
+                    value={formData?.packagingType || ""}
                   />
-                  {/* <div className="flex flex-col gap-2">
-                    <Autocomplete
-                      id="packagingType"
-                      noOptionsText="No packaging types available"
-                      options={Object.values(PackagingType).map((name) => name)}
-                      value={formData?.packagingType || null}
-                      getOptionLabel={(option) => option}
-                      filterSelectedOptions
-                      onChange={(_event, newValue) => {
-                        if (!newValue) return;
-
-                        handleChange("packagingType", newValue);
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label={
-                            params.inputProps.value
-                              ? "Packaging type"
-                              : "Select packaging type"
-                          }
-                        />
-                      )}
-                    />
-
-                    {errors?.packagingType && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        className="mt-1"
-                      >
-                        {errors?.packagingType?.message as string}
-                      </Typography>
-                    )}
-                  </div> */}
 
                   <div className="flex flex-col gap-2">
                     <FormControl fullWidth>

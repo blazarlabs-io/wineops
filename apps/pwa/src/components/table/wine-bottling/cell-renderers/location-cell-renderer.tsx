@@ -46,7 +46,13 @@ export const LocationCellRenderer: FunctionComponent<
           {value &&
             value.length > 0 &&
             value.map((item: any, index: number) => (
-              <div key={index} className="max-w-fit max-h-fit! leading-0!">
+              <div
+                key={index}
+                style={{
+                  display: index <= 2 ? "flex" : "none",
+                }}
+                className="max-w-fit max-h-fit! leading-0!"
+              >
                 <div
                   className="flex fle-row items-center gap-[2px]! w-full"
                   style={{

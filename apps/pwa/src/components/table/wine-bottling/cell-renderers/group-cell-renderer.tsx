@@ -115,7 +115,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
           ) : (
             <>
               <Typography variant="body1" className="max-h-fit">
-                {node?.data?.name}
+                {node?.data?.name || node?.data?.collectionName || "N/A"}
               </Typography>
               <div className="flex items-center gap-1">
                 <Icon icon="formkit:date" width="12" height="12" />

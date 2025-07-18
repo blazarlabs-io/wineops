@@ -58,7 +58,7 @@ export default function LocationDialog({
             borderColor: "var(--mui-palette-divider)",
           }}
         >
-          {data.map((d, index) => (
+          {data?.map((d, index) => (
             <DialogContentText key={d + index}>{d || "N/A"}</DialogContentText>
           ))}
         </div>

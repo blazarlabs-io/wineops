@@ -61,9 +61,13 @@ export default function LotIdAndLotStatusDialog({
           }}
         >
           {ids.map((id, index) => (
-            <div key={id + index} className="flex items-center gap-2">
+            <div key={id + index} className="grid grid-cols-2 items-center">
               <DialogContentText variant="body2">{id}</DialogContentText>
-              <Chip size="small" label={statuses[index]} className="text-xs!" />
+              <Chip
+                size="small"
+                label={statuses[index]}
+                className="text-xs! max-w-fit!"
+              />
             </div>
           ))}
         </div>
