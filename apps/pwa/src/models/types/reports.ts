@@ -128,7 +128,7 @@ export type Anexa7Data = {
   stockProducts?: Array<Anexa7StockProduct>;
   modifications?: Array<Partial<Pick<Anexa7Data, "declarant">>>;
   createdAt: string | Timestamp;
-  createdBy: TeamMember["id"] | TeamMember["email"];
+  createdBy?: TeamMember["id"] | TeamMember["email"];
   modifiedAt?: string | Timestamp;
   modifiedBy?: TeamMember["id"] | TeamMember["email"];
   date?: string | Timestamp;

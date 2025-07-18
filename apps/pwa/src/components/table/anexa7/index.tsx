@@ -107,7 +107,7 @@ const Anexa7Table = () => {
     () =>
       anexa7List.map(({ createdBy, modifiedBy, ...report }) => ({
         ...report,
-        createdByUser: getUser(createdBy),
+        createdByUser: createdBy ? getUser(createdBy) : "",
         modifiedByUser: modifiedBy ? getUser(modifiedBy) : "",
       })),
     [anexa7List, getUser]

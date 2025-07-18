@@ -82,8 +82,11 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userId =
-    teamMembers?.find(({ email }) => email === user?.email)?.id ||
+    teamMembers?.find(
+      ({ id, email }) => email === user?.email || id === user?.uid
+    )?.id ||
     user?.email ||
+    user?.uid ||
     "";
 
   const defaultAnexa7Data = useMemo(
@@ -97,64 +100,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
           name2: "",
           idno_idnp: "",
         },
-        stockProducts: [
-          /*
-          {
-            category: "Vin în Vrac",
-            externalId: "",
-            id: crypto.randomUUID(),
-            name: "Test Vin în Vrac 1",
-            red: "",
-            rose: "",
-            total: "",
-            unit: "dal",
-            white: "",
-          },
-          {
-            category: "Vin în Vrac",
-            externalId: "",
-            id: crypto.randomUUID(),
-            name: "Test Vin în Vrac 2",
-            red: "",
-            rose: "",
-            total: "",
-            unit: "dal",
-            white: "",
-          },
-          {
-            category: "Vin în Vrac",
-            externalId: "",
-            id: crypto.randomUUID(),
-            name: "Test Vin în Vrac 3",
-            red: "",
-            rose: "",
-            total: "",
-            unit: "dal",
-            white: "",
-          },
-          {
-            category: "Vin Îmbuteliat",
-            externalId: "",
-            id: crypto.randomUUID(),
-            name: "Test Vin Îmbuteliat 1",
-            red: "",
-            rose: "",
-            total: "",
-            unit: "sticle",
-            white: "",
-          },
-          {
-            category: "Vin Îmbuteliat",
-            externalId: "",
-            id: crypto.randomUUID(),
-            name: "Test Vin Îmbuteliat 2",
-            red: "",
-            rose: "",
-            total: "",
-            unit: "sticle",
-            white: "",
-          },*/
-        ],
+        stockProducts: [],
         createdAt: Timestamp.fromDate(new Date()),
         createdBy: userId,
         date: Timestamp.fromDate(new Date()),
@@ -168,6 +114,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
     setValue,
     reset,
     formState: { errors },
+    setError,
   } = useForm<Anexa7Data>({
     resolver: joiResolver(anexa7Schema, { stripUnknown: true }),
     defaultValues: anexa7 || defaultAnexa7Data,
@@ -316,6 +263,33 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
   );
 
   const onSubmit = async (data: Anexa7Data) => {
+    for (let index = 0; index < (data?.stockProducts?.length || 0); index++) {
+      const stockProduct = data.stockProducts?.[index];
+
+      if ((stockProduct?.total || 0) <= 0) {
+        setError(`stockProducts.${index}.total`, {
+          type: "manual",
+          message: `Please enter a valid number`,
+        });
+
+        return;
+      }
+
+      if (
+        stockProduct?.total !==
+        (stockProduct?.red || 0) +
+          (stockProduct?.rose || 0) +
+          (stockProduct?.white || 0)
+      ) {
+        setError(`stockProducts.${index}.total`, {
+          type: "manual",
+          message: `Total (${stockProduct?.total}) must be equal with roşu + roz + alb`,
+        });
+
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -1011,7 +985,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                       {isEditing ? (
                                         <EditableQty
                                           name="total"
-                                          value={total}
+                                          value={total || ""}
                                           onChange={(e) =>
                                             handleStockProductChange(
                                               externalId,
@@ -1032,7 +1006,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                       {isEditing ? (
                                         <EditableQty
                                           name="red"
-                                          value={red}
+                                          value={red || ""}
                                           onChange={(e) =>
                                             handleStockProductChange(
                                               externalId,
@@ -1053,7 +1027,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                       {isEditing ? (
                                         <EditableQty
                                           name="rose"
-                                          value={rose}
+                                          value={rose || ""}
                                           onChange={(e) =>
                                             handleStockProductChange(
                                               externalId,
@@ -1072,7 +1046,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                       {isEditing ? (
                                         <EditableQty
                                           name="white"
-                                          value={white}
+                                          value={white || ""}
                                           onChange={(e) =>
                                             handleStockProductChange(
                                               externalId,
