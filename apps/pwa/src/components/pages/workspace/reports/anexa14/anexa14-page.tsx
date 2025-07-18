@@ -104,7 +104,8 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
         },
         harvest: {
           unit: "ha",
-          totalVineyardsArea: totalVineyardsArea > 0 ? totalVineyardsArea : "",
+          totalVineyardsArea:
+            totalVineyardsArea > 0 ? totalVineyardsArea.toFixed(2) : "",
           freshConsumption: "",
         },
         parcelVineyards: [],
@@ -123,7 +124,15 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
     formState: { errors },
   } = useForm<Anexa14Data>({
     resolver: joiResolver(anexa14Schema, { stripUnknown: true }),
-    defaultValues: anexa14 || defaultAnexa14Data,
+    defaultValues: anexa14
+      ? {
+          ...anexa14,
+          harvest: {
+            ...anexa14?.harvest,
+            totalVineyardsArea: +(totalVineyardsArea || 0)?.toFixed(2),
+          },
+        }
+      : defaultAnexa14Data,
   });
 
   const [formData, setFormData] = useState<Anexa14Data | undefined>();
@@ -728,7 +737,9 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                         {...register("harvest.totalVineyardsArea")}
                       />
                     ) : (
-                      <Completed>{harvest?.totalVineyardsArea}</Completed>
+                      <Completed>
+                        {harvest?.totalVineyardsArea?.toFixed(2)}
+                      </Completed>
                     )}
                   </Box>
 

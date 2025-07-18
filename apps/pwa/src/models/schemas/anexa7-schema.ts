@@ -2,9 +2,9 @@
 
 import Joi from "joi";
 import { Timestamp } from "firebase/firestore";
-import { StockProductCategory } from "../types/reports";
+import { Anexa7Data, StockProductCategory } from "../types/reports";
 
-export const anexa7Schema = Joi.object({
+export const anexa7Schema = Joi.object<Anexa7Data>({
   id: Joi.string().required(),
   date: Joi.alternatives()
     .try(
@@ -56,16 +56,16 @@ export const anexa7Schema = Joi.object({
         }),
         unit: Joi.string().optional().allow(""),
         total: Joi.number().required().messages({
-          "number.base": "Total must be a number",
+          "number.base": "Please enter a valid number",
         }),
         red: Joi.number().optional().empty("").messages({
-          "number.base": "Total must be a number",
+          "number.base": "Please enter a valid number",
         }),
         rose: Joi.number().optional().empty("").messages({
-          "number.base": "Total must be a number",
+          "number.base": "Please enter a valid number",
         }),
         white: Joi.number().optional().empty("").messages({
-          "number.base": "Total must be a number",
+          "number.base": "Please enter a valid number",
         }),
       }).optional()
     )
@@ -86,7 +86,7 @@ export const anexa7Schema = Joi.object({
       "any.required": "Date is required.",
       "alternatives.types": "Date must be a valid date.",
     }),
-  createdBy: Joi.string().required(),
+  createdBy: Joi.string().optional().allow(""),
   modifiedAt: Joi.alternatives()
     .try(
       Joi.string().isoDate().messages({

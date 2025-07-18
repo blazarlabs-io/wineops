@@ -83,7 +83,7 @@ export const EditableQty = ({
       {...(name !== "name" && {
         slotProps: {
           htmlInput: {
-            min: 1,
+            min: 0,
             step: 0.1,
             max: 1_000_000,
           },
