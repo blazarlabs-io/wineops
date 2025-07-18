@@ -10,7 +10,6 @@ import { useMust } from "@/context/must";
 import { useVessel } from "@/context/vessel";
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
-import { setNestedValue } from "@/helpers/form-helpers";
 import { useGetGrapesNames } from "@/hooks/use-get-grapes-names";
 import { useAuth } from "@/lib/firebase/auth";
 import { grapeProcessingActionSchema } from "@/models/schemas/actions/grape-processing-action-schema";
@@ -39,6 +38,7 @@ import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 import { Add, ExpandMore } from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
+import { parseToDate } from "@/utils/date-format";
 
 export default function GrapeProcessingActionForm({
   onBackClick,
@@ -76,17 +76,13 @@ export default function GrapeProcessingActionForm({
 
   const handleChange = useCallback(
     (name: string, value: any) => {
-      if (name.startsWith("executionDate")) {
-        // value = Timestamp.fromDate(value.toDate());
-        value = new Date(value).toDateString();
-      }
-
       setValue(name, value);
-      const path = name.split(".");
-      const newFormData = setNestedValue(formData, path, value);
-      setFormData(newFormData);
+      setFormData((prev) => ({
+        ...(prev as GrapeProcessingAction),
+        [name]: value,
+      }));
     },
-    [formData, setValue]
+    [setValue]
   );
 
   const onSubmit = async (data: any, e: any) => {
@@ -134,11 +130,6 @@ export default function GrapeProcessingActionForm({
           return;
         }
 
-        console.log(
-          "totalVesselsQty !== item.inputQuantity:",
-          totalVesselsQty,
-          data?.pressPercentage[0].inputQuantity
-        );
         return;
       }
     );
@@ -405,9 +396,9 @@ export default function GrapeProcessingActionForm({
                   <DatePicker
                     name="executionDate"
                     value={
-                      formData.executionDate instanceof Timestamp
-                        ? dayjs(formData.executionDate.toDate())
-                        : dayjs(formData.executionDate)
+                      formData?.executionDate
+                        ? dayjs(parseToDate(formData?.executionDate))
+                        : null
                     }
                     label={
                       formData.executionDate
@@ -418,11 +409,10 @@ export default function GrapeProcessingActionForm({
                     views={["year", "month", "day"]}
                     className="w-full"
                     onChange={(date) => {
-                      if (date) {
-                        handleChange("executionDate", date);
-                      } else {
-                        handleChange("executionDate", undefined);
-                      }
+                      handleChange(
+                        "executionDate",
+                        date ? Timestamp.fromDate(date.toDate()) : null
+                      );
                     }}
                   />
                 </Stack>
@@ -438,7 +428,7 @@ export default function GrapeProcessingActionForm({
                     <ResponsibleTeamMemberField
                       teamMembers={teamMembers}
                       onChange={(value) => {
-                        handleChange("responsible.name", value);
+                        handleChange("responsible", { name: value });
                       }}
                     />
                   </Stack>
@@ -593,7 +583,7 @@ export default function GrapeProcessingActionForm({
                     variant="text"
                     startIcon={<Add />}
                     onClick={handleAddPressPercentage}
-                    disabled={totalPressPercentage > 100}
+                    disabled={totalPressPercentage >= 100}
                   >
                     Add
                   </Button>
@@ -743,9 +733,6 @@ export default function GrapeProcessingActionForm({
                           filterSelectedOptions
                           onChange={(_event, newValue) => {
                             const added = newValue.at(-1);
-
-                            console.log("newValue:", newValue);
-                            console.log("added:", added);
 
                             if (!added) return;
 
