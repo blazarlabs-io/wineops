@@ -17,10 +17,10 @@ import {
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useColorScheme } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
-import { Anexa14GridData, columns } from "./columns";
+import { Anexa7GridData, columns } from "./columns";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { useWinery } from "@/context/winery";
-import { useAnexa14List } from "@/context/anexa14";
+import { useAnexa7List } from "@/context/anexa7";
 import { TeamMember } from "@/models/types/db";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -30,7 +30,7 @@ const rowSelection: RowSelectionOptions = {
   headerCheckbox: false,
 };
 
-const Anexa14Table = () => {
+const Anexa7Table = () => {
   const { mode } = useColorScheme();
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT / 1.5);
 
@@ -73,14 +73,14 @@ const Anexa14Table = () => {
     return {};
   }, []);
 
-  const { anexa14List } = useAnexa14List();
+  const { anexa7List } = useAnexa7List();
   const { teamMembers } = useWinery();
 
   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
 
   const handleSelectionChanged = useCallback(
     (data: any) => {
-      setSelected(data.api.getSelectedRows(), "anexa14");
+      setSelected(data.api.getSelectedRows(), "anexa7");
     },
     [setSelected]
   );
@@ -103,25 +103,25 @@ const Anexa14Table = () => {
 
   const { selected, entityName } = useSelectedEntitiesStore((state) => state);
 
-  const normalizedAnexa14List = useMemo(
+  const normalizedAnexa7List = useMemo(
     () =>
-      anexa14List.map(({ createdBy, modifiedBy, ...report }) => ({
+      anexa7List.map(({ createdBy, modifiedBy, ...report }) => ({
         ...report,
         createdByUser: getUser(createdBy),
         modifiedByUser: modifiedBy ? getUser(modifiedBy) : "",
       })),
-    [anexa14List, getUser]
+    [anexa7List, getUser]
   );
 
   const selectedIds = useMemo(() => selected.map(({ id }) => id), [selected]);
 
   const onGridReady = useCallback(
     (params: GridReadyEvent) => {
-      if (entityName !== "anexa14" || selectedIds.length === 0) return;
+      if (entityName !== "anexa7" || selectedIds.length === 0) return;
 
       const gridApi: GridApi = params.api;
 
-      gridApi.forEachNode((node: IRowNode<Anexa14GridData>) => {
+      gridApi.forEachNode((node: IRowNode<Anexa7GridData>) => {
         if (node.data?.id && selectedIds.includes(node.data?.id)) {
           node.setSelected(true);
         }
@@ -140,7 +140,7 @@ const Anexa14Table = () => {
     <div className={`${themeClass} w-full h-[calc(100vh-212px)]`}>
       <AgGridReact
         theme={myTheme}
-        rowData={normalizedAnexa14List}
+        rowData={normalizedAnexa7List}
         columnDefs={colDefs}
         defaultColDef={defaultColDef}
         pagination={true}
@@ -152,4 +152,4 @@ const Anexa14Table = () => {
   );
 };
 
-export default Anexa14Table;
+export default Anexa7Table;

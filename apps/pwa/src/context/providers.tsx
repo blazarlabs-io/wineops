@@ -16,6 +16,7 @@ import { QuickDrawerProvider } from "./quick-drawer";
 import { Anexa14Provider } from "./anexa14";
 import { ToolsbarProvider } from "./tools-bar";
 import { BottleProvider } from "./bottle";
+import { Anexa7Provider } from "./anexa7";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -34,14 +35,16 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                             <ChemistryProvider>
                               <WineProvider>
                                 <Anexa14Provider>
-                                  <APIProvider
-                                    apiKey={
-                                      process.env
-                                        .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
-                                    }
-                                  >
-                                    {children}
-                                  </APIProvider>
+                                  <Anexa7Provider>
+                                    <APIProvider
+                                      apiKey={
+                                        process.env
+                                          .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+                                      }
+                                    >
+                                      {children}
+                                    </APIProvider>
+                                  </Anexa7Provider>
                                 </Anexa14Provider>
                               </WineProvider>
                             </ChemistryProvider>

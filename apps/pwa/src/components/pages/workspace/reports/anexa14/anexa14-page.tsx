@@ -221,7 +221,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
           setFormData(newData);
 
           if (updateRes.status === 200) {
-            enqueueSnackbar(`Updated ${name} successfully`, {
+            enqueueSnackbar(`Updated successfully`, {
               variant: "success",
             });
           } else {
@@ -483,7 +483,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                           textAlign: "center",
                           borderBottom: isEditing
                             ? ""
-                            : "1px solid var(--anexa14-border-color)",
+                            : "1px solid var(--reports-table-border-color)",
                         }}
                       >
                         {isEditing ? (
@@ -540,7 +540,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                           textAlign: "center",
                           borderBottom: isEditing
                             ? ""
-                            : "1px solid var(--anexa14-border-color)",
+                            : "1px solid var(--reports-table-border-color)",
                         }}
                       >
                         {isEditing ? (
@@ -588,7 +588,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                           textAlign: "center",
                           borderBottom: isEditing
                             ? ""
-                            : "1px solid var(--anexa14-border-color)",
+                            : "1px solid var(--reports-table-border-color)",
                         }}
                       >
                         {isEditing ? (
@@ -631,7 +631,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                           textAlign: "center",
                           borderBottom: isEditing
                             ? ""
-                            : "1px solid var(--anexa14-border-color)",
+                            : "1px solid var(--reports-table-border-color)",
                         }}
                       >
                         {isEditing ? (
@@ -672,7 +672,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                           textAlign: "center",
                           borderBottom: isEditing
                             ? ""
-                            : "1px solid var(--anexa14-border-color)",
+                            : "1px solid var(--reports-table-border-color)",
                         }}
                       >
                         {isEditing ? (
@@ -717,7 +717,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                       textAlign: "center",
                       borderBottom: isEditing
                         ? ""
-                        : "1px solid var(--anexa14-border-color)",
+                        : "1px solid var(--reports-table-border-color)",
                     }}
                   >
                     {isEditing ? (
@@ -752,7 +752,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                       textAlign: "center",
                       borderBottom: isEditing
                         ? ""
-                        : "1px solid var(--anexa14-border-color)",
+                        : "1px solid var(--reports-table-border-color)",
                     }}
                   >
                     {isEditing ? (
@@ -1458,7 +1458,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                       textAlign: "center",
                       borderBottom: isEditing
                         ? ""
-                        : "1px solid var(--anexa14-border-color)",
+                        : "1px solid var(--reports-table-border-color)",
                     }}
                   >
                     {isEditing ? (
@@ -1500,7 +1500,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                       width: "100px",
                       borderBottom: isEditing
                         ? ""
-                        : "1px solid var(--anexa14-border-color)",
+                        : "1px solid var(--reports-table-border-color)",
                     }}
                   />
                 </Stack>
