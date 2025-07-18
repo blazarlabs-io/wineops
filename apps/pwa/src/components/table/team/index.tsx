@@ -92,6 +92,12 @@ const TeamTable = () => {
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    return () => {
+      setSelected([]);
+    };
+  }, [setSelected]);
+
   return (
     <div className={`${themeClass} w-full h-[calc(100vh-212px)]`}>
       <AgGridReact

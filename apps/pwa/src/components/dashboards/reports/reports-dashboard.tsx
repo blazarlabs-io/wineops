@@ -23,6 +23,12 @@ export const REPORTS: {
     subtitle: "Declarația privind recolta totală de struguri",
     href: "reports/anexa14",
   },
+  {
+    id: 2,
+    title: "Anexa nr. 7",
+    subtitle: "Declaraţie de stoc",
+    href: "reports/anexa7",
+  },
 ];
 
 export default function ReportsDashboard() {

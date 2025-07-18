@@ -28,3 +28,4 @@ export const TASKS = "tasks";
 export const DOCUMENTS = "documents";
 export const ANEXA14 = "anexa14";
 export const BOTTLES = "bottles";
+export const ANEXA7 = "anexa7";
