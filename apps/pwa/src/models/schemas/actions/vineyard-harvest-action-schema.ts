@@ -83,7 +83,7 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
   // * Quality params
   sugar: sugarSchema.optional(),
   acidity: aciditySchema.optional(),
-  certificateOfInofensiviate: Joi.string().optional().allow(""),
+  certificateOfInofensivitate: Joi.string().optional().allow(""),
   // * Additional info
   description: Joi.string().allow("").max(250).messages({
     "string.max":

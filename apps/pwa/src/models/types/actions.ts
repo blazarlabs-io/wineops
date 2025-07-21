@@ -68,7 +68,7 @@ export type GrapeIntakeAction = {
   executionDate: string | Timestamp;
   supplier: Partial<Supplier>;
   grapeVariety: string;
-  weigherName?: ResponsibleTeamMember;
+  weigherName?: TeamMember;
   mass?: {
     gross?: number;
     net?: number;
@@ -150,7 +150,7 @@ export interface VineyardHarvestAction {
   // * QUALITY PARAMS
   sugar: Partial<LabElement>;
   acidity?: Partial<LabElement>;
-  certificateOfInofensiviate?: string;
+  certificateOfInofensivitate?: string;
   // * ADDITIONAL INFO
   description?: string;
   harvestEnded?: boolean;
