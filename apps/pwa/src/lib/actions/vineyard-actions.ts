@@ -112,7 +112,7 @@ export const vineyardHarvestAction = async (
       vehicleIdNo: actionData.transportVehicleId as string,
       companyName: actionData.transportCompanyName as string,
       driverIdNo: actionData.transportDriverName as string,
-      certificate: "",
+      certificate: actionData?.certificateOfInofensivitate ?? "",
       acquisitionInvoiceNo: actionData.invoiceNumber as string,
     },
     processingInfo: {

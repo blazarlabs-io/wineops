@@ -1129,7 +1129,7 @@ export default function VineyardHarvestActionForm({
                             id="outlined-basic"
                             label="Certificat de inofensivitate ID"
                             variant="outlined"
-                            // {...register("invoice")}
+                            {...register("certificateOfInofensivitate")}
                           />
                         </FormControl>
                       </Stack>

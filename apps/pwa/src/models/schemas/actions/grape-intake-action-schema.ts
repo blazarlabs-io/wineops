@@ -79,11 +79,7 @@ export const grapeIntakeActionSchema = Joi.object<GrapeIntakeAction>({
     "string.max":
       "The certificat de inofensivitate ID must be less than or equal to 50 characters long",
   }),
-  weigherName: Joi.object({
-    id: Joi.string().required(),
-    name: Joi.string().optional(),
-    email: Joi.string().optional(),
-  }).optional(),
+  weigherName: Joi.object().optional(),
   mass: Joi.object({
     gross: Joi.number()
       .required()
