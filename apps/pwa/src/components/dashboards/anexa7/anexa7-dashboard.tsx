@@ -4,8 +4,9 @@ import Anexa7Table from "@/components/table/anexa7";
 import ToolsBar from "@/components/widgets/tools-bar";
 import { ButtonType } from "@/components/widgets/tools-bar/constants";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, IconButton, Stack, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function Anexa7Dashboard() {
   const { selected, entityName } = useSelectedEntitiesStore((state) => state);
@@ -24,6 +25,10 @@ export default function Anexa7Dashboard() {
     router.push(`anexa7/new`);
   };
 
+  const handleBackClick = () => {
+    router.push(`/workspace/reports`);
+  };
+
   return (
     <Box
       sx={{
@@ -40,7 +45,14 @@ export default function Anexa7Dashboard() {
           justifyContent: "center",
         }}
       >
-        <Typography variant="h4">Anexa nr. 7</Typography>
+        <Stack
+          sx={{ pt: 0.5, gap: 1, flexDirection: "row", alignItems: "center" }}
+        >
+          <IconButton onClick={handleBackClick}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h4">Anexa nr. 7</Typography>
+        </Stack>
 
         <ToolsBar
           buttons={{

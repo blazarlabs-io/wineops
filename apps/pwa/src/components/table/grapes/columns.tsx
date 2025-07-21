@@ -62,9 +62,9 @@ export const grapesColumns: ColDef<
     cellRenderer: BatchIDCellRenderer,
   },
   {
-    headerName: "Quantity",
+    headerName: "Quantity Overview",
     field: "metrics",
-    minWidth: 240,
+    minWidth: 270,
     flex: 1,
     editable: false,
     cellRenderer: QuantityCellRenderer,
@@ -78,7 +78,7 @@ export const grapesColumns: ColDef<
     cellRenderer: SupplierCellRenderer,
   },
   {
-    headerName: "Lab",
+    headerName: "Lab Results",
     field: "labData",
     minWidth: 200,
     flex: 1,

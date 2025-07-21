@@ -50,8 +50,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 import { useConsumable } from "@/context/consumable";
 import { hasKeyFromArray } from "../../utils";
-import AutocompleteWithTextField from "../../custom-fields/autocomplete-with-text-field";
-import { setNestedValue } from "@/helpers/form-helpers";
 
 export default function BottleWineActionForm({
   onBackClick,
@@ -151,28 +149,6 @@ export default function BottleWineActionForm({
     (name: keyof BottleWineAction, value: any) => {
       setValue(name, value);
       setFormData((prev) => ({ ...prev, [name]: value }));
-
-      if (name === "subjectRecipe") {
-        const id = filteredWines.filter(({ name }) => name === value)[0].id;
-        setValue("subjectRecipe.id", id);
-        formData.subjectRecipe = {
-          name: name,
-          id: id,
-        };
-      }
-
-      setValue(name, value);
-
-      if (name.startsWith("executionDate")) {
-        setFormData((prev) => ({
-          ...(prev as BottleWineAction),
-          [name]: value,
-        }));
-      } else {
-        const path = name.split(".");
-        const newFormData = setNestedValue(formData, path, value);
-        setFormData(newFormData);
-      }
     },
     [setValue]
   );
@@ -292,14 +268,31 @@ export default function BottleWineActionForm({
     [clearErrors, formData.supportingDocuments, setValue, user?.uid]
   );
 
-  const onSubmit = async (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
+  const onSubmit = async (data: any) => {
+    for (let index = 0; index < (data?.wines?.length || 0); index++) {
+      const wine = data.wines?.[index];
+
+      if ((wine?.quantity || 0) <= 0) {
+        setError(`wines.${index}.quantity`, {
+          type: "manual",
+          message: `Please enter a valid quantity for the wine`,
+        });
+
+        return;
+      }
+
+      if (wine?.quantity > (wine?.qty || 0)) {
+        setError(`wines.${index}.quantity`, {
+          type: "manual",
+          message: `Wine quantity (${wine?.quantity}) must be less or equal with ${wine?.qty || 0}`,
+        });
+
+        return;
+      }
+    }
 
     const subjectRecipe = filteredRecipes.filter(
-      ({ name }) => name === data.subjectRecipe.name
+      ({ name }) => name === data.subjectRecipe?.name
     )[0];
 
     setIsSubmitting(true);
@@ -538,35 +531,31 @@ export default function BottleWineActionForm({
                     )}
                   </div>
 
-                  {/* TODO: Start here */}
-                  <AutocompleteWithTextField
-                    key="subjectRecipe"
-                    label="Subject Recipe"
-                    errors={errors}
-                    options={[]}
-                    onValueChange={(name, value) => {
-                      console.log("onValueChange", name, value);
-                      // handleChange(name, value);
-                    }}
-                    onTextChange={(name, value) => {
-                      console.log("onTextChange", name, value);
-                      // handleChange(name, value);
-                    }}
-                  />
-
-                  {/* <div className="flex flex-col gap-2">
-                    <Autocomplete<Recipe, false, false, false>
-                      noOptionsText="No recipes available"
+                  <div className="flex flex-col gap-2">
+                    <Autocomplete<Recipe, false, false, true>
+                      freeSolo
+                      noOptionsText="No wine recipes available"
                       options={[]}
                       value={(formData?.subjectRecipe as Recipe) || null}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={(option) =>
+                        typeof option === "string" ? option : option.name
+                      }
                       filterSelectedOptions
                       onChange={(_event, newValue) => {
                         if (!newValue) return;
 
                         handleChange("subjectRecipe", {
-                          id: newValue.id,
-                          name: newValue.name,
+                          id: typeof newValue === "string" ? "" : newValue.id,
+                          name:
+                            typeof newValue === "string"
+                              ? newValue
+                              : newValue.name,
+                        });
+                      }}
+                      onInputChange={(_event, newInputValue) => {
+                        handleChange("subjectRecipe", {
+                          id: "",
+                          name: newInputValue,
                         });
                       }}
                       renderInput={(params) => (
@@ -574,7 +563,9 @@ export default function BottleWineActionForm({
                           {...params}
                           variant="outlined"
                           label={
-                            params.inputProps.value ? "Recipe" : "Select recipe"
+                            params.inputProps.value
+                              ? "Wine recipe"
+                              : "Select a wine recipe"
                           }
                         />
                       )}
@@ -594,7 +585,7 @@ export default function BottleWineActionForm({
                         }
                       </Typography>
                     )}
-                  </div> */}
+                  </div>
 
                   <div className="flex flex-col gap-2">
                     <Autocomplete
@@ -777,11 +768,34 @@ export default function BottleWineActionForm({
                   </div>
 
                   <div className="flex flex-col gap-2">
+                    <FormControl>
+                      <Input
+                        id="lotId"
+                        label="Lot ID"
+                        type="text"
+                        variant="outlined"
+                        {...register("lotId")}
+                      />
+                    </FormControl>
+
+                    {errors?.lotId && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.lotId?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
                     <Autocomplete
+                      freeSolo
                       id="bottlingLine"
                       options={[]}
                       noOptionsText="No bottling lines available"
-                      value={formData?.bottlingLine}
+                      value={formData?.bottlingLine || null}
                       filterSelectedOptions
                       renderInput={(params) => (
                         <TextField
@@ -792,6 +806,9 @@ export default function BottleWineActionForm({
                       )}
                       onChange={(_e, value) => {
                         handleChange("bottlingLine", value);
+                      }}
+                      onInputChange={(_event, newInputValue) => {
+                        handleChange("bottlingLine", newInputValue);
                       }}
                     />
 
@@ -1049,23 +1066,9 @@ export default function BottleWineActionForm({
 
               <AccordionDetails>
                 <Stack gap={2}>
-                  <AutocompleteWithTextField
-                    //  id="packagingType"
-                    key="packagingType"
-                    label="Packaging Type"
-                    errors={errors}
-                    options={Object.values(PackagingType).map((name) => name)}
-                    onValueChange={(name, value) => {
-                      // handleChange(name, value);
-                      handleChange("packagingType", value);
-                    }}
-                    onTextChange={(name, value) => {
-                      console.log("onTextChange", name, value);
-                      // handleChange("packagingType", value);
-                    }}
-                  />
-                  {/* <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
                     <Autocomplete
+                      freeSolo
                       id="packagingType"
                       noOptionsText="No packaging types available"
                       options={Object.values(PackagingType).map((name) => name)}
@@ -1076,6 +1079,9 @@ export default function BottleWineActionForm({
                         if (!newValue) return;
 
                         handleChange("packagingType", newValue);
+                      }}
+                      onInputChange={(_event, newInputValue) => {
+                        handleChange("packagingType", newInputValue);
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -1099,7 +1105,7 @@ export default function BottleWineActionForm({
                         {errors?.packagingType?.message as string}
                       </Typography>
                     )}
-                  </div> */}
+                  </div>
 
                   <div className="flex flex-col gap-2">
                     <FormControl fullWidth>

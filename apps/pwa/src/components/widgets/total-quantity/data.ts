@@ -4,7 +4,7 @@ import { MetricsOutput, MetricsOutput2, MetricsTotal } from "./types";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { TOTAL_QUANTITY_COLORS } from "./constants";
 import { useColorScheme } from "@mui/material";
-import { formatNumberWithUnit } from "@/utils/number-format";
+import { formatNumberWithLowerCaseUnitAndSpace, formatNumberWithUnit } from "@/utils/number-format";
 
 const IS_PRE = (status?: EntityStatus) =>
   status === GrapeStatus.IN_TRANSIT ||
@@ -316,7 +316,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
   ];
 
   function valueFormatter(value: number | null) {
-    return `${formatNumberWithUnit(value || 0, "%", 2)} = ${formatNumberWithUnit(((value || 0) * totu) / 100, "T", 2)}`;
+    return `${formatNumberWithUnit(value || 0, "%", 2)} = ${formatNumberWithLowerCaseUnitAndSpace(((value || 0) * totu) / 100, "T", 2)}`;
   }
 
   const series = [

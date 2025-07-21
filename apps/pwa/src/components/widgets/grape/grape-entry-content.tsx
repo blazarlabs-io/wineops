@@ -2,7 +2,7 @@ import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import { DEFAULT_LOCALE } from "@/data/constants";
 import { GrapeEntry, ProcessingInfo } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
-import { formatNumberWithUnit } from "@/utils/number-format";
+import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 
 type GrapeEntryProps = {
   entry: GrapeEntry;
@@ -29,16 +29,16 @@ export default function GrapeEntryContent({
       <SimpleDataDisplay
         label="Gross weight"
         value={
-          grossWeight ? formatNumberWithUnit(grossWeight, grossUnit) : "N/A"
+          grossWeight ? formatNumberWithLowerCaseUnitAndSpace(grossWeight, grossUnit || "kg") : "N/A"
         }
       />
       <SimpleDataDisplay
         label="Net weight"
-        value={netWeight ? formatNumberWithUnit(netWeight, netUnit) : "N/A"}
+        value={netWeight ? formatNumberWithLowerCaseUnitAndSpace(netWeight, netUnit || "kg") : "N/A"}
       />
       <SimpleDataDisplay
         label="Tare weight"
-        value={tareWeight ? formatNumberWithUnit(tareWeight, tareUnit) : "N/A"}
+        value={tareWeight ? formatNumberWithLowerCaseUnitAndSpace(tareWeight, tareUnit || "kg") : "N/A"}
       />
       <SimpleDataDisplay label="Weigher Name" value={weigherName ?? "N/A"} />
       <SimpleDataDisplay

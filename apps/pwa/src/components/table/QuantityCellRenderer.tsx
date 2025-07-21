@@ -1,8 +1,8 @@
-import QuantityWidget from "@/components/widgets/quantity";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Stack from "@mui/material/Stack";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import TotalQuantityPieWidget from "../widgets/total-quantity/total-qty-pie";
+import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 
 export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
   const { value, node, data } = params;
@@ -24,6 +24,13 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
         </Stack>
       ) : (
         <>
+          {value?.entry?.netWeight
+            ? formatNumberWithLowerCaseUnitAndSpace(
+                value?.entry?.netWeight,
+                value?.entry?.netUnit || "kg"
+              )
+            : "N/A"}
+          {/*
           <QuantityWidget
             actual={value?.actual}
             supply={value?.supply}
@@ -31,6 +38,7 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
             status={value?.status}
             unit={value?.unit}
           />
+        */}
         </>
       )}
     </Stack>

@@ -31,6 +31,12 @@ export const wineBottlingSchema = Joi.object<Bottle>({
     "array.includesRequiredUnknowns": "At least one wine must be provided",
   }),
   responsible: teamMemberSchema.optional(),
+  lotId: Joi.string().min(2).max(50).required().messages({
+    "any.required": "Please enter the Lot ID",
+    "string.empty": "Please enter the Lot ID",
+    "string.min": "Lot ID must be at least 2 characters long",
+    "string.max": "Lot ID must be less than or equal to 50 characters long",
+  }),
   bottlingLine: Joi.string().optional().min(2).max(50).messages({
     "string.min": "Bottling line must be at least 2 characters long",
     "string.max":
