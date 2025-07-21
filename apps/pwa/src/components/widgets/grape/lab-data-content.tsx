@@ -1,9 +1,10 @@
-import LabItem from "@/components/data-display/lab-item";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import UnitDisplay from "@/components/data-display/unit-display";
 import { GrapeLabData } from "@/models/types/db";
-import { formatNumberWithUnit } from "@/utils/number-format";
-import Box from "@mui/material/Box";
+import {
+  formatNumberWithLowerCaseUnitAndSpace,
+  formatNumberWithUnit,
+  formatNumberWithUnitAndSpace,
+} from "@/utils/number-format";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
 
@@ -34,19 +35,51 @@ export default function LabDataContent({ labData }: LabDataProps) {
 
       {labData && (
         <div className="grid grid-cols-4 w-full py-2 items-center justify-center">
-          <Box p={1}>
-            <LabItem label="Sugar" data={sugar ?? { value: "N/A" }} />
-          </Box>
-          <Box p={1}>
-            <LabItem label="Acidity" data={acidity ?? { value: "N/A" }} />
-          </Box>
+          <SimpleDataDisplay
+            label="Sugar"
+            value={
+              sugar?.value ? (
+                <div className="flex items-start gap-1">
+                  <span className="text-muted-foreground">
+                    {formatNumberWithLowerCaseUnitAndSpace(
+                      sugar.value,
+                      sugar?.unit ?? "g/dm³"
+                    )}
+                  </span>
+                </div>
+              ) : (
+                "N/A"
+              )
+            }
+          />
+          <SimpleDataDisplay
+            label="Acidity"
+            value={
+              acidity?.value ? (
+                <div className="flex items-start gap-1">
+                  <span className="text-muted-foreground">
+                    {formatNumberWithLowerCaseUnitAndSpace(
+                      acidity.value,
+                      acidity?.unit ?? "g/dm³"
+                    )}
+                  </span>
+                </div>
+              ) : (
+                "N/A"
+              )
+            }
+          />
           <SimpleDataDisplay
             label="Density"
             value={
               density?.value ? (
                 <div className="flex items-start gap-1">
-                  <span className="text-muted-foreground">{density.value}</span>
-                  <UnitDisplay unit={density.unit ?? ""} />
+                  <span className="text-muted-foreground">
+                    {formatNumberWithLowerCaseUnitAndSpace(
+                      density.value,
+                      density?.unit ?? "kg/L"
+                    )}
+                  </span>
                 </div>
               ) : (
                 "N/A"
@@ -59,9 +92,11 @@ export default function LabDataContent({ labData }: LabDataProps) {
               temperature?.value ? (
                 <div className="flex items-start gap-1">
                   <span className="text-muted-foreground">
-                    {temperature.value}
+                    {formatNumberWithUnitAndSpace(
+                      temperature.value,
+                      temperature.unit ?? "°C"
+                    )}
                   </span>
-                  <UnitDisplay unit={temperature.unit ?? ""} />
                 </div>
               ) : (
                 "N/A"

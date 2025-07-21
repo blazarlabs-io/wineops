@@ -5,7 +5,7 @@ import { MetricsTotal } from "./types";
 import { useChartOptions } from "./data";
 import { Stack, Typography } from "@mui/material";
 import { pieArcClasses, PieChart } from "@mui/x-charts/PieChart";
-import { formatNumberWithUnit } from "@/utils/number-format";
+import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 import { getStripedPatterns } from "./constants";
 
 const LABELS = {
@@ -84,7 +84,7 @@ export default function TotalQuantityPieWidget({
         {Object.entries(relatedData).map(([key, value]) => (
           <Typography key={key} variant="caption">
             {LABELS[key as keyof typeof LABELS] || key}:{" "}
-            <strong>{formatNumberWithUnit(value, "T", 2)}</strong>
+            <strong>{formatNumberWithLowerCaseUnitAndSpace(value, "T", 2)}</strong>
           </Typography>
         ))}
       </Stack>

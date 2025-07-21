@@ -1,4 +1,4 @@
-import { formatNumberWithUnit } from "@/utils/number-format";
+import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 import { SortedValueWithColor } from "./types";
 import { Metric } from "@/models/types/db";
 
@@ -31,7 +31,7 @@ export default function Markers({ maxValue, markers }: MarkersProps) {
                   textColor || (isLowerDemand ? secondaryDarkColor : color),
               }}
             >
-              {formatNumberWithUnit(value, "T", 1)}
+              {formatNumberWithLowerCaseUnitAndSpace(value, "T", 1)}
             </div>
           );
         }
