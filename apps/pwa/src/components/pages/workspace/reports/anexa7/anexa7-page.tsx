@@ -368,6 +368,10 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
     console.log("formData:", formData);
   }, [formData]);
 
+  const handleBackClick = () => {
+    router.push(`/workspace/reports/anexa7`);
+  };
+
   return (
     <Box
       sx={{
@@ -397,14 +401,14 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
             direction="row"
             sx={{ alignItems: "center", justifyContent: "center", pb: 2 }}
           >
-            <Stack direction="row" gap={0.5} sx={{ flex: 1 }}>
-              <Link href="/workspace/reports/anexa7">
-                <Button
-                  disabled={isSubmitting}
-                  variant="text"
-                  startIcon={<ArrowBackIcon />}
-                />
-              </Link>
+            <Stack
+              direction="row"
+              gap={0.5}
+              sx={{ flex: 1, alignItems: "flex-start" }}
+            >
+              <IconButton onClick={handleBackClick} sx={{ mt: 0.6 }}>
+                <ArrowBackIcon />
+              </IconButton>
 
               <Stack gap={0.5} sx={{ flex: 1 }}>
                 <Stack
