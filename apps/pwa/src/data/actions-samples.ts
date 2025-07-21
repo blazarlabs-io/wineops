@@ -39,7 +39,7 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
     date: Timestamp.now(),
   },
   acidity: {},
-  certificateOfInofensiviate: "",
+  certificateOfInofensivitate: "",
   transportCompanyName: "",
   transportVehicleId: "",
   transportDriverName: "",

@@ -18,12 +18,14 @@ export type ResponsibleTeamMemberFieldProps = {
   teamMembers: TeamMember[];
   onChange: (value: any) => void;
   currentValue?: any;
+  label?: string;
 };
 
 export default function ResponsibleTeamMemberField({
   teamMembers,
   onChange,
   currentValue,
+  label = "Responsible person",
 }: ResponsibleTeamMemberFieldProps) {
   const { sortedTeamMembers } = useSortTeamMembersNames(teamMembers);
   const [value, setValue] = useState<string | null>(currentValue);
@@ -92,9 +94,7 @@ export default function ResponsibleTeamMemberField({
       // freeSolo
       filterSelectedOptions
       renderOption={handleRenderOption}
-      renderInput={(params) => (
-        <TextField {...params} label="Responsible person" />
-      )}
+      renderInput={(params) => <TextField {...params} label={label} />}
       onChange={handleChange}
     />
   );
