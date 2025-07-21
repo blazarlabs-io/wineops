@@ -75,7 +75,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
               density?.value ? (
                 <div className="flex items-start gap-1">
                   <span className="text-muted-foreground">
-                    {formatNumberWithLowerCaseUnitAndSpace(
+                    {formatNumberWithUnitAndSpace(
                       density.value,
                       density?.unit ?? "kg/L"
                     )}
