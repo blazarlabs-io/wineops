@@ -18,12 +18,14 @@ export type FileUploaderFieldProps = {
   path: string;
   data: any;
   onDocumentUpload?: (data: any) => void;
+  onFileData?: (data: any) => void;
 };
 
 export default function FileUploaderField({
   path,
   data = [],
   onDocumentUpload,
+  onFileData,
 }: FileUploaderFieldProps) {
   const { user } = useAuth();
 
@@ -83,6 +85,17 @@ export default function FileUploaderField({
             name: file.name,
             url: complete,
           });
+
+          if (onFileData) {
+            onFileData({
+              name: file.name,
+              url: complete,
+              media: {
+                type: file.type,
+                size: file.size,
+              },
+            });
+          }
 
           if (fileInputRef.current) fileInputRef.current.value = "";
         },

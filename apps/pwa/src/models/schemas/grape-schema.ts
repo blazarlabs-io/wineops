@@ -59,6 +59,7 @@ const transportationInfoSchema = Joi.object({
   vehicleIdNo: Joi.string().optional().allow(""),
   companyName: Joi.string().optional().allow(""),
   driverIdNo: Joi.string().optional().allow(""),
+  processingLocation: Joi.string().optional().allow(""),
   certificate: Joi.string().required().min(2).max(50).messages({
     "any.required": "Please enter the certificat de inofensivitate ID",
     "string.empty": "Please enter the certificat de inofensivitate ID",
@@ -171,4 +172,5 @@ export const grapeSchema = Joi.object().keys({
   metrics: Joi.object().allow(null).optional(),
   status: Joi.string().optional().allow(""),
   certifications: Joi.object().allow(null).optional(),
+  description: Joi.string().optional().allow(""),
 });

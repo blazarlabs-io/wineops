@@ -49,6 +49,7 @@ import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-mem
 import { parseToDate } from "@/utils/date-format";
 import { File } from "lucide-react";
 import { db } from "@/lib/firebase/services";
+import FileUploaderField from "../../custom-fields/file-uploader-field";
 
 const equipment: ActionRelation[] = [];
 
@@ -1177,6 +1178,7 @@ export default function VineyardHarvestActionForm({
                         borderRadius: "4px",
                         padding: "16px 8px",
                       }}
+                      {...register("description")}
                     />
 
                     <Stack gap={1}>

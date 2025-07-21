@@ -5,7 +5,14 @@ import { useGrape } from "@/context/grape";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { grapeSchema } from "@/models/schemas/grape-schema";
-import { DbResponse, FormMode, Grape } from "@/models/types/db";
+import {
+  DbResponse,
+  FormMode,
+  Grape,
+  GrapeStatus,
+  SingleDocument,
+  TeamMember,
+} from "@/models/types/db";
 import { parseToDate } from "@/utils/date-format";
 import { joiResolver } from "@hookform/resolvers/joi";
 import {
@@ -18,12 +25,15 @@ import {
   FormControl,
   TextField as Input,
   InputLabel,
+  LinearProgress,
   Stack,
+  TextareaAutosize,
   TextField,
   Typography,
+  useColorScheme,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
@@ -32,15 +42,25 @@ import { ExpandMore } from "@mui/icons-material";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { hasKeyFromArray } from "../utils";
+import { grapeSample } from "@/data/grapeSample";
+import FileUploaderField from "../custom-fields/file-uploader-field";
+import { useWinery } from "@/context/winery";
 
 export default function GrapeForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { user } = useAuth();
+  const { teamMembers } = useWinery();
   const { enqueueSnackbar } = useSnackbar();
+  const { mode } = useColorScheme();
+  const [generalExpanded, setGeneralExpanded] = useState<boolean>(true);
+  const [detailsExpanded, setDetailsExpanded] = useState<boolean>(false);
+  const [parametersExpanded, setParametersExpanded] = useState<boolean>(false);
+  const [transportationInfoExpanded, setTransportationInfoExpanded] =
+    useState<boolean>(false);
+  const [additionalInfoExpanded, setAdditionalInfoExpanded] =
+    useState<boolean>(false);
 
-  const [generalExpanded, setGeneralExpanded] = useState(true);
-  const [detailsExpanded, setDetailsExpanded] = useState(false);
-  const [parametersExpanded, setParametersExpanded] = useState(false);
+  const supportingDocumentsRef = useRef<HTMLInputElement | null>(null);
 
   const handleGeneralExpansion = () => {
     setGeneralExpanded((prevExpanded) => !prevExpanded);
@@ -54,6 +74,14 @@ export default function GrapeForm() {
     setParametersExpanded((prevExpanded) => !prevExpanded);
   };
 
+  const handleTransportationInfoExpansion = () => {
+    setTransportationInfoExpanded((prevExpanded) => !prevExpanded);
+  };
+
+  const handleAdditionalInfoExpansion = () => {
+    setAdditionalInfoExpanded((prevExpanded) => !prevExpanded);
+  };
+
   const close = useDialogDrawerStore(({ close }) => close);
   const closeDrawer = useCallback(() => close("form-drawer"), [close]);
 
@@ -63,7 +91,9 @@ export default function GrapeForm() {
 
   const { grapes } = useGrape();
 
-  const existingGrape = grapes?.find(({ id }) => id === selected[0]?.id);
+  const existingGrape: Grape = grapes?.find(
+    ({ id }) => id === selected[0]?.id
+  ) as Grape;
 
   const {
     register,
@@ -77,12 +107,48 @@ export default function GrapeForm() {
 
   const [formData, setFormData] = useState<Grape | undefined>();
 
+  const scrollIntoView = useCallback(
+    () =>
+      setTimeout(
+        () =>
+          supportingDocumentsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          }),
+        detailsExpanded ? 0 : 1000
+      ),
+    [detailsExpanded]
+  );
+
   const handleSelectChange = useCallback(
     (name: string, value: any) => {
       setValue(name as keyof Grape, value);
       setFormData((prev) => ({ ...(prev as Grape), [name]: value }));
     },
     [setValue]
+  );
+
+  const onDocumentUpload = useCallback(
+    (data: any) => {
+      console.log(
+        "onDocumentUpload",
+        ...(formData?.documents as SingleDocument[]),
+        data
+      );
+      const newSingleDocument = {
+        id: crypto.randomUUID(),
+        name: data.name,
+        fileUrl: data.fileUrl,
+        owner: teamMembers.find(({ id }) => id === user?.uid) as TeamMember,
+        uploadDate: Timestamp.now(),
+        media: data.media.type,
+      };
+      handleSelectChange("documents", [
+        ...(formData?.documents as SingleDocument[]),
+        newSingleDocument,
+      ]);
+    },
+    [formData?.documents, handleSelectChange, teamMembers, user?.uid]
   );
 
   const handleCreateGrape = useCallback(
@@ -98,59 +164,9 @@ export default function GrapeForm() {
         if (getOneRes.status === 200 && getOneRes.data !== null) {
           const { id, name, group = formData?.group } = data;
 
-          /*const {
-            grossWeight,
-            grossUnit,
-            netWeight,
-            netUnit,
-            tareWeight,
-            tareUnit,
-          } = data?.entry;
-
-          const entry = {
-            ...data?.entry,
-            ...(grossWeight
-              ? { grossWeight, grossUnit }
-              : { grossWeight: undefined, grossUnit: undefined }),
-            ...(netWeight
-              ? { netWeight, netUnit }
-              : { netWeight: undefined, netUnit: undefined }),
-            ...(tareWeight
-              ? { tareWeight, tareUnit }
-              : { tareWeight: undefined, tareUnit: undefined }),
-          };
-
-          const { density, temperature, sugar, acidity } = data?.labData;
-
-          const labData = {
-            ...data?.labData,
-            density: {
-              ...density,
-              value: density?.value,
-              unit: density?.value != null ? density.unit : undefined,
-            },
-            temperature: {
-              ...temperature,
-              value: temperature?.value,
-              unit: temperature?.value != null ? temperature.unit : undefined,
-            },
-            sugar: {
-              ...sugar,
-              value: sugar?.value,
-              unit: sugar?.value != null ? sugar.unit : undefined,
-            },
-            acidity: {
-              ...acidity,
-              value: acidity?.value,
-              unit: acidity?.value != null ? acidity.unit : undefined,
-            },
-          };*/
-
           const newData = {
             ...data,
             group: [...(group ?? []).slice(0, -1), name ?? id],
-            /*entry,
-            labData,*/
           };
 
           const updateRes: DbResponse = await db.grape.update(uid, id, newData);
@@ -211,55 +227,24 @@ export default function GrapeForm() {
     }
   };
 
-  /*useEffect(() => {
-    if (selected.length > 0 && grapes.length > 0) {
-      const existingGrape = grapes.find(({ id }) => id === selected[0]?.id);
-
-      if (!existingGrape) return;
-
-      setWorkingGrape(existingGrape);
-    } else {
-      setWorkingGrape(undefined);
-    }
-  }, [grapes, selected]);*/
+  // useEffect(() => {
+  //   if (grapeSample) {
+  //     reset(grapeSample);
+  //     setFormData(grapeSample);
+  //   }
+  // }, [grapeSample]);
 
   useEffect(() => {
     const name = `BatchID_${grapes?.filter(({ rowType }) => rowType !== "group")?.length + 1}`;
 
     const formatted = {
       ...existingGrape,
-      ...(!existingGrape && {
-        id: Date.now().toString(),
+      ...{
+        id: crypto.randomUUID(),
         name,
         group: [name],
-      }),
-      /*entry: {
-        ...grape?.entry,
-        grossUnit: grape?.entry?.grossUnit || MASS_UNITS[0] || "kg",
-        netUnit: grape?.entry?.netUnit || MASS_UNITS[0] || "kg",
-        tareUnit: grape?.entry?.tareUnit || MASS_UNITS[0] || "kg",
+        status: existingGrape?.status ?? GrapeStatus.NEW,
       },
-      labData: {
-        ...grape?.labData,
-        density: {
-          ...grape?.labData?.density,
-          unit: grape?.labData?.density?.unit || DENSITY_UNITS[0] || "kg/L",
-        },
-        temperature: {
-          ...grape?.labData?.temperature,
-          unit: grape?.labData?.temperature?.unit || "°C",
-        },
-        sugar: {
-          ...grape?.labData?.sugar,
-          unit:
-            grape?.labData?.sugar?.unit || CONCENTRATION_UNITS[0] || "g/dm³",
-        },
-        acidity: {
-          ...grape?.labData?.acidity,
-          unit:
-            grape?.labData?.acidity?.unit || CONCENTRATION_UNITS[0] || "g/dm³",
-        },
-      },*/
     } as Grape;
 
     reset(formatted);
@@ -307,6 +292,11 @@ export default function GrapeForm() {
         >
           <Box sx={{ p: 2, flex: 1, overflowY: "auto" }}>
             <Accordion
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
               defaultExpanded
               disableGutters={true}
               expanded={generalExpanded}
@@ -457,6 +447,11 @@ export default function GrapeForm() {
             </Accordion>
 
             <Accordion
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
               disableGutters={true}
               expanded={detailsExpanded}
               onChange={handleDetailsExpansion}
@@ -780,6 +775,11 @@ export default function GrapeForm() {
             </Accordion>
 
             <Accordion
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
               disableGutters={true}
               expanded={parametersExpanded}
               onChange={handleParametersExpansion}
@@ -794,6 +794,38 @@ export default function GrapeForm() {
 
               <AccordionDetails>
                 <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the sample temperature (°C)
+                    </InputLabel>
+                    <Stack direction="row" gap={2} alignItems="center">
+                      <FormControl sx={{ flex: 1 }}>
+                        <Input
+                          id="labData.temperature.value"
+                          label="Sample temperature (°C)"
+                          variant="outlined"
+                          type="number"
+                          slotProps={{
+                            htmlInput: { min: 0, step: 0.01, max: 1000 },
+                          }}
+                          {...register("labData.temperature.value", {
+                            setValueAs: (value) =>
+                              value === "" ? undefined : parseFloat(value),
+                          })}
+                        />
+                      </FormControl>
+                    </Stack>
+                    {errors?.labData?.temperature?.value && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.labData?.temperature?.value?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
                   <div className="flex flex-col gap-2">
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the density (Kg/L)
@@ -868,65 +900,6 @@ export default function GrapeForm() {
                         className="mt-1"
                       >
                         {errors?.labData?.density?.unit?.message as string}
-                      </Typography>
-                    )}*/}
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <InputLabel className="text-sm text-muted-foreground">
-                      Enter the sample temperature (°C)
-                    </InputLabel>
-
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labData.temperature.value"
-                          label="Sample temperature (°C)"
-                          variant="outlined"
-                          type="number"
-                          slotProps={{
-                            htmlInput: { min: 0, step: 0.01, max: 1000 },
-                          }}
-                          {...register("labData.temperature.value", {
-                            setValueAs: (value) =>
-                              value === "" ? undefined : parseFloat(value),
-                          })}
-                        />
-                      </FormControl>
-
-                      {/*<FormControl sx={{ width: "100px", display: "none" }}>
-                        <Input
-                          id="labData.temperature.unit"
-                          label="Unit"
-                          type="hidden"
-                          variant="outlined"
-                          value={formData?.labData?.temperature?.unit || "°C"}
-                          {...register("labData.temperature.unit")}
-                        />
-                      </FormControl>
-
-                      <Box sx={{ width: "40px" }}>
-                        {formData?.labData?.temperature?.unit || "°C"}
-                      </Box>*/}
-                    </Stack>
-
-                    {errors?.labData?.temperature?.value && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        className="mt-1"
-                      >
-                        {errors?.labData?.temperature?.value?.message as string}
-                      </Typography>
-                    )}
-
-                    {/*{errors?.labData?.temperature?.unit && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        className="mt-1"
-                      >
-                        {errors?.labData?.temperature?.unit?.message as string}
                       </Typography>
                     )}*/}
                   </div>
@@ -1074,16 +1047,6 @@ export default function GrapeForm() {
                         {errors?.labData?.acidity?.value?.message as string}
                       </Typography>
                     )}
-
-                    {/*{{errors?.labData?.acidity?.unit && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        className="mt-1"
-                      >
-                        {errors?.labData?.acidity?.unit?.message as string}
-                      </Typography>
-                    )}*/}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -1197,6 +1160,37 @@ export default function GrapeForm() {
 
                   <div className="flex flex-col gap-2">
                     <InputLabel className="text-sm text-muted-foreground">
+                      Enter the lab certificate ID
+                    </InputLabel>
+                    <Stack direction="row" gap={2} alignItems="center">
+                      <FormControl sx={{ flex: 1 }}>
+                        <Input
+                          id="labData.labCertificateID"
+                          label="Lab certificate ID"
+                          variant="outlined"
+                          slotProps={{
+                            htmlInput: { minLength: 2, maxLength: 50 },
+                          }}
+                          {...register("labData.labCertificateID", {
+                            setValueAs: (value) =>
+                              value === "" ? undefined : value,
+                          })}
+                        />
+                      </FormControl>
+                    </Stack>
+                    {errors?.labData?.temperature?.value && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.labData?.temperature?.value?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
                       Enter the lab technician name
                     </InputLabel>
 
@@ -1221,6 +1215,220 @@ export default function GrapeForm() {
                     )}
                   </div>
                 </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
+              disableGutters={true}
+              expanded={transportationInfoExpanded}
+              onChange={handleTransportationInfoExpansion}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls="details-content"
+                id="details-header"
+              >
+                <Typography component="span">Transportation Info</Typography>
+              </AccordionSummary>
+
+              <AccordionDetails>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Select the processing location
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="transportationInfo.processingLocation"
+                        label="Processing Location"
+                        type="text"
+                        variant="outlined"
+                        {...register("transportationInfo.processingLocation")}
+                      />
+                    </FormControl>
+
+                    {errors?.labData?.labTechnicianName && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {
+                          errors?.transportationInfo?.processingLocation
+                            ?.message as string
+                        }
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the dispatch invoice
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="transportationInfo.acquisitionInvoiceNo"
+                        label="Dispatch Invoice"
+                        type="text"
+                        variant="outlined"
+                        {...register("transportationInfo.acquisitionInvoiceNo")}
+                      />
+                    </FormControl>
+
+                    {errors?.transportationInfo?.acquisitionInvoiceNo && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {
+                          errors?.transportationInfo?.acquisitionInvoiceNo
+                            ?.message as string
+                        }
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the transportation company name
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="transportationInfo.companyName"
+                        label="Company name"
+                        type="text"
+                        variant="outlined"
+                        {...register("transportationInfo.companyName")}
+                      />
+                    </FormControl>
+
+                    {errors?.transportationInfo?.companyName && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {
+                          errors?.transportationInfo?.companyName
+                            ?.message as string
+                        }
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the vehicle registration number
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="transportationInfo.vehicleIdNo"
+                        label="Vehicle number"
+                        type="text"
+                        variant="outlined"
+                        {...register("transportationInfo.vehicleIdNo")}
+                      />
+                    </FormControl>
+
+                    {errors?.transportationInfo?.vehicleIdNo && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {
+                          errors?.transportationInfo?.vehicleIdNo
+                            ?.message as string
+                        }
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the driver name
+                    </InputLabel>
+
+                    <FormControl>
+                      <Input
+                        id="transportationInfo.driverIdNo"
+                        label="Driver name"
+                        type="text"
+                        variant="outlined"
+                        {...register("transportationInfo.driverIdNo")}
+                      />
+                    </FormControl>
+
+                    {errors?.transportationInfo?.driverIdNo && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {
+                          errors?.transportationInfo?.driverIdNo
+                            ?.message as string
+                        }
+                      </Typography>
+                    )}
+                  </div>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+            {/* * ADDITIONAL INFORMATION */}
+            <Accordion
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
+              disableGutters={true}
+              expanded={additionalInfoExpanded}
+              onChange={handleAdditionalInfoExpansion}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                <Typography component="span">Additional Information</Typography>
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  flexDirection: "column",
+                }}
+              >
+                <Typography variant="body1">Description</Typography>
+                <TextareaAutosize
+                  minRows={8}
+                  placeholder="Description or additional information..."
+                  style={{
+                    width: "100%",
+                    border: "1px solid",
+                    borderColor: "var(--mui-palette-divider)",
+                    borderRadius: "4px",
+                    padding: "16px 8px",
+                  }}
+                  onChange={(e) =>
+                    handleSelectChange("description", e.target.value)
+                  }
+                />
+                <FileUploaderField
+                  path="documents"
+                  data={formData.documents}
+                  onFileData={onDocumentUpload}
+                />
               </AccordionDetails>
             </Accordion>
           </Box>
