@@ -24,7 +24,11 @@ export default function GrapesTable() {
             location: grape?.location,
             status: grape?.status,
           },
-          metrics: { ...grape.metrics, status: grape.status },
+          metrics: {
+            ...grape.metrics,
+            status: grape.status,
+            entry: grape?.entry,
+          },
         }),
       })),
     [grapes]

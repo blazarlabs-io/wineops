@@ -49,3 +49,13 @@ export function formatNumberWithLowerCaseUnitAndSpace(
   const formattedValue = formatNumber(value, decimals, fallback);
   return `${formattedValue} ${unit.toLowerCase()}`;
 }
+
+export function formatNumberWithUnitAndSpace(
+  value: number | null | undefined,
+  unit: string,
+  decimals?: number,
+  fallback: string = "0"
+): string {
+  const formattedValue = formatNumber(value, decimals, fallback);
+  return `${formattedValue} ${unit}`;
+}
