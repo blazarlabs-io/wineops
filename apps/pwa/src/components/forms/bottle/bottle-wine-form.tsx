@@ -301,6 +301,28 @@ export default function BottleWineForm() {
     console.log("SUBMIT", data);
     console.log("ERRORS:", errors);
 
+    for (let index = 0; index < (data?.wines?.length || 0); index++) {
+      const wine = data.wines?.[index];
+
+      if ((wine?.quantity || 0) <= 0) {
+        setError(`wines.${index}.quantity`, {
+          type: "manual",
+          message: `Please enter a valid quantity for the wine`,
+        });
+
+        return;
+      }
+
+      if (wine?.quantity > (wine?.qty || 0)) {
+        setError(`wines.${index}.quantity`, {
+          type: "manual",
+          message: `Wine quantity (${wine?.quantity}) must be less or equal with ${wine?.qty || 0}`,
+        });
+
+        return;
+      }
+    }
+
     // const subjectRecipe = filteredRecipes.filter(
     //   ({ name }) => name === data.subjectRecipe.name
     // )[0];
@@ -790,6 +812,28 @@ export default function BottleWineForm() {
                         className="mt-1"
                       >
                         {errors?.responsible?.message as string}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <FormControl>
+                      <Input
+                        id="lotId"
+                        label="Lot ID"
+                        type="text"
+                        variant="outlined"
+                        {...register("lotId")}
+                      />
+                    </FormControl>
+
+                    {errors?.lotId && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors?.lotId?.message as string}
                       </Typography>
                     )}
                   </div>
