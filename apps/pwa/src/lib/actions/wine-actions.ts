@@ -59,6 +59,7 @@ export const bottleWineAction = async (
   const newCollection = {
     id: newId,
     name: collectionName,
+    collectionName,
     vintage,
     executionDate,
     group: [collectionName],

@@ -773,7 +773,7 @@ export type Bottle = Entity & {
   }>;
   responsible?: TeamMember;
   //
-  lotId?: string;
+  lotId: string;
   lotStatus?: LotStatus;
   //
   bottlingLine?: string;
