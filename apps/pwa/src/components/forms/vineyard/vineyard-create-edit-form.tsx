@@ -335,7 +335,7 @@ export default function VineyardForm({
       cadastralNumber: existingVineyard?.cadastralNumber || [],
       name: existingVineyard?.name || name,
       ...(!existingVineyard && {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         name,
         group: [name],
         labData: [],

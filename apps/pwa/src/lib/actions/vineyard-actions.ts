@@ -20,12 +20,6 @@ export const vineyardHarvestAction = async (
   actionData: VineyardHarvestAction,
   vineyard: Vineyard
 ) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("vineyardHarvestAction", actionData);
-  console.log("vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-
   const updatedVineyard: Vineyard = {
     ...vineyard,
     status: actionData.harvestEnded
@@ -46,8 +40,6 @@ export const vineyardHarvestAction = async (
       },
     ],
   };
-
-  console.log("UPDATED-VINEYARD", updatedVineyard);
 
   // * 1. Update Vineyard
   const vineyardRes = await db.vineyard.update(uid, vineyard.id, {
@@ -73,7 +65,7 @@ export const vineyardHarvestAction = async (
   const newBatch: Grape = {
     id: actionData.batchId,
     name: actionData.batchId,
-    date: Timestamp.now(),
+    date: actionData.executionDate,
     group: [actionData.batchId],
     location: actionData.location as string,
     rowType: "item",
@@ -147,6 +139,14 @@ export const vineyardHarvestAction = async (
       variant: "error",
     });
   }
+
+  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
+  console.log("UID", uid);
+  console.log("HARVEST ACTION DATA", actionData);
+  console.log("SELECTED-VINEYARD", vineyard);
+  console.log("UPDATED-VINEYARD", updatedVineyard);
+  console.log("NEW-BATCH", newBatch);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 };
 
 export const vineyardLabAction = async (

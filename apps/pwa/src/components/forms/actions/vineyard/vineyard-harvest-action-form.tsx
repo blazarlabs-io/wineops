@@ -96,45 +96,6 @@ export default function VineyardHarvestActionForm({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const supportingDocumentsRef = useRef<HTMLInputElement | null>(null);
 
-  // ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-  // const handleChange = useCallback(
-  //     (name: string, value: any) => {
-  //       // console.log("NAME", name, value);
-  //       if (name.startsWith("consumables")) {
-  //         const data = consumables?.filter((v) => v.consumableID === value[0]);
-  //         const newValue = {
-  //           id: data[0]?.id,
-  //           name: data[0]?.consumableID as string,
-  //           qty: data[0]?.qty as number,
-  //         };
-  //         if (formData.consumables === undefined) formData.consumables = [];
-  //         // formData?.consumables?.push(newValue);
-  //         const _consumables = [
-  //           ...(formData.consumables as {
-  //             name: string;
-  //             id: string;
-  //             qty: number;
-  //           }[]),
-  //           newValue,
-  //         ];
-  //         setFormData((prev) => ({
-  //           ...(prev as VineyardGlobalAction),
-  //           consumables: _consumables,
-  //         }));
-
-  //         setValue("consumables", _consumables);
-
-  //         return;
-  //       }
-  //       setFormData((prev) => ({
-  //         ...(prev as VineyardGlobalAction),
-  //         [name]: value,
-  //       }));
-  //     },
-  //     [consumables, formData]
-  //   );
-
   function removeByIndex<T>(array: T[], index: number): T[] {
     if (index < 0 || index >= array.length) return array; // index out of bounds
     const result = [...array.slice(0, index), ...array.slice(index + 1)];
@@ -169,8 +130,6 @@ export default function VineyardHarvestActionForm({
     [formData]
   );
 
-  // ! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
   const handleChange = useCallback(
     (name: string, value: any) => {
       if (name === "subject.name") {
@@ -194,6 +153,7 @@ export default function VineyardHarvestActionForm({
           ...(prev as VineyardHarvestAction),
           [name]: value,
         }));
+        console.log("\n\n\nDATE-CHANGED TO", value, "\n\n\n");
         return;
       } else if (name === "consumables") {
         const data = consumables?.filter((v) => v.consumableID === value[0]);
@@ -219,48 +179,6 @@ export default function VineyardHarvestActionForm({
 
         setValue("consumables", _consumables);
         return;
-        // const prevConsumables =
-        //   (formData.consumables as ActionRelation[]) || [];
-
-        // // * Check if the consumable is already in the list
-        // const alreadyInList = prevConsumables.find((c) => c.name === value);
-
-        // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-        // console.log("prevConsumables", prevConsumables);
-        // console.log("alreadyInList", alreadyInList);
-        // console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-
-        // if (alreadyInList !== undefined) {
-        //   console.log("\n\n already in list: LEAVE AS IS");
-        //   value = [alreadyInList] as ActionRelation[];
-        // } else if (prevConsumables.length === 0) {
-        //   // add consumable to list
-        //   console.log("\n\n not in list and prevConsumables is empty: ADD");
-        //   const newConsumable = {
-        //     id: consumables.filter((c) => c.name === value)[0].id,
-        //     name: value,
-        //   };
-        //   value = [...prevConsumables, newConsumable] as ActionRelation[];
-        // } else {
-        //   // remove consumable from list
-        //   console.log(
-        //     "\n\n not in list and prevConsumables is not empty: DELETE"
-        //   );
-        //   value = prevConsumables.slice(0, -1) as ActionRelation[];
-        // }
-
-        // console.log("\n\n----------------------------");
-        // console.log("value", value);
-        // console.log("----------------------------\n\n");
-
-        // setValue("consumables" as string, value as ActionRelation[]);
-        // setFormData((prevData: VineyardHarvestAction) => {
-        //   return {
-        //     ...prevData,
-        //     consumables: value,
-        //   };
-        // });
-        // return;
       } else if (name === "sugar" && value === "acidity") {
         value = {
           id: "",
@@ -491,7 +409,14 @@ export default function VineyardHarvestActionForm({
 
       onBackClick?.();
     },
-    [actions?.harvest, errors, localVineyard?.id, user?.uid, vineyards]
+    [
+      actions?.harvest,
+      errors,
+      localVineyard?.id,
+      onBackClick,
+      user?.uid,
+      vineyards,
+    ]
   );
 
   useEffect(() => {
@@ -546,11 +471,11 @@ export default function VineyardHarvestActionForm({
 
   useEffect(() => {
     // * General
-    vineyardHarvestActionSample.id = Date.now().toString();
+    vineyardHarvestActionSample.id = crypto.randomUUID();
     vineyardHarvestActionSample.batchId = `BatchID_${grapes?.length + 1}`;
     vineyardHarvestActionSample.type = "harvest";
     vineyardHarvestActionSample.weight = "";
-    vineyardHarvestActionSample.executionDate = Timestamp.fromDate(new Date());
+    vineyardHarvestActionSample.executionDate = Timestamp.now();
     vineyardHarvestActionSample.equipment = [];
     vineyardHarvestActionSample.consumables = [];
     vineyardHarvestActionSample.sugar.value = 0;
@@ -567,6 +492,8 @@ export default function VineyardHarvestActionForm({
         id: selectedVineyards[0].id,
         name: selectedVineyards[0].name,
       };
+
+      console.log("\n\n\n\n", selectedVineyards[0], "\n\n\n\n");
 
       setLocalVineyard(selectedVineyards[0]);
 
@@ -600,7 +527,11 @@ export default function VineyardHarvestActionForm({
 
       console.log("LAB REPORT", vineyardHarvestActionSample);
 
-      console.log("vineyardHarvestActionSample", vineyardHarvestActionSample);
+      console.log(
+        "vineyardHarvestActionSample",
+        vineyardHarvestActionSample,
+        crypto.randomUUID()
+      );
     } else {
       setDisableSubject(false);
     }
