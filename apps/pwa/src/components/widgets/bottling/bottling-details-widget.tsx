@@ -4,7 +4,7 @@ import { Bottle } from "@/models/types/db";
 import ResponsibleTeamMemberDataDisplay from "@/components/data-display/responsible-team-member-data-display";
 import DocumentsTable from "@/components/table/documents";
 import { ROW_HEIGHT_EXPANDED_BOTTLING } from "@/data/constants";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import { useEffect, useState } from "react";
@@ -44,70 +44,6 @@ export default function BottlingDetailsWidget({
     minHeight: "fit-content !important",
   };
 
-  //   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
-  //   const open = useDialogDrawerStore(({ open }) => open);
-  //   const openDeleteEntityDataDialog = () => open("delete-entity-data");
-
-  //   const handleDeleteClick = (labReport: LabReport) => {
-  //     openDeleteEntityDataDialog();
-  //     setSelected([labReport as unknown as DashboardEntity], "labReport");
-  //   };
-
-  //   const onDeleteLabReport = async (data: any[]) => {
-  //     const labReportId = data[0].id;
-
-  //     if (!user?.uid || !bottle.id || !labReportId) return;
-
-  //     const filteredLabData = bottle.labData?.filter(
-  //       ({ id }) => id !== labReportId
-  //     );
-
-  //     await db.bottle.update(user?.uid, bottle.id, {
-  //       labData: filteredLabData,
-  //     });
-  //   };
-
-  //   const handleDocumentUpload = useCallback(
-  //     async (files: Array<{ name: string; url: string }>) => {
-  //       if (!user?.uid || !bottle.id || !files) return;
-
-  //       const deletedNames = files
-  //         .filter((file) => !file.url)
-  //         .map((file) => file.name);
-
-  //       const newDocuments = files
-  //         ?.filter((file) => file.url)
-  //         ?.map(({ name, url }) => ({
-  //           id: crypto.randomUUID(),
-  //           name,
-  //           fileUrl: url,
-  //           owner: { email: user?.email },
-
-  //           uploadDate: Timestamp.now(),
-  //         }));
-
-  //       const oldDocuments =
-  //         localBottle?.documents?.filter(
-  //           (document) => !deletedNames.includes(document.name)
-  //         ) || [];
-
-  //       const updatedDocuments = [...newDocuments, ...oldDocuments];
-
-  //       const vineyardRes = await db.bottle.update(user?.uid, bottle.id, {
-  //         documents: updatedDocuments,
-  //       });
-
-  //       if (vineyardRes.status === 200) {
-  //         enqueueSnackbar("Bottle updated successfully", {
-  //           variant: "success",
-  //         });
-  //       } else {
-  //         enqueueSnackbar("Error updating bottle", { variant: "error" });
-  //       }
-  //     },
-  //     [user?.email, user?.uid, localBottle, bottle.id]
-  //   );
-
   return (
     <Box
       sx={{
@@ -135,39 +71,91 @@ export default function BottlingDetailsWidget({
       >
         <Tab label="Details" {...a11yProps(0)} sx={sx} />
         <Tab label="Bottle Specs" {...a11yProps(1)} sx={sx} />
-        <Tab label="Packaging Details" {...a11yProps(2)} sx={sx} />
         <Tab label="Lab Results" {...a11yProps(3)} sx={sx} />
         <Tab label="Tasks" {...a11yProps(4)} sx={sx} />
         <Tab label="Documents" {...a11yProps(6)} sx={sx} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <div className="flex items-center h-full gap-8 w-full">
-          <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
-            <SimpleDataDisplay
-              label="Wine Supply"
-              value={
-                formatNumberWithLowerCaseUnitAndSpace(wineQuantity, "kg") ||
-                "N/A"
-              }
-            />
-            <ResponsibleTeamMemberDataDisplay
-              label="Responsible Team Member"
-              name={"Fito Segrera"}
-              avatar="https://i.pravatar.cc/120"
-            />
-            <SimpleDataDisplay
-              label="Bottling Line"
-              value={localBottle?.bottlingLine || "N/A"}
-            />
-            <SimpleDataDisplay
-              label="Losses"
-              value={
-                formatNumberWithLowerCaseUnitAndSpace(
-                  localBottle?.losses,
-                  "l"
-                ) || "N/A"
-              }
-            />
+        <div className="flex flex-col w-full gap-4">
+          <div className="flex flex-col w-full gap-2">
+            <Typography variant="body1" className="">
+              Bottling Info
+            </Typography>
+            <div
+              className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full rounded-md"
+              style={{ border: "1px solid var(--mui-palette-divider)" }}
+            >
+              <SimpleDataDisplay
+                label="Wine Supply"
+                value={
+                  formatNumberWithLowerCaseUnitAndSpace(wineQuantity, "kg") ||
+                  "N/A"
+                }
+              />
+              <ResponsibleTeamMemberDataDisplay
+                label="Responsible Team Member"
+                name={"Fito Segrera"}
+                avatar="https://i.pravatar.cc/120"
+              />
+              <SimpleDataDisplay
+                label="Bottling Line"
+                value={localBottle?.bottlingLine || "N/A"}
+              />
+              <SimpleDataDisplay
+                label="Losses"
+                value={
+                  formatNumberWithLowerCaseUnitAndSpace(
+                    localBottle?.losses,
+                    "l"
+                  ) || "N/A"
+                }
+              />
+            </div>
+          </div>
+          <div className="flex flex-col w-full gap-2">
+            <Typography variant="body1" className="">
+              Packaging
+            </Typography>
+            <div
+              className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full rounded-md"
+              style={{ border: "1px solid var(--mui-palette-divider)" }}
+            >
+              <SimpleDataDisplay
+                label="Packaging Type"
+                value={
+                  localBottle?.packagingType !== undefined
+                    ? localBottle?.packagingType
+                    : "N/A"
+                }
+              />
+              <SimpleDataDisplay
+                label="Bottles Per Box"
+                value={
+                  localBottle?.bottlesPerBox !== undefined
+                    ? formatNumberWithLowerCaseUnitAndSpace(
+                        localBottle?.bottlesPerBox,
+                        "kg"
+                      )
+                    : "N/A"
+                }
+              />
+              <SimpleDataDisplay
+                label="Packaging Material"
+                value={
+                  localBottle?.packagingMaterial !== undefined
+                    ? localBottle?.packagingMaterial
+                    : "N/A"
+                }
+              />
+              <SimpleDataDisplay
+                label="Pallet ID"
+                value={
+                  localBottle?.palletId !== undefined
+                    ? localBottle?.palletId
+                    : "N/A"
+                }
+              />
+            </div>
           </div>
         </div>
       </TabPanel>
@@ -231,7 +219,7 @@ export default function BottlingDetailsWidget({
           </div>
         </div>
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      {/* <TabPanel value={value} index={2}>
         <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
           <SimpleDataDisplay
             label="Packaging Type"
@@ -269,8 +257,8 @@ export default function BottlingDetailsWidget({
             }
           />
         </div>
-      </TabPanel>
-      <TabPanel value={value} index={3}>
+      </TabPanel> */}
+      <TabPanel value={value} index={2}>
         <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
           <SimpleDataDisplay
             label="Alcohol"
@@ -330,17 +318,17 @@ export default function BottlingDetailsWidget({
           />
         </div>
       </TabPanel>
-      <TabPanel value={value} index={4}>
+      <TabPanel value={value} index={3}>
         <div className="h-full">
           <TasksView tasks={localBottle?.tasks || []} />
         </div>
       </TabPanel>
-      <TabPanel value={value} index={5}>
+      <TabPanel value={value} index={4}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
           <DocumentsTable docs={[]} />
         </div>
       </TabPanel>
-      <TabPanel value={value} index={6}>
+      <TabPanel value={value} index={5}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
           {/* <div className="flex items-center justify-start w-full">
             <Button variant="text" className="">

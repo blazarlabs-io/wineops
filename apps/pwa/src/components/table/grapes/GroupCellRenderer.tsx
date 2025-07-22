@@ -86,6 +86,13 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     }
   };
 
+  // console.log("\n\n\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  // console.log("node", node);
+  // console.log("value", value);
+  // console.log("grapes", grapes);
+  // console.log("node.data?.id", node.data?.id);
+  // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n\n\n");
+
   return (
     <>
       <Stack
