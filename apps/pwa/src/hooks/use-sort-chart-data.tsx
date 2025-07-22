@@ -1,4 +1,4 @@
-import { LabDataChart, LabDataSimple } from "@/models/types/db";
+import { LabDataChart } from "@/models/types/db";
 import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -8,15 +8,21 @@ export type SortedLabData = {
   labels: string[];
 };
 
-export const useSortChartData = (data: LabDataChart) => {
+export const useSortChartData = ({ items }: LabDataChart) => {
   const [labData, setLabData] = useState<SortedLabData | null>(null);
 
   useEffect(() => {
-    if (data) {
+    if (items?.length) {
       const sugar: number[] = [];
       const acidity: number[] = [];
       const labels: string[] = [];
-      data.items.forEach(({ date, results = {} }) => {
+      [
+        ...items.sort(
+          (a, b) =>
+            (a.date as Timestamp).toDate().getTime() -
+            (b.date as Timestamp).toDate().getTime()
+        ),
+      ].forEach(({ date, results = {} }) => {
         if (results?.sugar?.value) sugar.push(results.sugar.value);
 
         if (results?.acidity?.value) acidity.push(results.acidity.value);
@@ -29,12 +35,10 @@ export const useSortChartData = (data: LabDataChart) => {
       setLabData({
         sugar,
         acidity,
-        labels: labels.sort(
-          (a, b) => new Date(a).getTime() - new Date(b).getTime()
-        ),
+        labels,
       });
     }
-  }, [data]);
+  }, [items]);
 
   return { labData };
 };

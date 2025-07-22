@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import QuickActionsWidgetStepOne from "./step-one";
 import QuickActionsWidgetStepTwo from "./step-two";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
+import { useDialogDrawerStore } from "@/store/dialogs";
 
 export interface QuickActionsWidgetProps {
   actions?: any;
@@ -37,6 +38,7 @@ export default function QuickActionsWidget({
       console.log("ACTIONS", actions);
       console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
       onClick(action);
+
       setSelectedAction(() => actions[action.split(" ").join("-")]);
       setFormTitle(selected?.title ?? `${action} action`);
       setStep(2);
@@ -47,6 +49,20 @@ export default function QuickActionsWidget({
   const handleBackClick = useCallback(() => {
     setStep(1);
   }, []);
+
+  const dialogs = useDialogDrawerStore(({ dialogs }) => dialogs);
+
+  useEffect(() => {
+    if (!dialogs["action-drawer"]) return;
+
+    const existingAction = Object.keys(actions).find(
+      (key) => key === `${dialogs["action-drawer"]}`
+    );
+
+    if (!existingAction) return;
+
+    handleActionClick(existingAction.split("-").join(" "));
+  }, [actions, dialogs, handleActionClick]);
 
   return (
     <div

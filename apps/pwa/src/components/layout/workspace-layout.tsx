@@ -30,6 +30,7 @@ import { useGrape } from "@/context/grape";
 import { useMust } from "@/context/must";
 import QuickTasksDrawer from "../drawers/quick-tasks-drawer";
 import { useWine } from "@/context/wine";
+import { useDialogDrawerStore } from "@/store/dialogs";
 
 interface MainProps {
   window?: () => Window;
@@ -104,6 +105,16 @@ export default function WorkspaceLayout(props: MainProps) {
     }
   }, [user]);
 
+  const { dialogs, close } = useDialogDrawerStore((state) => state);
+
+  const isActionsDrawerOpen =
+    !!dialogs["action-drawer"] || (open && type === "actions");
+
+  const handleDrawerClose = () => {
+    handleOpenChange("actions", false);
+    if (!!dialogs["action-drawer"]) close("action-drawer");
+  };
+
   return (
     <DemoProvider window={demoWindow}>
       <AppProvider
@@ -152,19 +163,19 @@ export default function WorkspaceLayout(props: MainProps) {
           />
         )}
         {/* * Quick Actions DRAWER */}
-        {open && type === "actions" && (
+        {isActionsDrawerOpen && (
           <>
             {currentDashboard === "vineyards" && (
               <QuickActionsDrawer<VineyardActions>
-                open={open && type === "actions"}
+                open={isActionsDrawerOpen}
                 actions={vineyardActions}
-                onOpenChange={() => handleOpenChange("actions", false)}
+                onOpenChange={handleDrawerClose}
                 dashboard={currentDashboard}
               />
             )}
             {currentDashboard === "grapes" && (
               <QuickActionsDrawer<GrapeActions>
-                open={open && type === "actions"}
+                open={isActionsDrawerOpen}
                 actions={grapeActions}
                 onOpenChange={() => handleOpenChange("actions", false)}
                 dashboard={currentDashboard}
@@ -172,7 +183,7 @@ export default function WorkspaceLayout(props: MainProps) {
             )}
             {currentDashboard === "primary-vinification" && (
               <QuickActionsDrawer<MustActions>
-                open={open && type === "actions"}
+                open={isActionsDrawerOpen}
                 actions={mustActions}
                 onOpenChange={() => handleOpenChange("actions", false)}
                 dashboard={currentDashboard}
@@ -180,7 +191,7 @@ export default function WorkspaceLayout(props: MainProps) {
             )}
             {currentDashboard === "secondary-vinification" && (
               <QuickActionsDrawer<WineActions>
-                open={open && type === "actions"}
+                open={isActionsDrawerOpen}
                 actions={wineActions}
                 onOpenChange={() => handleOpenChange("actions", false)}
                 dashboard={currentDashboard}
