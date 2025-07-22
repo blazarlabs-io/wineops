@@ -13,15 +13,21 @@ import StatusDataDisplay from "@/components/data-display/status-data-display";
 import { ExpandMore } from "@mui/icons-material";
 import GrapeDetailsWidget from "@/components/widgets/grape/grape-details-widget";
 import EntityLocation from "../EntityLocation";
-import { LabReport } from "@/models/types/db";
+import { Grape, GrapeStatus, LabReport } from "@/models/types/db";
 import { useGrape } from "@/context/grape";
 import { useGetLabData } from "@/hooks/use-get-lab-data";
+import StatusDataDisplaySelect from "@/components/data-display/status-data-display-select";
+import { EntityStatus } from "@/models/types/dashboard";
+import { db } from "@/lib/firebase/services";
+import { useAuth } from "@/lib/firebase/auth";
+import { enqueueSnackbar } from "notistack";
+import GrapeStatusDataDisplaySelect from "@/components/data-display/grape-status-data-display-select";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params
 ) => {
   const { value, node } = params;
-
+  const { user } = useAuth();
   const [expanded, setExpanded] = useState<boolean>(node.expanded);
 
   const handleMasterDetailExpansion = useCallback(() => {
@@ -64,6 +70,21 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     labReports,
     grapes
   );
+
+  const handleStatusChange = async (status: EntityStatus) => {
+    const selectedGrape = grapes.find(
+      (grape) => grape.id === node.data?.id
+    ) as Grape;
+    if (selectedGrape !== undefined && selectedGrape.status !== undefined) {
+      selectedGrape.status = status as GrapeStatus;
+      const res = await db.grape.update(user?.uid, node.data.id, selectedGrape);
+      if (res.status === 200) {
+        enqueueSnackbar("Status updated successfully", { variant: "success" });
+      } else {
+        enqueueSnackbar("Error updating status", { variant: "error" });
+      }
+    }
+  };
 
   return (
     <>
@@ -154,7 +175,13 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                 </Typography>
               )}
               {<EntityLocation location={node?.data?.location} />}
-              {<StatusDataDisplay status={node?.data?.status} />}
+              {node?.data?.status && (
+                <GrapeStatusDataDisplaySelect
+                  status={node?.data?.status}
+                  onSelect={handleStatusChange}
+                />
+              )}
+              {/* {<StatusDataDisplay status={node?.data?.status} />} */}
             </Stack>
           </Stack>
         )}
