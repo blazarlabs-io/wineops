@@ -156,4 +156,6 @@ export const wineBottlingSchema = Joi.object<Bottle>({
     })
     .optional(),
   group: Joi.array().items(Joi.string().optional().allow("")),
+  name: Joi.string().optional().allow(""),
+  rowType: Joi.string().optional().allow(""),
 });

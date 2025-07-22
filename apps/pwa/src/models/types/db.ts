@@ -764,6 +764,7 @@ export type StorageCondition = {
 export type Bottle = Entity & {
   type?: WineActionType;
   collectionName?: string;
+  name?: string;
   vintage?: string;
   executionDate?: string | Timestamp;
   subjectRecipe?: string;

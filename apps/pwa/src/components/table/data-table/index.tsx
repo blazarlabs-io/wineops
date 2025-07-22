@@ -219,6 +219,7 @@ export const DataTable = <T extends DashboardEntity>({
       // * Selected items in an array format, Only list of items grouping is ignored
       const entities = nodesToEntities<T>(selectedNodes);
       setSelected(entities, entityName);
+      console.log("SELECTED:", entities, entityName);
     },
     [entityName, setSelected]
   );

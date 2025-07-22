@@ -16,7 +16,7 @@ export const grapeSample: Grape = {
   },
   date: Timestamp.now(),
   grapeVariety: "Merlot",
-  status: "New",
+  status: "New Batch",
   certifications: {
     eco: {
       active: false,

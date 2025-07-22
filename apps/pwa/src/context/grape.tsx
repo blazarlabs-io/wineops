@@ -25,7 +25,6 @@ interface GrapeContextType {
   grapes: Grape[];
   actions: GrapeActions;
   labReports: LabReport[];
-  documents: SingleDocument[];
 }
 
 const GrapeContext = createContext<GrapeContextType | null>(null);

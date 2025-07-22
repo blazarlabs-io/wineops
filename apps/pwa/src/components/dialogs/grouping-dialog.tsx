@@ -17,7 +17,7 @@ import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import EntityChip from "./entity-chip";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { useDialogDrawerStore } from "@/store/dialogs";
@@ -51,6 +51,8 @@ export default function GroupingDialog<T extends DashboardEntity>({
 
   const isAddToGroupDisabled = selectedGroup === "" && newGroup === "";
 
+  // console.log("\n\n\n\n", data, "\n\n\n\n");
+
   const handleGroupChange = (event: SelectChangeEvent) => {
     console.log("GROUP CHANGE:", event.target.value);
     setSelectedGroup(event.target.value);
@@ -61,6 +63,7 @@ export default function GroupingDialog<T extends DashboardEntity>({
   };
 
   const handleParentChange = (event: SelectChangeEvent) => {
+    console.log("PARENT CHANGE:", event.target.value);
     setSelectedParent(event.target.value);
     setSelectedGroup(event.target.value);
   };
@@ -114,7 +117,13 @@ export default function GroupingDialog<T extends DashboardEntity>({
       ? `${selectedGroup}${newGroup ? ` > ${newGroup}` : ""}`
       : newGroup;
 
+  console.log("FULL PATH:", fullPath);
+
   const { uniqueGroups } = useGrouping<T>(data);
+
+  useEffect(() => {
+    console.log("\n\n\n\nSELECTED:", selected, "\n\n\n\n");
+  }, [selected]);
 
   return (
     <Dialog
@@ -290,14 +299,16 @@ export default function GroupingDialog<T extends DashboardEntity>({
               </>
             )}
           </Typography>
-          <Stack px={0} gap={1} marginTop={2} direction="row" flexWrap="wrap">
-            {selected.map((row) => (
-              <EntityChip
-                row={row}
-                key={`${row.id}-${row["vesselId" as keyof DashboardEntity] || ""}`}
-              />
-            ))}
-          </Stack>
+          {selected && (
+            <Stack px={0} gap={1} marginTop={2} direction="row" flexWrap="wrap">
+              {selected.map((row) => (
+                <EntityChip
+                  row={row}
+                  key={`${row.id}-${row["vesselId" as keyof DashboardEntity] || ""}`}
+                />
+              ))}
+            </Stack>
+          )}
         </Stack>
       </DialogContent>
 

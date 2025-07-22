@@ -43,6 +43,7 @@ import {
   Stack,
   TextField,
   Typography,
+  useColorScheme,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -85,6 +86,7 @@ export default function BottleWineForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { mode } = useColorScheme();
   const { wines, actions } = useWine();
 
   const { consumables } = useConsumable();
@@ -369,18 +371,29 @@ export default function BottleWineForm() {
       return;
     }
 
+    const tmpName = `Collection ${bottles.length + 1}`;
+
     const bottleWineSample: Bottle = {
       id: crypto.randomUUID(),
+      rowType: "item",
       type: "bottle-a-wine",
       executionDate: Timestamp.fromDate(new Date()),
-      collectionName: `Collection ${bottles.length + 1}`,
-      group: [`Collection ${bottles.length + 1}`],
-      // Add other required properties here
+      collectionName: tmpName,
+      name: tmpName,
+      group: [tmpName],
     } as Bottle;
 
     reset(bottleWineSample);
     setFormData(bottleWineSample);
-  }, [bottles.length, existingBottle, filteredRecipes, reset, teamMembers]);
+  }, [
+    bottles,
+    bottles.length,
+    existingBottle,
+    filteredRecipes,
+    reset,
+    selected,
+    teamMembers,
+  ]);
 
   useEffect(() => {
     if (errors) {
@@ -416,22 +429,12 @@ export default function BottleWineForm() {
     }
   }, [errors]);
 
-  useEffect(() => {
-    if (formData) {
-      console.log("formData", formData);
-    }
-  }, [formData]);
-
   if (!formData) return null;
 
   return (
     <div
-      className="w-full"
-      style={{
-        borderColor: "var(--mui-palette-divider)",
-        height: "100%",
-        overflow: "hidden",
-      }}
+      className="pl-0 pr-0 w-full h-[calc(100vh-128px)]"
+      style={{ background: "var(--mui-palette-background-default)" }}
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -442,11 +445,11 @@ export default function BottleWineForm() {
           className="w-full"
           sx={{
             py: 2,
-            flex: 1,
-            overflowY: "auto",
+            flex: "1 1 auto",
+            overflowY: "scroll",
           }}
         >
-          <div className="flex flex-col gap-4 w-full ">
+          <div className="flex flex-col gap-4 w-full">
             {/* * ID - HIDDEN */}
             <div className="hidden">
               {/* <Label htmlFor="id">Id</Label> */}
@@ -465,6 +468,11 @@ export default function BottleWineForm() {
               defaultExpanded={true}
               expanded={generalExpanded}
               onChange={handleGeneralExpansion}
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
             >
               <AccordionSummary
                 expandIcon={<ExpandMore />}
@@ -876,6 +884,11 @@ export default function BottleWineForm() {
               defaultExpanded={false}
               expanded={bottleSpecsExpanded}
               onChange={handleBottleSpecsExpansion}
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
             >
               <AccordionSummary
                 expandIcon={<ExpandMore />}
@@ -1100,7 +1113,15 @@ export default function BottleWineForm() {
               </AccordionDetails>
             </Accordion>
 
-            <Accordion disableGutters={true} defaultExpanded={false}>
+            <Accordion
+              disableGutters={true}
+              defaultExpanded={false}
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
+            >
               <AccordionSummary
                 expandIcon={<ExpandMore />}
                 aria-controls={`packaging-details-content`}
@@ -1205,6 +1226,11 @@ export default function BottleWineForm() {
               defaultExpanded={false}
               expanded={finalLabExpanded}
               onChange={handleFinalLabExpansion}
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
             >
               <AccordionSummary
                 expandIcon={<ExpandMore />}
@@ -1395,6 +1421,11 @@ export default function BottleWineForm() {
               defaultExpanded={false}
               expanded={quantityLossesExpanded}
               onChange={handleQuantityLossesExpanded}
+              sx={{
+                background:
+                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                borderBottom: "1px solid var(--mui-palette-divider) !important",
+              }}
             >
               <AccordionSummary
                 expandIcon={<ExpandMore />}
@@ -1510,11 +1541,20 @@ export default function BottleWineForm() {
           </div>
         </Box>
 
-        <Box p={2} gap={2} display="flex" justifyContent="space-between">
+        <Box
+          p={2}
+          gap={2}
+          display="flex"
+          justifyContent="space-between"
+          className=""
+          style={{
+            borderTop: "1px solid var(--mui-palette-divider)",
+          }}
+        >
           <Button
             variant="outlined"
             component="label"
-            className="w-auto flex items-center gap-2"
+            className="w-auto flex items-center gap-2 max-h-fit"
           >
             <Attachment className="w-4 h-4 rotate-90" />
             Upload File
