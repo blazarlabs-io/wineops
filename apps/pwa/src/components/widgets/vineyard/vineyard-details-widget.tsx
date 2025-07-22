@@ -31,6 +31,7 @@ import { useAuth } from "@/lib/firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
 import { getActionsByIds } from "./utils";
+import { ActionsEntity } from "@/models/types/actions";
 
 export type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
@@ -48,7 +49,7 @@ export default function VineyardDetailsWidget({
 
   const { user } = useAuth();
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -198,6 +199,15 @@ export default function VineyardDetailsWidget({
     },
     [user?.email, user?.uid, localVineyard?.documents, vineyard.id]
   );
+
+  const openLabReportAction = useCallback(
+    () => open("action-drawer", "lab-report" as unknown as ActionsEntity),
+    [open]
+  );
+
+  const handleNewReport = useCallback(() => {
+    openLabReportAction();
+  }, [openLabReportAction]);
 
   return (
     <Box
@@ -406,75 +416,86 @@ export default function VineyardDetailsWidget({
         <div className="flex gap-8 px-4">Timeline View</div>
       </TabPanel>
       <TabPanel value={value} index={3}>
-        {labReports && labReports.length > 0 && (
-          <Stack display={"flex"} direction={"column"} gap={0}>
-            <div className="flex items-center justify-start gap-4 w-full">
-              <Button
-                size="small"
-                variant="text"
-                className="capitalize!"
-                startIcon={<Add />}
-              >
-                New Report
-              </Button>
-              <div
-                className="w-[1px] h-[24px]"
-                style={{ background: "var(--mui-palette-divider)" }}
-              />
-              <Button size="small" variant="text" className="capitalize!">
-                View All
-              </Button>
-            </div>
-            <div className="flex items-center gap-4 w-full overflow-x-auto">
-              <div className="min-w-fit h-full flex flex-col max-w-[200px] max-h-[180px] gap-2 overflow-y-scroll pr-4">
-                {labReports.map((item, index) => {
-                  return (
-                    <div
-                      key={item.id + index}
-                      className="min-w-fit rounded-md w-full"
-                      style={{
-                        border: "1px solid var(--mui-palette-divider)",
-                      }}
-                    >
-                      {/* {index < 3 && ( */}
-                      <div className="flex items-center min-w-fit w-full gap-1 px-2 py-1 h-full ">
-                        <LabReportResponsibleDataDisplay
-                          data={item}
-                          prevData={
-                            index < labReports?.length - 1
-                              ? labReports[index + 1]
-                              : undefined
-                          }
-                        />
-                        <IconButton
-                          size="small"
-                          className="max-w-[24px] max-h-[24px]"
-                          color="error"
-                          onClick={() => handleDeleteClick(item)}
-                        >
-                          <DeleteOutline className="max-w-4 max-h-4" />
-                        </IconButton>
-                      </div>
-                      {/* )} */}
+        <Stack display={"flex"} direction={"column"} gap={0}>
+          <div className="flex items-center justify-start gap-4 w-full">
+            <Button
+              size="small"
+              variant="text"
+              className="capitalize!"
+              startIcon={<Add />}
+              onClick={handleNewReport}
+            >
+              New Report
+            </Button>
+            <div
+              className="w-[1px] h-[24px]"
+              style={{ background: "var(--mui-palette-divider)" }}
+            />
+            <Button
+              size="small"
+              variant="text"
+              className="capitalize!"
+              disabled={labReports?.length === 0}
+            >
+              View All
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-4 w-full overflow-x-auto">
+            <div className="min-w-fit h-full flex flex-col max-w-[200px] max-h-[180px] gap-2 overflow-y-scroll pr-4">
+              {[
+                ...labReports.sort(
+                  (a, b) =>
+                    (b.date as Timestamp).toDate().getTime() -
+                    (a.date as Timestamp).toDate().getTime()
+                ),
+              ]?.map((item, index) => {
+                return (
+                  <div
+                    key={item.id + index}
+                    className="min-w-fit rounded-md w-full"
+                    style={{
+                      border: "1px solid var(--mui-palette-divider)",
+                    }}
+                  >
+                    {/* {index < 3 && ( */}
+                    <div className="flex items-center min-w-fit w-full gap-1 px-2 py-1 h-full ">
+                      <LabReportResponsibleDataDisplay
+                        data={item}
+                        prevData={
+                          index < labReports?.length - 1
+                            ? labReports[index + 1]
+                            : undefined
+                        }
+                      />
+                      <IconButton
+                        size="small"
+                        className="max-w-[24px] max-h-[24px]"
+                        color="error"
+                        onClick={() => handleDeleteClick(item)}
+                      >
+                        <DeleteOutline className="max-w-4 max-h-4" />
+                      </IconButton>
                     </div>
-                  );
-                })}
-              </div>
-              <div
-                className="min-w-[600px] w-full flex items-center justify-start"
-                style={{ height: "220px" }}
-              >
-                <LabResultsChart
-                  data={{
-                    id: "1",
-                    items: labReports,
-                    date: new Date().toISOString(),
-                  }}
-                />
-              </div>
+                    {/* )} */}
+                  </div>
+                );
+              })}
             </div>
-          </Stack>
-        )}
+            <div
+              className="min-w-[600px] w-full flex items-center justify-start"
+              style={{ height: "220px" }}
+            >
+              <LabResultsChart
+                data={{
+                  id: "1",
+                  items: labReports,
+                  date: new Date().toISOString(),
+                }}
+              />
+            </div>
+          </div>
+        </Stack>
       </TabPanel>
       <TabPanel value={value} index={4}>
         <Typography>Tasks</Typography>
