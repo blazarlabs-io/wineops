@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { vineyardStatus } from "@/data/system-variables";
-import { VineyardStatus } from "@/models/types/db";
+import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { MenuItem, Select, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
 export type StatusDataDisplayProps = {
-  status: VineyardStatus;
-  onSelect?: (status: VineyardStatus) => void;
+  status: GrapeStatus;
+  onSelect?: (status: GrapeStatus) => void;
 };
 
-export default function StatusDataDisplaySelect({
+export default function GrapeStatusDataDisplaySelect({
   status,
   onSelect,
 }: StatusDataDisplayProps) {
-  const [statuses, setStatuses] = useState<VineyardStatus[]>([]);
-  const [selected, setSelected] = useState<VineyardStatus>(
-    status as VineyardStatus
-  );
+  const [statuses, setStatuses] = useState<GrapeStatus[]>([]);
+  const [selected, setSelected] = useState<GrapeStatus>(status as GrapeStatus);
 
   const handleChange = useCallback(
     (e: any) => {
@@ -27,11 +25,11 @@ export default function StatusDataDisplaySelect({
   );
 
   useEffect(() => {
-    if (vineyardStatus) setStatuses(Object.values(VineyardStatus));
+    if (vineyardStatus) setStatuses(Object.values(GrapeStatus));
   }, []);
 
   useEffect(() => {
-    setSelected(status as VineyardStatus);
+    setSelected(status as GrapeStatus);
   }, [status]);
 
   return (
