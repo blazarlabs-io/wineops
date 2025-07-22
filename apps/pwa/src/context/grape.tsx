@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
 import { GRAPES, LAB_REPORTS, WINERY } from "@/lib/firebase/config";
 import { GrapeActions } from "@/models/types/actions";
-import { Grape, LabReport } from "@/models/types/db";
+import { Grape, LabReport, SingleDocument } from "@/models/types/db";
 import { collection, onSnapshot, Timestamp } from "firebase/firestore";
 import {
   createContext,

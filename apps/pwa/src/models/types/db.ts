@@ -369,6 +369,7 @@ export type VineyardItemGroup = {
 };
 
 export const GrapeStatus = {
+  NEW: "New Batch",
   IN_TRANSIT: "In Transit",
   RECEIVED: "Received",
   PROCESSED: "Processed",
@@ -411,6 +412,7 @@ export type TransportationInfo = {
   driverIdNo: string;
   certificate: string;
   acquisitionInvoiceNo: string;
+  processingLocation?: string;
 };
 
 export type GrapeLabData = {
@@ -454,6 +456,7 @@ export type Grape = Entity & {
   documents: SingleDocument[];
   musts?: ActionRelation[];
   actions?: ActionRelation[];
+  description?: string;
 };
 
 export type MustInfo = {
@@ -761,6 +764,7 @@ export type StorageCondition = {
 export type Bottle = Entity & {
   type?: WineActionType;
   collectionName?: string;
+  name?: string;
   vintage?: string;
   executionDate?: string | Timestamp;
   subjectRecipe?: string;

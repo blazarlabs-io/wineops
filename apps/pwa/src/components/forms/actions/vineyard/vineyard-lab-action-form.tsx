@@ -36,6 +36,7 @@ import { File } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
+import FileUploaderField from "../../custom-fields/file-uploader-field";
 
 export default function VineyardLabActionForm({
   onBackClick,
@@ -503,6 +504,7 @@ export default function VineyardLabActionForm({
                       <Typography variant="body2" color="text.secondary">
                         Supporting Documents
                       </Typography>
+
                       {isUploading && (
                         <LinearProgress
                           variant="determinate"

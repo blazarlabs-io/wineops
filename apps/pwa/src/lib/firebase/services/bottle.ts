@@ -82,6 +82,7 @@ const bottle = {
     }
   },
   updateGroup: async (uid: string, rows: Bottle[]) => {
+    console.log("\n\n\nupdateGroup", rows, "\n\n\n");
     try {
       const batch = writeBatch(fdb);
 

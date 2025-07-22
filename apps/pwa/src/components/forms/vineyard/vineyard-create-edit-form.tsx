@@ -381,432 +381,1089 @@ export default function VineyardForm({
           style={{ background: "var(--mui-palette-background-default)" }}
         >
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-            <div className="w-full">
-              <Accordion
-                defaultExpanded
-                sx={{
-                  background:
-                    mode === "dark"
-                      ? "#121212 !important"
-                      : "#ffffff !important",
-                  borderBottom:
-                    "1px solid var(--mui-palette-divider) !important",
-                }}
-                disableGutters
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
+            <Box
+              className="w-full"
+              sx={{
+                py: 2,
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
+              <div className="flex flex-col gap-4 w-full ">
+                <Accordion
+                  disableGutters={true}
+                  defaultExpanded={true}
+                  sx={{
+                    background:
+                      mode === "dark"
+                        ? "#121212 !important"
+                        : "#ffffff !important",
+                    borderBottom:
+                      "1px solid var(--mui-palette-divider) !important",
+                  }}
                 >
-                  <Typography component="span">General</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div className="flex flex-col gap-4">
-                    {/* * ID - HIDDEN */}
-                    <div className="hidden">
-                      {/* <Label htmlFor="id">Id</Label> */}
-                      <FormControl>
-                        <Input
-                          id={formData.id as Vineyard["id"]}
-                          value={formData.id}
-                          type="hidden"
-                          {...register("id")}
-                        />
-                      </FormControl>
-                    </div>
-                    {/* * VINEYARD NAME */}
-                    <div className="flex flex-col gap-2">
-                      {/* <Label htmlFor="name">Vineyard Name</Label> */}
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter a name for the vineyard
-                      </InputLabel>
-                      <FormControl>
-                        <Input
-                          id="name"
-                          label="Vineyard Name"
-                          type="text"
-                          variant="outlined"
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              "&.Mui-focused fieldset": {
-                                borderColor: nameError
-                                  ? "#ff3511aa"
-                                  : "#inherit", // your custom color here
-                              },
-                              color: nameError ? "#f44336" : "#inherit",
-                            },
-                          }}
-                          value={(formData?.name as string) || ""}
-                          onChange={handleNameChange}
-                          // {...register("name")}
-                        />
-                      </FormControl>
-                      {nameError && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {nameError}
-                        </Typography>
-                      )}
-                      {errors?.name && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.name?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-                    {/* * GRAPE VARIETY - MANDATORY */}
-                    <div className="flex flex-col gap-2">
-                      {/* <Label htmlFor="grapeVariety">Grape Variety</Label> */}
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter a grape variety for the vineyard
-                      </InputLabel>
-                      <FormControl>
-                        <Input
-                          id="grapeVariety"
-                          type="text"
-                          label="Grape Variety"
-                          variant="outlined"
-                          {...register("grapeVariety")}
-                        />
-                      </FormControl>
-                      {errors?.grapeVariety && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.grapeVariety?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    {/* * GRAPE COLOR - MANDATORY */}
-                    <div className="flex flex-col gap-2">
-                      {/* <Label htmlFor="grapeColor">Grape Color</Label> */}
-                      <Typography
-                        color="textSecondary"
-                        className="text-sm text-muted-foreground"
-                      >
-                        Select the grape variety color
-                      </Typography>
-
-                      <FormControl>
-                        <InputLabel
-                          id="grapeColor"
-                          className="text-sm text-muted-foreground"
-                        >
-                          Grape Color
-                        </InputLabel>
-                        <Select
-                          label="Grape Color"
-                          id="grapeColor"
-                          value={(formData.grapeColor as string) || ""}
-                          onChange={(e) => {
-                            handleSelectChange("grapeColor", e.target.value);
-                          }}
-                          className="capitalize"
-                        >
-                          {Object.values(WineColor).map((grapeColor, index) => (
-                            <MenuItem
-                              key={grapeColor + index}
-                              value={grapeColor}
-                              className="capitalize"
-                            >
-                              {grapeColor}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      {errors?.grapeColor && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.grapeColor?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter the Identificatorul unic al parcelei viticole
-                      </InputLabel>
-
-                      <FormControl>
-                        <Controller
-                          name="identificatorUnicParcela"
-                          control={control}
-                          render={({ field }) => {
-                            if (
-                              field.value !== undefined &&
-                              field.value.length > 0
-                            ) {
-                              return (
-                                <Stack
-                                  direction={"row"}
-                                  marginBottom={2}
-                                  flexWrap={"wrap"}
-                                  gap={1}
-                                >
-                                  {field.value.map(
-                                    (identificator: string, index: number) => (
-                                      <Chip
-                                        key={identificator + index}
-                                        label={identificator}
-                                        onDelete={() => {
-                                          handleDeleteFromArray(
-                                            "identificatorUnicParcela",
-                                            field.value[field.value.length - 1]
-                                          );
-                                        }}
-                                      />
-                                    )
-                                  )}
-                                </Stack>
-                              );
-                            } else {
-                              return <></>;
-                            }
-                          }}
-                        />
-                        <Stack
-                          spacing={2}
-                          direction="column"
-                          alignItems="center"
-                          width="100%"
-                        >
-                          <Input
-                            id="identificatorUnicParcela"
-                            type="text"
-                            label="Identificatorul unic al parcelei viticole"
-                            variant="outlined"
-                            fullWidth
-                            value={identificatorUnicParcela}
-                            onChange={(e) =>
-                              setIdentificatorUnicParcela(e.target.value)
-                            }
-                          />
-                          <Button
-                            type="button"
-                            variant="outlined"
-                            color="primary"
-                            fullWidth
-                            disabled={identificatorUnicParcela.length < 2}
-                            onClick={() => {
-                              handleArrayChange(
-                                "identificatorUnicParcela",
-                                identificatorUnicParcela
-                              );
-                              setIdentificatorUnicParcela("");
-                            }}
-                            startIcon={<Add />}
-                          >
-                            Add
-                          </Button>
-                        </Stack>
-                      </FormControl>
-
-                      {errors?.identificatorUnicParcela && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.identificatorUnicParcela?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-
-                    {/* * CADASTRAL NUMBER */}
-                    <div className="flex flex-col gap-2">
-                      {/* <Label htmlFor="cadastralNumber">Cadastral Number</Label> */}
-                      <InputLabel className="text-sm text-muted-foreground">
-                        Enter the cadastral number(s)
-                      </InputLabel>
-                      <FormControl>
-                        <Controller
-                          name="cadastralNumber"
-                          control={control}
-                          render={({ field }) => {
-                            if (
-                              field.value !== undefined &&
-                              field.value.length > 0
-                            ) {
-                              return (
-                                <Stack
-                                  direction={"row"}
-                                  marginBottom={2}
-                                  flexWrap={"wrap"}
-                                  gap={1}
-                                >
-                                  {field.value.map(
-                                    (cadastral: string, index: number) => (
-                                      <Chip
-                                        key={cadastral + index}
-                                        label={cadastral}
-                                        onDelete={() => {
-                                          handleDeleteFromArray(
-                                            "cadastralNumber",
-                                            field.value[field.value.length - 1]
-                                          );
-                                        }}
-                                      />
-                                    )
-                                  )}
-                                </Stack>
-                              );
-                            } else {
-                              return <></>;
-                            }
-                          }}
-                        />
-                        <Stack
-                          spacing={2}
-                          direction="column"
-                          alignItems="center"
-                          width={"100%"}
-                        >
-                          <Input
-                            id="cadastralNumber"
-                            type="text"
-                            label="Cadastral Number"
-                            variant="outlined"
-                            fullWidth
-                            value={cadastral}
-                            onChange={(e) => setCadastral(e.target.value)}
-                          />
-                          <Button
-                            type="button"
-                            variant="outlined"
-                            color="primary"
-                            fullWidth
-                            disabled={cadastral.length < 2}
-                            onClick={() => {
-                              handleArrayChange("cadastralNumber", cadastral);
-                              setCadastral("");
-                            }}
-                            startIcon={<Add />}
-                          >
-                            Add
-                          </Button>
-                        </Stack>
-                      </FormControl>
-
-                      {errors?.cadastralNumber && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.cadastralNumber?.message as string}
-                        </Typography>
-                      )}
-                    </div>
-                  </div>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion
-                sx={{
-                  background:
-                    mode === "dark"
-                      ? "#121212 !important"
-                      : "#ffffff !important",
-                  borderBottom:
-                    "1px solid var(--mui-palette-divider) !important",
-                }}
-                disableGutters
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="panel2-content"
-                  id="panel2-header"
-                >
-                  <Typography component="span">Vineyard Details</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div className="p-0 flex flex-col gap-4">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="text-muted-foreground w-4 h-4" />
-                      <h2 className="font-medium text-base">Location</h2>
-                    </div>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Typography component="span">General</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
                     <div className="flex flex-col gap-4">
-                      {/* ? LOCATION */}
-
-                      {/* * MAP */}
-                      <div className="w-full bg-muted rounded-md min-h-[320px] relative">
-                        <PolygonDrawingMap
-                          initialCoordinates={formData.info?.location?.map}
-                          onComplete={handlePolygonDrawingComplete}
-                        />
+                      {/* * ID - HIDDEN */}
+                      <div className="hidden">
+                        {/* <Label htmlFor="id">Id</Label> */}
+                        <FormControl>
+                          <Input
+                            id={formData.id as Vineyard["id"]}
+                            value={formData.id}
+                            type="hidden"
+                            {...register("id")}
+                          />
+                        </FormControl>
                       </div>
-
-                      {/* * SURFACE */}
+                      {/* * VINEYARD NAME */}
                       <div className="flex flex-col gap-2">
+                        {/* <Label htmlFor="name">Vineyard Name</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
-                          Enter the surface area of the vineyard (Ha)
+                          Enter a name for the vineyard
                         </InputLabel>
-
-                        <Stack
-                          direction={"row"}
-                          alignItems={"center"}
-                          gap={2}
-                          width={"100%"}
-                          className="justify-between"
-                        >
-                          <FormControl className="w-full">
-                            <Input
-                              id="info.location.surface"
-                              type="number"
-                              variant="outlined"
-                              label="Surface (Ha)"
-                              inputProps={{
-                                step: "0.01",
-                                min: 0,
-                                max: 100000,
-                              }}
-                              {...register("info.location.surface")}
-                            />
-                          </FormControl>
-                        </Stack>
-
-                        {(errors?.info as any)?.location?.surface && (
-                          <p className="text-sm text-destructive  mt-1">
-                            {
-                              (errors?.info as any)?.location.surface
-                                .message as string
-                            }
-                          </p>
+                        <FormControl>
+                          <Input
+                            id="name"
+                            label="Vineyard Name"
+                            type="text"
+                            variant="outlined"
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                "&.Mui-focused fieldset": {
+                                  borderColor: nameError
+                                    ? "#ff3511aa"
+                                    : "#inherit", // your custom color here
+                                },
+                                color: nameError ? "#f44336" : "#inherit",
+                              },
+                            }}
+                            value={(formData?.name as string) || ""}
+                            onChange={handleNameChange}
+                            // {...register("name")}
+                          />
+                        </FormControl>
+                        {nameError && (
+                          <Typography
+                            variant="body2"
+                            color="error"
+                            className="mt-1"
+                          >
+                            {nameError}
+                          </Typography>
+                        )}
+                        {errors?.name && (
+                          <Typography
+                            variant="body2"
+                            color="error"
+                            className="mt-1"
+                          >
+                            {errors?.name?.message as string}
+                          </Typography>
+                        )}
+                      </div>
+                      {/* * GRAPE VARIETY - MANDATORY */}
+                      <div className="flex flex-col gap-2">
+                        {/* <Label htmlFor="grapeVariety">Grape Variety</Label> */}
+                        <InputLabel className="text-sm text-muted-foreground">
+                          Enter a grape variety for the vineyard
+                        </InputLabel>
+                        <FormControl>
+                          <Input
+                            id="grapeVariety"
+                            type="text"
+                            label="Grape Variety"
+                            variant="outlined"
+                            {...register("grapeVariety")}
+                          />
+                        </FormControl>
+                        {errors?.grapeVariety && (
+                          <Typography
+                            variant="body2"
+                            color="error"
+                            className="mt-1"
+                          >
+                            {errors?.grapeVariety?.message as string}
+                          </Typography>
                         )}
                       </div>
 
-                      {/* * COUNTRY */}
+                      {/* * GRAPE COLOR - MANDATORY */}
+                      <div className="flex flex-col gap-2">
+                        {/* <Label htmlFor="grapeColor">Grape Color</Label> */}
+                        <Typography
+                          color="textSecondary"
+                          className="text-sm text-muted-foreground"
+                        >
+                          Select the grape variety color
+                        </Typography>
+
+                        <FormControl>
+                          <InputLabel
+                            id="grapeColor"
+                            className="text-sm text-muted-foreground"
+                          >
+                            Grape Color
+                          </InputLabel>
+                          <Select
+                            label="Grape Color"
+                            id="grapeColor"
+                            value={(formData.grapeColor as string) || ""}
+                            onChange={(e) => {
+                              handleSelectChange("grapeColor", e.target.value);
+                            }}
+                            className="capitalize"
+                          >
+                            {Object.values(WineColor).map(
+                              (grapeColor, index) => (
+                                <MenuItem
+                                  key={grapeColor + index}
+                                  value={grapeColor}
+                                  className="capitalize"
+                                >
+                                  {grapeColor}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </FormControl>
+                        {errors?.grapeColor && (
+                          <Typography
+                            variant="body2"
+                            color="error"
+                            className="mt-1"
+                          >
+                            {errors?.grapeColor?.message as string}
+                          </Typography>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <InputLabel className="text-sm text-muted-foreground">
+                          Enter the Identificatorul unic al parcelei viticole
+                        </InputLabel>
+
+                        <FormControl>
+                          <Controller
+                            name="identificatorUnicParcela"
+                            control={control}
+                            render={({ field }) => {
+                              if (
+                                field.value !== undefined &&
+                                field.value.length > 0
+                              ) {
+                                return (
+                                  <Stack
+                                    direction={"row"}
+                                    marginBottom={2}
+                                    flexWrap={"wrap"}
+                                    gap={1}
+                                  >
+                                    {field.value.map(
+                                      (
+                                        identificator: string,
+                                        index: number
+                                      ) => (
+                                        <Chip
+                                          key={identificator + index}
+                                          label={identificator}
+                                          onDelete={() => {
+                                            handleDeleteFromArray(
+                                              "identificatorUnicParcela",
+                                              field.value[
+                                                field.value.length - 1
+                                              ]
+                                            );
+                                          }}
+                                        />
+                                      )
+                                    )}
+                                  </Stack>
+                                );
+                              } else {
+                                return <></>;
+                              }
+                            }}
+                          />
+                          <Stack
+                            spacing={2}
+                            direction="column"
+                            alignItems="center"
+                            width="100%"
+                          >
+                            <Input
+                              id="identificatorUnicParcela"
+                              type="text"
+                              label="Identificatorul unic al parcelei viticole"
+                              variant="outlined"
+                              fullWidth
+                              value={identificatorUnicParcela}
+                              onChange={(e) =>
+                                setIdentificatorUnicParcela(e.target.value)
+                              }
+                            />
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              color="primary"
+                              fullWidth
+                              disabled={identificatorUnicParcela.length < 2}
+                              onClick={() => {
+                                handleArrayChange(
+                                  "identificatorUnicParcela",
+                                  identificatorUnicParcela
+                                );
+                                setIdentificatorUnicParcela("");
+                              }}
+                              startIcon={<Add />}
+                            >
+                              Add
+                            </Button>
+                          </Stack>
+                        </FormControl>
+
+                        {errors?.identificatorUnicParcela && (
+                          <Typography
+                            variant="body2"
+                            color="error"
+                            className="mt-1"
+                          >
+                            {
+                              errors?.identificatorUnicParcela
+                                ?.message as string
+                            }
+                          </Typography>
+                        )}
+                      </div>
+
+                      {/* * CADASTRAL NUMBER */}
+                      <div className="flex flex-col gap-2">
+                        {/* <Label htmlFor="cadastralNumber">Cadastral Number</Label> */}
+                        <InputLabel className="text-sm text-muted-foreground">
+                          Enter the cadastral number(s)
+                        </InputLabel>
+                        <FormControl>
+                          <Controller
+                            name="cadastralNumber"
+                            control={control}
+                            render={({ field }) => {
+                              if (
+                                field.value !== undefined &&
+                                field.value.length > 0
+                              ) {
+                                return (
+                                  <Stack
+                                    direction={"row"}
+                                    marginBottom={2}
+                                    flexWrap={"wrap"}
+                                    gap={1}
+                                  >
+                                    {field.value.map(
+                                      (cadastral: string, index: number) => (
+                                        <Chip
+                                          key={cadastral + index}
+                                          label={cadastral}
+                                          onDelete={() => {
+                                            handleDeleteFromArray(
+                                              "cadastralNumber",
+                                              field.value[
+                                                field.value.length - 1
+                                              ]
+                                            );
+                                          }}
+                                        />
+                                      )
+                                    )}
+                                  </Stack>
+                                );
+                              } else {
+                                return <></>;
+                              }
+                            }}
+                          />
+                          <Stack
+                            spacing={2}
+                            direction="column"
+                            alignItems="center"
+                            width={"100%"}
+                          >
+                            <Input
+                              id="cadastralNumber"
+                              type="text"
+                              label="Cadastral Number"
+                              variant="outlined"
+                              fullWidth
+                              value={cadastral}
+                              onChange={(e) => setCadastral(e.target.value)}
+                            />
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              color="primary"
+                              fullWidth
+                              disabled={cadastral.length < 2}
+                              onClick={() => {
+                                handleArrayChange("cadastralNumber", cadastral);
+                                setCadastral("");
+                              }}
+                              startIcon={<Add />}
+                            >
+                              Add
+                            </Button>
+                          </Stack>
+                        </FormControl>
+
+                        {errors?.cadastralNumber && (
+                          <Typography
+                            variant="body2"
+                            color="error"
+                            className="mt-1"
+                          >
+                            {errors?.cadastralNumber?.message as string}
+                          </Typography>
+                        )}
+                      </div>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion
+                  sx={{
+                    background:
+                      mode === "dark"
+                        ? "#121212 !important"
+                        : "#ffffff !important",
+                    borderBottom:
+                      "1px solid var(--mui-palette-divider) !important",
+                  }}
+                  disableGutters
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel2-content"
+                    id="panel2-header"
+                  >
+                    <Typography component="span">Vineyard Details</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div className="p-0 flex flex-col gap-4">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="text-muted-foreground w-4 h-4" />
+                        <h2 className="font-medium text-base">Location</h2>
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        {/* ? LOCATION */}
+
+                        {/* * MAP */}
+                        <div className="w-full bg-muted rounded-md min-h-[320px] relative">
+                          <PolygonDrawingMap
+                            initialCoordinates={formData.info?.location?.map}
+                            onComplete={handlePolygonDrawingComplete}
+                          />
+                        </div>
+
+                        {/* * SURFACE */}
+                        <div className="flex flex-col gap-2">
+                          <InputLabel className="text-sm text-muted-foreground">
+                            Enter the surface area of the vineyard (Ha)
+                          </InputLabel>
+
+                          <Stack
+                            direction={"row"}
+                            alignItems={"center"}
+                            gap={2}
+                            width={"100%"}
+                            className="justify-between"
+                          >
+                            <FormControl className="w-full">
+                              <Input
+                                id="info.location.surface"
+                                type="number"
+                                variant="outlined"
+                                label="Surface (Ha)"
+                                inputProps={{
+                                  step: "0.01",
+                                  min: 0,
+                                  max: 100000,
+                                }}
+                                {...register("info.location.surface")}
+                              />
+                            </FormControl>
+                          </Stack>
+
+                          {(errors?.info as any)?.location?.surface && (
+                            <p className="text-sm text-destructive  mt-1">
+                              {
+                                (errors?.info as any)?.location.surface
+                                  .message as string
+                              }
+                            </p>
+                          )}
+                        </div>
+
+                        {/* * COUNTRY */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-2 w-full">
+                            <Typography
+                              color="textSecondary"
+                              className="text-sm text-muted-foreground"
+                            >
+                              Select the country of the vineyard
+                            </Typography>
+                            <Autocomplete
+                              id="info.location.country"
+                              options={countries.map(
+                                (country) => country?.name
+                              )}
+                              filterSelectedOptions
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Select a country"
+                                />
+                              )}
+                              value={
+                                formData?.info?.location?.country as string
+                              }
+                              onChange={(e, value) => {
+                                handleSelectChange(
+                                  "info.location.country",
+                                  value as string
+                                );
+                              }}
+                            />
+                            {(errors?.info as any)?.location?.country && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {(errors?.info as any)?.location?.country}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* * CITY */}
+                        <div className="flex flex-col gap-2">
+                          <InputLabel className="text-sm text-muted-foreground">
+                            Enter the City/Region of the vineyard
+                          </InputLabel>
+                          <FormControl>
+                            <Input
+                              id="info.location.city"
+                              type="text"
+                              variant="outlined"
+                              label="City/Region"
+                              {...register("info.location.city")}
+                            />
+                          </FormControl>
+                          {(errors?.info as any)?.location?.city && (
+                            <p className="text-sm text-destructive  mt-1">
+                              {(errors?.info as any)?.location?.city}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* * ELEVATION */}
+                        <div className="flex flex-col gap-2 w-full">
+                          <InputLabel className="text-sm text-muted-foreground">
+                            Enter the elevation of the vineyard (m)
+                          </InputLabel>
+                          <Stack
+                            direction={"row"}
+                            alignItems={"center"}
+                            gap={2}
+                            width={"100%"}
+                            className="justify-between"
+                          >
+                            <FormControl className="w-full">
+                              <Input
+                                id="info.location.elevation"
+                                type="number"
+                                variant="outlined"
+                                label="Elevation (m)"
+                                inputProps={{
+                                  step: "0.1",
+                                  min: 0,
+                                }}
+                                {...register("info.location.elevation")}
+                              />
+                            </FormControl>
+                          </Stack>
+                          {(errors?.info as any)?.location?.elevation && (
+                            <p className="text-sm text-destructive  mt-1">
+                              {(errors?.info as any)?.location?.elevation}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* * ORIENTATION */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-2 w-full">
+                            <Typography
+                              color="textSecondary"
+                              className="text-sm text-muted-foreground"
+                            >
+                              Select the exposure of the vineyard
+                            </Typography>
+
+                            <FormControl>
+                              <InputLabel
+                                id="orientation-select"
+                                className="text-muted-foreground"
+                              >
+                                Select exposure
+                              </InputLabel>
+                              <Select
+                                name="info.location.orientation"
+                                labelId="orientation-select"
+                                variant="outlined"
+                                label="Select exposure"
+                                value={
+                                  formData?.info?.location
+                                    ?.orientation as string
+                                }
+                                onChange={(e) =>
+                                  handleSelectChange(
+                                    "info.location.orientation",
+                                    e.target.value
+                                  )
+                                }
+                                className="capitalize"
+                              >
+                                {orientations.length > 0 &&
+                                  orientations.map(
+                                    (orientation: string, index: number) => {
+                                      return (
+                                        <MenuItem
+                                          key={orientation + index}
+                                          value={orientation}
+                                          className="capitalize"
+                                        >
+                                          {orientation.split("-").join(" ")}
+                                        </MenuItem>
+                                      );
+                                    }
+                                  )}
+                              </Select>
+                            </FormControl>
+                            {(errors?.info as any)?.location?.orientation && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {(errors?.info as any)?.location?.orientation}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* ? END OF LOCATION */}
+
+                        {/* ? VINES */}
+
+                        {/* * PLANTING SCHEME */}
+                        <div className="flex items-center gap-2 mt-2">
+                          <Leaf className="text-muted-foreground w-4 h-4" />
+                          <Typography className="font-medium text-base">
+                            Planting Scheme
+                          </Typography>
+                        </div>
+                        {/* * SPACING */}
+                        <div className="flex flex-col gap-4">
+                          <div className="flex flex-col gap-2 justify-between w-full">
+                            <div className="flex flex-col gap-2">
+                              <InputLabel className="text-sm text-muted-foreground">
+                                Enter the spacing between rows (m)
+                              </InputLabel>
+                            </div>
+
+                            <Stack
+                              direction={"row"}
+                              alignItems={"center"}
+                              gap={2}
+                              width={"100%"}
+                              className="justify-between"
+                            >
+                              <FormControl className="w-full">
+                                <Input
+                                  className="w-full"
+                                  id="info.vines.plantingScheme.spacing"
+                                  type="number"
+                                  variant="outlined"
+                                  label="Spacing (m)"
+                                  inputProps={{
+                                    step: "0.1",
+                                    min: 0,
+                                  }}
+                                  {...register(
+                                    "info.vines.plantingScheme.spacing"
+                                  )}
+                                />
+                              </FormControl>
+                            </Stack>
+                            {(errors?.info as any)?.vines?.plantingScheme
+                              ?.spacing && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {
+                                  (errors?.info as any)?.vines?.plantingScheme
+                                    ?.spacing
+                                }
+                              </p>
+                            )}
+                          </div>
+
+                          {/* * ROW ORIENTATION */}
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2 w-full">
+                              <Typography
+                                color="textSecondary"
+                                className="text-sm text-muted-foreground"
+                              >
+                                Select the row orientation
+                              </Typography>
+
+                              <FormControl>
+                                <InputLabel id="row-orientation-select">
+                                  Select orientation
+                                </InputLabel>
+                                <Select
+                                  name="info.vines.plantingScheme.rowOrientation"
+                                  id="info.vines.plantingScheme.rowOrientation"
+                                  variant="outlined"
+                                  label="Select orientation"
+                                  value={
+                                    formData?.info?.vines?.plantingScheme
+                                      ?.rowOrientation as string
+                                  }
+                                  onChange={(e) =>
+                                    handleSelectChange(
+                                      "info.vines.plantingScheme.rowOrientation",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="capitalize"
+                                >
+                                  {rowOrientations.length > 0 &&
+                                    rowOrientations.map(
+                                      (orientation: string, index: number) => {
+                                        return (
+                                          <MenuItem
+                                            key={index + orientation}
+                                            value={orientation}
+                                            className="capitalize"
+                                          >
+                                            {orientation}
+                                          </MenuItem>
+                                        );
+                                      }
+                                    )}
+                                </Select>
+                              </FormControl>
+                              {(errors?.info as any)?.location?.country && (
+                                <p className="text-sm text-destructive  mt-1">
+                                  {(errors?.info as any)?.location?.country}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* * DENSITY */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              <InputLabel className="text-sm text-muted-foreground">
+                                Enter distance between vines on the same row (m)
+                              </InputLabel>
+                            </div>
+
+                            <Stack
+                              direction={"row"}
+                              alignItems={"center"}
+                              gap={2}
+                              width={"100%"}
+                              className="justify-between"
+                            >
+                              <FormControl className="w-full">
+                                <Input
+                                  id="info.vines.plantingScheme.density"
+                                  type="number"
+                                  variant="outlined"
+                                  label="Distance (m)"
+                                  inputProps={{
+                                    step: "0.01",
+                                    min: 0,
+                                    max: 100,
+                                  }}
+                                  {...register(
+                                    "info.vines.plantingScheme.density"
+                                  )}
+                                />
+                              </FormControl>
+                            </Stack>
+
+                            {(errors?.info as any)?.vines?.plantingScheme
+                              ?.density && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {
+                                  (errors?.info as any)?.vines?.plantingScheme
+                                    ?.density
+                                }
+                              </p>
+                            )}
+                          </div>
+
+                          {/* * PLANTS PER HA */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              <InputLabel className="text-sm text-muted-foreground">
+                                Enter the plants per Ha
+                              </InputLabel>
+                            </div>
+                            <Input
+                              id="info.vines.plantingScheme.plantsPerHa"
+                              type="number"
+                              variant="outlined"
+                              label="Plants per Ha"
+                              inputProps={{
+                                step: "1",
+                                min: 0,
+                                max: 100000,
+                              }}
+                              {...register(
+                                "info.vines.plantingScheme.plantsPerHa"
+                              )}
+                            />
+                            {(errors?.info as any)?.vines?.plantingScheme
+                              ?.density && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {
+                                  (errors?.info as any)?.vines?.plantingScheme
+                                    ?.density
+                                }
+                              </p>
+                            )}
+                          </div>
+
+                          {/* * TRELLIS SYSTEM  */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              <InputLabel className="text-sm text-muted-foreground">
+                                Enter the vineyard trellis system
+                              </InputLabel>
+                            </div>
+                            <Input
+                              id="info.vines.plantingScheme.trellisSystem"
+                              variant="outlined"
+                              label="Trellis system type"
+                              {...register(
+                                "info.vines.plantingScheme.trellisSystem"
+                              )}
+                            />
+                            {(errors?.info as any)?.vines?.plantingScheme
+                              ?.trellisSystem && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {
+                                  (errors?.info as any)?.vines?.plantingScheme
+                                    ?.trellisSystem
+                                }
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {/* * YEAR OF PLANTATION */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-2 w-full">
+                            <Stack
+                              direction={"row"}
+                              alignItems={"center"}
+                              justifyContent={"space-between"}
+                            >
+                              <Typography
+                                color="textSecondary"
+                                className="text-sm text-muted-foreground"
+                              >
+                                Select the year of plantation of the vineyard
+                              </Typography>
+                            </Stack>
+                            <Autocomplete
+                              id="info.vines.yearOfPlantation"
+                              options={generateYearsList()}
+                              value={formData?.info?.vines?.yearOfPlantation}
+                              filterSelectedOptions
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Plantation year"
+                                />
+                              )}
+                              onChange={(e, value) => {
+                                handleSelectChange(
+                                  "info.vines.yearOfPlantation",
+                                  value as number
+                                );
+                              }}
+                            />
+
+                            {(errors?.info as any)?.vines?.yearOfPlantation && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {(errors?.info as any)?.vines?.yearOfPlantation}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {/* * SUNLIGHT HOURS */}
+                        <div className="flex flex-col gap-2 justify-between">
+                          <div className="flex flex-col gap-2">
+                            {/* <Label htmlFor="info.vines.sunlightHours">Sunlight hours</Label> */}
+                            <span className="text-sm text-muted-foreground">
+                              Enter the sunlight hours your vineyard receives.
+                            </span>
+                          </div>
+                          <Input
+                            id="info.vines.sunlightHours"
+                            type="number"
+                            variant="outlined"
+                            label="Sunlight hours"
+                            inputProps={{
+                              step: "0.1",
+                              min: 0,
+                            }}
+                            {...register("info.vines.sunlightHours")}
+                          />
+                          {(errors?.info as any)?.vines?.plantingScheme
+                            ?.rowOrientation && (
+                            <p className="text-sm text-destructive  mt-1">
+                              {
+                                (errors?.info as any)?.vines?.plantingScheme
+                                  ?.rowOrientation
+                              }
+                            </p>
+                          )}
+                        </div>
+
+                        {/* * SOIL TYPE */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-2 w-full">
+                            {/* <Label htmlFor="info.vines.soilType">Soil Type</Label> */}
+                            <span className="text-sm text-muted-foreground">
+                              Choose the soil type of your vineyard.
+                            </span>
+                            <FormControl>
+                              <Input
+                                id="info.vines.soilType"
+                                variant="outlined"
+                                label="Soil Type"
+                                {...register("info.vines.soilType")}
+                              />
+                            </FormControl>
+
+                            {(errors?.info as any)?.vines?.soilType && (
+                              <p className="text-sm text-destructive  mt-1">
+                                {(errors?.info as any)?.vines?.soilType}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* ? END OF VINES */}
+                        {/* ? CERTIFICATIONS */}
+                        <div className="flex items-center gap-2 mt-2">
+                          <ReceiptLong className="text-muted-foreground w-4 h-4" />
+                          <Typography className="font-medium text-base">
+                            Vineyard Classification / Dessignation
+                          </Typography>
+                        </div>
+
+                        <div>
+                          <div className="grid grid-cols-2">
+                            {/* * ECO */}
+                            <div className="flex flex-col gap-2 justify-between">
+                              <div className="flex flex-col gap-2">
+                                {/* <Label htmlFor="info.certifications.eco.active">Eco/Bio</Label> */}
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="info.certifications.eco.active"
+                                    checked={
+                                      formData?.info?.certifications?.eco
+                                        ?.active
+                                    }
+                                    onChange={(e) =>
+                                      handleCheckboxChange(
+                                        "info.certifications.eco.active",
+                                        e.target.checked
+                                      )
+                                    }
+                                    // {...register("info.certifications.eco.active")}
+                                  />
+                                  <span className="text-sm text-muted-foreground">
+                                    ECO certified
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* * BIO */}
+                            <div className="flex flex-col gap-2 justify-between">
+                              <div className="flex flex-col gap-2">
+                                {/* <Label htmlFor="info.certifications.bio.active">Eco/Bio</Label> */}
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="info.certifications.bio"
+                                    checked={
+                                      formData?.info?.certifications?.bio
+                                        ?.active
+                                    }
+                                    onChange={(e) =>
+                                      handleCheckboxChange(
+                                        "info.certifications.bio.active",
+                                        e.target.checked
+                                      )
+                                    }
+                                    // {...register("info.certifications.bio.active")}
+                                  />
+                                  <span className="text-sm text-muted-foreground">
+                                    BIO certified
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* * IGP */}
+                            <div className="flex flex-col gap-2 justify-between">
+                              <div className="flex flex-col gap-2">
+                                {/* <Label htmlFor="info.certifications.igp.active">IGP</Label> */}
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="info.certifications.igp.active"
+                                    checked={
+                                      formData?.info?.certifications?.igp
+                                        ?.active
+                                    }
+                                    onChange={(e) =>
+                                      handleCheckboxChange(
+                                        "info.certifications.igp.active",
+                                        e.target.checked
+                                      )
+                                    }
+                                  />
+                                  <span className="text-sm text-muted-foreground">
+                                    IGP certified
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* * DOP */}
+                            <div className="flex flex-col gap-2 justify-between">
+                              <div className="flex flex-col gap-2">
+                                {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="info.certifications.dop.active"
+                                    checked={
+                                      formData?.info?.certifications?.dop
+                                        ?.active
+                                    }
+                                    onChange={(e) =>
+                                      handleCheckboxChange(
+                                        "info.certifications.dop.active",
+                                        e.target.checked
+                                      )
+                                    }
+                                  />
+                                  <span className="text-sm text-muted-foreground">
+                                    DOP certified
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          {/* * ICO */}
+                          <div className="flex flex-col gap-2 justify-between">
+                            <div className="flex flex-col gap-2">
+                              {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id="info.certifications.ice.active"
+                                  checked={
+                                    formData?.info?.certifications?.ice?.active
+                                  }
+                                  onChange={(e) =>
+                                    handleCheckboxChange(
+                                      "info.certifications.ice.active",
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                <span className="text-sm text-muted-foreground">
+                                  Designated for ice wine
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* ? END OF CERTIFICATIONS */}
+                      </div>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion
+                  sx={{
+                    background:
+                      mode === "dark"
+                        ? "#121212 !important"
+                        : "#ffffff !important",
+                    borderBottom:
+                      "1px solid var(--mui-palette-divider) !important",
+                  }}
+                  disableGutters
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel3-content"
+                    id="panel3-header"
+                  >
+                    <Typography component="span">Grape Details</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div className="p-4 flex flex-col gap-4">
+                      {/* * CLONAL SELECTION */}
+                      <div className="flex flex-col gap-2 justify-between">
+                        <div className="flex flex-col gap-2">
+                          <Typography className="text-sm text-muted-foreground">
+                            Enter the clonal selection of the grape
+                          </Typography>
+                        </div>
+                        <Input
+                          id="grape.clonalSelection"
+                          type="text"
+                          label="Clonal Selection"
+                          {...register("grape.clonalSelection")}
+                        />
+                      </div>
+
+                      {/* * COUNTRY OF ORIGIN */}
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 w-full">
                           <Typography
                             color="textSecondary"
                             className="text-sm text-muted-foreground"
                           >
-                            Select the country of the vineyard
+                            Select the country of origin of the grape
                           </Typography>
                           <Autocomplete
-                            id="info.location.country"
-                            options={countries.map((country) => country?.name)}
+                            id="grape.countryOfOrigin"
+                            options={countries.map((country) => country.name)}
                             filterSelectedOptions
                             renderInput={(params) => (
                               <TextField {...params} label="Select a country" />
                             )}
-                            value={formData?.info?.location?.country as string}
+                            value={formData?.grape?.countryOfOrigin || ""}
                             onChange={(e, value) => {
                               handleSelectChange(
-                                "info.location.country",
+                                "grape.countryOfOrigin",
                                 value as string
                               );
                             }}
@@ -819,646 +1476,25 @@ export default function VineyardForm({
                         </div>
                       </div>
 
-                      {/* * CITY */}
-                      <div className="flex flex-col gap-2">
-                        <InputLabel className="text-sm text-muted-foreground">
-                          Enter the City/Region of the vineyard
-                        </InputLabel>
-                        <FormControl>
-                          <Input
-                            id="info.location.city"
-                            type="text"
-                            variant="outlined"
-                            label="City/Region"
-                            {...register("info.location.city")}
-                          />
-                        </FormControl>
-                        {(errors?.info as any)?.location?.city && (
-                          <p className="text-sm text-destructive  mt-1">
-                            {(errors?.info as any)?.location?.city}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* * ELEVATION */}
-                      <div className="flex flex-col gap-2 w-full">
-                        <InputLabel className="text-sm text-muted-foreground">
-                          Enter the elevation of the vineyard (m)
-                        </InputLabel>
-                        <Stack
-                          direction={"row"}
-                          alignItems={"center"}
-                          gap={2}
-                          width={"100%"}
-                          className="justify-between"
-                        >
-                          <FormControl className="w-full">
-                            <Input
-                              id="info.location.elevation"
-                              type="number"
-                              variant="outlined"
-                              label="Elevation (m)"
-                              inputProps={{
-                                step: "0.1",
-                                min: 0,
-                              }}
-                              {...register("info.location.elevation")}
-                            />
-                          </FormControl>
-                        </Stack>
-                        {(errors?.info as any)?.location?.elevation && (
-                          <p className="text-sm text-destructive  mt-1">
-                            {(errors?.info as any)?.location?.elevation}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* * ORIENTATION */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex flex-col gap-2 w-full">
-                          <Typography
-                            color="textSecondary"
-                            className="text-sm text-muted-foreground"
-                          >
-                            Select the exposure of the vineyard
-                          </Typography>
-
-                          <FormControl>
-                            <InputLabel
-                              id="orientation-select"
-                              className="text-muted-foreground"
-                            >
-                              Select exposure
-                            </InputLabel>
-                            <Select
-                              name="info.location.orientation"
-                              labelId="orientation-select"
-                              variant="outlined"
-                              label="Select exposure"
-                              value={
-                                formData?.info?.location?.orientation as string
-                              }
-                              onChange={(e) =>
-                                handleSelectChange(
-                                  "info.location.orientation",
-                                  e.target.value
-                                )
-                              }
-                              className="capitalize"
-                            >
-                              {orientations.length > 0 &&
-                                orientations.map(
-                                  (orientation: string, index: number) => {
-                                    return (
-                                      <MenuItem
-                                        key={orientation + index}
-                                        value={orientation}
-                                        className="capitalize"
-                                      >
-                                        {orientation.split("-").join(" ")}
-                                      </MenuItem>
-                                    );
-                                  }
-                                )}
-                            </Select>
-                          </FormControl>
-                          {(errors?.info as any)?.location?.orientation && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {(errors?.info as any)?.location?.orientation}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* ? END OF LOCATION */}
-
-                      {/* ? VINES */}
-
-                      {/* * PLANTING SCHEME */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <Leaf className="text-muted-foreground w-4 h-4" />
-                        <Typography className="font-medium text-base">
-                          Planting Scheme
-                        </Typography>
-                      </div>
-                      {/* * SPACING */}
-                      <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-2 justify-between w-full">
-                          <div className="flex flex-col gap-2">
-                            <InputLabel className="text-sm text-muted-foreground">
-                              Enter the spacing between rows (m)
-                            </InputLabel>
-                          </div>
-
-                          <Stack
-                            direction={"row"}
-                            alignItems={"center"}
-                            gap={2}
-                            width={"100%"}
-                            className="justify-between"
-                          >
-                            <FormControl className="w-full">
-                              <Input
-                                className="w-full"
-                                id="info.vines.plantingScheme.spacing"
-                                type="number"
-                                variant="outlined"
-                                label="Spacing (m)"
-                                inputProps={{
-                                  step: "0.1",
-                                  min: 0,
-                                }}
-                                {...register(
-                                  "info.vines.plantingScheme.spacing"
-                                )}
-                              />
-                            </FormControl>
-                          </Stack>
-                          {(errors?.info as any)?.vines?.plantingScheme
-                            ?.spacing && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {
-                                (errors?.info as any)?.vines?.plantingScheme
-                                  ?.spacing
-                              }
-                            </p>
-                          )}
-                        </div>
-
-                        {/* * ROW ORIENTATION */}
-
-                        <div className="flex flex-col gap-2">
-                          <div className="flex flex-col gap-2 w-full">
-                            <Typography
-                              color="textSecondary"
-                              className="text-sm text-muted-foreground"
-                            >
-                              Select the row orientation
-                            </Typography>
-
-                            <FormControl>
-                              <InputLabel id="row-orientation-select">
-                                Select orientation
-                              </InputLabel>
-                              <Select
-                                name="info.vines.plantingScheme.rowOrientation"
-                                id="info.vines.plantingScheme.rowOrientation"
-                                variant="outlined"
-                                label="Select orientation"
-                                value={
-                                  formData?.info?.vines?.plantingScheme
-                                    ?.rowOrientation as string
-                                }
-                                onChange={(e) =>
-                                  handleSelectChange(
-                                    "info.vines.plantingScheme.rowOrientation",
-                                    e.target.value
-                                  )
-                                }
-                                className="capitalize"
-                              >
-                                {rowOrientations.length > 0 &&
-                                  rowOrientations.map(
-                                    (orientation: string, index: number) => {
-                                      return (
-                                        <MenuItem
-                                          key={index + orientation}
-                                          value={orientation}
-                                          className="capitalize"
-                                        >
-                                          {orientation}
-                                        </MenuItem>
-                                      );
-                                    }
-                                  )}
-                              </Select>
-                            </FormControl>
-                            {(errors?.info as any)?.location?.country && (
-                              <p className="text-sm text-destructive  mt-1">
-                                {(errors?.info as any)?.location?.country}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* * DENSITY */}
-                        <div className="flex flex-col gap-2 justify-between">
-                          <div className="flex flex-col gap-2">
-                            <InputLabel className="text-sm text-muted-foreground">
-                              Enter distance between vines on the same row (m)
-                            </InputLabel>
-                          </div>
-
-                          <Stack
-                            direction={"row"}
-                            alignItems={"center"}
-                            gap={2}
-                            width={"100%"}
-                            className="justify-between"
-                          >
-                            <FormControl className="w-full">
-                              <Input
-                                id="info.vines.plantingScheme.density"
-                                type="number"
-                                variant="outlined"
-                                label="Distance (m)"
-                                inputProps={{
-                                  step: "0.01",
-                                  min: 0,
-                                  max: 100,
-                                }}
-                                {...register(
-                                  "info.vines.plantingScheme.density"
-                                )}
-                              />
-                            </FormControl>
-                          </Stack>
-
-                          {(errors?.info as any)?.vines?.plantingScheme
-                            ?.density && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {
-                                (errors?.info as any)?.vines?.plantingScheme
-                                  ?.density
-                              }
-                            </p>
-                          )}
-                        </div>
-
-                        {/* * PLANTS PER HA */}
-                        <div className="flex flex-col gap-2 justify-between">
-                          <div className="flex flex-col gap-2">
-                            <InputLabel className="text-sm text-muted-foreground">
-                              Enter the plants per Ha
-                            </InputLabel>
-                          </div>
-                          <Input
-                            id="info.vines.plantingScheme.plantsPerHa"
-                            type="number"
-                            variant="outlined"
-                            label="Plants per Ha"
-                            inputProps={{
-                              step: "1",
-                              min: 0,
-                              max: 100000,
-                            }}
-                            {...register(
-                              "info.vines.plantingScheme.plantsPerHa"
-                            )}
-                          />
-                          {(errors?.info as any)?.vines?.plantingScheme
-                            ?.density && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {
-                                (errors?.info as any)?.vines?.plantingScheme
-                                  ?.density
-                              }
-                            </p>
-                          )}
-                        </div>
-
-                        {/* * TRELLIS SYSTEM  */}
-                        <div className="flex flex-col gap-2 justify-between">
-                          <div className="flex flex-col gap-2">
-                            <InputLabel className="text-sm text-muted-foreground">
-                              Enter the vineyard trellis system
-                            </InputLabel>
-                          </div>
-                          <Input
-                            id="info.vines.plantingScheme.trellisSystem"
-                            variant="outlined"
-                            label="Trellis system type"
-                            {...register(
-                              "info.vines.plantingScheme.trellisSystem"
-                            )}
-                          />
-                          {(errors?.info as any)?.vines?.plantingScheme
-                            ?.trellisSystem && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {
-                                (errors?.info as any)?.vines?.plantingScheme
-                                  ?.trellisSystem
-                              }
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      {/* * YEAR OF PLANTATION */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex flex-col gap-2 w-full">
-                          <Stack
-                            direction={"row"}
-                            alignItems={"center"}
-                            justifyContent={"space-between"}
-                          >
-                            <Typography
-                              color="textSecondary"
-                              className="text-sm text-muted-foreground"
-                            >
-                              Select the year of plantation of the vineyard
-                            </Typography>
-                          </Stack>
-                          <Autocomplete
-                            id="info.vines.yearOfPlantation"
-                            options={generateYearsList()}
-                            value={formData?.info?.vines?.yearOfPlantation}
-                            filterSelectedOptions
-                            renderInput={(params) => (
-                              <TextField {...params} label="Plantation year" />
-                            )}
-                            onChange={(e, value) => {
-                              handleSelectChange(
-                                "info.vines.yearOfPlantation",
-                                value as number
-                              );
-                            }}
-                          />
-
-                          {(errors?.info as any)?.vines?.yearOfPlantation && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {(errors?.info as any)?.vines?.yearOfPlantation}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      {/* * SUNLIGHT HOURS */}
+                      {/* * VIVC NUMBER */}
                       <div className="flex flex-col gap-2 justify-between">
                         <div className="flex flex-col gap-2">
-                          {/* <Label htmlFor="info.vines.sunlightHours">Sunlight hours</Label> */}
                           <span className="text-sm text-muted-foreground">
-                            Enter the sunlight hours your vineyard receives.
+                            Enter the vivc number of the grape
                           </span>
                         </div>
                         <Input
-                          id="info.vines.sunlightHours"
-                          type="number"
-                          variant="outlined"
-                          label="Sunlight hours"
-                          inputProps={{
-                            step: "0.1",
-                            min: 0,
-                          }}
-                          {...register("info.vines.sunlightHours")}
+                          id="grape.vivcNumber"
+                          type="text"
+                          label="Vivc Number"
+                          {...register("grape.vivcNumber")}
                         />
-                        {(errors?.info as any)?.vines?.plantingScheme
-                          ?.rowOrientation && (
-                          <p className="text-sm text-destructive  mt-1">
-                            {
-                              (errors?.info as any)?.vines?.plantingScheme
-                                ?.rowOrientation
-                            }
-                          </p>
-                        )}
-                      </div>
-
-                      {/* * SOIL TYPE */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex flex-col gap-2 w-full">
-                          {/* <Label htmlFor="info.vines.soilType">Soil Type</Label> */}
-                          <span className="text-sm text-muted-foreground">
-                            Choose the soil type of your vineyard.
-                          </span>
-                          <FormControl>
-                            <Input
-                              id="info.vines.soilType"
-                              variant="outlined"
-                              label="Soil Type"
-                              {...register("info.vines.soilType")}
-                            />
-                          </FormControl>
-
-                          {(errors?.info as any)?.vines?.soilType && (
-                            <p className="text-sm text-destructive  mt-1">
-                              {(errors?.info as any)?.vines?.soilType}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* ? END OF VINES */}
-                      {/* ? CERTIFICATIONS */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <ReceiptLong className="text-muted-foreground w-4 h-4" />
-                        <Typography className="font-medium text-base">
-                          Vineyard Classification / Dessignation
-                        </Typography>
-                      </div>
-
-                      <div>
-                        <div className="grid grid-cols-2">
-                          {/* * ECO */}
-                          <div className="flex flex-col gap-2 justify-between">
-                            <div className="flex flex-col gap-2">
-                              {/* <Label htmlFor="info.certifications.eco.active">Eco/Bio</Label> */}
-                              <div className="flex items-center gap-2">
-                                <Checkbox
-                                  id="info.certifications.eco.active"
-                                  checked={
-                                    formData?.info?.certifications?.eco?.active
-                                  }
-                                  onChange={(e) =>
-                                    handleCheckboxChange(
-                                      "info.certifications.eco.active",
-                                      e.target.checked
-                                    )
-                                  }
-                                  // {...register("info.certifications.eco.active")}
-                                />
-                                <span className="text-sm text-muted-foreground">
-                                  ECO certified
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* * BIO */}
-                          <div className="flex flex-col gap-2 justify-between">
-                            <div className="flex flex-col gap-2">
-                              {/* <Label htmlFor="info.certifications.bio.active">Eco/Bio</Label> */}
-                              <div className="flex items-center gap-2">
-                                <Checkbox
-                                  id="info.certifications.bio"
-                                  checked={
-                                    formData?.info?.certifications?.bio?.active
-                                  }
-                                  onChange={(e) =>
-                                    handleCheckboxChange(
-                                      "info.certifications.bio.active",
-                                      e.target.checked
-                                    )
-                                  }
-                                  // {...register("info.certifications.bio.active")}
-                                />
-                                <span className="text-sm text-muted-foreground">
-                                  BIO certified
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* * IGP */}
-                          <div className="flex flex-col gap-2 justify-between">
-                            <div className="flex flex-col gap-2">
-                              {/* <Label htmlFor="info.certifications.igp.active">IGP</Label> */}
-                              <div className="flex items-center gap-2">
-                                <Checkbox
-                                  id="info.certifications.igp.active"
-                                  checked={
-                                    formData?.info?.certifications?.igp?.active
-                                  }
-                                  onChange={(e) =>
-                                    handleCheckboxChange(
-                                      "info.certifications.igp.active",
-                                      e.target.checked
-                                    )
-                                  }
-                                />
-                                <span className="text-sm text-muted-foreground">
-                                  IGP certified
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* * DOP */}
-                          <div className="flex flex-col gap-2 justify-between">
-                            <div className="flex flex-col gap-2">
-                              {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
-                              <div className="flex items-center gap-2">
-                                <Checkbox
-                                  id="info.certifications.dop.active"
-                                  checked={
-                                    formData?.info?.certifications?.dop?.active
-                                  }
-                                  onChange={(e) =>
-                                    handleCheckboxChange(
-                                      "info.certifications.dop.active",
-                                      e.target.checked
-                                    )
-                                  }
-                                />
-                                <span className="text-sm text-muted-foreground">
-                                  DOP certified
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {/* * ICO */}
-                        <div className="flex flex-col gap-2 justify-between">
-                          <div className="flex flex-col gap-2">
-                            {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="info.certifications.ice.active"
-                                checked={
-                                  formData?.info?.certifications?.ice?.active
-                                }
-                                onChange={(e) =>
-                                  handleCheckboxChange(
-                                    "info.certifications.ice.active",
-                                    e.target.checked
-                                  )
-                                }
-                              />
-                              <span className="text-sm text-muted-foreground">
-                                Designated for ice wine
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* ? END OF CERTIFICATIONS */}
-                    </div>
-                  </div>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion
-                sx={{
-                  background:
-                    mode === "dark"
-                      ? "#121212 !important"
-                      : "#ffffff !important",
-                  borderBottom:
-                    "1px solid var(--mui-palette-divider) !important",
-                }}
-                disableGutters
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="panel3-content"
-                  id="panel3-header"
-                >
-                  <Typography component="span">Grape Details</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div className="p-4 flex flex-col gap-4">
-                    {/* * CLONAL SELECTION */}
-                    <div className="flex flex-col gap-2 justify-between">
-                      <div className="flex flex-col gap-2">
-                        <Typography className="text-sm text-muted-foreground">
-                          Enter the clonal selection of the grape
-                        </Typography>
-                      </div>
-                      <Input
-                        id="grape.clonalSelection"
-                        type="text"
-                        label="Clonal Selection"
-                        {...register("grape.clonalSelection")}
-                      />
-                    </div>
-
-                    {/* * COUNTRY OF ORIGIN */}
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col gap-2 w-full">
-                        <Typography
-                          color="textSecondary"
-                          className="text-sm text-muted-foreground"
-                        >
-                          Select the country of origin of the grape
-                        </Typography>
-                        <Autocomplete
-                          id="grape.countryOfOrigin"
-                          options={countries.map((country) => country.name)}
-                          filterSelectedOptions
-                          renderInput={(params) => (
-                            <TextField {...params} label="Select a country" />
-                          )}
-                          value={formData?.grape?.countryOfOrigin || ""}
-                          onChange={(e, value) => {
-                            handleSelectChange(
-                              "grape.countryOfOrigin",
-                              value as string
-                            );
-                          }}
-                        />
-                        {(errors?.info as any)?.location?.country && (
-                          <p className="text-sm text-destructive  mt-1">
-                            {(errors?.info as any)?.location?.country}
-                          </p>
-                        )}
                       </div>
                     </div>
-
-                    {/* * VIVC NUMBER */}
-                    <div className="flex flex-col gap-2 justify-between">
-                      <div className="flex flex-col gap-2">
-                        <span className="text-sm text-muted-foreground">
-                          Enter the vivc number of the grape
-                        </span>
-                      </div>
-                      <Input
-                        id="grape.vivcNumber"
-                        type="text"
-                        label="Vivc Number"
-                        {...register("grape.vivcNumber")}
-                      />
-                    </div>
-                  </div>
-                </AccordionDetails>
-              </Accordion>
-            </div>
+                  </AccordionDetails>
+                </Accordion>
+              </div>
+            </Box>
 
             {/* * FORECASTED YIELD - HIDDEN */}
             <div className="hidden flex-col gap-2">
