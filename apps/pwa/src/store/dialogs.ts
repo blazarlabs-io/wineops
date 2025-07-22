@@ -1,3 +1,4 @@
+import { ActionsEntity } from "@/models/types/actions";
 import { create } from "zustand";
 
 type DialogKey =
@@ -5,12 +6,25 @@ type DialogKey =
   | "ungroup-entities"
   | "delete-entities"
   | "form-drawer"
-  | "delete-entity-data";
+  | "delete-entity-data"
+  | "action-drawer";
 
-type DialogFn = (key: DialogKey) => void;
+type DialogValueMap = {
+  "group-entities": boolean;
+  "ungroup-entities": boolean;
+  "delete-entities": boolean;
+  "form-drawer": boolean;
+  "delete-entity-data": boolean;
+  "action-drawer": boolean | ActionsEntity;
+};
+
+type DialogFn = <T extends DialogKey>(
+  key: T,
+  value?: DialogValueMap[T]
+) => void;
 
 interface DialogDrawerStore {
-  dialogs: Record<DialogKey, boolean>;
+  dialogs: DialogValueMap;
   open: DialogFn;
   close: DialogFn;
   toggle: DialogFn;
@@ -23,9 +37,12 @@ export const useDialogDrawerStore = create<DialogDrawerStore>((set) => ({
     "delete-entities": false,
     "form-drawer": false,
     "delete-entity-data": false,
+    "action-drawer": false,
   },
-  open: (key) =>
-    set(({ dialogs }) => ({ dialogs: { ...dialogs, [key]: true } })),
+  open: (key, value) =>
+    set(({ dialogs }) => ({
+      dialogs: { ...dialogs, [key]: value ? value : true },
+    })),
   close: (key) =>
     set(({ dialogs }) => ({ dialogs: { ...dialogs, [key]: false } })),
   toggle: (key) =>

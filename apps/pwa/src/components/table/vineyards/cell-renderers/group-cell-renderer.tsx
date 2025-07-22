@@ -85,7 +85,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                 >
                   <VineyardDetailsWidget
                     vineyard={node.data}
-                    labReports={labData as LabReport[]}
+                    labReports={(labData || []) as LabReport[]}
                   />
                 </div>
               )}
