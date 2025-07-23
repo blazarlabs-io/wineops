@@ -7,6 +7,7 @@ import {
   Must,
   MustWithVessel,
   Priority,
+  UploadedDocument,
   Vessel,
   Vineyard,
   VineyardStatus,
@@ -22,7 +23,8 @@ export type DashboardEntity =
   | Chemistry
   | Consumable
   | Bottle
-  | MustWithVessel;
+  | MustWithVessel
+  | UploadedDocument;
 
 export type EntityStatus = VineyardStatus | GrapeStatus | Priority;
 

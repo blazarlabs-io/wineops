@@ -16,7 +16,6 @@ export interface CreateNoteDialogProps {
   subject: string;
   uid: string;
   onClose: () => void;
-  uploadedDocuments?: any[];
   onDocumentUpload?: (data: any) => Promise<void>;
 }
 
@@ -26,7 +25,6 @@ export default function UploadDocumentsDialog({
   uid,
 
   onClose,
-  uploadedDocuments,
   onDocumentUpload,
 }: CreateNoteDialogProps) {
   const [currentUploads, setCurrentUploads] = useState<any[]>([]);
@@ -35,17 +33,26 @@ export default function UploadDocumentsDialog({
     (file: { name: string; url: string }) => {
       if (!file) return;
 
-      setCurrentUploads((prevFiles) => [...prevFiles, file]);
+      setCurrentUploads((prevFiles) =>
+        file?.url
+          ? [...prevFiles, file]
+          : prevFiles?.filter(({ name }) => name !== file.name)
+      );
     },
     []
   );
+
+  const handleClose = () => {
+    onClose();
+    setCurrentUploads([]);
+  };
 
   const onDoneClick = async () => {
     if (currentUploads.length > 0 && !!onDocumentUpload) {
       await onDocumentUpload(currentUploads);
     }
 
-    onClose();
+    handleClose();
   };
 
   useEffect(() => {
@@ -57,7 +64,7 @@ export default function UploadDocumentsDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       aria-labelledby="create-team-member-dialog-title"
       aria-describedby="create-team-member-dialog-description"
     >
@@ -76,7 +83,7 @@ export default function UploadDocumentsDialog({
 
         <FileUploaderField
           path="documents"
-          data={uploadedDocuments}
+          data={[]}
           onDocumentUpload={handleUploadDocuments}
         />
         {/* <CreateNoteForm

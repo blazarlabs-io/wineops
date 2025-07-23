@@ -44,7 +44,7 @@ export default function VineyardDetailsWidget({
 }: VineyardDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
   const [localVineyard, setLocalVineyard] = useState<Vineyard>(vineyard);
-  const [docs, setDocs] = useState<any[]>([]);
+  const [docs, setDocs] = useState<any[] | undefined>();
   const mountRef = useRef<boolean>(false);
 
   const { user } = useAuth();
@@ -57,35 +57,14 @@ export default function VineyardDetailsWidget({
     if (!mountRef.current) {
       mountRef.current = true;
 
-      if (labReports) {
-        labReports.map((l: any) => {
-          if (l.supportingDocuments && l.supportingDocuments?.length > 0) {
-            console.log("l.supportingDocuments", l);
-            l.supportingDocuments.map((d: any) => {
-              const newDoc = {
-                name: d.name,
-                url: d.url,
-                responsible: l.responsible,
-                date: l.date,
-                type: "lab report",
-              };
-              setDocs((prev) => [...prev, newDoc]);
-            });
-          }
-        });
-      }
-
       if (!user?.uid) return;
 
       const fetchActions = async () => {
-        const filteredActions = (localVineyard?.actions || []).filter(
-          ({ name }) => name !== "lab-reports"
-        );
-
-        if (filteredActions.length === 0) return;
+        if (!localVineyard?.actions || localVineyard?.actions?.length === 0)
+          return;
 
         const actions = await getActionsByIds(
-          filteredActions.map(({ id }) => id),
+          localVineyard.actions.map(({ id }) => id),
           user?.uid
         );
 
@@ -94,7 +73,7 @@ export default function VineyardDetailsWidget({
         const actionDocs: any[] = actions.reduce(
           (
             acc,
-            { type, responsible, executionDate, supportingDocuments = [] }
+            { id, type, responsible, executionDate, supportingDocuments = [] }
           ) => [
             ...acc,
             ...supportingDocuments.map((doc: any) => ({
@@ -103,6 +82,9 @@ export default function VineyardDetailsWidget({
               responsible,
               date: executionDate,
               type: type.split("-").join(" "),
+              actionId: id,
+              vineyardId: localVineyard.id,
+              actions: localVineyard?.actions,
             })),
           ],
           []
@@ -110,22 +92,28 @@ export default function VineyardDetailsWidget({
 
         if (actionDocs.length === 0) return;
 
-        setDocs((prev) => [...prev, ...actionDocs]);
+        setDocs((prev = []) => [...prev, ...actionDocs]);
       };
 
       fetchActions();
 
-      setDocs((prev) => [
+      setDocs((prev = []) => [
         ...prev,
         ...(localVineyard?.documents || []).map((doc) => ({
           ...doc,
           url: doc.fileUrl,
           date: doc.uploadDate,
           responsible: doc.owner,
+          vineyardId: localVineyard.id,
         })),
       ]);
     }
-  }, [labReports, user?.uid, localVineyard?.actions, localVineyard?.documents]);
+  }, [
+    localVineyard.actions,
+    localVineyard?.documents,
+    localVineyard.id,
+    user?.uid,
+  ]);
 
   useEffect(() => {
     setLocalVineyard(vineyard);
@@ -183,7 +171,12 @@ export default function VineyardDetailsWidget({
           (document) => !deletedNames.includes(document.name)
         ) || [];
 
-      const updatedDocuments = [...newDocuments, ...oldDocuments];
+      const filteredNewDocuments = newDocuments?.filter(
+        (document) =>
+          !oldDocuments.map((file) => file.name).includes(document.name)
+      );
+
+      const updatedDocuments = [...oldDocuments, ...filteredNewDocuments];
 
       const vineyardRes = await db.vineyard.update(user?.uid, vineyard.id, {
         documents: updatedDocuments,
@@ -513,11 +506,7 @@ export default function VineyardDetailsWidget({
               View All
             </Button>
           </div> */}
-          <DocumentsTable
-            docs={docs}
-            uploadedDocuments={localVineyard?.documents || []}
-            onDocumentUpload={handleDocumentUpload}
-          />
+          <DocumentsTable docs={docs} onDocumentUpload={handleDocumentUpload} />
         </div>
       </TabPanel>
 

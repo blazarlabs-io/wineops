@@ -208,11 +208,7 @@ export default function StorageDetailsWidget({
 
       <TabPanel value={value} index={4}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
-          <DocumentsTable
-            docs={docs}
-            uploadedDocuments={localMust?.documents || []}
-            onDocumentUpload={handleDocumentUpload}
-          />
+          <DocumentsTable docs={docs} onDocumentUpload={handleDocumentUpload} />
         </div>
       </TabPanel>
     </Box>

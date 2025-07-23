@@ -22,16 +22,17 @@ export const useGetLabData = (
       id
     ) {
       const entity = entities.filter((v) => v.name === id)[0];
+      const entityLabData = entity?.["labData" as keyof DashboardEntity];
 
       const labRes = labReports.filter(
         (r: LabReport) =>
           r.id ===
-          (entity?.labData
-            ? Array.isArray(entity?.labData)
-              ? (entity?.labData as unknown as LabReport[]).find(
+          (entityLabData
+            ? Array.isArray(entityLabData)
+              ? (entityLabData as unknown as LabReport[]).find(
                   (l) => l.id === r.id
                 )?.id
-              : (entity?.labData as unknown as LabReport).id
+              : (entityLabData as unknown as LabReport).id
             : null)
       );
 
