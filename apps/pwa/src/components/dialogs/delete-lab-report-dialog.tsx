@@ -4,7 +4,7 @@ import { db } from "@/lib/firebase/services";
 import { DashboardEntity } from "@/models/types/dashboard";
 import { EntitiesNames, EntityName, LabReport } from "@/models/types/db";
 import { useDialogDrawerStore } from "@/store/dialogs";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { useSelectedItemsStore } from "@/store/selected-items";
 import { DeleteOutline } from "@mui/icons-material";
 import {
   Box,
@@ -28,42 +28,45 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { selected, setSelected, entityName } = useSelectedEntitiesStore(
+  const { selectedItems, setSelectedItems, itemType } = useSelectedItemsStore(
     (state) => state
   );
 
   const { dialogs, close } = useDialogDrawerStore((state) => state);
   const isOpen =
     dialogs["delete-entity-data"] &&
-    entityName === ("lab-report" as unknown as EntityName);
+    itemType === ("labReport" as unknown as EntityName);
   const onClose = () => close("delete-entity-data");
 
-  const [one, many] = EntitiesNames[entityName];
+  const [one, many] = EntitiesNames[itemType];
 
   const handleDelete = async () => {
-    if (!entityName || !db[entityName]) return;
+    if (!itemType || !db[itemType]) return;
     onClose();
 
-    const res = await db[entityName].deleteMany(
+    const res = await db[itemType].deleteMany(
       user?.uid as string,
-      selected.map(({ id }) => id)
+      selectedItems.map(({ id }) => id)
     );
 
     if (res.status === 200) {
-      onDelete(selected);
+      onDelete(selectedItems);
 
-      setSelected([]);
+      setSelectedItems([]);
 
       enqueueSnackbar(
-        `${selected?.length > 1 ? many : one} deleted successfully`,
+        `${selectedItems?.length > 1 ? many : one} deleted successfully`,
         {
           variant: "success",
         }
       );
     } else {
-      enqueueSnackbar(`Error deleting ${selected?.length > 1 ? many : one}`, {
-        variant: "error",
-      });
+      enqueueSnackbar(
+        `Error deleting ${selectedItems?.length > 1 ? many : one}`,
+        {
+          variant: "error",
+        }
+      );
     }
   };
 
@@ -76,13 +79,13 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
     >
       <DialogTitle id="delete-dialog-title" className="flex items-center gap-1">
         <DeleteOutline color="error" />
-        Delete {selected?.length > 1 ? many : one}
+        Delete {selectedItems?.length > 1 ? many : one}
       </DialogTitle>
 
       <DialogContent>
         <DialogContentText id="delete-dialog-description">
           Are you sure you want to delete{" "}
-          {selected?.length > 1 ? `these ${many}` : `this ${one}`}?
+          {selectedItems?.length > 1 ? `these ${many}` : `this ${one}`}?
         </DialogContentText>
 
         <Box
@@ -95,7 +98,7 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
         >
           <Box sx={{ width: "300px" }}>
             <LabReportResponsibleDataDisplay
-              data={selected[0] as unknown as LabReport}
+              data={selectedItems[0] as unknown as LabReport}
             />
           </Box>
         </Box>

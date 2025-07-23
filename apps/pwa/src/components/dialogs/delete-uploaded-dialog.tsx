@@ -4,7 +4,7 @@ import { db } from "@/lib/firebase/services";
 import { ActionRelation } from "@/models/types/actions";
 import { EntitiesNames, EntityName, UploadedDocument } from "@/models/types/db";
 import { useDialogDrawerStore } from "@/store/dialogs";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { useSelectedItemsStore } from "@/store/selected-items";
 import { DeleteOutline } from "@mui/icons-material";
 import {
   Box,
@@ -26,18 +26,18 @@ export default function DeleteUploadedDialog() {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { selected, setSelected, entityName } = useSelectedEntitiesStore(
+  const { selectedItems, setSelectedItems, itemType } = useSelectedItemsStore(
     (state) => state
   );
 
   const { dialogs, close } = useDialogDrawerStore((state) => state);
   const isOpen =
     dialogs["delete-entity-data"] &&
-    entityName === ("document" as unknown as EntityName);
+    itemType === ("document" as unknown as EntityName);
   const onClose = useCallback(() => close("delete-entity-data"), [close]);
 
-  const [one, many] = EntitiesNames[entityName];
-  const fileToDelete = selected[0] as UploadedDocument;
+  const [one, many] = EntitiesNames[itemType];
+  const fileToDelete = selectedItems[0] as UploadedDocument;
 
   const {
     name,
@@ -48,7 +48,7 @@ export default function DeleteUploadedDialog() {
   } = fileToDelete?.row || {};
 
   const handleDeleteFile = useCallback(async () => {
-    if (!entityName || !fileToDelete || !name) return;
+    if (!itemType || !fileToDelete || !name) return;
 
     const path = type
       ? type
@@ -140,23 +140,23 @@ export default function DeleteUploadedDialog() {
     } finally {
       onClose();
       setIsDeleting(false);
-      setSelected([]);
+      setSelectedItems([]);
     }
   }, [
     actionId,
     actions,
     enqueueSnackbar,
-    entityName,
+    itemType,
     fileToDelete,
     name,
     onClose,
-    setSelected,
+    setSelectedItems,
     type,
     user?.uid,
     vineyardId,
   ]);
 
-  if (!selected || selected?.length === 0 || !fileToDelete) return;
+  if (!selectedItems || selectedItems?.length === 0 || !fileToDelete) return;
 
   return (
     <Dialog
@@ -167,13 +167,13 @@ export default function DeleteUploadedDialog() {
     >
       <DialogTitle id="delete-dialog-title" className="flex items-center gap-1">
         <DeleteOutline color="error" />
-        Delete {selected?.length > 1 ? many : one}
+        Delete {selectedItems?.length > 1 ? many : one}
       </DialogTitle>
 
       <DialogContent>
         <DialogContentText id="delete-dialog-description">
           Are you sure you want to delete{" "}
-          {selected?.length > 1 ? `these ${many}` : `this ${one}`}?
+          {selectedItems?.length > 1 ? `these ${many}` : `this ${one}`}?
         </DialogContentText>
 
         <Box
