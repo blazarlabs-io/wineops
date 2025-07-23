@@ -182,7 +182,7 @@ export default function VineyardLabActionForm({
       db.storage.uploadFile(
         file,
         user?.uid,
-        "labResults",
+        "labReport",
         (progress: number) => {
           setIsUploading(true);
           setUploadProgress(progress);
@@ -227,7 +227,7 @@ export default function VineyardLabActionForm({
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
-        "labResults",
+        "labReport",
         name
       );
 
@@ -316,10 +316,12 @@ export default function VineyardLabActionForm({
       };
     }
 
+    vineyardGlobalActionSample.supportingDocuments = [];
+
     reset(vineyardGlobalActionSample);
     setFormData(vineyardGlobalActionSample);
     console.log("vineyardGlobalActionSample", vineyardGlobalActionSample);
-  }, [vineyards, teamMembers, selectedVineyards]);
+  }, [vineyards, teamMembers, selectedVineyards, reset]);
 
   useEffect(() => {
     if (errors) {

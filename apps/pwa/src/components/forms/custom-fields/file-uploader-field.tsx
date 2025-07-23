@@ -160,11 +160,11 @@ export default function FileUploaderField({
             </Stack>
             <IconButton
               size="small"
-              className="max-w-[24px] max-h-[24px]"
+              className="max-w-[36px] max-h-[36px]"
               color="error"
               onClick={() => handleDeleteFile(doc.name, index)}
             >
-              <DeleteOutline className="max-w-4 max-h-4" />
+              <DeleteOutline className="max-w-6 max-h-6" />
             </IconButton>
           </Stack>
         ))}

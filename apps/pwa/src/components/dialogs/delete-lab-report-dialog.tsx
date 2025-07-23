@@ -2,7 +2,7 @@
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { DashboardEntity } from "@/models/types/dashboard";
-import { EntitiesNames, LabReport } from "@/models/types/db";
+import { EntitiesNames, EntityName, LabReport } from "@/models/types/db";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { DeleteOutline } from "@mui/icons-material";
@@ -33,7 +33,9 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
   );
 
   const { dialogs, close } = useDialogDrawerStore((state) => state);
-  const isOpen = dialogs["delete-entity-data"];
+  const isOpen =
+    dialogs["delete-entity-data"] &&
+    entityName === ("lab-report" as unknown as EntityName);
   const onClose = () => close("delete-entity-data");
 
   const [one, many] = EntitiesNames[entityName];

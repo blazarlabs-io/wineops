@@ -45,12 +45,10 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
 }
 
 type DocumentsTableToolbarProps = {
-  uploadedDocuments?: any[];
   onDocumentUpload?: (data: any) => Promise<void>;
 };
 
 export default function DocumentsTableToolbar({
-  uploadedDocuments,
   onDocumentUpload,
 }: DocumentsTableToolbarProps) {
   const [openUploadDialog, setOpenUploadDialog] = useState<boolean>(false);
@@ -62,7 +60,6 @@ export default function DocumentsTableToolbar({
         subject=""
         uid=""
         onClose={() => setOpenUploadDialog(false)}
-        uploadedDocuments={uploadedDocuments}
         onDocumentUpload={onDocumentUpload}
       />
       <Toolbar

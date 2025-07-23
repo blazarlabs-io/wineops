@@ -24,7 +24,8 @@ export type EntityName =
   | "anexa14"
   | "labReport"
   | "bottle"
-  | "anexa7";
+  | "anexa7"
+  | "document";
 
 export const EntitiesNames: Record<EntityName, string[]> = {
   UNKNOWN: ["UNKNOWN", "UNKNOWNS"],
@@ -41,6 +42,7 @@ export const EntitiesNames: Record<EntityName, string[]> = {
   labReport: ["lab report", "lab reports"],
   bottle: ["bottle", "bottles"],
   anexa7: ["report", "reports"],
+  document: ["document", "documents"],
 } as const;
 
 export const WineColor = {
@@ -827,3 +829,8 @@ export const LotStatus = {
 } as const;
 
 export type LotStatus = (typeof LotStatus)[keyof typeof LotStatus];
+
+export type UploadedDocument = Entity & {
+  api: any;
+  row: any;
+};
