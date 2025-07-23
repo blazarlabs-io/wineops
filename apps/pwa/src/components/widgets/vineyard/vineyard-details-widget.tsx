@@ -23,8 +23,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
 import DeleteLabReportDialog from "@/components/dialogs/delete-lab-report-dialog";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { DashboardEntity } from "@/models/types/dashboard";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
@@ -32,6 +30,7 @@ import { Timestamp } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
 import { getActionsByIds } from "./utils";
 import { ActionsEntity } from "@/models/types/actions";
+import { useSelectedItemsStore } from "@/store/selected-items";
 
 export type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
@@ -124,13 +123,13 @@ export default function VineyardDetailsWidget({
     minHeight: "fit-content !important",
   };
 
-  const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  const setSelected = useSelectedItemsStore((state) => state.setSelectedItems);
   const open = useDialogDrawerStore(({ open }) => open);
   const openDeleteEntityDataDialog = () => open("delete-entity-data");
 
   const handleDeleteClick = (labReport: LabReport) => {
     openDeleteEntityDataDialog();
-    setSelected([labReport as unknown as DashboardEntity], "labReport");
+    setSelected([labReport], "labReport");
   };
 
   const onDeleteLabReport = async (data: any[]) => {

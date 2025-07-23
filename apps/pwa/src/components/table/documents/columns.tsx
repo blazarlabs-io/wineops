@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DEFAULT_LOCALE } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
-import { DashboardEntity } from "@/models/types/dashboard";
 import { UploadedDocument } from "@/models/types/db";
 import { useDialogDrawerStore } from "@/store/dialogs";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { useSelectedItemsStore } from "@/store/selected-items";
 import formatDate from "@/utils/date-format";
 import { DeleteOutline, Download } from "@mui/icons-material";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
@@ -35,7 +34,7 @@ const getApplyQuickFilterFnSameYear: GetApplyQuickFilterFn<any, unknown> = (
 const ActionsComponent = (params: GridRenderCellParams) => {
   const { user } = useAuth();
 
-  const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
+  const setSelected = useSelectedItemsStore((state) => state.setSelectedItems);
   const open = useDialogDrawerStore(({ open }) => open);
   const openDeleteEntityDataDialog = useCallback(
     () => open("delete-entity-data"),
