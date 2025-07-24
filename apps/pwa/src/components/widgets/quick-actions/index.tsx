@@ -31,20 +31,16 @@ export default function QuickActionsWidget({
     (action: string) => {
       const key = action.split(" ").join("-");
       const selected = actions[key];
-      console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-      console.log("ACTION CLICKED", action);
-      console.log("KEY", key);
-      console.log("SELECTED", selected);
-      console.log("ACTIONS", actions);
-      console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
       onClick(action);
 
-      setSelectedAction(() => actions[action.split(" ").join("-")]);
+      setSelectedAction(() => ({ ...selected, key }));
       setFormTitle(selected?.title ?? `${action} action`);
       setStep(2);
     },
     [actions, onClick]
   );
+
+  console.log("selectedAction:", selectedAction);
 
   const handleBackClick = useCallback(() => {
     setStep(1);

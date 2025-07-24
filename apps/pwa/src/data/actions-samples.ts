@@ -47,6 +47,7 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
 
 export const vineyardGlobalActionSample: VineyardGlobalAction = {
   id: "",
+  createdAt: Timestamp.now(),
   type: null,
   executionDate: Timestamp.now(),
   inUseVineyard: {

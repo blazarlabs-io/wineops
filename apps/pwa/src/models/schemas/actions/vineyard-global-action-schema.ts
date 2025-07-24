@@ -2,22 +2,40 @@ import { VineyardGlobalAction } from "@/models/types/actions";
 import Joi from "joi";
 import { teamMemberSchema } from "../vineyard-schema";
 import { relationSchema } from "./vineyard-harvest-action-schema";
-import chemistry from "@/lib/firebase/services/chemistry";
+import { TimestampOrString } from "../grape-schema";
 
 export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
   id: Joi.string().required(),
   type: Joi.string().required(),
-  executionDate: Joi.date().required(),
+  executionDate: TimestampOrString.required().messages({
+    "any.required": "Please select a date",
+    "string.empty": "Please select a date",
+    "alternatives.types": "Date must be a valid date.",
+  }),
   inUseVineyard: Joi.object({
     id: Joi.string().required(),
     name: Joi.string().required(),
-  }),
-  responsible: teamMemberSchema.required(),
+  })
+    .required()
+    .messages({
+      "any.required": "Please select a vineyard",
+      "string.empty": "Please select a vineyard",
+    }),
+  responsible: teamMemberSchema,
+  chemistry: Joi.array()
+    .items({
+      id: Joi.string().allow("").required(),
+      name: Joi.string().allow("").required(),
+      qty: Joi.number().precision(2).required(),
+      stockChemistryQty: Joi.number().precision(2).optional(),
+    })
+    .optional(),
   consumables: Joi.array()
     .items({
       id: Joi.string().allow("").required(),
       name: Joi.string().allow("").required(),
       qty: Joi.number().precision(2).required(),
+      stockConsumableQty: Joi.number().precision(2).optional(),
     })
     .optional(),
   equipment: Joi.array().items(relationSchema).optional(),
@@ -34,5 +52,6 @@ export const vineyardGlobalActionSchema = Joi.object<VineyardGlobalAction>({
     })
     .optional(),
   aditionalInformation: Joi.string().optional().allow(""),
-  chemistry: Joi.array().items(relationSchema).optional(),
+  createdAt: TimestampOrString.empty("").optional(),
+  createdBy: Joi.string().optional().allow(""),
 });

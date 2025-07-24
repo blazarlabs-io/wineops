@@ -1,4 +1,5 @@
 import { ActionsEntity } from "@/models/types/actions";
+import { Vineyard } from "@/models/types/db";
 import { create } from "zustand";
 
 type DialogKey =
@@ -20,7 +21,8 @@ type DialogValueMap = {
 
 type DialogFn = <T extends DialogKey>(
   key: T,
-  value?: DialogValueMap[T]
+  value?: DialogValueMap[T],
+  vineyard?: Vineyard
 ) => void;
 
 interface DialogDrawerStore {
@@ -28,6 +30,7 @@ interface DialogDrawerStore {
   open: DialogFn;
   close: DialogFn;
   toggle: DialogFn;
+  vineyard?: Vineyard | undefined;
 }
 
 export const useDialogDrawerStore = create<DialogDrawerStore>((set) => ({
@@ -39,12 +42,16 @@ export const useDialogDrawerStore = create<DialogDrawerStore>((set) => ({
     "delete-entity-data": false,
     "action-drawer": false,
   },
-  open: (key, value) =>
+  open: (key, value, vineyard) =>
     set(({ dialogs }) => ({
       dialogs: { ...dialogs, [key]: value ? value : true },
+      vineyard,
     })),
   close: (key) =>
-    set(({ dialogs }) => ({ dialogs: { ...dialogs, [key]: false } })),
+    set(({ dialogs }) => ({
+      dialogs: { ...dialogs, [key]: false },
+      vineyard: undefined,
+    })),
   toggle: (key) =>
     set(({ dialogs }) => ({
       dialogs: { ...dialogs, [key]: !dialogs[key] },

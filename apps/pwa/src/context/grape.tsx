@@ -1,7 +1,7 @@
 "use client";
 
-import GrapeIntakeActionFormComposer from "@/components/forms/actions/grape/grape-intake-action-form-composer";
-import GrapeProcessingActionFormComposer from "@/components/forms/actions/grape/grape-processing-action-form-composer";
+import GrapeIntakeActionForm from "@/components/forms/actions/grape/grape-intake-action-form";
+import GrapeProcessingActionForm from "@/components/forms/actions/grape/grape-processing-action-form";
 import {
   grapeIntakeAction,
   grapeProcessingAction,
@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/client";
 import { GRAPES, LAB_REPORTS, WINERY } from "@/lib/firebase/config";
 import { GrapeActions } from "@/models/types/actions";
-import { Grape, LabReport, SingleDocument } from "@/models/types/db";
+import { Grape, LabReport } from "@/models/types/db";
 import { collection, onSnapshot, Timestamp } from "firebase/firestore";
 import {
   createContext,
@@ -51,13 +51,13 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
   const [actions] = useState<GrapeActions>({
     "grape-intake": {
       exec: grapeIntakeAction,
-      form: GrapeIntakeActionFormComposer,
+      form: GrapeIntakeActionForm,
       icon: "hugeicons:grapes",
       title: "Record Grape Intake",
     },
     "grape-process": {
       exec: grapeProcessingAction,
-      form: GrapeProcessingActionFormComposer,
+      form: GrapeProcessingActionForm,
       icon: "material-symbols:grain",
       title: "Process Grapes into Must",
     },

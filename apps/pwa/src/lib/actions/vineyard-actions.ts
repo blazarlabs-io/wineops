@@ -252,27 +252,26 @@ export const vineyardLabAction = async (
   }
 };
 
-export const vineyardIrrigationAction = async (
+export const vineyardGenericAction = async (
   uid: string,
   actionData: VineyardGlobalAction,
   vineyard: Vineyard
 ) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+  console.log(`\n\n--- GENERIC ACTION: ${actionData.type} ---`);
+  console.log("UID | Action Data | Vineyard:\n", uid, actionData, vineyard);
+  console.log("----------------------------------------------\n\n");
 
-  // * 1. Add Action
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
-    enqueueSnackbar("Action created", { variant: "success" });
+    enqueueSnackbar(
+      `Action "${actionData.type?.split("-").join(" ")}" created`,
+      { variant: "success" }
+    );
   } else {
     enqueueSnackbar("Error creating action", { variant: "error" });
   }
 
-  // * 2. Update Vineyard
   const vineyardRes = await db.vineyard.update(
     uid,
     actionData.inUseVineyard.id,
@@ -281,7 +280,7 @@ export const vineyardIrrigationAction = async (
         ...(vineyard.actions || ([] as ActionRelation[])),
         {
           id: actionData.id,
-          name: "irrigation",
+          name: actionData.type,
         },
       ],
     }
@@ -292,88 +291,4 @@ export const vineyardIrrigationAction = async (
   } else {
     enqueueSnackbar("Vineyard status update failed", { variant: "error" });
   }
-};
-
-export const vineyardPestInspectionAction = async (
-  uid: string,
-  actionData: VineyardGlobalAction,
-  vineyard: Vineyard
-) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-};
-
-export const vineyardVinePruningAction = async (
-  uid: string,
-  actionData: VineyardGlobalAction,
-  vineyard: Vineyard
-) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-};
-
-export const vineyardWeedRemovalAction = async (
-  uid: string,
-  actionData: VineyardGlobalAction,
-  vineyard: Vineyard
-) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-};
-
-export const vineyardSoilMonitoringAction = async (
-  uid: string,
-  actionData: VineyardGlobalAction,
-  vineyard: Vineyard
-) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-};
-
-export const vineyardGreenHarvestAction = async (
-  uid: string,
-  actionData: VineyardGlobalAction,
-  vineyard: Vineyard
-) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-};
-
-export const vineyardFertilizerApplicationAction = async (
-  uid: string,
-  actionData: VineyardGlobalAction,
-  vineyard: Vineyard
-) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-};
-
-export const vineyardPesticideApplicationAction = async (
-  uid: string,
-  actionData: VineyardGlobalAction,
-  vineyard: Vineyard
-) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("Action Data", actionData);
-  console.log("Vineyard", vineyard);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 };
