@@ -1,6 +1,5 @@
 import { Timestamp } from "firebase/firestore";
 import {
-  Chemistry,
   EntityConsumable,
   Grape,
   LabElement,
@@ -8,7 +7,6 @@ import {
   LotStatus,
   Must,
   MustWineVessel,
-  ResponsibleTeamMember,
   Supplier,
   TeamMember,
   Vineyard,
@@ -27,6 +25,8 @@ export type VineyardSingleAction = {
   exec: (uid: string, actionData: any, vineyard: Vineyard) => void;
   form: any;
   icon: string;
+  title?: string;
+  key?: keyof VineyardActions;
 };
 
 export type VineyardActions = {
@@ -51,6 +51,7 @@ export type GrapeSingleAction = {
   form: any;
   icon: string;
   title?: string;
+  key?: keyof VineyardActions;
 };
 
 export type GrapeActions = {
@@ -165,18 +166,26 @@ export interface VineyardGlobalAction {
   type: VineyardActionType;
   executionDate: string | Timestamp;
   inUseVineyard: ActionRelation;
-  responsible?: ResponsibleTeamMember;
+  responsible?: Partial<TeamMember>;
   inputData?: any;
   supportingDocuments?: { name: string; url: string }[];
   consumables?: {
     id: string;
     name: string;
     qty: number;
+    stockConsumableQty?: number; // total consumable quantity
   }[];
-  equipment?: ActionRelation[];
+  chemistry?: {
+    id: string;
+    name: string;
+    qty: number;
+    stockChemistryQty?: number; // total chemistry quantity
+  }[];
+  equipment?: any[];
   labDataToDeleteIds?: string[];
   aditionalInformation?: string;
-  chemistry?: ActionRelation[];
+  createdAt?: string | Timestamp;
+  createdBy?: TeamMember["id"] | TeamMember["email"];
 }
 
 export const MUST_ACTION_TYPES = ["must-decant"] as const;
@@ -238,6 +247,7 @@ export type WineSingleAction = {
   form: any;
   icon: string;
   title?: string;
+  key?: keyof VineyardActions;
 };
 
 export type WineActions = {
@@ -310,4 +320,9 @@ export type BottleWineAction = {
     name: string;
     url: string;
   }>;
+};
+
+export type ActionFormProps = {
+  actionKey: keyof VineyardActions;
+  onBackClick?: () => void;
 };

@@ -123,13 +123,15 @@ export default function VineyardDetailsWidget({
     minHeight: "fit-content !important",
   };
 
-  const setSelected = useSelectedItemsStore((state) => state.setSelectedItems);
+  const setSelectedItem = useSelectedItemsStore(
+    (state) => state.setSelectedItems
+  );
   const open = useDialogDrawerStore(({ open }) => open);
   const openDeleteEntityDataDialog = () => open("delete-entity-data");
 
   const handleDeleteClick = (labReport: LabReport) => {
     openDeleteEntityDataDialog();
-    setSelected([labReport], "labReport");
+    setSelectedItem([labReport], "labReport");
   };
 
   const onDeleteLabReport = async (data: any[]) => {
@@ -193,8 +195,13 @@ export default function VineyardDetailsWidget({
   );
 
   const openLabReportAction = useCallback(
-    () => open("action-drawer", "lab-report" as unknown as ActionsEntity),
-    [open]
+    () =>
+      open(
+        "action-drawer",
+        "lab-report" as unknown as ActionsEntity,
+        localVineyard
+      ),
+    [localVineyard, open]
   );
 
   const handleNewReport = useCallback(() => {

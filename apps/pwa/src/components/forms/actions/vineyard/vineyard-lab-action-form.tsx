@@ -2,7 +2,7 @@
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
-import { VineyardGlobalAction } from "@/models/types/actions";
+import { ActionFormProps, VineyardGlobalAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useVineyard } from "@/context/vineyard";
@@ -33,22 +33,28 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import { File } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
-import FileUploaderField from "../../custom-fields/file-uploader-field";
+import { useDialogDrawerStore } from "@/store/dialogs";
 
 export default function VineyardLabActionForm({
   onBackClick,
-}: {
-  onBackClick?: () => void;
-}) {
+}: ActionFormProps) {
+  const { dialogs, vineyard } = useDialogDrawerStore((state) => state);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { vineyards = [], actions, labReports } = useVineyard();
 
-  const selectedVineyards = useSelectedEntitiesStore(
-    ({ selected }) => selected
+  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+
+  const selectedVineyards = useMemo(
+    () =>
+      `${dialogs["action-drawer"]}` === "lab-report" && vineyard
+        ? [vineyard]
+        : selected,
+    [dialogs, selected, vineyard]
   );
 
   const { teamMembers } = useWinery();

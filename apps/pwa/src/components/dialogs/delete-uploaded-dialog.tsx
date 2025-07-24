@@ -50,17 +50,7 @@ export default function DeleteUploadedDialog() {
   const handleDeleteFile = useCallback(async () => {
     if (!itemType || !fileToDelete || !name) return;
 
-    const path = type
-      ? type
-          .split(" ")
-          .reduce(
-            (acc: string, word: string, index: number) =>
-              index === 0
-                ? word
-                : `${acc}${word[0].toUpperCase()}${word.slice(1)}`,
-            ""
-          )
-      : "documents";
+    const path = type ? type.split(" ").join("-") : "documents";
 
     if (!path) return;
 

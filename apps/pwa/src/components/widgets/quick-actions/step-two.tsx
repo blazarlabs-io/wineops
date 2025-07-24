@@ -1,7 +1,7 @@
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { SingleActionEntity } from "@/models/types/actions";
 import { Icon } from "@iconify/react";
-import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import React from "react";
 
 export interface QuickActionsWidgetStepOneProps<T extends SingleActionEntity> {
@@ -46,8 +46,10 @@ export default function QuickActionsWidgetStepTwo<
         </Button>
       </Box>
       <Box display="flex" alignItems="center" gap={1} px={2}>
-        <Icon icon={selectedAction?.icon as string} width={24} height={24} />
-        <Typography variant="h5" className="capitalize">
+        {selectedAction?.icon && (
+          <Icon icon={selectedAction?.icon} width={24} height={24} />
+        )}
+        <Typography variant="h5" className="capitalize text-[22px]!">
           {title}
         </Typography>
       </Box>
@@ -63,7 +65,12 @@ export default function QuickActionsWidgetStepTwo<
         <Stack height="100%">
           {/* *Form */}
           <React.Fragment>
-            {FormComponent && <FormComponent onBackClick={onBackClick} />}
+            {FormComponent && (
+              <FormComponent
+                onBackClick={onBackClick}
+                actionKey={selectedAction?.key}
+              />
+            )}
           </React.Fragment>
         </Stack>
       </Box>

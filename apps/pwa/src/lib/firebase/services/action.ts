@@ -2,15 +2,15 @@
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../client";
 import { ACTIONS, WINERY } from "../config";
-import { cleanUndefined } from "@/utils/clean-undefined";
 import { DbResponse } from "@/models/types/db";
 import { cleanObjectWithDeletes } from "@/utils/clean-objects-with-delete";
+import { cleanObject } from "@/utils/clean-object";
 
 const action = {
   create: async (uid: string, data: any) => {
     try {
       const docRef = doc(db, WINERY, uid, ACTIONS, data.id);
-      const cleanedData = cleanUndefined(data);
+      const cleanedData = cleanObject(data);
       console.log("\n\ncleanedData", cleanedData);
       const newDocRef = await setDoc(docRef, cleanedData);
 

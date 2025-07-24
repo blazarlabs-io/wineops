@@ -5,6 +5,7 @@ import { vineyardHarvestActionSample } from "@/data/actions-samples";
 import { useAuth } from "@/lib/firebase/auth";
 import { vineyardHarvestActionSchema } from "@/models/schemas/actions/vineyard-harvest-action-schema";
 import {
+  ActionFormProps,
   ActionRelation,
   VineyardGlobalAction,
   VineyardHarvestAction,
@@ -49,15 +50,12 @@ import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-mem
 import { parseToDate } from "@/utils/date-format";
 import { File } from "lucide-react";
 import { db } from "@/lib/firebase/services";
-import FileUploaderField from "../../custom-fields/file-uploader-field";
 
 const equipment: ActionRelation[] = [];
 
 export default function VineyardHarvestActionForm({
   onBackClick,
-}: {
-  onBackClick?: () => void;
-}) {
+}: ActionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { vineyards = [], actions } = useVineyard();
 
