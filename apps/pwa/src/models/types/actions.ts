@@ -99,6 +99,8 @@ export type GrapeIntakeAction = {
     url: string;
   }>;
   additionalInfo?: string;
+  createdAt?: string | Timestamp;
+  createdBy?: TeamMember["id"] | TeamMember["email"];
 };
 
 export type PressPercentage = {
