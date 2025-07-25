@@ -31,6 +31,7 @@ import { enqueueSnackbar } from "notistack";
 import { getActionsByIds } from "./utils";
 import { ActionsEntity } from "@/models/types/actions";
 import { useSelectedItemsStore } from "@/store/selected-items";
+import TasksView from "../components/tasks-view";
 
 export type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
@@ -216,6 +217,7 @@ export default function VineyardDetailsWidget({
         display: "flex",
         alignItems: "center",
         width: "100%",
+        height: "100%",
       }}
       className=""
     >
@@ -415,7 +417,12 @@ export default function VineyardDetailsWidget({
         <div className="flex gap-8 px-4">Timeline View</div>
       </TabPanel>
       <TabPanel value={value} index={3}>
-        <Stack display={"flex"} direction={"column"} gap={0}>
+        <Stack
+          gap={1}
+          sx={{
+            height: "100%",
+          }}
+        >
           <div className="flex items-center justify-start gap-4 w-full">
             <Button
               size="small"
@@ -497,7 +504,7 @@ export default function VineyardDetailsWidget({
         </Stack>
       </TabPanel>
       <TabPanel value={value} index={4}>
-        <Typography>Tasks</Typography>
+        <TasksView tasks={vineyard?.tasks || []} />
       </TabPanel>
       <TabPanel value={value} index={5}>
         <Typography>Weather</Typography>
