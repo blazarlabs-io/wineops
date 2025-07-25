@@ -8,6 +8,7 @@ import TabPanel from "../components/tab-panel";
 import SstInfoContent from "./sst-info-content";
 import BarrelInfoContent from "./barrel-info-content";
 import HistoryContent from "./history-content";
+import TasksView from "../components/tasks-view";
 
 export type VesselDetailsWidgetProps = {
   vessel: Vessel;
@@ -75,7 +76,7 @@ export default function VesselDetailsWidget({
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <div className="flex gap-8 px-4">Task View</div>
+        <TasksView tasks={vessel?.tasks || []} />
       </TabPanel>
     </Box>
   );

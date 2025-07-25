@@ -30,6 +30,7 @@ const STATUSES_COLORS: Record<TaskStatus | "default", any> = {
   [TaskStatus.BLOCKED]: { icon: Block, color: "#616161" },
   default: { icon: CalendarMonthIcon, color: "text.secondary" },
 };
+
 type TasksViewProps = {
   tasks: Task[];
 };
@@ -108,7 +109,7 @@ export default function TasksView({ tasks }: TasksViewProps) {
           gap={1}
           direction="row"
           alignItems="center"
-          justifyContent="center"
+          justifyContent="space-between"
         >
           <Button
             size="small"
@@ -144,10 +145,16 @@ export default function TasksView({ tasks }: TasksViewProps) {
             View All
           </Button>
         </Stack>
+
         <Stack gap={1} alignItems="center" justifyContent="flex-start">
-          <Typography variant="body2" sx={{ alignSelf: "start", pl: 1, pt: 2 }}>
-            Filter by status:
-          </Typography>
+          {statusCounts.size > 0 && (
+            <Typography
+              variant="body2"
+              sx={{ alignSelf: "start", pl: 1, pt: 2 }}
+            >
+              Filter by status:
+            </Typography>
+          )}
 
           <div className="grid grid-cols-2 w-full gap-3">
             {[...statusCounts].map(([status, count]) => {

@@ -617,6 +617,7 @@ export type Vessel = Entity & {
   sstInfo?: StainlessSteelTankInfo;
   history?: VesselHistory[];
   labData?: ActionRelation[];
+  tasks?: Task[];
 };
 
 export const ConsumableCategory = {
@@ -751,6 +752,7 @@ export type Wine = Entity & {
   tasks?: Task[];
   consumables?: EntityConsumable[];
   actions?: ActionRelation[];
+  documents?: SingleDocument[];
 };
 
 export type StorageCondition = {

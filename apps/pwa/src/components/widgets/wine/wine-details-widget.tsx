@@ -8,6 +8,7 @@ import TabPanel from "../components/tab-panel";
 import LabDataContent from "./lab-data-content";
 import WineInfoContent from "./wine-info-content";
 import QtyContent from "./qty-content";
+import TasksView from "../components/tasks-view";
 
 export type WineDetailsWidgetProps = {
   wine: Wine;
@@ -77,7 +78,7 @@ export default function WineDetailsWidget({ wine }: WineDetailsWidgetProps) {
       </TabPanel>
 
       <TabPanel value={value} index={4}>
-        <div className="flex gap-8 px-4">Tasks View</div>
+        <TasksView tasks={wine?.tasks || []} />
       </TabPanel>
     </Box>
   );

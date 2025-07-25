@@ -20,6 +20,7 @@ import { enqueueSnackbar } from "notistack";
 import { Timestamp } from "firebase/firestore";
 import StorageConditionsContent from "./storage-conditions-content";
 import LabsContent from "./labs-content";
+import TasksView from "../components/tasks-view";
 
 export type StorageDetailsWidgetProps = {
   must: Must;
@@ -199,7 +200,7 @@ export default function StorageDetailsWidget({
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <div className="flex gap-8 px-4">Tasks View</div>
+        <TasksView tasks={must?.tasks || []} />
       </TabPanel>
 
       <TabPanel value={value} index={3}>

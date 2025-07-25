@@ -8,6 +8,7 @@ import TabPanel from "../components/tab-panel";
 import LabDataContent from "./lab-data-content";
 import MustInfoContent from "./must-info-content";
 import QtyContent from "./qty-content";
+import TasksView from "../components/tasks-view";
 
 export type MustDetailsWidgetProps = {
   must: Must;
@@ -78,7 +79,7 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
       </TabPanel>
 
       <TabPanel value={value} index={4}>
-        <div className="flex gap-8 px-4">Tasks View</div>
+        <TasksView tasks={must?.tasks || []} />
       </TabPanel>
     </Box>
   );
