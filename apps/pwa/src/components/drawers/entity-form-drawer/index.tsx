@@ -3,6 +3,8 @@ import { useDialogDrawerStore } from "@/store/dialogs";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { Close } from "@mui/icons-material";
 import { Box, Drawer, IconButton, Typography } from "@mui/material";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export type EntityFormDrawerProps = {
   entityName: EntityName;
@@ -20,6 +22,17 @@ export default function EntityFormDrawer({
   const selected = useSelectedEntitiesStore(({ selected }) => selected);
 
   const formType: FormMode = selected.length > 0 ? "edit" : "create";
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (isOpen) {
+      close("form-drawer");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  if (!isOpen) return null;
 
   return (
     <Drawer
