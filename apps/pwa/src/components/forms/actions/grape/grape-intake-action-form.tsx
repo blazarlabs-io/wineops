@@ -77,16 +77,32 @@ export default function GrapeIntakeActionForm({
     ({ selected }) => selected
   ) as Grape[];
 
-  const updatedSelectedGrapes = useMemo(
+  const filteredGrapes = useMemo(
     () =>
-      selectedGrapes.map(
-        (selected) => grapes.find((g) => g.id === selected.id) ?? selected
+      (selectedGrapes.length > 0
+        ? selectedGrapes.map(
+            (selected) =>
+              grapes.find(({ id }) => id === selected.id) ?? selected
+          )
+        : grapes
+      ).filter(
+        ({ rowType, status }) =>
+          rowType === "item" && status === GrapeStatus.IN_TRANSIT
       ),
     [grapes, selectedGrapes]
   );
 
   const { teamMembers } = useWinery();
   const { user } = useAuth();
+
+  const userId =
+    teamMembers?.find(
+      ({ id, email }) => email === user?.email || id === user?.uid
+    )?.id ||
+    user?.email ||
+    user?.uid ||
+    "";
+
   const {
     register,
     handleSubmit,
@@ -99,22 +115,10 @@ export default function GrapeIntakeActionForm({
     resolver: joiResolver(grapeIntakeActionSchema),
   });
 
-  const filteredGrapes = useMemo(
-    () =>
-      (updatedSelectedGrapes.length > 0
-        ? updatedSelectedGrapes
-        : grapes
-      ).filter(
-        ({ rowType, status }) =>
-          rowType === "item" && status === GrapeStatus.IN_TRANSIT
-      ),
-    [grapes, updatedSelectedGrapes]
-  );
-
   const [formData, setFormData] = useState<GrapeIntakeAction>(
     {} as GrapeIntakeAction
   );
-  const [disableSubject, setDisableSubject] = useState<boolean>(false);
+
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -122,16 +126,7 @@ export default function GrapeIntakeActionForm({
 
   const handleChange = useCallback(
     (name: string, value: any) => {
-      if (name === "subjectGrape.name") {
-        const id = filteredGrapes.filter(({ name }) => name === value)[0].id;
-        setValue("subjectGrape.id", id);
-        formData.subjectGrape = {
-          name: name,
-          id: id,
-        };
-      }
-
-      setValue(name, value);
+      setValue(name, value, { shouldTouch: true, shouldValidate: true });
 
       if (name.startsWith("executionDate")) {
         setFormData((prev) => ({
@@ -144,7 +139,7 @@ export default function GrapeIntakeActionForm({
         setFormData(newFormData);
       }
     },
-    [filteredGrapes, formData, setValue]
+    [formData, setValue]
   );
 
   const handleNewUpload = useCallback(
@@ -202,7 +197,7 @@ export default function GrapeIntakeActionForm({
       db.storage.uploadFile(
         file,
         user?.uid,
-        "grapeIntake",
+        "grape-intake",
         (progress: number) => {
           setIsUploading(true);
           setUploadProgress(progress);
@@ -248,7 +243,7 @@ export default function GrapeIntakeActionForm({
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
-        "grapeIntake",
+        "grape-intake",
         name
       );
 
@@ -262,24 +257,21 @@ export default function GrapeIntakeActionForm({
     [clearErrors, formData.supportingDocuments, setValue, user?.uid]
   );
 
-  const onSubmit = async (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
+  const onSubmit = async (data: any) => {
+    if (!user?.uid || !data.subjectGrape.id) return;
 
     const subjectGrape = filteredGrapes.filter(
-      ({ name }) => name === data.subjectGrape.name
+      ({ id }) => id === data.subjectGrape.id
     )[0];
+
+    if (!subjectGrape) return;
+
+    console.log("SUBJECT GRAPE:", subjectGrape);
 
     setIsSubmitting(true);
 
     try {
-      await actions?.["grape-intake"].exec(
-        user?.uid as string,
-        data,
-        subjectGrape
-      );
+      await actions?.["grape-intake"].exec(user.uid, data, subjectGrape);
     } finally {
       setIsSubmitting(false);
     }
@@ -289,90 +281,55 @@ export default function GrapeIntakeActionForm({
     onBackClick?.();
   };
 
+  const subjectGrape = useMemo(
+    () =>
+      formData.subjectGrape?.id
+        ? filteredGrapes.find(({ id }) => id === formData.subjectGrape?.id)
+        : filteredGrapes?.length === 1
+          ? filteredGrapes[0]
+          : undefined,
+    [filteredGrapes, formData.subjectGrape?.id]
+  );
+
   useEffect(() => {
-    const subjectGrape = formData.subjectGrape?.id
-      ? filteredGrapes.find(({ id }) => id === formData.subjectGrape?.id)
-      : undefined;
+    if (!subjectGrape) return;
 
     const grapeIntakeActionSample: GrapeIntakeAction = {
       id: crypto.randomUUID(),
+      createdAt: Timestamp.fromDate(new Date()),
+      createdBy: userId,
       type: "grape-intake",
-      subjectGrape: formData?.subjectGrape || { id: "", name: "" },
-      executionDate: Timestamp.fromDate(new Date()), //new Date().toDateString(),
+      subjectGrape: subjectGrape
+        ? { id: subjectGrape.id, name: subjectGrape.name }
+        : { id: "", name: "" },
+      executionDate: Timestamp.fromDate(new Date()),
       supplier: {
         companyName: "",
       },
-      grapeVariety: "",
-      mass: {},
-      qualityCharacteristics: {},
-      processingLocation: "",
+      grapeVariety: subjectGrape?.grapeVariety ?? "",
+      mass: {
+        net: subjectGrape?.metrics?.actual,
+      },
+      qualityCharacteristics: {
+        sugar: subjectGrape?.labData?.sugar?.value || undefined,
+        acidity: subjectGrape?.labData?.acidity?.value || undefined,
+      },
+      processingLocation: subjectGrape?.location ?? "",
       supportingDocuments: [],
-      certificatDeInofensivitate: "",
-      transportInfo: {},
-    };
-
-    if (
-      filteredGrapes &&
-      filteredGrapes.length === 1 &&
-      grapeIntakeActionSample.subjectGrape !== undefined &&
-      grapeIntakeActionSample.mass !== undefined
-    ) {
-      setDisableSubject(true);
-      grapeIntakeActionSample.subjectGrape.name = filteredGrapes[0]?.name;
-      grapeIntakeActionSample.subjectGrape.id = filteredGrapes[0]?.id;
-      grapeIntakeActionSample.grapeVariety = filteredGrapes[0]?.grapeVariety;
-      grapeIntakeActionSample.mass.net = filteredGrapes[0]?.metrics?.actual;
-
-      grapeIntakeActionSample.qualityCharacteristics = {
-        sugar: filteredGrapes[0]?.labData?.sugar?.value,
-        acidity: filteredGrapes[0]?.labData?.acidity?.value,
-      };
-
-      grapeIntakeActionSample.certificatDeInofensivitate =
-        filteredGrapes[0]?.transportationInfo?.certificate ?? "";
-
-      grapeIntakeActionSample.processingLocation =
-        filteredGrapes[0]?.location ?? "";
-      grapeIntakeActionSample.invoiceNumber =
-        filteredGrapes[0]?.transportationInfo?.acquisitionInvoiceNo ?? "";
-      grapeIntakeActionSample.transportInfo = {
-        ...grapeIntakeActionSample.transportInfo,
-        companyName: filteredGrapes[0]?.transportationInfo?.companyName ?? "",
-        vehicleId: filteredGrapes[0]?.transportationInfo?.vehicleIdNo ?? "",
-        driverId: filteredGrapes[0]?.transportationInfo?.driverIdNo ?? "",
-      };
-    } else if (
-      filteredGrapes &&
-      filteredGrapes.length > 0 &&
-      grapeIntakeActionSample.subjectGrape !== undefined &&
-      grapeIntakeActionSample.mass !== undefined
-    ) {
-      setDisableSubject(false);
-      grapeIntakeActionSample.grapeVariety = subjectGrape?.grapeVariety || "";
-      grapeIntakeActionSample.mass.net = subjectGrape?.metrics?.actual;
-
-      grapeIntakeActionSample.qualityCharacteristics = {
-        sugar: subjectGrape?.labData?.sugar?.value,
-        acidity: subjectGrape?.labData?.acidity?.value,
-      };
-
-      grapeIntakeActionSample.certificatDeInofensivitate =
-        subjectGrape?.transportationInfo?.certificate ?? "";
-
-      grapeIntakeActionSample.processingLocation = subjectGrape?.location ?? "";
-      grapeIntakeActionSample.invoiceNumber =
-        subjectGrape?.transportationInfo?.acquisitionInvoiceNo ?? "";
-      grapeIntakeActionSample.transportInfo = {
-        ...grapeIntakeActionSample.transportInfo,
+      certificatDeInofensivitate:
+        subjectGrape?.transportationInfo?.certificate ?? "",
+      transportInfo: {
         companyName: subjectGrape?.transportationInfo?.companyName ?? "",
         vehicleId: subjectGrape?.transportationInfo?.vehicleIdNo ?? "",
         driverId: subjectGrape?.transportationInfo?.driverIdNo ?? "",
-      };
-    }
+      },
+      invoiceNumber:
+        subjectGrape?.transportationInfo?.acquisitionInvoiceNo ?? "",
+    };
 
     reset(grapeIntakeActionSample);
     setFormData(grapeIntakeActionSample);
-  }, [filteredGrapes, formData?.subjectGrape, reset, teamMembers]);
+  }, [reset, subjectGrape, userId]);
 
   useEffect(() => {
     if (errors) {
@@ -424,21 +381,19 @@ export default function GrapeIntakeActionForm({
         style={{ height: "100%", display: "flex", flexDirection: "column" }}
       >
         <Box
-          className="w-full"
           sx={{
             py: 2,
             flex: 1,
+            width: "100%",
             overflowY: "auto",
           }}
         >
-          <div className="flex flex-col gap-4 w-full ">
-            {/* * ID - HIDDEN */}
+          <Stack gap={2}>
             <div className="hidden">
-              {/* <Label htmlFor="id">Id</Label> */}
               <FormControl>
                 <Input
                   id={formData.id as VineyardGlobalAction["id"]}
-                  // value={formData.id}
+                  value={formData.id}
                   type="hidden"
                   {...register("id")}
                 />
@@ -461,7 +416,7 @@ export default function GrapeIntakeActionForm({
 
               <AccordionDetails>
                 <Stack gap={2}>
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Selected batch ID
                     </InputLabel>
@@ -506,10 +461,9 @@ export default function GrapeIntakeActionForm({
                         }
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  {/* * EXECUTION DATE */}
-                  <Stack gap={1} className="w-full">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Select execution date
                     </InputLabel>
@@ -530,17 +484,12 @@ export default function GrapeIntakeActionForm({
                       views={["year", "month", "day"]}
                       className="w-full"
                       onChange={(date) => {
+                        if (!date) return;
+
                         handleChange(
                           "executionDate",
-                          date ? Timestamp.fromDate(date.toDate()) : null
+                          Timestamp.fromDate(date.toDate())
                         );
-
-                        return;
-                        if (date) {
-                          handleChange("executionDate", date);
-                        } else {
-                          handleChange("executionDate", undefined);
-                        }
                       }}
                     />
 
@@ -555,7 +504,7 @@ export default function GrapeIntakeActionForm({
                     )}
                   </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter supplier name
                     </InputLabel>
@@ -583,9 +532,9 @@ export default function GrapeIntakeActionForm({
                           }
                         </Typography>
                       )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter a grape variety
                     </InputLabel>
@@ -618,9 +567,9 @@ export default function GrapeIntakeActionForm({
                         {errors?.grapeVariety?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the certificat de inofensivitate ID
                     </InputLabel>
@@ -632,7 +581,9 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           inputLabel: {
-                            shrink: !!formData?.certificatDeInofensivitate,
+                            ...(formData?.certificatDeInofensivitate && {
+                              shrink: true,
+                            }),
                           },
                         }}
                         {...register("certificatDeInofensivitate")}
@@ -648,7 +599,7 @@ export default function GrapeIntakeActionForm({
                         {errors?.certificatDeInofensivitate?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
                 </Stack>
               </AccordionDetails>
             </Accordion>
@@ -669,7 +620,7 @@ export default function GrapeIntakeActionForm({
 
               <AccordionDetails>
                 <Stack gap={2}>
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter gross weight (kg)
                     </InputLabel>
@@ -682,6 +633,9 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 1_000_000_000 },
+                          inputLabel: {
+                            ...(formData?.mass?.gross && { shrink: true }),
+                          },
                         }}
                         {...register("mass.gross")}
                       />
@@ -696,9 +650,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter tare weight (kg)
                     </InputLabel>
@@ -711,6 +665,9 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 1_000_000_000 },
+                          inputLabel: {
+                            ...(formData?.mass?.tare && { shrink: true }),
+                          },
                         }}
                         {...register("mass.tare")}
                       />
@@ -725,9 +682,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter net weight (kg)
                     </InputLabel>
@@ -740,6 +697,9 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 1_000_000_000 },
+                          inputLabel: {
+                            ...(formData?.mass?.net && { shrink: true }),
+                          },
                         }}
                         {...register("mass.net")}
                       />
@@ -754,7 +714,7 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
                   <div className="hidden">
                     <FormControl fullWidth>
@@ -765,6 +725,9 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 1_000_000_000 },
+                          inputLabel: {
+                            ...(formData?.mass?.gross && { shrink: true }),
+                          },
                         }}
                       />
 
@@ -780,8 +743,7 @@ export default function GrapeIntakeActionForm({
                     </FormControl>
                   </div>
 
-                  {/* * WEIGHER NAME */}
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the weighbridge operator name
                     </InputLabel>
@@ -819,7 +781,7 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
                 </Stack>
               </AccordionDetails>
             </Accordion>
@@ -840,8 +802,7 @@ export default function GrapeIntakeActionForm({
 
               <AccordionDetails>
                 <Stack gap={2}>
-                  {/* *QUALITY CHARACTERISTICS */}
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the sample temperature (°C)
                     </InputLabel>
@@ -854,6 +815,10 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: -200, step: 0.01, max: 1_000 },
+                          inputLabel: {
+                            ...((formData?.qualityCharacteristics
+                              ?.temperature || 0) > 0 && { shrink: true }),
+                          },
                         }}
                         {...register("qualityCharacteristics.temperature")}
                       />
@@ -871,9 +836,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the density (kg/L)
                     </InputLabel>
@@ -886,6 +851,10 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 1_000 },
+                          inputLabel: {
+                            ...((formData?.qualityCharacteristics?.density ||
+                              0) > 0 && { shrink: true }),
+                          },
                         }}
                         {...register("qualityCharacteristics.density")}
                       />
@@ -903,13 +872,12 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the mass concentration of sugars (g/dm³)
                     </InputLabel>
-
                     <FormControl fullWidth>
                       <TextField
                         type="number"
@@ -918,6 +886,10 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 10_000_000 },
+                          inputLabel: {
+                            ...((formData?.qualityCharacteristics?.sugar || 0) >
+                              0 && { shrink: true }),
+                          },
                         }}
                         {...register("qualityCharacteristics.sugar")}
                       />
@@ -935,9 +907,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the acidity (g/dm³)
                     </InputLabel>
@@ -950,13 +922,17 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 10_000_000 },
+                          inputLabel: {
+                            ...((formData?.qualityCharacteristics?.acidity ||
+                              0) > 0 && { shrink: true }),
+                          },
                         }}
                         {...register("qualityCharacteristics.acidity")}
                       />
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground whitespace-normal!">
                       Enter mass fraction of grapes affected by diseases and
                       pests (%)
@@ -970,6 +946,12 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 100 },
+                          inputLabel: {
+                            ...((formData?.qualityCharacteristics
+                              ?.massFractionSpoiled || 0) > 0 && {
+                              shrink: true,
+                            }),
+                          },
                         }}
                         {...register(
                           "qualityCharacteristics.massFractionSpoiled"
@@ -990,9 +972,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter mass fraction of crushed grapes (%)
                     </InputLabel>
@@ -1005,6 +987,12 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 100 },
+                          inputLabel: {
+                            ...((formData?.qualityCharacteristics
+                              ?.massFractionCrushed || 0) > 0 && {
+                              shrink: true,
+                            }),
+                          },
                         }}
                         {...register(
                           "qualityCharacteristics.massFractionCrushed"
@@ -1025,9 +1013,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground whitespace-normal!">
                       Enter mass fraction of mixed grape varieties (%)
                     </InputLabel>
@@ -1040,6 +1028,12 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           htmlInput: { min: 0, step: 0.01, max: 100 },
+                          inputLabel: {
+                            ...((formData?.qualityCharacteristics
+                              ?.massFractionMixed || 0) > 0 && {
+                              shrink: true,
+                            }),
+                          },
                         }}
                         {...register(
                           "qualityCharacteristics.massFractionMixed"
@@ -1060,10 +1054,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  {/* * LAB ID */}
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the lab certificate ID
                     </InputLabel>
@@ -1074,6 +1067,11 @@ export default function GrapeIntakeActionForm({
                         label="Lab certificate ID"
                         variant="outlined"
                         {...register("labCertificateId")}
+                        slotProps={{
+                          inputLabel: {
+                            ...(formData?.labCertificateId && { shrink: true }),
+                          },
+                        }}
                       />
 
                       {errors?.labCertificateId && (
@@ -1086,10 +1084,9 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  {/* * labTechnicianName */}
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the lab technician name
                     </InputLabel>
@@ -1100,6 +1097,13 @@ export default function GrapeIntakeActionForm({
                         label="Technician name"
                         variant="outlined"
                         {...register("labTechnicianName")}
+                        slotProps={{
+                          inputLabel: {
+                            ...(formData?.labTechnicianName && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
                       />
 
                       {errors?.labTechnicianName && (
@@ -1115,7 +1119,7 @@ export default function GrapeIntakeActionForm({
                         </Typography>
                       )}
                     </FormControl>
-                  </div>
+                  </Stack>
                 </Stack>
               </AccordionDetails>
             </Accordion>
@@ -1136,7 +1140,7 @@ export default function GrapeIntakeActionForm({
 
               <AccordionDetails>
                 <Stack gap={2}>
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Select the processing location
                     </InputLabel>
@@ -1159,10 +1163,9 @@ export default function GrapeIntakeActionForm({
                         />
                       )}
                     />
-                  </div>
+                  </Stack>
 
-                  {/* * INVOICE ID */}
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the dispatch invoice
                     </InputLabel>
@@ -1173,12 +1176,16 @@ export default function GrapeIntakeActionForm({
                         label="Dispatch invoice"
                         variant="outlined"
                         {...register("invoiceNumber")}
+                        slotProps={{
+                          inputLabel: {
+                            ...(formData?.invoiceNumber && { shrink: true }),
+                          },
+                        }}
                       />
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  {/* * TANSPORT INFO */}
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the transportation company name
                     </InputLabel>
@@ -1190,15 +1197,17 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           inputLabel: {
-                            shrink: !!formData?.transportInfo?.companyName,
+                            ...(formData?.transportInfo?.companyName && {
+                              shrink: true,
+                            }),
                           },
                         }}
                         {...register("transportInfo.companyName")}
                       />
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the vehicle registration number
                     </InputLabel>
@@ -1210,15 +1219,17 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           inputLabel: {
-                            shrink: !!formData?.transportInfo?.vehicleId,
+                            ...(formData?.transportInfo?.vehicleId && {
+                              shrink: true,
+                            }),
                           },
                         }}
                         {...register("transportInfo.vehicleId")}
                       />
                     </FormControl>
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter the driver name
                     </InputLabel>
@@ -1230,19 +1241,21 @@ export default function GrapeIntakeActionForm({
                         variant="outlined"
                         slotProps={{
                           inputLabel: {
-                            shrink: !!formData?.transportInfo?.driverId,
+                            ...(formData?.transportInfo?.driverId && {
+                              shrink: true,
+                            }),
                           },
                         }}
                         {...register("transportInfo.driverId")}
                       />
                     </FormControl>
-                  </div>
+                  </Stack>
                 </Stack>
               </AccordionDetails>
             </Accordion>
 
             <Stack p={2} gap={2}>
-              <div className="flex flex-col gap-2">
+              <Stack gap={1}>
                 <InputLabel className="text-sm text-muted-foreground">
                   Description
                 </InputLabel>
@@ -1262,12 +1275,12 @@ export default function GrapeIntakeActionForm({
                     {...register("additionalInfo")}
                   />
                 </FormControl>
-              </div>
+              </Stack>
 
               <Stack gap={1}>
-                <Typography variant="body2" color="text.secondary">
+                <InputLabel className="text-sm text-muted-foreground">
                   Supporting Documents
-                </Typography>
+                </InputLabel>
 
                 {isUploading && (
                   <LinearProgress
@@ -1276,50 +1289,50 @@ export default function GrapeIntakeActionForm({
                   />
                 )}
 
-                {formData.supportingDocuments &&
-                  formData.supportingDocuments.length > 0 &&
-                  formData.supportingDocuments.map((doc, index) => (
+                {formData.supportingDocuments?.map(({ name = "" }, index) => (
+                  <Stack
+                    key={`${name || index}`}
+                    gap={1}
+                    display={"flex"}
+                    alignItems={"center"}
+                    direction={"row"}
+                    justifyContent={"space-between"}
+                  >
                     <Stack
-                      key={doc.name}
                       gap={1}
                       display={"flex"}
                       alignItems={"center"}
                       direction={"row"}
-                      justifyContent={"space-between"}
                     >
-                      <Stack
-                        gap={1}
-                        display={"flex"}
-                        alignItems={"center"}
-                        direction={"row"}
-                      >
-                        <File width={16} height={16} />
-                        <Typography variant="body2">{doc.name}</Typography>
-                      </Stack>
-                      <IconButton
-                        size="small"
-                        className="max-w-[24px] max-h-[24px]"
-                        color="error"
-                        onClick={() => handleDeleteFile(doc.name, index)}
-                      >
-                        <DeleteOutline className="max-w-4 max-h-4" />
-                      </IconButton>
+                      <File width={16} height={16} />
+                      <Typography variant="body2">{name}</Typography>
                     </Stack>
-                  ))}
+                    <IconButton
+                      disabled={isSubmitting}
+                      size="small"
+                      className="max-w-[24px] max-h-[24px]"
+                      color="error"
+                      onClick={() => handleDeleteFile(name, index)}
+                    >
+                      <DeleteOutline className="max-w-4 max-h-4" />
+                    </IconButton>
+                  </Stack>
+                ))}
 
-                {errors?.supportingDocuments && (
+                {errors?.supportingDocuments?.message && (
                   <Typography variant="body2" color="error" className="mt-1">
-                    {errors?.supportingDocuments?.message as string}
+                    {errors?.supportingDocuments.message as string}
                   </Typography>
                 )}
                 <div ref={supportingDocumentsRef}></div>
               </Stack>
             </Stack>
-          </div>
+          </Stack>
         </Box>
 
         <Box p={2} gap={2} display="flex" justifyContent="space-between">
           <Button
+            disabled={isSubmitting}
             variant="outlined"
             component="label"
             className="w-auto flex items-center gap-2"
@@ -1336,7 +1349,7 @@ export default function GrapeIntakeActionForm({
 
           <FormControl>
             <Button
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploading}
               type="submit"
               variant="contained"
               className="mt-8"

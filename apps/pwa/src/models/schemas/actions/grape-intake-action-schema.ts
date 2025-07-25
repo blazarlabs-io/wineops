@@ -216,4 +216,6 @@ export const grapeIntakeActionSchema = Joi.object<GrapeIntakeAction>({
     })
     .optional(),
   additionalInfo: Joi.string().optional().allow(""),
+  createdAt: TimestampOrString.empty("").optional(),
+  createdBy: Joi.string().optional().allow(""),
 });
