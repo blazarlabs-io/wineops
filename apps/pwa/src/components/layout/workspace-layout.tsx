@@ -21,8 +21,7 @@ import { Box } from "@mui/material";
 import { AppProvider, Session } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { DemoProvider, useDemoRouter } from "@toolpad/core/internal";
-import * as React from "react";
-import { useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import Logo from "../data-display/logo";
 import QuickActionsDrawer from "../drawers/quick-actions-drawer";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,7 +33,7 @@ import { useDialogDrawerStore } from "@/store/dialogs";
 
 interface MainProps {
   window?: () => Window;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export default function WorkspaceLayout(props: MainProps) {
@@ -57,7 +56,7 @@ export default function WorkspaceLayout(props: MainProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [currentDashboard, setCurrentDashboard] = useState<string>("vineyards");
 
-  const handleOpenChange = React.useCallback(
+  const handleOpenChange = useCallback(
     (type: string, value: any) => {
       updateOpen(value);
       updateType(type as QuickDrawerType);
@@ -91,7 +90,7 @@ export default function WorkspaceLayout(props: MainProps) {
       // console.log("\n\nCURRENT DASHBOARD", current);
       navRouter.push(`/workspace/${router.pathname}`);
     }
-  }, [router.pathname]);
+  }, [navRouter, pathname, router.pathname]);
 
   useEffect(() => {
     if (user) {
@@ -110,10 +109,25 @@ export default function WorkspaceLayout(props: MainProps) {
   const isActionsDrawerOpen =
     !!dialogs["action-drawer"] || (open && type === "actions");
 
-  const handleDrawerClose = () => {
+  const handleDrawerClose = useCallback(() => {
     handleOpenChange("actions", false);
     if (!!dialogs["action-drawer"]) close("action-drawer");
-  };
+  }, [close, dialogs, handleOpenChange]);
+
+  useEffect(() => {
+    if (
+      !isActionsDrawerOpen ||
+      [
+        "vineyards",
+        "grapes",
+        "primary-vinification",
+        "secondary-vinification",
+      ].includes(currentDashboard)
+    )
+      return;
+
+    handleDrawerClose();
+  }, [currentDashboard, handleDrawerClose, isActionsDrawerOpen]);
 
   return (
     <DemoProvider window={demoWindow}>
