@@ -28,7 +28,7 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
   sugar: {
     id: "",
     name: "",
-    value: 0,
+    value: undefined,
     variation: 0,
     unit: "g/dm³",
     responsible: {
