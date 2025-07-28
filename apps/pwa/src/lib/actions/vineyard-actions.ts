@@ -11,7 +11,6 @@ import {
   Vineyard,
   VineyardStatus,
 } from "@/models/types/db";
-import { Timestamp } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
 import { db } from "../firebase/services";
 
@@ -62,6 +61,18 @@ export const vineyardHarvestAction = async (
   }
 
   // * 3. Add batch of grapes
+  const latestResults = actionData?.latestVineyardLabReport?.results;
+  const latestResultsDate = actionData?.latestVineyardLabReport?.date;
+
+  const labDate =
+    latestResults &&
+    latestResultsDate &&
+    latestResults?.sugar?.value === actionData.sugar.value &&
+    (latestResults?.acidity?.value === actionData?.acidity?.value ||
+      !actionData?.acidity?.value)
+      ? latestResultsDate
+      : actionData.executionDate;
+
   const newBatch: Grape = {
     id: actionData.batchId,
     name: actionData.batchId,
@@ -88,8 +99,13 @@ export const vineyardHarvestAction = async (
     status: "In Transit",
     grapeVariety: vineyard.grapeVariety,
     certifications: vineyard.info.certifications,
+
+    // TODO: if sugar & acidity from vineyard harverst action are the same as the latest vineyard lab report, take lab report date, otherwise take execution date
+    // TODO: make sure 100% that sugar have positive value greater than zero!!!
+    // TODO: make sure 100% that acidity have positive value greater than zero!!!
+
     labData: {
-      date: Timestamp.now(),
+      date: labDate,
       sugar: {
         value: actionData.sugar.value,
         unit: actionData.sugar.unit,

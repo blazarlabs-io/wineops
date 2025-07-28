@@ -37,6 +37,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 import { useDialogDrawerStore } from "@/store/dialogs";
+import { parseToDate } from "@/utils/date-format";
 
 export default function VineyardLabActionForm({
   onBackClick,
@@ -83,8 +84,10 @@ export default function VineyardLabActionForm({
   const handleChange = useCallback(
     (name: string, value: any) => {
       if (name.startsWith("executionDate")) {
-        // value = Timestamp.fromDate(value.toDate());
-        value = new Date(value).toDateString();
+        setFormData((prev) => ({
+          ...(prev as VineyardGlobalAction),
+          [name]: value,
+        }));
       }
 
       if (name === "inUseVineyard.name") {
@@ -95,7 +98,7 @@ export default function VineyardLabActionForm({
         );
         setValue("inUseVineyard.name" as string, value as any);
       } else {
-        setValue(name as string, value as any);
+        setValue(name, value, { shouldTouch: true, shouldValidate: true });
       }
 
       if (name === "responsible.name") {
@@ -292,7 +295,7 @@ export default function VineyardLabActionForm({
   useEffect(() => {
     vineyardGlobalActionSample.id = Date.now().toString();
     vineyardGlobalActionSample.type = "lab-report";
-    vineyardGlobalActionSample.executionDate = new Date().toDateString();
+    vineyardGlobalActionSample.executionDate = Timestamp.fromDate(new Date());
     if (
       vineyardGlobalActionSample.responsible !== undefined &&
       teamMembers &&
@@ -406,27 +409,38 @@ export default function VineyardLabActionForm({
                     {/* * EXECUTION DATE */}
                     <Stack gap={1} className="w-full">
                       <Typography variant="body2" color="text.secondary">
-                        Select execution Date
+                        Select execution date
                       </Typography>
                       <DatePicker
                         name="executionDate"
                         value={
-                          formData.executionDate instanceof Timestamp
-                            ? dayjs(formData.executionDate.toDate())
-                            : dayjs(formData.executionDate)
+                          formData?.executionDate
+                            ? dayjs(parseToDate(formData?.executionDate))
+                            : null
                         }
                         label="Execution Date"
                         disableFuture
                         views={["year", "month", "day"]}
                         className="w-full"
                         onChange={(date) => {
-                          if (date) {
-                            handleChange("executionDate", date);
-                          } else {
-                            handleChange("executionDate", undefined);
-                          }
+                          if (!date) return;
+
+                          handleChange(
+                            "executionDate",
+                            Timestamp.fromDate(date.toDate())
+                          );
                         }}
                       />
+
+                      {errors?.executionDate?.message && (
+                        <Typography
+                          variant="body2"
+                          color="error"
+                          className="mt-1"
+                        >
+                          {errors?.executionDate.message as string}
+                        </Typography>
+                      )}
                     </Stack>
                     {/* * RESPONSIBLE */}
                     <Stack gap={1} className="w-full">

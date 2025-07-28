@@ -161,6 +161,7 @@ export interface VineyardHarvestAction {
     name: string;
     url: string;
   }>;
+  latestVineyardLabReport?: LabReport;
 }
 
 export interface VineyardGlobalAction {
