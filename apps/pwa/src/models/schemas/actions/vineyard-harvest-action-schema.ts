@@ -96,4 +96,5 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
     })
     .optional(),
   harvestEnded: Joi.boolean().default(false).optional(),
+  latestVineyardLabReport: Joi.object({}).unknown(true).optional(),
 });

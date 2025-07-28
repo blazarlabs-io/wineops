@@ -36,7 +36,6 @@ export const vineyardHarvestActionSample: VineyardHarvestAction = {
       name: "",
       email: "",
     },
-    date: Timestamp.now(),
   },
   acidity: {},
   certificateOfInofensivitate: "",

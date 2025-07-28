@@ -20,7 +20,6 @@ import { useWinery } from "@/context/winery";
 import { countries } from "@/data/countries";
 import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { cleanUndefined } from "@/utils/clean-undefined";
 import { Attachment, DeleteOutline, ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
@@ -50,6 +49,7 @@ import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-mem
 import { parseToDate } from "@/utils/date-format";
 import { File } from "lucide-react";
 import { db } from "@/lib/firebase/services";
+import { cleanObject } from "@/utils/clean-object";
 
 const equipment: ActionRelation[] = [];
 
@@ -186,7 +186,6 @@ export default function VineyardHarvestActionForm({
           variation: 0,
           unit: "g/dm³",
           responsible: { name: "", email: "" },
-          date: new Date().toDateString(),
         };
 
         setValue(name as string, value);
@@ -383,16 +382,13 @@ export default function VineyardHarvestActionForm({
   );
 
   const onSubmit = useCallback(
-    async (data: any, e: any) => {
-      e.stopPropagation();
-      e.preventDefault();
-
+    async (data: any) => {
       const selected = vineyards.filter((v) => v.id === localVineyard?.id)[0];
 
       console.log("SUBMIT", user?.uid, data, selected);
       console.log("ERRORS:", errors);
 
-      const cleanData = cleanUndefined(data);
+      const cleanData = cleanObject(data);
 
       console.log("CLEANED", cleanData);
 
@@ -429,32 +425,37 @@ export default function VineyardHarvestActionForm({
 
       const selected = vineyards.filter((v) => v.id === formData.subject.id)[0];
 
-      // ? We get the corresponding lab report
-      const labReport = labData?.filter((l) =>
-        selected?.labData?.some((ld) => ld.id === l.id)
-      )[0];
+      const latestVineyardLabReport = labData
+        ?.filter((l) => selected?.labData?.some((ld) => ld.id === l.id))
+        ?.sort(
+          (a, b) =>
+            (b.date as Timestamp).toDate().getTime() -
+            (a.date as Timestamp).toDate().getTime()
+        )?.[0];
 
       vineyardHarvestActionSample.sugar = {
-        id: labReport?.id,
+        id: latestVineyardLabReport?.id,
         name: "",
-        value: labReport?.results?.sugar?.value ?? 0,
-        variation: labReport?.results?.sugar?.variation,
-        date: labReport?.date || Timestamp.now(),
-        unit: (labReport?.units?.[0] as string as string) || "",
+        value: latestVineyardLabReport?.results?.sugar?.value ?? 0,
+        variation: latestVineyardLabReport?.results?.sugar?.variation,
+        date: latestVineyardLabReport?.date,
+        unit: (latestVineyardLabReport?.units?.[0] as string as string) || "",
       };
 
       vineyardHarvestActionSample.acidity = {
-        id: labReport?.id,
+        id: latestVineyardLabReport?.id,
         name: "",
-        value: labReport?.results?.acidity?.value ?? 0,
-        variation: labReport?.results?.acidity?.variation,
-        date: labReport?.date || Timestamp.now(),
-        unit: (labReport?.units?.[0] as string) || "",
+        value: latestVineyardLabReport?.results?.acidity?.value ?? 0,
+        variation: latestVineyardLabReport?.results?.acidity?.variation,
+        date: latestVineyardLabReport?.date,
+        unit: (latestVineyardLabReport?.units?.[0] as string) || "",
       };
 
       setHarvestEnded(selected.status === VineyardStatus.HARVEST_ENDED);
 
       vineyardHarvestActionSample.supportingDocuments = [];
+      vineyardHarvestActionSample.latestVineyardLabReport =
+        latestVineyardLabReport;
 
       const result = {
         ...formData,
@@ -478,10 +479,8 @@ export default function VineyardHarvestActionForm({
     vineyardHarvestActionSample.equipment = [];
     vineyardHarvestActionSample.consumables = [];
     vineyardHarvestActionSample.sugar.value = 0;
-    vineyardHarvestActionSample.sugar.date = Timestamp.now();
     if (vineyardHarvestActionSample.acidity?.value) {
       vineyardHarvestActionSample.acidity.value = 0;
-      vineyardHarvestActionSample.acidity.date = Timestamp.now();
     }
     // * One vineyard is selected
     if (selectedVineyards && selectedVineyards.length === 1) {
@@ -506,7 +505,7 @@ export default function VineyardHarvestActionForm({
         name: "",
         value: labReport?.results?.sugar?.value ?? 0,
         variation: labReport?.results?.sugar?.variation,
-        date: labReport?.date || new Date().toDateString(),
+        date: labReport?.date,
         unit: (labReport?.units?.[0] as string as string) || "",
       };
 
@@ -515,7 +514,7 @@ export default function VineyardHarvestActionForm({
         name: "",
         value: labReport?.results?.acidity?.value ?? 0,
         variation: labReport?.results?.acidity?.variation,
-        date: labReport?.date || new Date().toDateString(),
+        date: labReport?.date,
         unit: (labReport?.units?.[0] as string) || "",
       };
 
@@ -546,8 +545,6 @@ export default function VineyardHarvestActionForm({
       console.log("ERRORS", errors);
     }
   }, [errors]);
-
-  useEffect(() => {}, []);
 
   return (
     <>
