@@ -17,7 +17,6 @@ import {
   Box,
   Button,
   FormControl,
-  FormHelperText,
   IconButton,
   TextField as Input,
   InputLabel,
@@ -37,6 +36,7 @@ import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-mem
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { parseToDate } from "@/utils/date-format";
 import { Vineyard } from "@/models/types/db";
+import { NumberSchema } from "joi";
 
 export default function VineyardLabActionForm({
   onBackClick,
@@ -76,6 +76,24 @@ export default function VineyardLabActionForm({
     user?.uid ||
     "";
 
+  const labActionSchema = vineyardGlobalActionSchema.fork(
+    ["inputData.sugar"],
+    (schema) =>
+      (schema as NumberSchema)
+        .precision(2)
+        .min(0.01)
+        .max(10_000)
+        .required()
+        .messages({
+          "any.required": "Please enter a valid number for the sugar",
+          "number.empty": "Please enter a valid number for the sugar",
+          "number.base": "Please enter a valid number for the sugar",
+          "number.precision": "Sugar must have at most 2 decimal places",
+          "number.min": "Sugar must be greater than 0 g/dm³",
+          "number.max": "Sugar cannot exceed 10,000 g/dm³",
+        })
+  );
+
   const {
     register,
     handleSubmit,
@@ -85,7 +103,9 @@ export default function VineyardLabActionForm({
     setError,
     clearErrors,
   } = useForm({
-    resolver: joiResolver(vineyardGlobalActionSchema),
+    resolver: joiResolver(labActionSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
   });
 
   const [formData, setFormData] = useState<VineyardGlobalAction>(
@@ -474,12 +494,13 @@ export default function VineyardLabActionForm({
                       }}
                       {...register("inputData.sugar")}
                     />
-                    {(errors.inputData as any)?.sugar?.message && (
-                      <FormHelperText error>
-                        {(errors.inputData as any)?.sugar.message}
-                      </FormHelperText>
-                    )}
                   </FormControl>
+
+                  {(errors.inputData as any)?.sugar?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {(errors.inputData as any)?.sugar.message}
+                    </Typography>
+                  )}
                 </Stack>
 
                 <Stack gap={1}>
