@@ -7,14 +7,13 @@ import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
-import { setNestedValue } from "@/helpers/form-helpers";
-import { useGetVineyardsNames } from "@/hooks/use-get-vineyards-names";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { BackupOutlined, DeleteOutline } from "@mui/icons-material";
+import { Attachment, DeleteOutline } from "@mui/icons-material";
 import {
+  Autocomplete,
   Box,
   Button,
   FormControl,
@@ -23,9 +22,8 @@ import {
   TextField as Input,
   InputLabel,
   LinearProgress,
-  MenuItem,
-  Select,
   Stack,
+  TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
@@ -38,6 +36,7 @@ import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { parseToDate } from "@/utils/date-format";
+import { Vineyard } from "@/models/types/db";
 
 export default function VineyardLabActionForm({
   onBackClick,
@@ -48,18 +47,35 @@ export default function VineyardLabActionForm({
 
   const { vineyards = [], actions, labReports } = useVineyard();
 
-  const selected = useSelectedEntitiesStore(({ selected }) => selected);
+  const selected = useSelectedEntitiesStore(
+    ({ selected }) => selected
+  ) as Vineyard[];
 
   const selectedVineyards = useMemo(
     () =>
       `${dialogs["action-drawer"]}` === "lab-report" && vineyard
         ? [vineyard]
-        : selected,
-    [dialogs, selected, vineyard]
+        : (selected.length > 0
+            ? selected.map(
+                (selected) =>
+                  vineyards.find(({ id }) => id === selected.id) ?? selected
+              )
+            : vineyards
+          ).filter(({ rowType }) => rowType === "item"),
+    [dialogs, selected, vineyard, vineyards]
   );
 
   const { teamMembers } = useWinery();
   const { user } = useAuth();
+
+  const userId =
+    teamMembers?.find(
+      ({ id, email }) => email === user?.email || id === user?.uid
+    )?.id ||
+    user?.email ||
+    user?.uid ||
+    "";
+
   const {
     register,
     handleSubmit,
@@ -71,11 +87,10 @@ export default function VineyardLabActionForm({
   } = useForm({
     resolver: joiResolver(vineyardGlobalActionSchema),
   });
-  const { vineyardNames } = useGetVineyardsNames(vineyards);
+
   const [formData, setFormData] = useState<VineyardGlobalAction>(
     vineyardGlobalActionSample
   );
-  const [disableSubject, setDisableSubject] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -83,58 +98,14 @@ export default function VineyardLabActionForm({
 
   const handleChange = useCallback(
     (name: string, value: any) => {
-      if (name.startsWith("executionDate")) {
-        setFormData((prev) => ({
-          ...(prev as VineyardGlobalAction),
-          [name]: value,
-        }));
-      }
+      setValue(name, value, { shouldTouch: true, shouldValidate: true });
 
-      if (name === "inUseVineyard.name") {
-        //value = Timestamp.fromDate(value.toDate());
-        setValue(
-          "inUseVineyard.id" as string,
-          vineyards.filter((v) => v?.name === value)[0]?.id as string
-        );
-        setValue("inUseVineyard.name" as string, value as any);
-      } else {
-        setValue(name, value, { shouldTouch: true, shouldValidate: true });
-      }
-
-      if (name === "responsible.name") {
-        setValue(
-          "responsible.email" as string,
-          teamMembers.filter((tm) => tm?.name === value)[0]?.email as any
-        );
-        setValue("responsible.name" as string, value as any);
-      }
-
-      const path = name.split(".");
-      const newFormData = setNestedValue(formData, path, value);
-
-      setFormData(newFormData);
-    },
-    [formData, setValue]
-  );
-
-  const handleInUseVineyardChange = useCallback(
-    (value: any) => {
-      const subjectVineyard = vineyards.filter((v) => v.name === value)[0];
-      console.log("value", value, subjectVineyard);
       setFormData((prev) => ({
         ...(prev as VineyardGlobalAction),
-        inUseVineyard: {
-          id: subjectVineyard?.id,
-          name: subjectVineyard?.name,
-        },
+        [name]: value,
       }));
-      setValue("inUseVineyard", {
-        id: subjectVineyard?.id,
-        name: subjectVineyard?.name,
-      });
     },
-
-    [setValue, vineyards]
+    [setValue]
   );
 
   const handleNewUpload = useCallback(
@@ -253,10 +224,10 @@ export default function VineyardLabActionForm({
   const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
+    console.log("SUBMIT:", data);
     console.log("ERRORS:", errors);
 
-    const subjectVineyard = vineyards.filter(
+    const subjectVineyard = selectedVineyards.filter(
       (v) => v.id === data.inUseVineyard.id
     )[0];
 
@@ -293,35 +264,21 @@ export default function VineyardLabActionForm({
   };
 
   useEffect(() => {
-    vineyardGlobalActionSample.id = Date.now().toString();
+    vineyardGlobalActionSample.id = crypto.randomUUID();
     vineyardGlobalActionSample.type = "lab-report";
     vineyardGlobalActionSample.executionDate = Timestamp.fromDate(new Date());
-    if (
-      vineyardGlobalActionSample.responsible !== undefined &&
-      teamMembers &&
-      teamMembers.length > 0
-    ) {
-      vineyardGlobalActionSample.responsible.name = ""; //teamMembers[0]?.name;
-      vineyardGlobalActionSample.responsible.email = ""; //teamMembers[0]?.email;
-    }
+    vineyardGlobalActionSample.createdAt = Timestamp.fromDate(new Date());
+    vineyardGlobalActionSample.createdBy = userId;
 
-    // * If there is only one vineyard selected, else use the first vineyard is any
     if (selectedVineyards && selectedVineyards.length === 1) {
-      setDisableSubject(true);
       vineyardGlobalActionSample.inUseVineyard = {
         id: selectedVineyards[0]?.id,
         name: selectedVineyards[0]?.name,
       };
-    } else if (
-      vineyards &&
-      vineyards.length > 0 &&
-      teamMembers &&
-      teamMembers.length > 0
-    ) {
-      setDisableSubject(false);
+    } else {
       vineyardGlobalActionSample.inUseVineyard = {
-        id: vineyards[0]?.id,
-        name: vineyards[0]?.name,
+        id: "",
+        name: "",
       };
     }
 
@@ -329,8 +286,7 @@ export default function VineyardLabActionForm({
 
     reset(vineyardGlobalActionSample);
     setFormData(vineyardGlobalActionSample);
-    console.log("vineyardGlobalActionSample", vineyardGlobalActionSample);
-  }, [vineyards, teamMembers, selectedVineyards, reset]);
+  }, [reset, selectedVineyards, userId]);
 
   useEffect(() => {
     if (errors) {
@@ -338,284 +294,322 @@ export default function VineyardLabActionForm({
     }
   }, [errors]);
 
+  if (!formData) return null;
+
   return (
-    <>
-      {formData && formData !== undefined && (
-        <div
-          className="w-full"
-          style={{
-            borderColor: "var(--mui-palette-divider)",
-            height: "100%",
-            overflow: "hidden",
+    <div
+      className="w-full"
+      style={{
+        borderColor: "var(--mui-palette-divider)",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full"
+        style={{ height: "100%", display: "flex", flexDirection: "column" }}
+      >
+        <Box
+          sx={{
+            p: 2,
+            flex: 1,
+            width: "100%",
+            overflowY: "auto",
           }}
         >
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full"
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-          >
-            <Box
-              className="w-full"
-              sx={{
-                p: 2,
-                flex: 1,
-                overflowY: "auto",
-              }}
-            >
-              <div className="flex flex-col gap-4 w-full">
-                {/* * ID - HIDDEN */}
-                <div className="hidden">
-                  {/* <Label htmlFor="id">Id</Label> */}
-                  <FormControl>
-                    <Input
-                      id={formData.id as VineyardGlobalAction["id"]}
-                      value={formData.id}
-                      type="hidden"
-                      {...register("id")}
+          <Stack gap={2}>
+            <div className="hidden">
+              <FormControl>
+                <Input
+                  id={formData.id as VineyardGlobalAction["id"]}
+                  value={formData.id}
+                  type="hidden"
+                  {...register("id")}
+                />
+              </FormControl>
+            </div>
+
+            <Stack>
+              <Stack gap={2}>
+                <Typography>General Info</Typography>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Selected vineyard
+                  </InputLabel>
+
+                  <Autocomplete<Vineyard, false, false, false>
+                    noOptionsText="No vineyards available"
+                    options={selectedVineyards}
+                    value={(formData?.inUseVineyard as Vineyard) || null}
+                    getOptionLabel={(option) => option.name}
+                    filterSelectedOptions
+                    onChange={(_event, newValue) => {
+                      if (!newValue) return;
+
+                      handleChange("inUseVineyard", {
+                        id: newValue.id,
+                        name: newValue.name,
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        label="Vineyard name"
+                      />
+                    )}
+                  />
+                  {((errors?.inUseVineyard as any)?.id ||
+                    (errors?.inUseVineyard as any)?.name) && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {
+                        ((errors?.inUseVineyard as any)?.id?.message ||
+                          (errors?.inUseVineyard as any)?.name
+                            ?.message) as string
+                      }
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Select execution date
+                  </InputLabel>
+
+                  <DatePicker
+                    name="executionDate"
+                    value={
+                      formData?.executionDate
+                        ? dayjs(parseToDate(formData?.executionDate))
+                        : null
+                    }
+                    label="Execution Date"
+                    disableFuture
+                    views={["year", "month", "day"]}
+                    className="w-full"
+                    onChange={(date) => {
+                      if (!date) return;
+
+                      handleChange(
+                        "executionDate",
+                        Timestamp.fromDate(date.toDate())
+                      );
+                    }}
+                  />
+
+                  {errors?.executionDate?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.executionDate.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the responsible person
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <ResponsibleTeamMemberField
+                      label="Responsible person"
+                      teamMembers={teamMembers}
+                      onChange={(value: any) => {
+                        if (!value) return;
+
+                        const responsible = teamMembers.find(({ name }) =>
+                          value.startsWith(name)
+                        );
+
+                        if (!responsible) {
+                          setError("responsible", {
+                            type: "manual",
+                            message: "Responsible person not found",
+                          });
+                          return;
+                        }
+
+                        handleChange("responsible", responsible);
+                      }}
+                      currentValue={
+                        formData?.responsible?.name !== undefined &&
+                        formData?.responsible?.lastName !== undefined
+                          ? `${formData?.responsible?.name} ${formData?.responsible?.lastName}`
+                          : ""
+                      }
+                    />
+
+                    {(errors?.responsible as any)?.name && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {(errors?.responsible as any)?.name?.message as string}
+                      </Typography>
+                    )}
+                  </FormControl>
+                </Stack>
+
+                <Typography>Lab Results</Typography>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the mass concentration of sugars (g/dm³)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="outlined-basic"
+                      label="Sugar (g/dm³)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 10_000,
+                        },
+                      }}
+                      {...register("inputData.sugar")}
+                    />
+                    {(errors.inputData as any)?.sugar?.message && (
+                      <FormHelperText error>
+                        {(errors.inputData as any)?.sugar.message}
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the acidity (g/dm³)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="outlined-basic"
+                      label="Acidity (g/dm³)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 10_000,
+                        },
+                      }}
+                      {...register("inputData.acidity")}
                     />
                   </FormControl>
-                </div>
+                </Stack>
 
-                <div className="flex flex-col w-full">
-                  {/* <DemoItem label="DatePicker"> */}
-                  <Box display={"flex"} flexDirection={"column"} gap={2}>
-                    <Typography>General Info</Typography>
-                    {/* * In use Vineyard */}
-                    {/* TODO Needs to update both vineyard name and id */}
-                    <FormControl fullWidth>
-                      <InputLabel id="subject-select">
-                        Selected vineyard
-                      </InputLabel>
-                      <Select
-                        disabled={disableSubject}
-                        name="inUseVineyard.name"
-                        // labelId="subject-select"
-                        id="inUseVineyard.name"
-                        value={(formData.inUseVineyard?.name as string) || ""}
-                        label="Selected vineyard"
-                        onChange={(e) => {
-                          handleInUseVineyardChange(e.target.value);
-                        }}
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Description
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextareaAutosize
+                      id="additionalInformation"
+                      minRows={8}
+                      placeholder="Provide additional information"
+                      style={{
+                        width: "100%",
+                        border: "1px solid",
+                        borderColor: "var(--mui-palette-divider)",
+                        borderRadius: "4px",
+                        padding: "16px 8px",
+                      }}
+                      {...register("additionalInformation")}
+                    />
+                  </FormControl>
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Supporting Documents
+                  </InputLabel>
+
+                  {isUploading && (
+                    <LinearProgress
+                      variant="determinate"
+                      value={uploadProgress}
+                    />
+                  )}
+
+                  {formData.supportingDocuments?.map(({ name = "" }, index) => (
+                    <Stack
+                      key={`${name || index}`}
+                      gap={1}
+                      display={"flex"}
+                      alignItems={"center"}
+                      direction={"row"}
+                      justifyContent={"space-between"}
+                    >
+                      <Stack
+                        gap={1}
+                        display={"flex"}
+                        alignItems={"center"}
+                        direction={"row"}
                       >
-                        {vineyardNames &&
-                          vineyardNames.length > 0 &&
-                          vineyardNames.map((name) => (
-                            <MenuItem key={name} value={name}>
-                              {name}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
-                    {/* * EXECUTION DATE */}
-                    <Stack gap={1} className="w-full">
-                      <Typography variant="body2" color="text.secondary">
-                        Select execution date
-                      </Typography>
-                      <DatePicker
-                        name="executionDate"
-                        value={
-                          formData?.executionDate
-                            ? dayjs(parseToDate(formData?.executionDate))
-                            : null
-                        }
-                        label="Execution Date"
-                        disableFuture
-                        views={["year", "month", "day"]}
-                        className="w-full"
-                        onChange={(date) => {
-                          if (!date) return;
-
-                          handleChange(
-                            "executionDate",
-                            Timestamp.fromDate(date.toDate())
-                          );
-                        }}
-                      />
-
-                      {errors?.executionDate?.message && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.executionDate.message as string}
-                        </Typography>
-                      )}
-                    </Stack>
-                    {/* * RESPONSIBLE */}
-                    <Stack gap={1} className="w-full">
-                      <Typography variant="body2" color="text.secondary">
-                        Enter the responsible person
-                      </Typography>
-                      <FormControl fullWidth>
-                        <ResponsibleTeamMemberField
-                          teamMembers={teamMembers}
-                          onChange={(value) => {
-                            handleChange("responsible.name", value);
-                          }}
-                        />
-                        {errors.responsible &&
-                          Array.isArray(errors.responsible) && (
-                            <FormHelperText error>
-                              {errors.responsible[0]?.message}
-                            </FormHelperText>
-                          )}
-                      </FormControl>
-                    </Stack>
-                    <Typography>Lab Results</Typography>
-                    {/* * LATEST LAB DATA */}
-                    <Stack
-                      direction={"column"}
-                      gap={1}
-                      display={"flex"}
-                      className=""
-                    >
-                      <Typography variant="body2" color="text.secondary">
-                        Enter the mass concentration of sugars (g/dm³)
-                      </Typography>
-                      <FormControl fullWidth>
-                        <TextField
-                          type="number"
-                          id="outlined-basic"
-                          label="Sugar (g/dm³)"
-                          variant="outlined"
-                          slotProps={{
-                            htmlInput: {
-                              min: 0,
-                              step: 0.01,
-                              max: 10_000,
-                            },
-                          }}
-                          {...register("inputData.sugar")}
-                        />
-                        {(errors.inputData as any)?.sugar?.message && (
-                          <FormHelperText error>
-                            {(errors.inputData as any)?.sugar.message}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Stack>
-                    <Stack
-                      direction={"column"}
-                      gap={1}
-                      display={"flex"}
-                      className=""
-                    >
-                      <Typography variant="body2" color="text.secondary">
-                        Enter the acidity (g/dm³)
-                      </Typography>
-                      <FormControl fullWidth>
-                        <TextField
-                          type="number"
-                          id="outlined-basic"
-                          label="Acidity (g/dm³)"
-                          variant="outlined"
-                          slotProps={{
-                            htmlInput: {
-                              min: 0,
-                              step: 0.01,
-                              max: 10_000,
-                            },
-                          }}
-                          {...register("inputData.acidity")}
-                        />
-                      </FormControl>
-                    </Stack>
-
-                    <Stack gap={1}>
-                      <Typography variant="body2" color="text.secondary">
-                        Supporting Documents
-                      </Typography>
-
-                      {isUploading && (
-                        <LinearProgress
-                          variant="determinate"
-                          value={uploadProgress}
-                        />
-                      )}
-                      {formData.supportingDocuments &&
-                        formData.supportingDocuments.length > 0 &&
-                        formData.supportingDocuments.map((doc, index) => (
-                          <Stack
-                            key={doc.name}
-                            gap={1}
-                            display={"flex"}
-                            alignItems={"center"}
-                            direction={"row"}
-                            justifyContent={"space-between"}
-                          >
-                            <Stack
-                              gap={1}
-                              display={"flex"}
-                              alignItems={"center"}
-                              direction={"row"}
-                            >
-                              <File width={16} height={16} />
-                              <Typography variant="body2">
-                                {doc.name}
-                              </Typography>
-                            </Stack>
-                            <IconButton
-                              size="small"
-                              className="max-w-[24px] max-h-[24px]"
-                              color="error"
-                              onClick={() => handleDeleteFile(doc.name, index)}
-                            >
-                              <DeleteOutline className="max-w-4 max-h-4" />
-                            </IconButton>
-                          </Stack>
-                        ))}
-
-                      {errors?.supportingDocuments && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          className="mt-1"
-                        >
-                          {errors?.supportingDocuments?.message as string}
-                        </Typography>
-                      )}
-
-                      <div ref={supportingDocumentsRef}></div>
-
-                      <Stack gap={1} paddingY={2}>
-                        <Button
-                          variant="outlined"
-                          component="label"
-                          className="w-full flex items-center gap-2"
-                        >
-                          <BackupOutlined className="w-4 h-4" />
-                          Upload File
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            hidden
-                            onChange={handleFile}
-                          />
-                        </Button>
+                        <File width={16} height={16} />
+                        <Typography variant="body2">{name}</Typography>
                       </Stack>
+                      <IconButton
+                        size="small"
+                        className="max-w-[24px] max-h-[24px]"
+                        color="error"
+                        onClick={() => handleDeleteFile(name, index)}
+                      >
+                        <DeleteOutline className="max-w-4 max-h-4" />
+                      </IconButton>
                     </Stack>
-                  </Box>
-                </div>
-              </div>
-            </Box>
+                  ))}
 
-            <Box p={2} gap={2} display="flex" justifyContent="end">
-              <FormControl>
-                <Button
-                  disabled={isSubmitting}
-                  type="submit"
-                  variant="contained"
-                  className="mt-8"
-                >
-                  Submit
-                </Button>
-              </FormControl>
-            </Box>
-          </form>
-        </div>
-      )}
-    </>
+                  {errors?.supportingDocuments?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.supportingDocuments.message as string}
+                    </Typography>
+                  )}
+                  <div ref={supportingDocumentsRef}></div>
+                </Stack>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Box>
+
+        <Box p={2} gap={2} display="flex" justifyContent="space-between">
+          <Button
+            disabled={isSubmitting}
+            variant="outlined"
+            component="label"
+            className="w-auto flex items-center gap-2"
+          >
+            <Attachment className="w-4 h-4 rotate-90" />
+            Upload File
+            <input
+              type="file"
+              ref={fileInputRef}
+              hidden
+              onChange={handleFile}
+            />
+          </Button>
+
+          <FormControl>
+            <Button
+              disabled={isSubmitting}
+              type="submit"
+              variant="contained"
+              className="mt-8"
+            >
+              Submit
+            </Button>
+          </FormControl>
+        </Box>
+      </form>
+    </div>
   );
 }
 

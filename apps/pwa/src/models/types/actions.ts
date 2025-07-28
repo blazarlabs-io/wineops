@@ -186,7 +186,7 @@ export interface VineyardGlobalAction {
   }[];
   equipment?: any[];
   labDataToDeleteIds?: string[];
-  aditionalInformation?: string;
+  additionalInformation?: string;
   createdAt?: string | Timestamp;
   createdBy?: TeamMember["id"] | TeamMember["email"];
 }

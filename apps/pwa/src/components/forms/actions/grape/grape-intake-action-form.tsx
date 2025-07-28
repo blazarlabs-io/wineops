@@ -128,18 +128,12 @@ export default function GrapeIntakeActionForm({
     (name: string, value: any) => {
       setValue(name, value, { shouldTouch: true, shouldValidate: true });
 
-      if (name.startsWith("executionDate")) {
-        setFormData((prev) => ({
-          ...(prev as GrapeIntakeAction),
-          [name]: value,
-        }));
-      } else {
-        const path = name.split(".");
-        const newFormData = setNestedValue(formData, path, value);
-        setFormData(newFormData);
-      }
+      setFormData((prev) => ({
+        ...(prev as GrapeIntakeAction),
+        [name]: value,
+      }));
     },
-    [formData, setValue]
+    [setValue]
   );
 
   const handleNewUpload = useCallback(
