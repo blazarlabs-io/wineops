@@ -807,7 +807,7 @@ export default function VineyardGenericActionForm({
 
               <FormControl fullWidth>
                 <TextareaAutosize
-                  id="aditionalInformation"
+                  id="additionalInformation"
                   minRows={8}
                   placeholder="Provide additional information"
                   style={{
@@ -817,13 +817,13 @@ export default function VineyardGenericActionForm({
                     borderRadius: "4px",
                     padding: "16px 8px",
                   }}
-                  {...register("aditionalInformation")}
+                  {...register("additionalInformation")}
                 />
               </FormControl>
 
-              {errors?.aditionalInformation?.message && (
+              {errors?.additionalInformation?.message && (
                 <Typography variant="body2" color="error" className="mt-1">
-                  {errors.aditionalInformation.message as string}
+                  {errors.additionalInformation.message as string}
                 </Typography>
               )}
             </Stack>
