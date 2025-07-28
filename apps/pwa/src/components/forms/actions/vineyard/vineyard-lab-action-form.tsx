@@ -475,7 +475,10 @@ export default function VineyardLabActionForm({
                 <Typography>Lab Results</Typography>
 
                 <Stack gap={1}>
-                  <InputLabel className="text-sm text-muted-foreground">
+                  <InputLabel
+                    className="text-sm text-muted-foreground"
+                    sx={{ whiteSpace: "normal" }}
+                  >
                     Enter the mass concentration of sugars (g/dm³)
                   </InputLabel>
 

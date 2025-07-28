@@ -19,11 +19,19 @@ const TimestampOrString = Joi.alternatives().try(
 const sugarSchema = Joi.object({
   id: Joi.string().optional().allow(""),
   name: Joi.string().optional().allow(""),
-  value: Joi.number().precision(2).min(0).max(10000).optional().messages({
-    "number.base": "Must be a number",
-    "number.min": "Value must be at least 0",
-    "number.max": "Value must be less than 10000",
-  }),
+  value: Joi.number()
+    .precision(2)
+    .min(0.01)
+    .max(10_000_000)
+    .required()
+    .messages({
+      "any.required": "Please enter a valid number for the sugar",
+      "number.empty": "Please enter a valid number for the sugar",
+      "number.base": "Please enter a valid number for the sugar",
+      "number.precision": "Sugar must have at most 2 decimal places",
+      "number.min": "Sugar must be greater than 0 g/dm³",
+      "number.max": "Sugar cannot exceed 10,000,000 g/dm³",
+    }),
   variation: Joi.number().precision(2).optional(),
   unit: Joi.string().optional().allow(""),
   responsible: Joi.object({
@@ -37,11 +45,17 @@ const sugarSchema = Joi.object({
 const aciditySchema = Joi.object({
   id: Joi.string().optional().allow(""),
   name: Joi.string().optional().allow(""),
-  value: Joi.number().precision(2).min(0).max(10000).optional().messages({
-    "number.base": "Must be a number",
-    "number.min": "Value must be at least 0",
-    "number.max": "Value must be less than 10000",
-  }),
+  value: Joi.number()
+    .precision(2)
+    .min(0)
+    .max(10000)
+    .optional()
+    .allow("")
+    .messages({
+      "number.base": "Must be a number",
+      "number.min": "Value must be at least 0",
+      "number.max": "Value must be less than 10000",
+    }),
   variation: Joi.number().precision(2).optional(),
   unit: Joi.string().optional().allow(""),
   responsible: Joi.object({
@@ -56,21 +70,36 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
   id: Joi.string().required(),
   type: Joi.string().required(),
   subject: Joi.object({
-    id: Joi.string().allow("").required(),
-    name: Joi.string().allow("").required(),
-  }),
+    id: Joi.string().required(),
+    name: Joi.string().required(),
+  })
+    .required()
+    .messages({
+      "any.required": "Please select a vineyard",
+      "string.empty": "Please select a vineyard",
+    }),
   executionDate: TimestampOrString.required().messages({
     "any.required": "Please select a date",
     "alternatives.types": "Date must be a valid date.",
   }),
-  batchId: Joi.string().optional().allow(""),
-  weight: Joi.number().optional(),
-  responsible: teamMemberSchema.optional(),
+  batchId: Joi.string().required().messages({
+    "any.required": "Please enter a Batch ID",
+    "string.empty": "Please enter a Batch ID",
+    "string.min": "Batch ID must be at least 2 characters long",
+    "string.max": "Batch ID must be less than or equal to 50 characters long",
+  }),
+  weight: Joi.number().min(0).max(1_000_000).required().messages({
+    "any.required": "Please enter a valid number for the net weight",
+    "number.empty": "Please enter a valid number for the net weight",
+    "number.base": "Please enter a valid number for the net weight",
+  }),
+  responsible: teamMemberSchema,
   consumables: Joi.array()
     .items({
       id: Joi.string().allow("").optional(),
       name: Joi.string().allow("").optional(),
       qty: Joi.number().precision(2).optional(),
+      stockConsumableQty: Joi.number().precision(2).optional(),
     })
     .optional(),
   equipment: Joi.array().items(relationSchema).optional(),
@@ -81,9 +110,20 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
   transportVehicleId: Joi.string().optional().allow(""),
   transportDriverName: Joi.string().optional().allow(""),
   // * Quality params
-  sugar: sugarSchema.optional(),
+  sugar: sugarSchema.required(),
   acidity: aciditySchema.optional(),
-  certificateOfInofensivitate: Joi.string().optional().allow(""),
+  certificateOfInofensivitate: Joi.string()
+    .min(2)
+    .max(250)
+    .required()
+    .messages({
+      "any.required": "Please enter the certificat de inofensivitate ID",
+      "string.empty": "Please enter the certificat de inofensivitate ID",
+      "string.min":
+        "Certificat de inofensivitate ID must be at least 2 characters long",
+      "string.max":
+        "Certificat de inofensivitate ID must be less than or equal to 50 characters long",
+    }),
   // * Additional info
   description: Joi.string().allow("").max(250).messages({
     "string.max":

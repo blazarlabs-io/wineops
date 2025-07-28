@@ -142,6 +142,7 @@ export interface VineyardHarvestAction {
     id: string;
     name: string;
     qty: number;
+    stockConsumableQty?: number; // total consumable quantity
   }[];
   equipment?: ActionRelation[];
   // * Transport Info
