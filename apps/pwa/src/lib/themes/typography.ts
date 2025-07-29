@@ -4,7 +4,6 @@ const fontFamily = {
 
 const typography = {
   fontFamily: fontFamily.latoSans,
-  
 };
 
 export default typography;

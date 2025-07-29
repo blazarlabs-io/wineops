@@ -22,7 +22,7 @@ export default function WinesTable() {
                 ...wine.metrics,
                 actual: wine?.vessels?.reduce(
                   (sum, { qty = 0 }) => sum + qty,
-                  0
+                  0,
                 ),
                 status: wine.status,
               },
@@ -41,7 +41,7 @@ export default function WinesTable() {
                 `${wine.name}-${vessel?.name}`,
               ],
             }),
-          }))
+          })),
         )
         .sort((a, b) => {
           if (a.status === WineStatus.STORED && b.status !== WineStatus.STORED)
@@ -50,7 +50,7 @@ export default function WinesTable() {
             return -1;
           return 0;
         }),
-    [wines]
+    [wines],
   );
 
   return (

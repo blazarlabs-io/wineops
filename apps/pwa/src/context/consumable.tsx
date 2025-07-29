@@ -47,7 +47,7 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
         db,
         WINERY,
         user?.uid as string,
-        CONSUMABLES
+        CONSUMABLES,
       );
 
       unsubConsumables = onSnapshot(consumablesRef, (querySnapshot) => {

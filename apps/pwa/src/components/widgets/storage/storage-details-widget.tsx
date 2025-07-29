@@ -1,4 +1,3 @@
-
 import { Must, MustLabData, StorageCondition } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -54,20 +53,20 @@ export default function StorageDetailsWidget({
 
       const fetchActions = async () => {
         const filteredActions = (localMust?.actions || []).filter(
-          ({ name }) => name 
+          ({ name }) => name,
         );
 
         if (filteredActions.length === 0) return;
 
         const actions = await getActionsByIds(
           filteredActions.map(({ id }) => id),
-          user?.uid
+          user?.uid,
         );
 
         if (actions.length === 0) return;
 
         const storageConditions = (actions.filter(
-          ({ type }) => type === "add-storage-condition"
+          ({ type }) => type === "add-storage-condition",
         ) || []) as StorageCondition[];
 
         setStorageConditions(storageConditions);
@@ -80,7 +79,7 @@ export default function StorageDetailsWidget({
         const actionDocs: any[] = actions.reduce(
           (
             acc,
-            { type, responsible, executionDate, supportingDocuments = [] }
+            { type, responsible, executionDate, supportingDocuments = [] },
           ) => [
             ...acc,
             ...supportingDocuments.map((doc: any) => ({
@@ -91,7 +90,7 @@ export default function StorageDetailsWidget({
               type: type.split("-").join(" "),
             })),
           ],
-          []
+          [],
         );
 
         if (actionDocs.length === 0) return;
@@ -143,7 +142,7 @@ export default function StorageDetailsWidget({
 
       const oldDocuments =
         localMust?.documents?.filter(
-          (document) => !deletedNames.includes(document.name)
+          (document) => !deletedNames.includes(document.name),
         ) || [];
 
       const updatedDocuments = [...newDocuments, ...oldDocuments];
@@ -160,7 +159,7 @@ export default function StorageDetailsWidget({
         enqueueSnackbar("Error updating must", { variant: "error" });
       }
     },
-    [user?.email, user?.uid, localMust?.documents, must.id]
+    [user?.email, user?.uid, localMust?.documents, must.id],
   );
 
   return (

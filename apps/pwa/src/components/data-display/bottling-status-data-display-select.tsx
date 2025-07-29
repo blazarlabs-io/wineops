@@ -1,4 +1,3 @@
-
 import { LotStatus } from "@/models/types/db";
 import { MenuItem, Select, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
@@ -42,10 +41,7 @@ export default function BottlingStatusDataDisplaySelect({
           }}
         >
           {statuses.map((s) => (
-            <MenuItem
-              key={s}
-              value={s}
-            >
+            <MenuItem key={s} value={s}>
               <Typography variant="caption">{s.toUpperCase()}</Typography>
             </MenuItem>
           ))}

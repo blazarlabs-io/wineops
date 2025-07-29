@@ -36,7 +36,7 @@ export default function VesselTable() {
           startDate: vessel?.startDate,
         },
       })),
-    [vessels]
+    [vessels],
   );
 
   return (

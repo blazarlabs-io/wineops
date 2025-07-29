@@ -19,14 +19,14 @@ export const useVineyardNameExists = () => {
 
       return _name;
     },
-    [vineyardNames]
+    [vineyardNames],
   );
 
   const checkIfNameExists = useCallback(
     (baseName: string): boolean => {
       return vineyardNames?.some((name) => name === baseName) as boolean;
     },
-    [vineyardNames]
+    [vineyardNames],
   );
 
   return {

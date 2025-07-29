@@ -1,4 +1,3 @@
-
 "use client";
 
 import { REPORTS } from "@/components/dashboards/reports/reports-dashboard";
@@ -58,7 +57,7 @@ import { useBottle } from "@/context/bottle";
 
 export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
   const [currentId, setCurrentId] = useState<string | undefined>(
-    anexa7Id === "new" ? "" : anexa7Id
+    anexa7Id === "new" ? "" : anexa7Id,
   );
 
   const [isEditing, setIsEditing] = useState(true);
@@ -83,7 +82,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
 
   const userId =
     teamMembers?.find(
-      ({ id, email }) => email === user?.email || id === user?.uid
+      ({ id, email }) => email === user?.email || id === user?.uid,
     )?.id ||
     user?.email ||
     user?.uid ||
@@ -105,7 +104,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
         createdBy: userId,
         date: Timestamp.fromDate(new Date()),
       }) as unknown as Anexa7Data,
-    [userId]
+    [userId],
   );
 
   const {
@@ -189,7 +188,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
         setFormData((prev) => ({ ...(prev as Anexa7Data), [name]: value }));
       }
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCancelEditing = () => {
@@ -214,7 +213,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
           const updateRes: DbResponse = await db.anexa7.update(
             uid,
             id,
-            newData
+            newData,
           );
 
           setFormData(newData);
@@ -249,14 +248,17 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
           }
         }
       } catch (e) {
-        console.error("Error creating document or subcollection with data: ", e);
+        console.error(
+          "Error creating document or subcollection with data: ",
+          e,
+        );
 
         enqueueSnackbar(`Error creating`, {
           variant: "error",
         });
       }
     },
-    [enqueueSnackbar, router, userId]
+    [enqueueSnackbar, router, userId],
   );
 
   const onSubmit = async (data: Anexa7Data) => {
@@ -300,7 +302,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
   const canAddStockProduct = (category: StockProductCategory) =>
     productsByCategories[category]?.length >
     (formData?.stockProducts || []).filter(
-      (product) => product.category === category
+      (product) => product.category === category,
     ).length;
 
   const handleAddStockProduct = (category: StockProductCategory) => {
@@ -329,7 +331,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
 
   const handleRemoveStockProduct = (stockProductId: string) => {
     const stockProducts = formData?.stockProducts?.filter(
-      ({ id }) => id !== stockProductId
+      ({ id }) => id !== stockProductId,
     );
 
     handleChange("stockProducts", stockProducts);
@@ -339,7 +341,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
     externalId: Anexa7StockProduct["externalId"],
     editableName: string,
     editableValue: string,
-    category?: StockProductCategory
+    category?: StockProductCategory,
   ) => {
     const updated = formData?.stockProducts?.map((stockProduct) => ({
       ...stockProduct,
@@ -357,11 +359,9 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
     setFormData(anexa7 || defaultAnexa7Data);
   }, [anexa7, defaultAnexa7Data]);
 
-  useEffect(() => {
-  }, [errors]);
+  useEffect(() => {}, [errors]);
 
-  useEffect(() => {
-  }, [formData]);
+  useEffect(() => {}, [formData]);
 
   const handleBackClick = () => {
     router.push(`/workspace/reports/anexa7`);
@@ -556,7 +556,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                   id="identificatorUnicUnitateVinicola"
                                   size="small"
                                   {...register(
-                                    "identificatorUnicUnitateVinicola"
+                                    "identificatorUnicUnitateVinicola",
                                   )}
                                 />
                               </>
@@ -807,7 +807,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                     rose = "",
                                     white = "",
                                   },
-                                  index
+                                  index,
                                 ) => (
                                   <Fragment
                                     key={`${externalId}-${category}-${name}-${index}`}
@@ -839,8 +839,8 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                       }) =>
                                                         externalId === id &&
                                                         categoryName ===
-                                                          category
-                                                    )
+                                                          category,
+                                                    ),
                                                 )
                                                 .map(({ id, name, total }) => ({
                                                   id,
@@ -861,7 +861,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
 
                                                 const existingProduct =
                                                   Array.isArray(
-                                                    formData?.stockProducts
+                                                    formData?.stockProducts,
                                                   )
                                                     ? formData?.stockProducts?.find(
                                                         ({
@@ -876,14 +876,14 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                               name ===
                                                                 product?.name)) &&
                                                           category ===
-                                                            categoryName
+                                                            categoryName,
                                                       )
                                                     : undefined;
 
                                                 if (existingProduct) return;
 
                                                 const existing = Array.isArray(
-                                                  formData?.stockProducts
+                                                  formData?.stockProducts,
                                                 )
                                                   ? formData?.stockProducts?.find(
                                                       ({
@@ -895,7 +895,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                             product?.id) ||
                                                         (name !== "" &&
                                                           name ===
-                                                            product?.name)
+                                                            product?.name),
                                                     )
                                                   : undefined;
 
@@ -919,12 +919,12 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                         white:
                                                           existing?.white || "",
                                                       }),
-                                                    })
+                                                    }),
                                                   );
 
                                                 handleChange(
                                                   "stockProducts",
-                                                  updated
+                                                  updated,
                                                 );
                                               }}
                                               sx={{ flex: 1 }}
@@ -987,7 +987,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                             handleStockProductChange(
                                               externalId,
                                               "total",
-                                              e.target.value
+                                              e.target.value,
                                             )
                                           }
                                           sx={{
@@ -1008,7 +1008,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                             handleStockProductChange(
                                               externalId,
                                               "red",
-                                              e.target.value
+                                              e.target.value,
                                             )
                                           }
                                           sx={{
@@ -1030,7 +1030,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                               externalId,
                                               "rose",
                                               e.target.value,
-                                              categoryName
+                                              categoryName,
                                             )
                                           }
                                         />
@@ -1049,7 +1049,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                               externalId,
                                               "white",
                                               e.target.value,
-                                              categoryName
+                                              categoryName,
                                             )
                                           }
                                         />
@@ -1058,7 +1058,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                       )}
                                     </td>
                                   </Fragment>
-                                )
+                                ),
                               )}
                           </tr>
 
@@ -1077,7 +1077,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                   rose = "",
                                   white = "",
                                 },
-                                index
+                                index,
                               ) => (
                                 <Fragment
                                   key={`${externalId}-${category}-${name}-${index}`}
@@ -1110,8 +1110,8 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                       }) =>
                                                         externalId === id &&
                                                         categoryName ===
-                                                          category
-                                                    )
+                                                          category,
+                                                    ),
                                                 )
                                                 .map(({ id, name, total }) => ({
                                                   id,
@@ -1132,7 +1132,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
 
                                                 const existingProduct =
                                                   Array.isArray(
-                                                    formData?.stockProducts
+                                                    formData?.stockProducts,
                                                   )
                                                     ? formData?.stockProducts?.find(
                                                         ({
@@ -1147,14 +1147,14 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                               name ===
                                                                 product?.name)) &&
                                                           category ===
-                                                            categoryName
+                                                            categoryName,
                                                       )
                                                     : undefined;
 
                                                 if (existingProduct) return;
 
                                                 const existing = Array.isArray(
-                                                  formData?.stockProducts
+                                                  formData?.stockProducts,
                                                 )
                                                   ? formData?.stockProducts?.find(
                                                       ({
@@ -1166,7 +1166,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                             product?.id) ||
                                                         (name !== "" &&
                                                           name ===
-                                                            product?.name)
+                                                            product?.name),
                                                     )
                                                   : undefined;
 
@@ -1190,12 +1190,12 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                                         white:
                                                           existing?.white || "",
                                                       }),
-                                                    })
+                                                    }),
                                                   );
 
                                                 handleChange(
                                                   "stockProducts",
-                                                  updated
+                                                  updated,
                                                 );
                                               }}
                                               sx={{ flex: 1 }}
@@ -1240,7 +1240,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                             handleStockProductChange(
                                               externalId,
                                               "total",
-                                              e.target.value
+                                              e.target.value,
                                             )
                                           }
                                           sx={{
@@ -1261,7 +1261,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                             handleStockProductChange(
                                               externalId,
                                               "red",
-                                              e.target.value
+                                              e.target.value,
                                             )
                                           }
                                           sx={{
@@ -1283,7 +1283,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                               externalId,
                                               "rose",
                                               e.target.value,
-                                              categoryName
+                                              categoryName,
                                             )
                                           }
                                         />
@@ -1302,7 +1302,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                               externalId,
                                               "white",
                                               e.target.value,
-                                              categoryName
+                                              categoryName,
                                             )
                                           }
                                         />
@@ -1312,7 +1312,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                                     </td>
                                   </tr>
                                 </Fragment>
-                              )
+                              ),
                             )}
                         </Fragment>
                       ))}
@@ -1539,7 +1539,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                             "date",
                             newValue
                               ? Timestamp.fromDate(newValue.toDate())
-                              : undefined
+                              : undefined,
                           )
                         }
                       />

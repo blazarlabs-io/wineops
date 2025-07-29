@@ -1,4 +1,3 @@
-
 import { GROUP_ITEMS_TO_SHOW, ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
@@ -41,7 +40,7 @@ export const VesselIDCellRenderer = (params: CustomCellRendererProps) => {
                         more
                       </Link>
                     )
-                  )
+                  ),
               )}
             </Stack>
           }

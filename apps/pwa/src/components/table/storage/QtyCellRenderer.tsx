@@ -1,4 +1,3 @@
-
 import TotalQuantityPieWidget from "@/components/widgets/total-quantity/total-qty-pie";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Stack from "@mui/material/Stack";
@@ -6,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
 export const QtyCellRenderer = (
-  params: CustomCellRendererProps & { alignItems?: string }
+  params: CustomCellRendererProps & { alignItems?: string },
 ) => {
   const { value, node, data, alignItems } = params;
   const isGroup = node.group || data.rowType === "group";

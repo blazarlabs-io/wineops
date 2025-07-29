@@ -18,7 +18,6 @@ const must = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -47,7 +46,6 @@ const must = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -67,7 +65,6 @@ const must = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -104,7 +101,6 @@ const must = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -123,7 +119,6 @@ const must = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -149,7 +144,6 @@ const must = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

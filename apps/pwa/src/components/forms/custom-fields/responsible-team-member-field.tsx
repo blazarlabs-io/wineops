@@ -1,4 +1,3 @@
-
 import {
   SortedTeamMembersNames,
   useSortTeamMembersNames,
@@ -43,7 +42,7 @@ export default function ResponsibleTeamMemberField({
     (props: { [x: string]: any; key: any }, option: string) => {
       const { key, ...optionProps } = props;
       const selectedMember: SortedTeamMembersNames[] = sortedTeamMembers.filter(
-        (member) => member?.fullName.includes(option)
+        (member) => member?.fullName.includes(option),
       );
       return (
         <Grid key={key} container spacing={2} columns={10} {...optionProps}>
@@ -79,7 +78,7 @@ export default function ResponsibleTeamMemberField({
         </Grid>
       );
     },
-    [sortedTeamMembers]
+    [sortedTeamMembers],
   );
 
   return (

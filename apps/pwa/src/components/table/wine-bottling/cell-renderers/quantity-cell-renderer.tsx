@@ -16,7 +16,7 @@ export const QuantityCellRenderer: FunctionComponent<
   const batches = node.data?.batches || [];
 
   const result = grapes.filter((item: Grape) =>
-    batches.some((b: ActionRelation) => b.id === item.id)
+    batches.some((b: ActionRelation) => b.id === item.id),
   );
 
   const batch = grapes.filter((grape) => {
@@ -42,7 +42,7 @@ export const QuantityCellRenderer: FunctionComponent<
         status: data?.status,
         unit: grape?.metrics?.unit,
       };
-    })
+    }),
   );
 
   const isGroup = node?.group || node?.data?.rowType === "group";

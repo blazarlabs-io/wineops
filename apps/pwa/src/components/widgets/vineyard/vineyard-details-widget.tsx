@@ -1,4 +1,3 @@
-
 import { default as LabResultsChart } from "@/components/charts/lab-results";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import { LabReport, Vineyard } from "@/models/types/db";
@@ -64,7 +63,7 @@ export default function VineyardDetailsWidget({
 
         const actions = await getActionsByIds(
           localVineyard.actions.map(({ id }) => id),
-          user?.uid
+          user?.uid,
         );
 
         if (actions.length === 0) return;
@@ -72,7 +71,7 @@ export default function VineyardDetailsWidget({
         const actionDocs: any[] = actions.reduce(
           (
             acc,
-            { id, type, responsible, executionDate, supportingDocuments = [] }
+            { id, type, responsible, executionDate, supportingDocuments = [] },
           ) => [
             ...acc,
             ...supportingDocuments.map((doc: any) => ({
@@ -86,7 +85,7 @@ export default function VineyardDetailsWidget({
               actions: localVineyard?.actions,
             })),
           ],
-          []
+          [],
         );
 
         if (actionDocs.length === 0) return;
@@ -124,7 +123,7 @@ export default function VineyardDetailsWidget({
   };
 
   const setSelectedItem = useSelectedItemsStore(
-    (state) => state.setSelectedItems
+    (state) => state.setSelectedItems,
   );
   const open = useDialogDrawerStore(({ open }) => open);
   const openDeleteEntityDataDialog = () => open("delete-entity-data");
@@ -140,7 +139,7 @@ export default function VineyardDetailsWidget({
     if (!user?.uid || !vineyard.id || !labReportId) return;
 
     const filteredLabData = vineyard.labData?.filter(
-      ({ id }) => id !== labReportId
+      ({ id }) => id !== labReportId,
     );
 
     await db.vineyard.update(user?.uid, vineyard.id, {
@@ -169,12 +168,12 @@ export default function VineyardDetailsWidget({
 
       const oldDocuments =
         localVineyard?.documents?.filter(
-          (document) => !deletedNames.includes(document.name)
+          (document) => !deletedNames.includes(document.name),
         ) || [];
 
       const filteredNewDocuments = newDocuments?.filter(
         (document) =>
-          !oldDocuments.map((file) => file.name).includes(document.name)
+          !oldDocuments.map((file) => file.name).includes(document.name),
       );
 
       const updatedDocuments = [...oldDocuments, ...filteredNewDocuments];
@@ -191,7 +190,7 @@ export default function VineyardDetailsWidget({
         enqueueSnackbar("Error updating vineyard", { variant: "error" });
       }
     },
-    [user?.email, user?.uid, localVineyard?.documents, vineyard.id]
+    [user?.email, user?.uid, localVineyard?.documents, vineyard.id],
   );
 
   const openLabReportAction = useCallback(
@@ -199,9 +198,9 @@ export default function VineyardDetailsWidget({
       open(
         "action-drawer",
         "lab-report" as unknown as ActionsEntity,
-        localVineyard
+        localVineyard,
       ),
-    [localVineyard, open]
+    [localVineyard, open],
   );
 
   const handleNewReport = useCallback(() => {
@@ -452,7 +451,7 @@ export default function VineyardDetailsWidget({
                 ...labReports.sort(
                   (a, b) =>
                     (b.date as Timestamp).toDate().getTime() -
-                    (a.date as Timestamp).toDate().getTime()
+                    (a.date as Timestamp).toDate().getTime(),
                 ),
               ]?.map((item, index) => {
                 return (

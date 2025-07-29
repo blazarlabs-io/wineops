@@ -1,4 +1,3 @@
-
 import { vineyardStatus } from "@/data/system-variables";
 import { VineyardStatus } from "@/models/types/db";
 import { MenuItem, Select, Typography } from "@mui/material";
@@ -15,7 +14,7 @@ export default function StatusDataDisplaySelect({
 }: StatusDataDisplayProps) {
   const [statuses, setStatuses] = useState<VineyardStatus[]>([]);
   const [selected, setSelected] = useState<VineyardStatus>(
-    status as VineyardStatus
+    status as VineyardStatus,
   );
 
   const handleChange = useCallback(
@@ -23,7 +22,7 @@ export default function StatusDataDisplaySelect({
       setSelected(e.target.value);
       onSelect?.(e.target.value);
     },
-    [onSelect]
+    [onSelect],
   );
 
   useEffect(() => {

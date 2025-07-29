@@ -17,7 +17,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -46,7 +45,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -66,7 +64,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -103,7 +100,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -122,7 +118,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -148,7 +143,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

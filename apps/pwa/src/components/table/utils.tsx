@@ -3,7 +3,7 @@ import { DashboardEntity } from "@/models/types/dashboard";
 export function shiftGroups<T extends DashboardEntity>(
   items: T[],
   source: T,
-  target: T | null | undefined
+  target: T | null | undefined,
 ): T[] | null {
   if (source === target) {
     return null; // invalid move - no-op
@@ -45,7 +45,7 @@ export function shiftGroups<T extends DashboardEntity>(
       group: pathReplaceBase(
         item.group as string[],
         sourcePath as string[],
-        newParentPath
+        newParentPath,
       ),
     }));
 
@@ -71,7 +71,7 @@ function pathStartsWith(path: string[] | undefined, base: string[]): boolean {
 function pathReplaceBase(
   path: string[],
   oldBase: string[],
-  newBase: string[] = []
+  newBase: string[] = [],
 ): string[] {
   return newBase.concat(path.slice(oldBase.length - 1));
 }

@@ -15,7 +15,6 @@ const task = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -40,7 +39,6 @@ const task = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

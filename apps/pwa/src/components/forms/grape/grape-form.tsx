@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useGrape } from "@/context/grape";
@@ -91,7 +90,7 @@ export default function GrapeForm() {
   const { grapes } = useGrape();
 
   const existingGrape = grapes?.find(
-    ({ id }) => id === selected[0]?.id
+    ({ id }) => id === selected[0]?.id,
   ) as Grape;
 
   const {
@@ -111,7 +110,7 @@ export default function GrapeForm() {
       setValue(name as keyof Grape, value);
       setFormData((prev) => ({ ...(prev as Grape), [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const onDocumentUpload = useCallback(
@@ -129,7 +128,7 @@ export default function GrapeForm() {
         newSingleDocument,
       ]);
     },
-    [formData?.documents, handleChange, teamMembers, user?.uid]
+    [formData?.documents, handleChange, teamMembers, user?.uid],
   );
 
   const handleCreateGrape = useCallback(
@@ -187,7 +186,7 @@ export default function GrapeForm() {
       } catch (e) {
         console.error(
           "Error creating document or subcollection with data: ",
-          e
+          e,
         );
 
         enqueueSnackbar(`Error creating grape`, {
@@ -195,7 +194,7 @@ export default function GrapeForm() {
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: Grape) => {
@@ -226,17 +225,16 @@ export default function GrapeForm() {
 
   useEffect(() => {
     if (errors) {
-
       const hasGeneralErrors = hasKeyFromArray(
         ["date", "supplier", "name", "variety"],
-        errors
+        errors,
       );
 
       if (hasGeneralErrors) setGeneralExpanded(hasGeneralErrors);
 
       const hasDetailsErrors = hasKeyFromArray(
         ["entry", "transportationInfo", "weigherName"],
-        errors
+        errors,
       );
 
       if (hasDetailsErrors) setDetailsExpanded(hasDetailsErrors);
@@ -313,7 +311,7 @@ export default function GrapeForm() {
                           "date",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : null
+                            : null,
                         )
                       }
                     />
@@ -461,7 +459,6 @@ export default function GrapeForm() {
                           })}
                         />
                       </FormControl>
-
                     </Stack>
 
                     {errors?.entry?.grossWeight && (
@@ -473,7 +470,6 @@ export default function GrapeForm() {
                         {errors?.entry?.grossWeight?.message as string}
                       </Typography>
                     )}
-
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -497,7 +493,6 @@ export default function GrapeForm() {
                           })}
                         />
                       </FormControl>
-
                     </Stack>
 
                     {errors?.entry?.tareWeight && (
@@ -532,7 +527,6 @@ export default function GrapeForm() {
                           })}
                         />
                       </FormControl>
-
                     </Stack>
 
                     {errors?.entry?.netWeight && (
@@ -544,7 +538,6 @@ export default function GrapeForm() {
                         {errors?.entry?.netWeight?.message as string}
                       </Typography>
                     )}
-
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -713,7 +706,6 @@ export default function GrapeForm() {
                           })}
                         />
                       </FormControl>
-
                     </Stack>
 
                     {errors?.labData?.density?.value && (
@@ -725,7 +717,6 @@ export default function GrapeForm() {
                         {errors?.labData?.density?.value?.message as string}
                       </Typography>
                     )}
-
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -749,7 +740,6 @@ export default function GrapeForm() {
                           })}
                         />
                       </FormControl>
-
                     </Stack>
 
                     {errors?.labData?.sugar?.value && (
@@ -761,7 +751,6 @@ export default function GrapeForm() {
                         {errors?.labData?.sugar?.value?.message as string}
                       </Typography>
                     )}
-
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -785,7 +774,6 @@ export default function GrapeForm() {
                           })}
                         />
                       </FormControl>
-
                     </Stack>
 
                     {errors?.labData?.acidity?.value && (

@@ -1,4 +1,3 @@
-
 import { EntityStatus } from "@/models/types/dashboard";
 import {
   GrapeStatus,
@@ -63,7 +62,7 @@ export default function TaskStatusDataDisplay({
 
 const getStatusStyles = (
   status: TaskStatus,
-  colorScheme?: SupportedColorScheme
+  colorScheme?: SupportedColorScheme,
 ) => {
   const isLight = colorScheme === "light";
 

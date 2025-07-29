@@ -1,4 +1,3 @@
-
 import { ColDef, ColGroupDef, ValueFormatterParams } from "ag-grid-community";
 import { Anexa7Data } from "@/models/types/reports";
 import { DateCellRenderer } from "./cell-renderers/date-cell-renderer";

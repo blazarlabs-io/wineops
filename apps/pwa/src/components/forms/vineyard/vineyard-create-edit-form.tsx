@@ -1,4 +1,3 @@
-
 "use client";
 
 import PolygonDrawingMap from "@/components/widgets/maps/polygon-drawing-map";
@@ -121,7 +120,7 @@ export default function VineyardForm({
       });
       setValue("name", event.target.value);
     },
-    [checkIfNameExists]
+    [checkIfNameExists],
   );
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
@@ -194,7 +193,7 @@ export default function VineyardForm({
 
       setFormData(() => newFormData);
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCheckboxChange = (name: string, value: boolean) => {
@@ -208,7 +207,6 @@ export default function VineyardForm({
 
   const handleCreateVineyard = useCallback(
     async (uid: string, data: any) => {
-
       if (formType === "create") {
         data.group = [data.name];
         data.status = VineyardStatus.MAINTENANCE;
@@ -240,7 +238,7 @@ export default function VineyardForm({
           const updateRes: DbResponse = await db.vineyard.update(
             uid,
             id,
-            newData
+            newData,
           );
 
           setFormData(() => newData);
@@ -274,14 +272,17 @@ export default function VineyardForm({
           }
         }
       } catch (e) {
-        console.error("Error creating document or subcollection with data: ", e);
+        console.error(
+          "Error creating document or subcollection with data: ",
+          e,
+        );
 
         enqueueSnackbar(`Error creating vineyard`, {
           variant: "error",
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: any, e: any) => {
@@ -311,8 +312,7 @@ export default function VineyardForm({
           formData.name = name;
         }
         setValue("name", name);
-      } catch (err: any) {
-      }
+      } catch (err: any) {}
     };
 
     check(name);
@@ -500,7 +500,7 @@ export default function VineyardForm({
                                 >
                                   {grapeColor}
                                 </MenuItem>
-                              )
+                              ),
                             )}
                           </Select>
                         </FormControl>
@@ -539,7 +539,7 @@ export default function VineyardForm({
                                     {field.value.map(
                                       (
                                         identificator: string,
-                                        index: number
+                                        index: number,
                                       ) => (
                                         <Chip
                                           key={identificator + index}
@@ -549,11 +549,11 @@ export default function VineyardForm({
                                               "identificatorUnicParcela",
                                               field.value[
                                                 field.value.length - 1
-                                              ]
+                                              ],
                                             );
                                           }}
                                         />
-                                      )
+                                      ),
                                     )}
                                   </Stack>
                                 );
@@ -588,7 +588,7 @@ export default function VineyardForm({
                               onClick={() => {
                                 handleArrayChange(
                                   "identificatorUnicParcela",
-                                  identificatorUnicParcela
+                                  identificatorUnicParcela,
                                 );
                                 setIdentificatorUnicParcela("");
                               }}
@@ -643,11 +643,11 @@ export default function VineyardForm({
                                               "cadastralNumber",
                                               field.value[
                                                 field.value.length - 1
-                                              ]
+                                              ],
                                             );
                                           }}
                                         />
-                                      )
+                                      ),
                                     )}
                                   </Stack>
                                 );
@@ -725,7 +725,6 @@ export default function VineyardForm({
                         <h2 className="font-medium text-base">Location</h2>
                       </div>
                       <div className="flex flex-col gap-4">
-
                         <div className="w-full bg-muted rounded-md min-h-[320px] relative">
                           <PolygonDrawingMap
                             initialCoordinates={formData.info?.location?.map}
@@ -789,7 +788,7 @@ export default function VineyardForm({
                             <Autocomplete
                               id="info.location.country"
                               options={countries.map(
-                                (country) => country?.name
+                                (country) => country?.name,
                               )}
                               filterSelectedOptions
                               renderInput={(params) => (
@@ -804,7 +803,7 @@ export default function VineyardForm({
                               onChange={(e, value) => {
                                 handleSelectChange(
                                   "info.location.country",
-                                  value as string
+                                  value as string,
                                 );
                               }}
                             />
@@ -903,7 +902,7 @@ export default function VineyardForm({
                                 onChange={(e) =>
                                   handleSelectChange(
                                     "info.location.orientation",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 className="capitalize"
@@ -920,7 +919,7 @@ export default function VineyardForm({
                                           {orientation.split("-").join(" ")}
                                         </MenuItem>
                                       );
-                                    }
+                                    },
                                   )}
                               </Select>
                             </FormControl>
@@ -974,7 +973,7 @@ export default function VineyardForm({
                                     },
                                   }}
                                   {...register(
-                                    "info.vines.plantingScheme.spacing"
+                                    "info.vines.plantingScheme.spacing",
                                   )}
                                 />
                               </FormControl>
@@ -1015,7 +1014,7 @@ export default function VineyardForm({
                                   onChange={(e) =>
                                     handleSelectChange(
                                       "info.vines.plantingScheme.rowOrientation",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="capitalize"
@@ -1032,7 +1031,7 @@ export default function VineyardForm({
                                             {orientation}
                                           </MenuItem>
                                         );
-                                      }
+                                      },
                                     )}
                                 </Select>
                               </FormControl>
@@ -1078,7 +1077,7 @@ export default function VineyardForm({
                                     },
                                   }}
                                   {...register(
-                                    "info.vines.plantingScheme.density"
+                                    "info.vines.plantingScheme.density",
                                   )}
                                 />
                               </FormControl>
@@ -1120,7 +1119,7 @@ export default function VineyardForm({
                                 },
                               }}
                               {...register(
-                                "info.vines.plantingScheme.plantsPerHa"
+                                "info.vines.plantingScheme.plantsPerHa",
                               )}
                             />
                             {(errors?.info as any)?.vines?.plantingScheme
@@ -1145,7 +1144,7 @@ export default function VineyardForm({
                               variant="outlined"
                               label="Trellis system type"
                               {...register(
-                                "info.vines.plantingScheme.trellisSystem"
+                                "info.vines.plantingScheme.trellisSystem",
                               )}
                             />
                             {(errors?.info as any)?.vines?.plantingScheme
@@ -1193,7 +1192,7 @@ export default function VineyardForm({
 
                                 handleSelectChange(
                                   "info.vines.yearOfPlantation",
-                                  value
+                                  value,
                                 );
                               }}
                             />
@@ -1281,7 +1280,7 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.eco.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                   />
@@ -1304,7 +1303,7 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.bio.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                   />
@@ -1327,7 +1326,7 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.igp.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                   />
@@ -1350,7 +1349,7 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.dop.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                   />
@@ -1372,7 +1371,7 @@ export default function VineyardForm({
                                   onChange={(e) =>
                                     handleCheckboxChange(
                                       "info.certifications.ice.active",
-                                      e.target.checked
+                                      e.target.checked,
                                     )
                                   }
                                 />
@@ -1383,7 +1382,6 @@ export default function VineyardForm({
                             </div>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </AccordionDetails>
@@ -1440,7 +1438,7 @@ export default function VineyardForm({
                             onChange={(e, value) => {
                               handleSelectChange(
                                 "grape.countryOfOrigin",
-                                value as string
+                                value as string,
                               );
                             }}
                           />

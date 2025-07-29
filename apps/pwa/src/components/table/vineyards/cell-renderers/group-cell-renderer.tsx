@@ -20,7 +20,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
     value,
     node.data?.labData,
     labReports,
-    vineyards
+    vineyards,
   );
   const [expanded, setExpanded] = useState<boolean>(node.expanded);
   const [openCadastrals, setOpenCadastrals] = useState<boolean>(false);
@@ -155,7 +155,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                         </>
                       )}
                     </div>
-                  )
+                  ),
                 )}
             </div>
           )}

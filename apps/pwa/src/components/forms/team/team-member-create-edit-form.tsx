@@ -1,4 +1,3 @@
-
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
@@ -61,7 +60,7 @@ export default function TeamMemberCreateEditForm() {
       }));
       setValue(name, value);
     },
-    [setValue]
+    [setValue],
   );
 
   const onSubmit = async (data: any, e: any) => {
@@ -191,10 +190,7 @@ export default function TeamMemberCreateEditForm() {
                       onChange={(e) => handleChange("role", e.target.value)}
                     >
                       {Object.values(Role)?.map((role) => (
-                        <MenuItem
-                          key={role}
-                          value={role}
-                        >
+                        <MenuItem key={role} value={role}>
                           {role}
                         </MenuItem>
                       ))}
@@ -215,10 +211,7 @@ export default function TeamMemberCreateEditForm() {
                       {Department &&
                         Object.values(Department).length > 0 &&
                         Object.values(Department).map((department) => (
-                          <MenuItem
-                            key={department}
-                            value={department}
-                          >
+                          <MenuItem key={department} value={department}>
                             {department}
                           </MenuItem>
                         ))}

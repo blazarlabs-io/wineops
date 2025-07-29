@@ -22,7 +22,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -43,7 +42,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -63,7 +61,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -88,7 +85,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

@@ -31,7 +31,6 @@ export default function QuickTasksWidget() {
     } else {
       enqueueSnackbar("Error creating task", { variant: "error" });
     }
-
   }, []);
 
   return (

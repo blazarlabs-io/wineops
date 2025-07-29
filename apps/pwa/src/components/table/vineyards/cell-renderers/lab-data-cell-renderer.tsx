@@ -1,4 +1,3 @@
-
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useMemo, type FunctionComponent } from "react";
 
@@ -21,7 +20,7 @@ export const LabDataCellRenderer: FunctionComponent<
   const descSortedLabData = labData
     ? labData.sort(
         (a: any, b: any) =>
-          b.date?.toDate()?.getTime() - a.date?.toDate()?.getTime()
+          b.date?.toDate()?.getTime() - a.date?.toDate()?.getTime(),
       )
     : [];
 
@@ -30,13 +29,13 @@ export const LabDataCellRenderer: FunctionComponent<
     () =>
       labReports.find(({ id }) => id === mostRecentLabData?.id) ??
       ({} as LabReport),
-    [labReports, mostRecentLabData?.id]
+    [labReports, mostRecentLabData?.id],
   );
   const secondMostRecentLab = useMemo(
     () =>
       labReports.find(({ id }) => id === secondMostRecentLabData?.id) ??
       ({} as LabReport),
-    [labReports, secondMostRecentLabData?.id]
+    [labReports, secondMostRecentLabData?.id],
   );
 
   return (

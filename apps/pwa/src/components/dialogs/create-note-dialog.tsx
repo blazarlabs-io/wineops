@@ -1,4 +1,3 @@
-
 import { db } from "@/lib/firebase/services";
 import { Role, TeamMember } from "@/models/types/db";
 import { EditNote } from "@mui/icons-material";
@@ -41,7 +40,7 @@ export default function CreateNoteDialog({
     }
 
     const subjectVineyard = vineyards.filter(
-      (vineyard) => vineyard.name === subject
+      (vineyard) => vineyard.name === subject,
     )[0];
 
     const vineyardRes = await db.vineyard.update(uid, subjectVineyard.id, {

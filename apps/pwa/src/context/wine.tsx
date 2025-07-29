@@ -100,14 +100,14 @@ export const WineProvider = ({ children }: IWineProvider) => {
         return { ...wine, vessels: updatedVessels as MustWineVessel[] };
       });
     },
-    []
+    [],
   );
 
   const { vessels } = useVessel();
 
   const hydratedWines = useMemo(
     () => hydrateWinesWithUpdatedVessels(wines, vessels),
-    [hydrateWinesWithUpdatedVessels, wines, vessels]
+    [hydrateWinesWithUpdatedVessels, wines, vessels],
   );
 
   return (

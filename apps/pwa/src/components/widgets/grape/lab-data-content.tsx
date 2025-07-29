@@ -43,7 +43,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
                   <span className="text-muted-foreground">
                     {formatNumberWithLowerCaseUnitAndSpace(
                       sugar.value,
-                      sugar?.unit ?? "g/dm³"
+                      sugar?.unit ?? "g/dm³",
                     )}
                   </span>
                 </div>
@@ -60,7 +60,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
                   <span className="text-muted-foreground">
                     {formatNumberWithLowerCaseUnitAndSpace(
                       acidity.value,
-                      acidity?.unit ?? "g/dm³"
+                      acidity?.unit ?? "g/dm³",
                     )}
                   </span>
                 </div>
@@ -77,7 +77,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
                   <span className="text-muted-foreground">
                     {formatNumberWithUnitAndSpace(
                       density.value,
-                      density?.unit ?? "kg/L"
+                      density?.unit ?? "kg/L",
                     )}
                   </span>
                 </div>
@@ -94,7 +94,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
                   <span className="text-muted-foreground">
                     {formatNumberWithUnitAndSpace(
                       temperature.value,
-                      temperature.unit ?? "°C"
+                      temperature.unit ?? "°C",
                     )}
                   </span>
                 </div>

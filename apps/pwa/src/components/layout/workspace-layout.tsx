@@ -1,4 +1,3 @@
-
 "use client";
 
 import { NAVIGATION } from "@/components/navigation/sidebar-navigation";
@@ -60,13 +59,13 @@ export default function WorkspaceLayout(props: MainProps) {
       updateOpen(value);
       updateType(type as QuickDrawerType);
     },
-    [updateOpen, updateType]
+    [updateOpen, updateType],
   );
 
   useEffect(() => {
     if (router.pathname.startsWith("/workspace")) {
       const splitedPathname = pathname.split(
-        "/workspace/wine-production/"
+        "/workspace/wine-production/",
       ) as unknown as ActionsEntity[];
       setCurrentDashboard(splitedPathname[1] as unknown as string);
       return;
@@ -74,7 +73,7 @@ export default function WorkspaceLayout(props: MainProps) {
 
     if (router.pathname) {
       const splitedPathname = router.pathname.split(
-        "/wine-production/"
+        "/wine-production/",
       ) as unknown as ActionsEntity[];
 
       const current = splitedPathname[

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
@@ -58,7 +57,7 @@ export default function CreateTaskForm({
       }));
       setValue(name, value);
     },
-    [setValue]
+    [setValue],
   );
 
   const onSubmit = (data: any, e: any) => {
@@ -153,7 +152,7 @@ export default function CreateTaskForm({
                         value={(formData?.assignedTo?.name as string) || ""}
                         onChange={(e) => {
                           const member = teamMembers.filter(
-                            (v) => v.id === e.target.value
+                            (v) => v.id === e.target.value,
                           )[0];
 
                           handleChange("assignedTo.name", member.name);
@@ -163,11 +162,11 @@ export default function CreateTaskForm({
                           handleChange("assignedTo.avatar", member.avatar);
                           handleChange(
                             "assignedTo.department",
-                            member.department
+                            member.department,
                           );
                           handleChange(
                             "assignedTo.contactPhone",
-                            member.contactPhone
+                            member.contactPhone,
                           );
                         }}
                       >
@@ -248,7 +247,7 @@ export default function CreateTaskForm({
                           "startDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : null
+                            : null,
                         )
                       }
                     />
@@ -267,7 +266,7 @@ export default function CreateTaskForm({
                           "dueDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : null
+                            : null,
                         )
                       }
                     />

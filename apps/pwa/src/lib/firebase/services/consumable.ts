@@ -17,7 +17,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -46,7 +45,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -57,7 +55,7 @@ const consumable = {
   update: async (
     uid: string,
     id: string,
-    data: Consumable
+    data: Consumable,
   ): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
@@ -70,7 +68,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -107,7 +104,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -126,7 +122,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -152,7 +147,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

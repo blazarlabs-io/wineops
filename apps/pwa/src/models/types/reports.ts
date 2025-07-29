@@ -54,8 +54,6 @@ interface OtherGrapeDestination extends BaseDestination {
   mustVol: number;
 }
 
-
-
 type Destination = {
   id: string;
   parcelClassification: ParcelClassification;

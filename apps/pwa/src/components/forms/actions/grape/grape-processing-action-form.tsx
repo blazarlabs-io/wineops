@@ -1,4 +1,3 @@
-
 "use client";
 
 import { GrapeProcessingAction, PressPercentage } from "@/models/types/actions";
@@ -52,7 +51,7 @@ export default function GrapeProcessingActionForm({
   const { labReports } = useVineyard();
 
   const selectedGrapes = useSelectedEntitiesStore(
-    ({ selected }) => selected
+    ({ selected }) => selected,
   ) as Grape[];
 
   const { musts } = useMust();
@@ -70,7 +69,7 @@ export default function GrapeProcessingActionForm({
   });
   const { grapesNames } = useGetGrapesNames(grapes);
   const [formData, setFormData] = useState<GrapeProcessingAction>(
-    {} as GrapeProcessingAction
+    {} as GrapeProcessingAction,
   );
   const [disableSubject, setDisableSubject] = useState<boolean>(false);
 
@@ -82,7 +81,7 @@ export default function GrapeProcessingActionForm({
         [name]: value,
       }));
     },
-    [setValue]
+    [setValue],
   );
 
   const onSubmit = async (data: any, e: any) => {
@@ -91,7 +90,7 @@ export default function GrapeProcessingActionForm({
 
     const totalPressPercentage = (data?.pressPercentage ?? []).reduce(
       (sum: number, { newPressPercentage = 0 }) => sum + newPressPercentage,
-      0
+      0,
     );
 
     if (totalPressPercentage !== 100) {
@@ -107,7 +106,7 @@ export default function GrapeProcessingActionForm({
       (item: PressPercentage, index: number) => {
         const totalVesselsQty = (item.vessels ?? []).reduce(
           (sum: number, { qty = 0 }) => sum + qty,
-          0
+          0,
         );
 
         if ((item?.inputQuantity || 0) === 0) {
@@ -129,7 +128,7 @@ export default function GrapeProcessingActionForm({
         }
 
         return;
-      }
+      },
     );
 
     const subjectGrape = grapes.filter((g) => g?.name === data?.batchId)[0];
@@ -160,7 +159,7 @@ export default function GrapeProcessingActionForm({
       await actions?.["grape-process"].exec(
         user?.uid as string,
         data,
-        subjectGrape
+        subjectGrape,
       );
     } finally {
       setIsSubmitting(false);
@@ -264,7 +263,6 @@ export default function GrapeProcessingActionForm({
 
     reset(grapeProcessingActionSample);
     setFormData(grapeProcessingActionSample);
-
   }, [grapes, selectedGrapes]);
 
   const filteredMusts = musts.filter(({ rowType }) => rowType === "item");
@@ -289,9 +287,9 @@ export default function GrapeProcessingActionForm({
     () =>
       (formData.pressPercentage || []).reduce(
         (sum, item) => (sum += +(item.newPressPercentage || 0)),
-        0
+        0,
       ),
-    [formData.pressPercentage]
+    [formData.pressPercentage],
   );
 
   useEffect(() => {
@@ -400,7 +398,7 @@ export default function GrapeProcessingActionForm({
                     onChange={(date) => {
                       handleChange(
                         "executionDate",
-                        date ? Timestamp.fromDate(date.toDate()) : null
+                        date ? Timestamp.fromDate(date.toDate()) : null,
                       );
                     }}
                   />
@@ -621,7 +619,7 @@ export default function GrapeProcessingActionForm({
                             ];
 
                             updated[index].newPressPercentage = Number(
-                              e.target.value
+                              e.target.value,
                             );
 
                             handleChange("pressPercentage", updated);
@@ -687,7 +685,7 @@ export default function GrapeProcessingActionForm({
                             ];
 
                             updated[index].inputQuantity = Number(
-                              e.target.value
+                              e.target.value,
                             );
 
                             handleChange("pressPercentage", updated);
@@ -713,7 +711,9 @@ export default function GrapeProcessingActionForm({
                           noOptionsText="No vessels available"
                           options={filteredVessels.filter(
                             (vessel) =>
-                              !item?.vessels?.some(({ id }) => id === vessel.id)
+                              !item?.vessels?.some(
+                                ({ id }) => id === vessel.id,
+                              ),
                           )}
                           value={[]}
                           getOptionLabel={(option) => option.name}
@@ -815,7 +815,7 @@ export default function GrapeProcessingActionForm({
 
                                             handleChange(
                                               "pressPercentage",
-                                              updated
+                                              updated,
                                             );
                                           }}
                                         />
@@ -827,7 +827,7 @@ export default function GrapeProcessingActionForm({
                                         onClick={() => {
                                           const updatedVessels =
                                             item.vessels?.filter(
-                                              (vessel) => vessel.id !== id
+                                              (vessel) => vessel.id !== id,
                                             );
 
                                           const updated = [
@@ -839,7 +839,7 @@ export default function GrapeProcessingActionForm({
 
                                           handleChange(
                                             "pressPercentage",
-                                            updated
+                                            updated,
                                           );
                                         }}
                                       >
@@ -855,18 +855,18 @@ export default function GrapeProcessingActionForm({
                                     >
                                       {errors?.pressPercentage &&
                                         Array.isArray(
-                                          errors?.pressPercentage
+                                          errors?.pressPercentage,
                                         ) &&
                                         Array.isArray(
                                           errors?.pressPercentage[index]
-                                            ?.vessels
+                                            ?.vessels,
                                         ) &&
                                         (errors?.pressPercentage[index]
                                           ?.vessels[vesselsIndex]
                                           ?.message as string)}
                                     </Typography>
                                   </Fragment>
-                                )
+                                ),
                               )}
                             </Stack>
                           </>

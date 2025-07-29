@@ -1,4 +1,3 @@
-
 import { ColDef } from "ag-grid-enterprise";
 import { Grape } from "@/models/types/db";
 import { BatchIDCellRenderer } from "./BatchIDCellRenderer";

@@ -1,4 +1,3 @@
-
 import { Grape, LabReport } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";

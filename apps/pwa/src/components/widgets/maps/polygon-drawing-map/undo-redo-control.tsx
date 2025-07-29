@@ -1,9 +1,12 @@
-import React, { useReducer, useRef } from 'react';
-import { useMap } from '@vis.gl/react-google-maps';
+import React, { useReducer, useRef } from "react";
+import { useMap } from "@vis.gl/react-google-maps";
 
-import reducer, { useDrawingManagerEvents, useOverlaySnapshots } from './undo-redo';
+import reducer, {
+  useDrawingManagerEvents,
+  useOverlaySnapshots,
+} from "./undo-redo";
 
-import { DrawingActionKind } from './types';
+import { DrawingActionKind } from "./types";
 
 interface Props {
   drawingManager: google.maps.drawing.DrawingManager | null;
@@ -30,7 +33,12 @@ export const UndoRedoControl = ({ drawingManager }: Props) => {
         disabled={!state.past.length}
         className="flex items-center"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="20"
+          viewBox="0 -960 960 960"
+          width="20"
+        >
           <path
             fill="#232323"
             d="M280-200v-80h284q63 0 109.5-40T720-420q0-60-46.5-100T564-560H312l104 104-56 56-200-200 200-200 56 56-104 104h252q97 0 166.5 63T800-420q0 94-69.5 157T564-200H280Z"
@@ -41,7 +49,12 @@ export const UndoRedoControl = ({ drawingManager }: Props) => {
         onClick={() => dispatch({ type: DrawingActionKind.REDO })}
         disabled={!state.future.length}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="20"
+          viewBox="0 -960 960 960"
+          width="20"
+        >
           <path
             fill="#232323"
             d="M396-200q-97 0-166.5-63T160-420q0-94 69.5-157T396-640h252L544-744l56-56 200 200-200 200-56-56 104-104H396q-63 0-109.5 40T240-420q0 60 46.5 100T396-280h284v80H396Z"

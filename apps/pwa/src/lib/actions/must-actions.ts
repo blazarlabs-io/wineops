@@ -15,9 +15,8 @@ export const mustDecantAction = async (
   uid: string,
   actionData: MustDecantAction,
   must: MustWithVessel,
-  mustVessel?: MustWineVessel
+  mustVessel?: MustWineVessel,
 ) => {
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
@@ -71,7 +70,7 @@ export const mustDecantAction = async (
           name,
           location,
           qty,
-        })
+        }),
       ),
     }),
   };
@@ -86,7 +85,6 @@ export const mustDecantAction = async (
   ];
 
   if (actionData?.moveToWine) {
-
     const newWine: Wine = {
       id: Date.now().toString(),
       name: actionData.wineName || "WineName",
@@ -122,7 +120,6 @@ export const mustDecantAction = async (
       return;
     }
   } else {
-
     const newMust: Must = {
       id: Date.now().toString(),
       name: actionData.wineName || "MustName",

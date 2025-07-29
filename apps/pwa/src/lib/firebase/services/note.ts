@@ -15,7 +15,6 @@ const note = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -39,7 +38,6 @@ const note = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -59,7 +57,6 @@ const note = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -78,7 +75,6 @@ const note = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

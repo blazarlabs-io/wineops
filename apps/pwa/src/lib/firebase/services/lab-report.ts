@@ -23,7 +23,6 @@ const labReport = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -72,7 +71,6 @@ const labReport = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

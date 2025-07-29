@@ -16,9 +16,8 @@ import {
 export const grapeIntakeAction = async (
   uid: string,
   actionData: GrapeIntakeAction,
-  grape: Grape
+  grape: Grape,
 ) => {
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
@@ -113,9 +112,8 @@ export const grapeIntakeAction = async (
 export const grapeProcessingAction = async (
   uid: string,
   actionData: any,
-  grape: Grape
+  grape: Grape,
 ) => {
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {

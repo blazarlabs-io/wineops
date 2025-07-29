@@ -1,4 +1,3 @@
-
 "use client";
 
 import { REPORTS } from "@/components/dashboards/reports/reports-dashboard";
@@ -60,7 +59,7 @@ import WysiwygIcon from "@mui/icons-material/Wysiwyg";
 
 export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
   const [currentId, setCurrentId] = useState<string | undefined>(
-    anexa14Id === "new" ? "" : anexa14Id
+    anexa14Id === "new" ? "" : anexa14Id,
   );
 
   const [isEditing, setIsEditing] = useState(true);
@@ -75,7 +74,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
 
   const totalVineyardsArea = vineyards.reduce(
     (sum: number, { info }) => (sum += +info?.location?.surface || 0),
-    0
+    0,
   );
 
   const { anexa14List } = useAnexa14List();
@@ -113,7 +112,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
         createdBy: userId,
         date: Timestamp.fromDate(new Date()),
       }) as unknown as Anexa14Data,
-    [totalVineyardsArea, userId]
+    [totalVineyardsArea, userId],
   );
 
   const {
@@ -153,11 +152,11 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
     : [];
 
   const parcelsWINE_VARIETY_GENERIC: ReducedVineyard[] = Array.isArray(
-    parcelVineyards
+    parcelVineyards,
   )
     ? filterByClassification(
         parcelVineyards,
-        ParcelClassification.WINE_VARIETY_GENERIC
+        ParcelClassification.WINE_VARIETY_GENERIC,
       )
     : [];
 
@@ -166,11 +165,11 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
     : [];
 
   const parcelsOTHER_DESTINATIONS: ReducedVineyard[] = Array.isArray(
-    parcelVineyards
+    parcelVineyards,
   )
     ? filterByClassification(
         parcelVineyards,
-        ParcelClassification.OTHER_DESTINATIONS
+        ParcelClassification.OTHER_DESTINATIONS,
       )
     : [];
 
@@ -199,7 +198,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
         setFormData((prev) => ({ ...(prev as Anexa14Data), [name]: value }));
       }
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCancelEditing = () => {
@@ -224,7 +223,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
           const updateRes: DbResponse = await db.anexa14.update(
             uid,
             id,
-            newData
+            newData,
           );
 
           setFormData(newData);
@@ -259,14 +258,17 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
           }
         }
       } catch (e) {
-        console.error("Error creating document or subcollection with data: ", e);
+        console.error(
+          "Error creating document or subcollection with data: ",
+          e,
+        );
 
         enqueueSnackbar(`Error creating`, {
           variant: "error",
         });
       }
     },
-    [enqueueSnackbar, router, userId]
+    [enqueueSnackbar, router, userId],
   );
 
   const onSubmit = async (data: Anexa14Data) => {
@@ -283,7 +285,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
   const canAddParcels = (type: ParcelClassification) =>
     vineyards.filter(({ rowType }) => rowType === "item").length >
     (formData?.parcelVineyards || []).filter(
-      ({ parcelClassification }) => parcelClassification === type
+      ({ parcelClassification }) => parcelClassification === type,
     ).length;
 
   const handleAddParcels = (type: ParcelClassification) => {
@@ -319,7 +321,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
 
   const handleRemoveParcel = (parcelId: string) => {
     const parcelVineyards = formData?.parcelVineyards?.filter(
-      ({ id }) => id !== parcelId
+      ({ id }) => id !== parcelId,
     );
 
     handleChange("parcelVineyards", parcelVineyards);
@@ -329,7 +331,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
     vineyardId: Vineyard["id"],
     editableName: string,
     editableValue: string,
-    type?: ParcelClassification
+    type?: ParcelClassification,
   ) => {
     const updated = formData?.parcelVineyards?.map((vineyard2) => ({
       ...vineyard2,
@@ -349,8 +351,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
     setFormData(anexa14 || defaultAnexa14Data);
   }, [anexa14, defaultAnexa14Data]);
 
-  useEffect(() => {
-  }, [errors]);
+  useEffect(() => {}, [errors]);
 
   const handleBackClick = () => {
     router.push(`/workspace/reports/anexa14`);
@@ -857,7 +858,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                       {PARCELS.map(({ type, title }, index) => (
                         <Fragment key={`${type}-${index}`}>
                           <tr>
-                            <td >
+                            <td>
                               <Stack
                                 direction="row"
                                 sx={{ alignItems: "center" }}
@@ -912,7 +913,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                 soldWhite = "",
                                 soldMustWhite = "",
                               },
-                              index
+                              index,
                             ) => (
                               <Fragment
                                 key={`${vineyardId}-${type}-${name}-${index}`}
@@ -944,8 +945,8 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                                     }) =>
                                                       vineyardId === id &&
                                                       type ===
-                                                        parcelClassification
-                                                  )
+                                                        parcelClassification,
+                                                  ),
                                               )
                                               .map(
                                                 ({
@@ -960,7 +961,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                                   info,
                                                   batches,
                                                   grapeVariety,
-                                                })
+                                                }),
                                               )}
                                             value={{
                                               id,
@@ -978,7 +979,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
 
                                               const existingParcel =
                                                 Array.isArray(
-                                                  formData?.parcelVineyards
+                                                  formData?.parcelVineyards,
                                                 )
                                                   ? formData?.parcelVineyards?.find(
                                                       ({
@@ -993,14 +994,14 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                                             name ===
                                                               vineyard?.name)) &&
                                                         parcelClassification ===
-                                                          type
+                                                          type,
                                                     )
                                                   : undefined;
 
                                               if (existingParcel) return;
 
                                               const existing = Array.isArray(
-                                                formData?.parcelVineyards
+                                                formData?.parcelVineyards,
                                               )
                                                 ? formData?.parcelVineyards?.find(
                                                     ({
@@ -1011,7 +1012,8 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                                         vineyardId ===
                                                           vineyard?.id) ||
                                                       (name !== "" &&
-                                                        name === vineyard?.name)
+                                                        name ===
+                                                          vineyard?.name),
                                                   )
                                                 : undefined;
 
@@ -1039,7 +1041,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                                         getVineyardBatchesQty(
                                                           vineyard.batches ||
                                                             [],
-                                                          grapes
+                                                          grapes,
                                                         ) ||
                                                         "",
                                                       totalHarvestedQtyWhite:
@@ -1047,16 +1049,16 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                                         getVineyardBatchesQty(
                                                           vineyard.batches ||
                                                             [],
-                                                          grapes
+                                                          grapes,
                                                         ) ||
                                                         "",
                                                     }),
-                                                  })
+                                                  }),
                                                 );
 
                                               handleChange(
                                                 "parcelVineyards",
-                                                updated
+                                                updated,
                                               );
                                             }}
                                             sx={{ flex: 1 }}
@@ -1101,7 +1103,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                           handleParcelChange(
                                             vineyardId,
                                             "surface",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                       />
@@ -1119,7 +1121,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                           handleParcelChange(
                                             vineyardId,
                                             "parcelCode",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         sx={{
@@ -1140,7 +1142,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                           handleParcelChange(
                                             vineyardId,
                                             "grapeVariety",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         sx={{
@@ -1163,7 +1165,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                           handleParcelChange(
                                             vineyardId,
                                             "totalHarvestedQty",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         sx={{
@@ -1186,7 +1188,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                           handleParcelChange(
                                             vineyardId,
                                             "totalHarvestedQtyWhite",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         sx={{
@@ -1209,7 +1211,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "wine",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1227,7 +1229,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "wineWhite",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1246,7 +1248,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "delivered",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1264,7 +1266,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "deliveredWhite",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1285,7 +1287,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "deliveredMust",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1305,7 +1307,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "deliveredMustWhite",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1326,7 +1328,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "sold",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1344,7 +1346,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "soldWhite",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1363,7 +1365,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "soldMust",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1381,7 +1383,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "soldMustWhite",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1402,7 +1404,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             vineyardId,
                                             "other",
                                             e.target.value,
-                                            type
+                                            type,
                                           )
                                         }
                                       />
@@ -1412,7 +1414,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                   </td>
                                 </tr>
                               </Fragment>
-                            )
+                            ),
                           )}
                         </Fragment>
                       ))}
@@ -1481,7 +1483,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                             "date",
                             newValue
                               ? Timestamp.fromDate(newValue.toDate())
-                              : undefined
+                              : undefined,
                           )
                         }
                       />

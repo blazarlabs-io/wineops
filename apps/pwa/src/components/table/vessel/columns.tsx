@@ -1,4 +1,3 @@
-
 import { ColDef, ValueFormatterParams } from "ag-grid-enterprise";
 import { Vessel } from "@/models/types/db";
 import { DefaultCellRenderer } from "../DefaultCellRenderer";

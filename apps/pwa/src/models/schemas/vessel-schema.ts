@@ -78,7 +78,7 @@ export const vesselSchema = Joi.object({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Start date must be a valid date.",
-      })
+      }),
     )
     .optional()
     .allow("")

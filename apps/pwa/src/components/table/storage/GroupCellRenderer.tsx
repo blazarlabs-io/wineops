@@ -17,7 +17,6 @@ export const GroupCellRenderer: FunctionComponent<
 > = (params) => {
   const { value, data, node, storageType } = params;
 
-  
   const isGroup = node?.group || node?.data?.rowType === "group";
   const groupField = isGroup ? node?.field : node?.parent?.field;
 
@@ -27,7 +26,7 @@ export const GroupCellRenderer: FunctionComponent<
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(
-      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT
+      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT,
     );
   }, [node]);
 
@@ -154,7 +153,7 @@ export const GroupCellRenderer: FunctionComponent<
                     </Typography>
                   )}
                   {<StatusDataDisplay status={data?.status} />}
-                </> 
+                </>
               ) : (
                 <>
                   <Typography variant="body1">{data?.name}</Typography>

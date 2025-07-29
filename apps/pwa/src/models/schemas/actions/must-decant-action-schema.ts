@@ -14,7 +14,7 @@ export const mustDecantActionSchema = Joi.object<MustDecantAction>({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Date must be a valid date.",
-      })
+      }),
     )
     .required()
     .messages({

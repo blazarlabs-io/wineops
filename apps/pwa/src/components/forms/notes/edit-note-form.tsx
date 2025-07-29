@@ -1,4 +1,3 @@
-
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
@@ -104,7 +103,7 @@ export default function EditNoteForm({
                   onChange={(newValue) =>
                     handleChange(
                       "date",
-                      newValue ? Timestamp.fromDate(newValue.toDate()) : null
+                      newValue ? Timestamp.fromDate(newValue.toDate()) : null,
                     )
                   }
                 />

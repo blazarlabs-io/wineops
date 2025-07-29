@@ -118,7 +118,7 @@ export default function StorageConditionsTable({
                     <Typography>{iotRoom}</Typography>
                   </TableCell>
                 </TableRow>
-              )
+              ),
             )
           )}
         </TableBody>

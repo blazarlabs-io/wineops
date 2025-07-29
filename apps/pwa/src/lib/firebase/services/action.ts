@@ -1,4 +1,3 @@
-
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../client";
 import { ACTIONS, WINERY } from "../config";
@@ -19,7 +18,6 @@ const action = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -40,7 +38,6 @@ const action = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

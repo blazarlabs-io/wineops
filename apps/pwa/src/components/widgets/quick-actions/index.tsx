@@ -1,4 +1,3 @@
-
 import {
   GrapeActions,
   VineyardActions,
@@ -37,7 +36,7 @@ export default function QuickActionsWidget({
       setFormTitle(selected?.title ?? `${action} action`);
       setStep(2);
     },
-    [actions, onClick]
+    [actions, onClick],
   );
 
   const handleBackClick = useCallback(() => {
@@ -50,7 +49,7 @@ export default function QuickActionsWidget({
     if (!dialogs["action-drawer"]) return;
 
     const existingAction = Object.keys(actions).find(
-      (key) => key === `${dialogs["action-drawer"]}`
+      (key) => key === `${dialogs["action-drawer"]}`,
     );
 
     if (!existingAction) return;

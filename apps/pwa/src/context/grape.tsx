@@ -92,7 +92,7 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
         db,
         WINERY,
         user?.uid as string,
-        LAB_REPORTS
+        LAB_REPORTS,
       );
 
       unsubLabReports = onSnapshot(labReportsRef, (querySnapshot) => {

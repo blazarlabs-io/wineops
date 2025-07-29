@@ -10,9 +10,8 @@ import {
 export const bottleWineAction = async (
   uid: string,
   actionData: BottleWineAction,
-  recipe: Recipe
+  recipe: Recipe,
 ) => {
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {

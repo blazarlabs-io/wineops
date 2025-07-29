@@ -8,7 +8,7 @@ export const TimestampOrString = Joi.alternatives().try(
   Joi.object().custom((value, helpers) => {
     if (value instanceof Timestamp) return value;
     return helpers.error("any.invalid");
-  }, "Timestamp validation")
+  }, "Timestamp validation"),
 );
 
 const supplierSchema = Joi.object({

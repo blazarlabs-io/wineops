@@ -48,7 +48,7 @@ const generateItems = (total: number) => {
 const generateRandomFilenameWithWords = (
   extension: string = "",
   separator: string = "-",
-  wordCount: number = 2
+  wordCount: number = 2,
 ): string => {
   const words = [
     "cloud",
@@ -74,7 +74,7 @@ const generateRandomFilenameWithWords = (
 
   const parts = Array.from(
     { length: wordCount },
-    () => words[Math.floor(Math.random() * words.length)]
+    () => words[Math.floor(Math.random() * words.length)],
   );
 
   const name = parts.join(separator);
@@ -95,7 +95,7 @@ const generateDummyDocs = (count: number) => {
       },
       uploadDate: getRandomDate(
         new Date("2024-01-01"),
-        new Date("2025-01-01")
+        new Date("2025-01-01"),
       ).toISOString(),
       media: {
         type: "application",

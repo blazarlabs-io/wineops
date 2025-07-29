@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { auth } from "@/lib/firebase/client";
@@ -19,12 +17,12 @@ export default function SignInPage() {
   const signIn = async (
     provider: AuthProvider,
     formData: FormData,
-    callbackUrl?: string
+    callbackUrl?: string,
   ) => {
     try {
       const res: any = await fbSignIn(
         formData.get("email") as string,
-        formData.get("password") as string
+        formData.get("password") as string,
       );
 
       if (res) {
@@ -49,7 +47,7 @@ export default function SignInPage() {
       signIn={async (
         provider: AuthProvider,
         formData: FormData,
-        callbackUrl?: string
+        callbackUrl?: string,
       ) => {
         try {
           return await signIn(provider, formData);

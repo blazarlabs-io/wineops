@@ -33,7 +33,7 @@ export default function PriorityDataDisplay({
 
 const getStatusStyles = (
   status: Priority,
-  colorScheme?: SupportedColorScheme
+  colorScheme?: SupportedColorScheme,
 ) => {
   const isLight = colorScheme === "light";
 

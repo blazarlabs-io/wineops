@@ -1,4 +1,3 @@
-
 import { DbResponse, Group, Vineyard } from "@/models/types/db";
 import {
   collection,
@@ -81,7 +80,7 @@ vineyard = {
   update: async (
     uid: string,
     id: string,
-    data: Vineyard
+    data: Vineyard,
   ): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
@@ -128,7 +127,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -207,7 +205,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

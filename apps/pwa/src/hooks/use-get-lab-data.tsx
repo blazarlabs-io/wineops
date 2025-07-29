@@ -7,7 +7,7 @@ export const useGetLabData = (
   id: string,
   entityLabData: ActionRelation[],
   labReports: LabReport[],
-  entities: DashboardEntity[]
+  entities: DashboardEntity[],
 ) => {
   const [labData, setLabData] = useState<LabReport[] | null>(null);
 
@@ -30,10 +30,10 @@ export const useGetLabData = (
           (entityLabData
             ? Array.isArray(entityLabData)
               ? (entityLabData as unknown as LabReport[]).find(
-                  (l) => l.id === r.id
+                  (l) => l.id === r.id,
                 )?.id
               : (entityLabData as unknown as LabReport).id
-            : null)
+            : null),
       );
 
       setLabData(labRes);

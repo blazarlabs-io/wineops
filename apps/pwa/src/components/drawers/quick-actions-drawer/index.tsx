@@ -31,8 +31,7 @@ export default function QuickActionsDrawer<T extends ActionsEntity>({
     if (onOpenChange) onOpenChange(false);
   };
 
-  const handleActionClick = (action: string) => {
-  };
+  const handleActionClick = (action: string) => {};
 
   return (
     <Drawer

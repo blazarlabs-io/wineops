@@ -52,16 +52,14 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       const serializedFirebaseConfig = encodeURIComponent(
-        JSON.stringify(firebaseConfig)
+        JSON.stringify(firebaseConfig),
       );
       const serviceWorkerUrl = `/auth-service-worker.js?firebaseConfig=${serializedFirebaseConfig}`;
 
       navigator.serviceWorker
         .register(serviceWorkerUrl)
-        .then((registration) => {
-        })
-        .catch((error) => {
-        });
+        .then((registration) => {})
+        .catch((error) => {});
     }
   }, []);
 
@@ -85,9 +83,7 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
   }, [user]);
 
   const signUp = async (email: string, password: string) => {
-
     await createUserWithEmailAndPassword(auth, email, password);
-
   };
 
   const signIn = async (email: string, password: string) => {

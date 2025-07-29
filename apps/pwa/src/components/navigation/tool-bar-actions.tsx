@@ -1,5 +1,3 @@
-
-
 import { useAuth } from "@/lib/firebase/auth";
 import {
   Avatar,

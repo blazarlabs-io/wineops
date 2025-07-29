@@ -51,7 +51,6 @@ export default function GroupingDialog<T extends DashboardEntity>({
 
   const isAddToGroupDisabled = selectedGroup === "" && newGroup === "";
 
-
   const handleGroupChange = (event: SelectChangeEvent) => {
     setSelectedGroup(event.target.value);
     setSelectedGroupDisplayName(event.target.value);

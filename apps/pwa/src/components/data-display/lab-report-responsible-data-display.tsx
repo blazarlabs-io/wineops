@@ -35,7 +35,7 @@ export default function LabReportResponsibleDataDisplay({
               className="text-xs text-muted-foreground leading-[0]"
             >
               {new Date(
-                (data.date as Timestamp)?.seconds * 1000
+                (data.date as Timestamp)?.seconds * 1000,
               ).toDateString()}
             </Typography>
             <div className="flex items-center gap-2">

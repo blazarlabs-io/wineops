@@ -1,4 +1,3 @@
-
 import { ColDef } from "ag-grid-enterprise";
 import { TasksCellRenderer } from "../tasks-cell-renderer";
 import { GrapeVarietyCellRenderer } from "./cell-renderers/grape-variety-cell-renderer";
@@ -31,7 +30,6 @@ export const vineyardColumns: ColDef[] = [
     minWidth: 264,
     flex: 1,
     cellRenderer: QuantityCellRenderer,
-
   },
   {
     field: "labData",

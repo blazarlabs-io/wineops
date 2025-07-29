@@ -1,4 +1,3 @@
-
 import { DEFAULT_LOCALE } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
 import { UploadedDocument } from "@/models/types/db";
@@ -17,7 +16,7 @@ import { getBlob, getStorage, ref } from "firebase/storage";
 import { useCallback } from "react";
 
 const getApplyQuickFilterFnSameYear: GetApplyQuickFilterFn<any, unknown> = (
-  value
+  value,
 ) => {
   if (!value || value.length !== 4 || !/\d{4}/.test(value)) {
     return null;
@@ -37,7 +36,7 @@ const ActionsComponent = (params: GridRenderCellParams) => {
   const open = useDialogDrawerStore(({ open }) => open);
   const openDeleteEntityDataDialog = useCallback(
     () => open("delete-entity-data"),
-    [open]
+    [open],
   );
 
   const handleDeleteClick = useCallback(() => {
@@ -49,7 +48,7 @@ const ActionsComponent = (params: GridRenderCellParams) => {
           api: params.api,
         } as UploadedDocument,
       ],
-      "document"
+      "document",
     );
 
     openDeleteEntityDataDialog();
@@ -80,8 +79,7 @@ const ActionsComponent = (params: GridRenderCellParams) => {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-    } catch (err) {
-    }
+    } catch (err) {}
   }, [params.row, user?.uid]);
 
   return (

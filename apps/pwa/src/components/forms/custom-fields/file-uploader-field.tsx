@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from "@/lib/firebase/auth";
@@ -102,10 +101,10 @@ export default function FileUploaderField({
           setUploadProgress(0);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
-    [documents, onDocumentUpload, path, user?.uid]
+    [documents, onDocumentUpload, path, user?.uid],
   );
 
   const handleDeleteFile = useCallback(
@@ -121,7 +120,7 @@ export default function FileUploaderField({
       } else {
       }
     },
-    [onDocumentUpload, path, user?.uid]
+    [onDocumentUpload, path, user?.uid],
   );
 
   return (

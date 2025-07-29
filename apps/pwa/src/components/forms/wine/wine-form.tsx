@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useVessel } from "@/context/vessel";
@@ -78,7 +77,7 @@ export default function WineForm() {
       setValue(name as keyof Wine, value);
       setFormData((prev) => ({ ...(prev as Wine), [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCreateWine = useCallback(
@@ -138,7 +137,7 @@ export default function WineForm() {
       } catch (e) {
         console.error(
           "Error creating document or subcollection with data: ",
-          e
+          e,
         );
 
         enqueueSnackbar(`Error creating wine`, {
@@ -146,7 +145,7 @@ export default function WineForm() {
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: Wine) => {
@@ -239,7 +238,7 @@ export default function WineForm() {
                           "date",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : undefined
+                            : undefined,
                         )
                       }
                     />
@@ -321,7 +320,7 @@ export default function WineForm() {
                         if (!added) return;
 
                         const existing = formData?.grapeVarieties?.filter(
-                          ({ name }) => name === added
+                          ({ name }) => name === added,
                         );
 
                         if (existing) return;
@@ -387,11 +386,11 @@ export default function WineForm() {
                                         ...(formData?.grapeVarieties || []),
                                       ];
                                       updated[index].percentage = Number(
-                                        e.target.value
+                                        e.target.value,
                                       );
                                       handleSelectChange(
                                         "grapeVarieties",
-                                        updated
+                                        updated,
                                       );
                                     }}
                                   />
@@ -403,11 +402,11 @@ export default function WineForm() {
                                   onClick={() => {
                                     const updated =
                                       formData?.grapeVarieties?.filter(
-                                        (variety) => variety.id !== id
+                                        (variety) => variety.id !== id,
                                       );
                                     handleSelectChange(
                                       "grapeVarieties",
-                                      updated
+                                      updated,
                                     );
                                   }}
                                 >
@@ -427,7 +426,7 @@ export default function WineForm() {
                                     ?.message as string)}
                               </Typography>
                             </Fragment>
-                          )
+                          ),
                         )}
                       </Stack>
                     )}
@@ -480,7 +479,9 @@ export default function WineForm() {
                       options={vessels.filter(
                         (vessel) =>
                           vessel.rowType !== "group" &&
-                          !formData?.vessels?.some(({ id }) => id === vessel.id)
+                          !formData?.vessels?.some(
+                            ({ id }) => id === vessel.id,
+                          ),
                       )}
                       value={[]}
                       getOptionLabel={(option) => option.name}
@@ -546,7 +547,7 @@ export default function WineForm() {
                                         ...(formData?.vessels || []),
                                       ];
                                       updated[index].qty = Number(
-                                        e.target.value
+                                        e.target.value,
                                       );
                                       handleSelectChange("vessels", updated);
                                     }}
@@ -558,7 +559,7 @@ export default function WineForm() {
                                   disabled={false}
                                   onClick={() => {
                                     const updated = formData?.vessels?.filter(
-                                      (vessel) => vessel.id !== id
+                                      (vessel) => vessel.id !== id,
                                     );
                                     handleSelectChange("vessels", updated);
                                   }}
@@ -579,7 +580,7 @@ export default function WineForm() {
                                     ?.message as string)}
                               </Typography>
                             </Fragment>
-                          )
+                          ),
                         )}
                       </Stack>
                     )}
@@ -684,7 +685,7 @@ export default function WineForm() {
                               field.onChange(
                                 newValue
                                   ? Timestamp.fromDate(newValue.toDate())
-                                  : null
+                                  : null,
                               )
                             }
                           />
@@ -866,7 +867,7 @@ export default function WineForm() {
                           onInputChange={(_event, newInputValue) => {
                             handleSelectChange(
                               "labData.sugar.unit",
-                              newInputValue
+                              newInputValue,
                             );
                           }}
                           sx={{ width: "100px" }}
@@ -953,13 +954,13 @@ export default function WineForm() {
                           onChange={(_event, newValue) => {
                             handleSelectChange(
                               "labData.acidity.unit",
-                              newValue
+                              newValue,
                             );
                           }}
                           onInputChange={(_event, newInputValue) => {
                             handleSelectChange(
                               "labData.acidity.unit",
-                              newInputValue
+                              newInputValue,
                             );
                           }}
                           sx={{ width: "100px" }}

@@ -15,7 +15,7 @@ const createSelectedItemsStore = <T>() =>
     selectedItems: [],
     setSelectedItems: (
       selectedItems: T[],
-      itemType: SelectedItem = "UNKNOWN"
+      itemType: SelectedItem = "UNKNOWN",
     ) => set({ selectedItems, itemType }),
   }));
 

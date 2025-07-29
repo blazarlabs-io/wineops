@@ -20,7 +20,7 @@ export const useSortChartData = ({ items }: LabDataChart) => {
         ...items.sort(
           (a, b) =>
             (a.date as Timestamp).toDate().getTime() -
-            (b.date as Timestamp).toDate().getTime()
+            (b.date as Timestamp).toDate().getTime(),
         ),
       ].forEach(({ date, results = {} }) => {
         if (results?.sugar?.value) sugar.push(results.sugar.value);
@@ -28,7 +28,7 @@ export const useSortChartData = ({ items }: LabDataChart) => {
         if (results?.acidity?.value) acidity.push(results.acidity.value);
 
         labels.push(
-          `${new Date((date as Timestamp).seconds * 1000).toDateString()}`
+          `${new Date((date as Timestamp).seconds * 1000).toDateString()}`,
         );
       });
 

@@ -19,7 +19,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -48,7 +47,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -59,7 +57,7 @@ const anexa7 = {
   update: async (
     uid: string,
     id: string,
-    data: Anexa7Data
+    data: Anexa7Data,
   ): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, ANEXA7, id);
@@ -72,7 +70,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -91,7 +88,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -117,7 +113,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

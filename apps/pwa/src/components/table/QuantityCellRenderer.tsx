@@ -9,7 +9,7 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
   const isGroup = node.group || data.rowType === "group";
 
   const metrics = (node?.allLeafChildren || []).map(
-    ({ data }) => data?.metrics
+    ({ data }) => data?.metrics,
   );
 
   return (
@@ -27,7 +27,7 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
           {value?.entry?.netWeight
             ? formatNumberWithLowerCaseUnitAndSpace(
                 value?.entry?.netWeight,
-                value?.entry?.netUnit || "kg"
+                value?.entry?.netUnit || "kg",
               )
             : "N/A"}
           {}

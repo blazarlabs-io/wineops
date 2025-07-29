@@ -1,6 +1,12 @@
 export default function QuickActionsIcon() {
   return (
-    <svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="18"
+      height="17"
+      viewBox="0 0 18 17"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <rect
         x="0.65"
         y="0.65"

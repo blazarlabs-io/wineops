@@ -1,4 +1,3 @@
-
 import { GROUP_ITEMS_TO_SHOW, ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { Link } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -37,7 +36,7 @@ export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
                   + {uniqueSuppliers.length - GROUP_ITEMS_TO_SHOW} more
                 </Link>
               )
-            )
+            ),
           )}
         </>
       ) : (

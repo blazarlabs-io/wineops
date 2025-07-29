@@ -18,7 +18,7 @@ export default function GrapeStatusDataDisplaySelect({
       setSelected(target.value);
       onSelect?.(target.value);
     },
-    [onSelect]
+    [onSelect],
   );
 
   useEffect(() => {

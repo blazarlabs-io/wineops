@@ -9,7 +9,7 @@ import { ExpandMore } from "@mui/icons-material";
 import VesselDetailsWidget from "@/components/widgets/vessel/vessel-details-widget";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, data, node } = params;
 
@@ -19,7 +19,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(
-      node.expanded ? ROW_HEIGHT_EXPANDED_VESSEL : ROW_HEIGHT_DEFAULT
+      node.expanded ? ROW_HEIGHT_EXPANDED_VESSEL : ROW_HEIGHT_DEFAULT,
     );
   }, [node]);
 

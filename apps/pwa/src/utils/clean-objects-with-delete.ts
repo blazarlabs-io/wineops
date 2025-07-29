@@ -1,4 +1,3 @@
-
 import { Timestamp, deleteField, FieldValue } from "firebase/firestore";
 
 type FirestoreCompatible =
@@ -10,7 +9,7 @@ type FirestoreCompatible =
   | FieldValue;
 
 export function cleanObjectWithDeletes<T>(
-  obj: T
+  obj: T,
 ): Record<string, FirestoreCompatible | object> {
   const result: Record<string, any> = {};
 

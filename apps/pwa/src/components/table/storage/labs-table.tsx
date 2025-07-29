@@ -123,7 +123,7 @@ export default function LabsTable({ data }: LabsTableProps) {
                     <Typography>{labTechnicianName}</Typography>
                   </TableCell>
                 </TableRow>
-              )
+              ),
             )
           )}
         </TableBody>

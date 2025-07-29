@@ -1,4 +1,3 @@
-
 import UploadDocumentsDialog from "@/components/dialogs/upload-documents-dialog";
 import { Backup, FilterList } from "@mui/icons-material";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -26,7 +25,7 @@ function Button(props: React.HTMLAttributes<HTMLButtonElement>) {
       {...props}
       className={clsx(
         `${colorScheme === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:active:bg-neutral-700" : ""} flex h-9 items-center justify-center rounded border border-neutral-200 cursor-pointer bg-neutral-50 px-2.5 text-sm font-bold text-neutral-700 whitespace-nowrap select-none hover:bg-neutral-100 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 active:bg-neutral-100`,
-        props.className
+        props.className,
       )}
     />
   );
@@ -40,7 +39,7 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={clsx(
         `${colorScheme === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200" : ""} h-9 w-full rounded border border-neutral-200 px-2.5 text-base text-neutral-900 focus:-outline-offset-2 focus:outline-blue-600`,
-        props.className
+        props.className,
       )}
     />
   );
@@ -110,7 +109,7 @@ export default function DocumentsTableToolbar({
               <div
                 className={clsx(
                   "flex overflow-clip transition-all duration-300 ease-in-out",
-                  state.expanded ? "w-48" : "w-0"
+                  state.expanded ? "w-48" : "w-0",
                 )}
               >
                 <QuickFilterControl
@@ -122,7 +121,9 @@ export default function DocumentsTableToolbar({
                       {...slotProps?.htmlInput}
                       className={clsx(
                         "flex-1 rounded-l-none",
-                        state.expanded && state.value !== "" && "rounded-r-none"
+                        state.expanded &&
+                          state.value !== "" &&
+                          "rounded-r-none",
                       )}
                     />
                   )}

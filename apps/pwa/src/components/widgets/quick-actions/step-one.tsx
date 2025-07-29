@@ -1,4 +1,3 @@
-
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { GridView, Search } from "@mui/icons-material";
 import {
@@ -37,16 +36,16 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
     () =>
       entityName === "grape"
         ? selected.map(
-            (selected) => grapes.find((g) => g.id === selected.id) ?? selected
+            (selected) => grapes.find((g) => g.id === selected.id) ?? selected,
           )
         : [],
-    [entityName, grapes, selected]
+    [entityName, grapes, selected],
   );
 
   const enableIntake =
     updatedSelected.length === 0 ||
     (updatedSelected as Grape[]).some(
-      ({ status }) => status === GrapeStatus.IN_TRANSIT
+      ({ status }) => status === GrapeStatus.IN_TRANSIT,
     );
 
   const handleActionClick = (action: string) => {

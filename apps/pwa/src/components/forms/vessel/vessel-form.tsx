@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useVessel } from "@/context/vessel";
@@ -75,7 +74,7 @@ export default function VesselForm() {
       setValue(name as keyof Vessel, value);
       setFormData((prev) => ({ ...(prev as Vessel), [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCreateVessel = useCallback(
@@ -116,7 +115,7 @@ export default function VesselForm() {
           const updateRes: DbResponse = await db.vessel.update(
             uid,
             id,
-            newData
+            newData,
           );
 
           setFormData(newData);
@@ -152,14 +151,17 @@ export default function VesselForm() {
           }
         }
       } catch (e) {
-        console.error("Error creating document or subcollection with data: ", e);
+        console.error(
+          "Error creating document or subcollection with data: ",
+          e,
+        );
 
         enqueueSnackbar(`Error creating vessel`, {
           variant: "error",
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: Vessel) => {
@@ -325,7 +327,7 @@ export default function VesselForm() {
                           "lastMaintenance",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : null
+                            : null,
                         )
                       }
                     />
@@ -405,7 +407,7 @@ export default function VesselForm() {
                           onChange={(e) =>
                             handleSelectChange(
                               "volumeUnit",
-                              e.target.value || ""
+                              e.target.value || "",
                             )
                           }
                         >
@@ -477,7 +479,7 @@ export default function VesselForm() {
                                         {status}
                                       </MenuItem>
                                     );
-                                  }
+                                  },
                                 )}
                               </Select>
                             )}
@@ -712,7 +714,7 @@ export default function VesselForm() {
                               }
                               onChange={(newValue) => {
                                 field.onChange(
-                                  newValue ? newValue?.year() : null
+                                  newValue ? newValue?.year() : null,
                                 );
                               }}
                               slotProps={{

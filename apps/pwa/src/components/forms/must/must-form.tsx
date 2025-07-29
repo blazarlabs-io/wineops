@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMust } from "@/context/must";
@@ -70,7 +69,7 @@ export default function MustForm() {
       setValue(name as keyof Must, value);
       setFormData((prev) => ({ ...(prev as Must), [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCreateMust = useCallback(
@@ -128,14 +127,17 @@ export default function MustForm() {
           }
         }
       } catch (e) {
-        console.error("Error creating document or subcollection with data: ", e);
+        console.error(
+          "Error creating document or subcollection with data: ",
+          e,
+        );
 
         enqueueSnackbar(`Error creating must`, {
           variant: "error",
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: Must) => {
@@ -227,7 +229,7 @@ export default function MustForm() {
                           "date",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : undefined
+                            : undefined,
                         )
                       }
                     />
@@ -354,7 +356,9 @@ export default function MustForm() {
                       options={vessels.filter(
                         (vessel) =>
                           vessel.rowType !== "group" &&
-                          !formData?.vessels?.some(({ id }) => id === vessel.id)
+                          !formData?.vessels?.some(
+                            ({ id }) => id === vessel.id,
+                          ),
                       )}
                       value={[]}
                       getOptionLabel={(option) => option.name}
@@ -420,7 +424,7 @@ export default function MustForm() {
                                         ...(formData.vessels || []),
                                       ];
                                       updated[index].qty = Number(
-                                        e.target.value
+                                        e.target.value,
                                       );
                                       handleSelectChange("vessels", updated);
                                     }}
@@ -432,7 +436,7 @@ export default function MustForm() {
                                   disabled={false}
                                   onClick={() => {
                                     const updated = formData.vessels?.filter(
-                                      (vessel) => vessel.id !== id
+                                      (vessel) => vessel.id !== id,
                                     );
                                     handleSelectChange("vessels", updated);
                                   }}
@@ -453,7 +457,7 @@ export default function MustForm() {
                                     ?.message as string)}
                               </Typography>
                             </Fragment>
-                          )
+                          ),
                         )}
                       </Stack>
                     )}
@@ -558,7 +562,7 @@ export default function MustForm() {
                               field.onChange(
                                 newValue
                                   ? Timestamp.fromDate(newValue.toDate())
-                                  : null
+                                  : null,
                               )
                             }
                           />
@@ -740,7 +744,7 @@ export default function MustForm() {
                           onInputChange={(_event, newInputValue) => {
                             handleSelectChange(
                               "labData.sugar.unit",
-                              newInputValue
+                              newInputValue,
                             );
                           }}
                           sx={{ width: "100px" }}
@@ -827,13 +831,13 @@ export default function MustForm() {
                           onChange={(_event, newValue) => {
                             handleSelectChange(
                               "labData.acidity.unit",
-                              newValue
+                              newValue,
                             );
                           }}
                           onInputChange={(_event, newInputValue) => {
                             handleSelectChange(
                               "labData.acidity.unit",
-                              newInputValue
+                              newInputValue,
                             );
                           }}
                           sx={{ width: "100px" }}
@@ -980,7 +984,7 @@ export default function MustForm() {
                           type="number"
                           slotProps={{ htmlInput: { min: 0, step: "any" } }}
                           {...register(
-                            "labData.yeastAssimilableNitrogen.value"
+                            "labData.yeastAssimilableNitrogen.value",
                           )}
                         />
                       </FormControl>

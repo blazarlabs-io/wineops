@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -74,7 +73,7 @@ export default function GrapeIntakeActionForm({
   const { grapes, actions } = useGrape();
 
   const selectedGrapes = useSelectedEntitiesStore(
-    ({ selected }) => selected
+    ({ selected }) => selected,
   ) as Grape[];
 
   const filteredGrapes = useMemo(
@@ -82,14 +81,14 @@ export default function GrapeIntakeActionForm({
       (selectedGrapes.length > 0
         ? selectedGrapes.map(
             (selected) =>
-              grapes.find(({ id }) => id === selected.id) ?? selected
+              grapes.find(({ id }) => id === selected.id) ?? selected,
           )
         : grapes
       ).filter(
         ({ rowType, status }) =>
-          rowType === "item" && status === GrapeStatus.IN_TRANSIT
+          rowType === "item" && status === GrapeStatus.IN_TRANSIT,
       ),
-    [grapes, selectedGrapes]
+    [grapes, selectedGrapes],
   );
 
   const { teamMembers } = useWinery();
@@ -97,7 +96,7 @@ export default function GrapeIntakeActionForm({
 
   const userId =
     teamMembers?.find(
-      ({ id, email }) => email === user?.email || id === user?.uid
+      ({ id, email }) => email === user?.email || id === user?.uid,
     )?.id ||
     user?.email ||
     user?.uid ||
@@ -116,7 +115,7 @@ export default function GrapeIntakeActionForm({
   });
 
   const [formData, setFormData] = useState<GrapeIntakeAction>(
-    {} as GrapeIntakeAction
+    {} as GrapeIntakeAction,
   );
 
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -133,7 +132,7 @@ export default function GrapeIntakeActionForm({
         [name]: value,
       }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleNewUpload = useCallback(
@@ -152,7 +151,7 @@ export default function GrapeIntakeActionForm({
 
       setValue(name, filesUrls);
     },
-    [formData.supportingDocuments, setValue]
+    [formData.supportingDocuments, setValue],
   );
 
   const handleFile = useCallback(
@@ -208,7 +207,7 @@ export default function GrapeIntakeActionForm({
           setUploadProgress(0);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
     [
@@ -217,7 +216,7 @@ export default function GrapeIntakeActionForm({
       handleNewUpload,
       setError,
       user?.uid,
-    ]
+    ],
   );
 
   const handleDeleteFile = useCallback(
@@ -236,7 +235,7 @@ export default function GrapeIntakeActionForm({
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
         "grape-intake",
-        name
+        name,
       );
 
       if (deleteFileRes.status == 200) {
@@ -244,14 +243,14 @@ export default function GrapeIntakeActionForm({
       } else {
       }
     },
-    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
   const onSubmit = async (data: any) => {
     if (!user?.uid || !data.subjectGrape.id) return;
 
     const subjectGrape = filteredGrapes.filter(
-      ({ id }) => id === data.subjectGrape.id
+      ({ id }) => id === data.subjectGrape.id,
     )[0];
 
     if (!subjectGrape) return;
@@ -276,7 +275,7 @@ export default function GrapeIntakeActionForm({
         : filteredGrapes?.length === 1
           ? filteredGrapes[0]
           : undefined,
-    [filteredGrapes, formData.subjectGrape?.id]
+    [filteredGrapes, formData.subjectGrape?.id],
   );
 
   useEffect(() => {
@@ -321,7 +320,6 @@ export default function GrapeIntakeActionForm({
 
   useEffect(() => {
     if (errors) {
-
       const hasGeneralErrors = hasKeyFromArray(
         [
           "subjectGrape",
@@ -330,7 +328,7 @@ export default function GrapeIntakeActionForm({
           "grapeVariety",
           "certificatDeInofensivitate",
         ],
-        errors
+        errors,
       );
       if (hasGeneralErrors) setGeneralExpanded(true);
 
@@ -339,13 +337,13 @@ export default function GrapeIntakeActionForm({
 
       const hasQualityParamsErrors = hasKeyFromArray(
         ["qualityCharacteristics", "labCertificateId", "labTechnicianName"],
-        errors
+        errors,
       );
       if (hasQualityParamsErrors) setQualityParamsExpanded(true);
 
       const hasTransportInfoError = hasKeyFromArray(
         ["processingLocation", "invoiceNumber", "transportInfo"],
-        errors
+        errors,
       );
       if (hasTransportInfoError) setTransportInfoExpanded(true);
     }
@@ -475,7 +473,7 @@ export default function GrapeIntakeActionForm({
 
                         handleChange(
                           "executionDate",
-                          Timestamp.fromDate(date.toDate())
+                          Timestamp.fromDate(date.toDate()),
                         );
                       }}
                     />
@@ -743,7 +741,7 @@ export default function GrapeIntakeActionForm({
                           if (!value) return;
 
                           const responsible = teamMembers.find(({ name }) =>
-                            value.startsWith(name)
+                            value.startsWith(name),
                           );
                           handleChange("weigherName", responsible);
                         }}
@@ -945,7 +943,7 @@ export default function GrapeIntakeActionForm({
                           },
                         }}
                         {...register(
-                          "qualityCharacteristics.massFractionSpoiled"
+                          "qualityCharacteristics.massFractionSpoiled",
                         )}
                       />
 
@@ -986,7 +984,7 @@ export default function GrapeIntakeActionForm({
                           },
                         }}
                         {...register(
-                          "qualityCharacteristics.massFractionCrushed"
+                          "qualityCharacteristics.massFractionCrushed",
                         )}
                       />
 
@@ -1027,7 +1025,7 @@ export default function GrapeIntakeActionForm({
                           },
                         }}
                         {...register(
-                          "qualityCharacteristics.massFractionMixed"
+                          "qualityCharacteristics.massFractionMixed",
                         )}
                       />
 

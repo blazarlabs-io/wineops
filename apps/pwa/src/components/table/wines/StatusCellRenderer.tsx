@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
 export const StatusCellRenderer = (
-  params: CustomCellRendererProps & { alignItems?: string }
+  params: CustomCellRendererProps & { alignItems?: string },
 ) => {
   const { value, node, data, alignItems } = params;
   const isGroup = node.group || data.rowType === "group";

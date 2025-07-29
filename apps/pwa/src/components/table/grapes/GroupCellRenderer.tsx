@@ -1,4 +1,3 @@
-
 import { IconButton, Link, Stack, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useCallback, useState, type FunctionComponent } from "react";
@@ -22,7 +21,7 @@ import { enqueueSnackbar } from "notistack";
 import GrapeStatusDataDisplaySelect from "@/components/data-display/grape-status-data-display-select";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, node } = params;
   const { user } = useAuth();
@@ -32,7 +31,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(
-      node.expanded ? ROW_HEIGHT_EXPANDED_GRAPE : ROW_HEIGHT_DEFAULT
+      node.expanded ? ROW_HEIGHT_EXPANDED_GRAPE : ROW_HEIGHT_DEFAULT,
     );
   }, [node]);
 
@@ -47,7 +46,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     isGroup && Array.isArray(batchId)
       ? batchId.map(
           (batch) =>
-            `${batch?.date ? formatDate(batch?.date, { locale: DEFAULT_LOCALE }) : ""}***${batch?.location ?? ""}`
+            `${batch?.date ? formatDate(batch?.date, { locale: DEFAULT_LOCALE }) : ""}***${batch?.location ?? ""}`,
         )
       : [];
 
@@ -66,12 +65,12 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     value,
     node.data?.labData,
     labReports,
-    grapes
+    grapes,
   );
 
   const handleStatusChange = async (status: EntityStatus) => {
     const selectedGrape = grapes.find(
-      (grape) => grape.id === node.data?.id
+      (grape) => grape.id === node.data?.id,
     ) as Grape;
     if (selectedGrape !== undefined && selectedGrape.status !== undefined) {
       selectedGrape.status = status as GrapeStatus;
@@ -133,7 +132,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                         + {uniqueDateLocation.length - GROUP_ITEMS_TO_SHOW} more
                       </Link>
                     )
-                  )
+                  ),
               )}
             </Stack>
           )

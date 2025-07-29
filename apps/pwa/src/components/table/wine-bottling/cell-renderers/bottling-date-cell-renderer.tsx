@@ -1,4 +1,3 @@
-
 import BottlingDateDialog from "@/components/dialogs/bottling-date-dialog";
 import LocationDialog from "@/components/dialogs/location-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";

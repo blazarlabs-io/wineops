@@ -100,14 +100,14 @@ export const MustProvider = ({ children }: IMustProvider) => {
         return { ...must, vessels: updatedVessels as MustWineVessel[] };
       });
     },
-    []
+    [],
   );
 
   const { vessels } = useVessel();
 
   const hydratedMusts = useMemo(
     () => hydrateMustsWithUpdatedVessels(musts, vessels),
-    [hydrateMustsWithUpdatedVessels, musts, vessels]
+    [hydrateMustsWithUpdatedVessels, musts, vessels],
   );
 
   return (

@@ -17,7 +17,6 @@ const chemistry = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -46,7 +45,6 @@ const chemistry = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -57,7 +55,7 @@ const chemistry = {
   update: async (
     uid: string,
     id: string,
-    data: Chemistry
+    data: Chemistry,
   ): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, CHEMISTRY, id);
@@ -70,7 +68,6 @@ const chemistry = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -107,7 +104,6 @@ const chemistry = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -126,7 +122,6 @@ const chemistry = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -152,7 +147,6 @@ const chemistry = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

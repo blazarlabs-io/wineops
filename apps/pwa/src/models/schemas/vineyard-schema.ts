@@ -18,7 +18,7 @@ const locationSchema = Joi.object<Location>({
       Joi.object({
         lat: Joi.number().optional(),
         lng: Joi.number().optional(),
-      })
+      }),
     )
     .optional(),
   surface: Joi.number()
@@ -124,7 +124,7 @@ const labDataSchema = Joi.object({
           email: Joi.string().optional().allow(""),
         }),
         date: Joi.string().optional().allow(""),
-      })
+      }),
     )
     .optional(),
   date: Joi.string().optional().allow(""),
@@ -135,7 +135,7 @@ const TimestampOrString = Joi.alternatives().try(
   Joi.object().custom((value, helpers) => {
     if (value instanceof Timestamp) return value;
     return helpers.error("any.invalid");
-  }, "Timestamp validation")
+  }, "Timestamp validation"),
 );
 
 export const teamMemberSchema = Joi.object<TeamMember>({
@@ -154,7 +154,7 @@ const actionRelationSchema = Joi.array()
     Joi.object({
       id: Joi.string().optional().allow(""),
       name: Joi.string().optional().allow(""),
-    })
+    }),
   )
   .optional();
 
@@ -194,14 +194,14 @@ export const vineyardSchema = Joi.object<Vineyard>().keys({
     Joi.string().min(2).max(50).optional().allow("").messages({
       "string.min": "Cadastral number must be at least 2 characters long",
       "string.max": `Cadastral number cannot be longer than 50 characters`,
-    })
+    }),
   ),
   identificatorUnicParcela: Joi.array().items(
     Joi.string().min(2).max(50).optional().allow("").messages({
       "string.min":
         "Identificatorul unic al parcelei viticole must be at least 2 characters long",
       "string.max": `Identificatorul unic al parcelei viticole cannot be longer than 50 characters`,
-    })
+    }),
   ),
   rowType: Joi.string().optional(),
   info: vineyardInfoSchema,
@@ -225,7 +225,7 @@ export const vineyardSchema = Joi.object<Vineyard>().keys({
         subtype: Joi.string().optional().allow(""),
         sizeMb: Joi.number().precision(2).optional(),
       }),
-    })
+    }),
   ),
   group: Joi.array().items(Joi.string().optional().allow("")),
   createdAt: TimestampOrString.empty("").optional(),

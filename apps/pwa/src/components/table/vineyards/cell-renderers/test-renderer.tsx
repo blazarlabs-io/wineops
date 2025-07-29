@@ -39,7 +39,7 @@ export const TestRenderer = (params: CustomCellRendererProps) => {
             </mark>
           ) : (
             partValue
-          )
+          ),
       )}
     </span>
   );

@@ -1,4 +1,3 @@
-
 import { ColDef } from "ag-grid-enterprise";
 import { Chemistry } from "@/models/types/db";
 import { DefaultCellRenderer } from "../DefaultCellRenderer";

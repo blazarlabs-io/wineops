@@ -1,4 +1,3 @@
-
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { BarrelInfoUsage, VesselType } from "@/models/types/db";
 import Stack from "@mui/material/Stack";
@@ -25,7 +24,7 @@ export const VesselUsageCellRenderer = (params: CustomCellRendererProps) => {
               ? vessel?.barrelInfo?.usageStatus || BarrelInfoUsage.NEW_VESSEL
               : vessel?.type === VesselType.STAINLESS_STEEL_TANK
                 ? vessel?.sstInfo?.usage
-                : usage) ?? "") !== ""
+                : usage) ?? "") !== "",
         )
     : [];
 

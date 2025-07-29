@@ -1,4 +1,3 @@
-
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -49,7 +48,7 @@ const TeamTable = () => {
         foregroundColor: "#FFFFFFCC",
         browserColorScheme: "dark",
       },
-      "dark"
+      "dark",
     )
     .withParams(
       {
@@ -57,12 +56,11 @@ const TeamTable = () => {
         foregroundColor: "#361008CC",
         browserColorScheme: "light",
       },
-      "light"
+      "light",
     );
 
   const defaultColDef = useMemo<ColDef>(() => {
-    return {
-    };
+    return {};
   }, []);
 
   const { teamMembers } = useWinery();
@@ -72,7 +70,7 @@ const TeamTable = () => {
     (data: any) => {
       setSelected(data.api.getSelectedRows(), "team");
     },
-    [setSelected]
+    [setSelected],
   );
 
   useEffect(() => {

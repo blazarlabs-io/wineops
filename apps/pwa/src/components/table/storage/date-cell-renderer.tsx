@@ -5,7 +5,7 @@ import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 
 export const DateCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, data, node } = params;
   const isGroup = node?.group || node?.data?.rowType === "group";

@@ -1,4 +1,3 @@
-
 import LocationDialog from "@/components/dialogs/location-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";

@@ -25,7 +25,6 @@ const vessel = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -48,7 +47,6 @@ const vessel = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -59,7 +57,7 @@ const vessel = {
   update: async (
     uid: string,
     id: string,
-    data: Vessel
+    data: Vessel,
   ): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, VESSELS, id);
@@ -73,7 +71,6 @@ const vessel = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -110,7 +107,6 @@ const vessel = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -129,7 +125,6 @@ const vessel = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -155,7 +150,6 @@ const vessel = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

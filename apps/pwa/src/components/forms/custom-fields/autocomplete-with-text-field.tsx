@@ -1,4 +1,3 @@
-
 import { Bottle, Chemistry, ChemistryType } from "@/models/types/db";
 import {
   InputLabel,
@@ -36,14 +35,14 @@ export default function AutocompleteWithTextField({
     (name: keyof LocalEntity, value: LocalEntity[keyof LocalEntity]) => {
       onValueChange(name, value);
     },
-    [onValueChange]
+    [onValueChange],
   );
 
   const handleInputChange = useCallback(
     (name: any, value: string) => {
       onTextChange(name, value);
     },
-    [onTextChange]
+    [onTextChange],
   );
 
   return (

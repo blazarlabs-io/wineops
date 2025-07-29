@@ -1,4 +1,3 @@
-
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -49,7 +48,7 @@ const TasksTable = () => {
         foregroundColor: "#FFFFFFCC",
         browserColorScheme: "dark",
       },
-      "dark"
+      "dark",
     )
     .withParams(
       {
@@ -57,12 +56,11 @@ const TasksTable = () => {
         foregroundColor: "#361008CC",
         browserColorScheme: "light",
       },
-      "light"
+      "light",
     );
 
   const defaultColDef = useMemo<ColDef>(() => {
-    return {
-    };
+    return {};
   }, []);
 
   const { tasks } = useVineyard();
@@ -73,7 +71,7 @@ const TasksTable = () => {
     (data: any) => {
       setSelected(data.api.getSelectedRows(), "task");
     },
-    [setSelected]
+    [setSelected],
   );
 
   useEffect(() => {

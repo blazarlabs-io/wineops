@@ -1,4 +1,3 @@
-
 import BottlingStatusDataDisplaySelect from "@/components/data-display/bottling-status-data-display-select";
 import LotIdAndLotStatusDialog from "@/components/dialogs/lot-id-lot-status-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
@@ -105,14 +104,14 @@ export const LotIdAndStatusCellRenderer: FunctionComponent<
         onClose={() => setOpenLots(false)}
         ids={
           node?.allLeafChildren?.map((_node: any) =>
-            _node.data?.lotId?.length > 0 ? _node.data?.lotId : ["Lot ID N/A"]
+            _node.data?.lotId?.length > 0 ? _node.data?.lotId : ["Lot ID N/A"],
           ) || []
         }
         statuses={
           node?.allLeafChildren?.map((_node: any) =>
             _node.data?.lotStatus?.length > 0
               ? _node.data?.lotStatus
-              : [LotStatus.PLANNED]
+              : [LotStatus.PLANNED],
           ) || []
         }
       />

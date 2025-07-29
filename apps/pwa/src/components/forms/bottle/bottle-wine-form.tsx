@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -93,19 +92,19 @@ export default function BottleWineForm() {
   const { consumables } = useConsumable();
 
   const bottleTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.BOTTLE
+    ({ category }) => category === ConsumableCategory.BOTTLE,
   );
   const closureTypes = [
     { id: "0", name: "Screw cap" },
     ...consumables?.filter(
-      ({ category }) => category === ConsumableCategory.CORK
+      ({ category }) => category === ConsumableCategory.CORK,
     ),
   ] as Consumable[];
   const capsuleTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.CAPSULE
+    ({ category }) => category === ConsumableCategory.CAPSULE,
   );
   const labelTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.LABEL
+    ({ category }) => category === ConsumableCategory.LABEL,
   );
 
   const { teamMembers } = useWinery();
@@ -157,9 +156,8 @@ export default function BottleWineForm() {
           [name]: value,
         }));
       }
-
     },
-    [setValue]
+    [setValue],
   );
 
   const handleNewUpload = useCallback(
@@ -178,7 +176,7 @@ export default function BottleWineForm() {
 
       setValue(name, filesUrls);
     },
-    [formData.supportingDocuments, setValue]
+    [formData.supportingDocuments, setValue],
   );
 
   const handleFile = useCallback(
@@ -234,7 +232,7 @@ export default function BottleWineForm() {
           setUploadProgress(0);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
     [
@@ -243,7 +241,7 @@ export default function BottleWineForm() {
       handleNewUpload,
       setError,
       user?.uid,
-    ]
+    ],
   );
 
   const handleDeleteFile = useCallback(
@@ -262,7 +260,7 @@ export default function BottleWineForm() {
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
         "bottleWine",
-        name
+        name,
       );
 
       if (deleteFileRes.status == 200) {
@@ -270,7 +268,7 @@ export default function BottleWineForm() {
       } else {
       }
     },
-    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
   const onSubmit = async (data: any, e: any) => {
@@ -320,7 +318,6 @@ export default function BottleWineForm() {
   const existingBottle = bottles?.find(({ id }) => id === selected[0]?.id);
 
   useEffect(() => {
-
     if (existingBottle && existingBottle !== undefined) {
       reset(existingBottle);
       setFormData(() => existingBottle);
@@ -353,31 +350,30 @@ export default function BottleWineForm() {
 
   useEffect(() => {
     if (errors) {
-
       const hasGeneralErrors = hasKeyFromArray(
         ["executionDate", "wines"],
-        errors
+        errors,
       );
 
       if (hasGeneralErrors) setGeneralExpanded(true);
 
       const hasBottleSpecsErrors = hasKeyFromArray(
         ["bottleType", "bottleSize", "closureType"],
-        errors
+        errors,
       );
 
       if (hasBottleSpecsErrors) setBottleSpecsExpanded(true);
 
       const hasFinalLabErrors = hasKeyFromArray(
         ["alcohol", "sugar", "ph", "totalSO2", "freeSO2"],
-        errors
+        errors,
       );
 
       if (hasFinalLabErrors) setFinalLabExpanded(true);
 
       const hasQuantityLossesErrors = hasKeyFromArray(
         ["numberOfBottles", "losses"],
-        errors
+        errors,
       );
 
       if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
@@ -458,7 +454,7 @@ export default function BottleWineForm() {
                       onChange={(date) => {
                         handleChange(
                           "executionDate",
-                          date ? Timestamp.fromDate(date.toDate()) : null
+                          date ? Timestamp.fromDate(date.toDate()) : null,
                         );
                       }}
                     />
@@ -542,8 +538,7 @@ export default function BottleWineForm() {
                     errors={errors}
                     value={formData?.subjectRecipe || ""}
                     options={[]}
-                    onValueChange={(name: any, value: any) => {
-                    }}
+                    onValueChange={(name: any, value: any) => {}}
                     onTextChange={(name: any, value: any) => {
                       handleChange("subjectRecipe", value);
                     }}
@@ -559,7 +554,7 @@ export default function BottleWineForm() {
                         (wine) =>
                           wine.rowType !== "group" &&
                           (wine?.qty || 0) > 0 &&
-                          !formData.wines?.some(({ id }) => id === wine.id)
+                          !formData.wines?.some(({ id }) => id === wine.id),
                       )}
                       value={[]}
                       getOptionLabel={(option) => option.name}
@@ -643,7 +638,7 @@ export default function BottleWineForm() {
                                         ];
 
                                         updated[index].quantity = Number(
-                                          e.target.value
+                                          e.target.value,
                                         );
 
                                         handleChange("wines", updated);
@@ -660,7 +655,7 @@ export default function BottleWineForm() {
                                     disabled={false}
                                     onClick={() => {
                                       const updated = formData.wines?.filter(
-                                        (wine) => wine.id !== id
+                                        (wine) => wine.id !== id,
                                       );
 
                                       handleChange("wines", updated);
@@ -682,13 +677,13 @@ export default function BottleWineForm() {
                                       ?.message as string)}
                                 </Typography>
                               </Fragment>
-                            )
+                            ),
                           )}
                           <Typography variant="body2">
                             Quantity used:{" "}
                             {formData?.wines?.reduce(
                               (sum, wine) => (sum += wine?.quantity || 0),
-                              0
+                              0,
                             )}
                           </Typography>
                         </Stack>
@@ -712,7 +707,7 @@ export default function BottleWineForm() {
                         teamMembers={teamMembers}
                         onChange={(value: any) => {
                           const responsible = teamMembers.find(({ name }) =>
-                            value.startsWith(name)
+                            value.startsWith(name),
                           );
                           handleChange("responsible", responsible);
                         }}
@@ -1054,8 +1049,7 @@ export default function BottleWineForm() {
                     onValueChange={(name, value) => {
                       handleChange("packagingType", value);
                     }}
-                    onTextChange={(name, value) => {
-                    }}
+                    onTextChange={(name, value) => {}}
                     value={formData?.packagingType || ""}
                   />
 

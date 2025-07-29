@@ -17,7 +17,7 @@ import { db } from "../firebase/services";
 export const vineyardHarvestAction = async (
   uid: string,
   actionData: VineyardHarvestAction,
-  vineyard: Vineyard
+  vineyard: Vineyard,
 ) => {
   const updatedVineyard: Vineyard = {
     ...vineyard,
@@ -147,15 +147,13 @@ export const vineyardHarvestAction = async (
       variant: "error",
     });
   }
-
 };
 
 export const vineyardLabAction = async (
   uid: string,
   actionData: VineyardGlobalAction,
-  vineyard: Vineyard
+  vineyard: Vineyard,
 ) => {
-
   const labReportId = Date.now().toString();
 
   const {
@@ -213,7 +211,7 @@ export const vineyardLabAction = async (
   const filteredLabData =
     (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0
       ? vineyard.labData?.filter(
-          (labData) => !labDataToDeleteIds?.includes(labData.id)
+          (labData) => !labDataToDeleteIds?.includes(labData.id),
         )
       : vineyard.labData) || ([] as ActionRelation[]);
 
@@ -246,15 +244,14 @@ export const vineyardLabAction = async (
 export const vineyardGenericAction = async (
   uid: string,
   actionData: VineyardGlobalAction,
-  vineyard: Vineyard
+  vineyard: Vineyard,
 ) => {
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
     enqueueSnackbar(
       `Action "${actionData.type?.split("-").join(" ")}" created`,
-      { variant: "success" }
+      { variant: "success" },
     );
   } else {
     enqueueSnackbar("Error creating action", { variant: "error" });
@@ -271,7 +268,7 @@ export const vineyardGenericAction = async (
           name: actionData.type,
         },
       ],
-    }
+    },
   );
 
   if (vineyardRes.status === 200) {

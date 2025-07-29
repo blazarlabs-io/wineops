@@ -1,4 +1,3 @@
-
 import { Backup } from "@mui/icons-material";
 import {
   Button,
@@ -36,10 +35,10 @@ export default function UploadDocumentsDialog({
       setCurrentUploads((prevFiles) =>
         file?.url
           ? [...prevFiles, file]
-          : prevFiles?.filter(({ name }) => name !== file.name)
+          : prevFiles?.filter(({ name }) => name !== file.name),
       );
     },
-    []
+    [],
   );
 
   const handleClose = () => {

@@ -7,7 +7,7 @@ import type { FunctionComponent } from "react";
 import React from "react";
 
 export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, data, node } = params;
   const isGroup = node.group || data?.rowType === "group";

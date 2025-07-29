@@ -1,4 +1,3 @@
-
 import {
   GrapeDestination,
   ParcelClassification,
@@ -224,7 +223,7 @@ export const StyledDatePicker = styled(DatePicker)(
       height: "16px",
       margin: "0px",
     },
-  })
+  }),
 );
 
 export const generateEmptyRows = (numberOfRows = 1) =>
@@ -245,11 +244,11 @@ export const generateEmptyCells = (numberOfCells = 1) =>
 
 export const filterByClassification = (
   arr: any[],
-  classification: ParcelClassification
+  classification: ParcelClassification,
 ) =>
   Array.isArray(arr)
     ? arr.filter(
-        ({ parcelClassification }) => parcelClassification === classification
+        ({ parcelClassification }) => parcelClassification === classification,
       )
     : [];
 

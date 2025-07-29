@@ -1,4 +1,3 @@
-
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { useToolsbar } from "@/context/tools-bar";

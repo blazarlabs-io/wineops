@@ -1,4 +1,3 @@
-
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
@@ -48,7 +47,7 @@ export default function VineyardLabActionForm({
   const { vineyards = [], actions, labReports } = useVineyard();
 
   const selected = useSelectedEntitiesStore(
-    ({ selected }) => selected
+    ({ selected }) => selected,
   ) as Vineyard[];
 
   const selectedVineyards = useMemo(
@@ -58,11 +57,11 @@ export default function VineyardLabActionForm({
         : (selected.length > 0
             ? selected.map(
                 (selected) =>
-                  vineyards.find(({ id }) => id === selected.id) ?? selected
+                  vineyards.find(({ id }) => id === selected.id) ?? selected,
               )
             : vineyards
           ).filter(({ rowType }) => rowType === "item"),
-    [dialogs, selected, vineyard, vineyards]
+    [dialogs, selected, vineyard, vineyards],
   );
 
   const { teamMembers } = useWinery();
@@ -70,7 +69,7 @@ export default function VineyardLabActionForm({
 
   const userId =
     teamMembers?.find(
-      ({ id, email }) => email === user?.email || id === user?.uid
+      ({ id, email }) => email === user?.email || id === user?.uid,
     )?.id ||
     user?.email ||
     user?.uid ||
@@ -91,7 +90,7 @@ export default function VineyardLabActionForm({
           "number.precision": "Sugar must have at most 2 decimal places",
           "number.min": "Sugar must be greater than 0 g/dm³",
           "number.max": "Sugar cannot exceed 10,000 g/dm³",
-        })
+        }),
   );
 
   const {
@@ -109,7 +108,7 @@ export default function VineyardLabActionForm({
   });
 
   const [formData, setFormData] = useState<VineyardGlobalAction>(
-    vineyardGlobalActionSample
+    vineyardGlobalActionSample,
   );
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -125,7 +124,7 @@ export default function VineyardLabActionForm({
         [name]: value,
       }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleNewUpload = useCallback(
@@ -142,7 +141,7 @@ export default function VineyardLabActionForm({
       }));
       setValue(name, filesUrls);
     },
-    [formData.supportingDocuments, setValue]
+    [formData.supportingDocuments, setValue],
   );
 
   const handleFile = useCallback(
@@ -198,7 +197,7 @@ export default function VineyardLabActionForm({
           setUploadProgress(0);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
     [
@@ -207,7 +206,7 @@ export default function VineyardLabActionForm({
       handleNewUpload,
       setError,
       user?.uid,
-    ]
+    ],
   );
 
   const handleDeleteFile = useCallback(
@@ -225,7 +224,7 @@ export default function VineyardLabActionForm({
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
         "labReport",
-        name
+        name,
       );
 
       if (deleteFileRes.status == 200) {
@@ -233,7 +232,7 @@ export default function VineyardLabActionForm({
       } else {
       }
     },
-    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
   const onSubmit = async (data: any, e: any) => {
@@ -241,7 +240,7 @@ export default function VineyardLabActionForm({
     e.preventDefault();
 
     const subjectVineyard = selectedVineyards.filter(
-      (v) => v.id === data.inUseVineyard.id
+      (v) => v.id === data.inUseVineyard.id,
     )[0];
 
     setIsSubmitting(true);
@@ -265,7 +264,7 @@ export default function VineyardLabActionForm({
       await actions?.["lab-report"].exec(
         user?.uid as string,
         { ...data, labDataToDeleteIds },
-        subjectVineyard
+        subjectVineyard,
       );
     } finally {
       setIsSubmitting(false);
@@ -406,7 +405,7 @@ export default function VineyardLabActionForm({
 
                       handleChange(
                         "executionDate",
-                        Timestamp.fromDate(date.toDate())
+                        Timestamp.fromDate(date.toDate()),
                       );
                     }}
                   />
@@ -431,7 +430,7 @@ export default function VineyardLabActionForm({
                         if (!value) return;
 
                         const responsible = teamMembers.find(({ name }) =>
-                          value.startsWith(name)
+                          value.startsWith(name),
                         );
 
                         if (!responsible) {

@@ -40,12 +40,12 @@ export default function StorageDashboard() {
 
   const hasStoredMusts = useMemo(
     () => hasEntitiesWithStatus(musts, MustStatus.STORED),
-    [musts]
+    [musts],
   );
 
   const hasStoredWines = useMemo(
     () => hasEntitiesWithStatus(wines, WineStatus.STORED),
-    [wines]
+    [wines],
   );
 
   const hasBottledWines = false;
@@ -150,12 +150,12 @@ export default function StorageDashboard() {
 
 const hasEntitiesWithStatus = (
   entities: (Must | Wine)[],
-  entityStatus: typeof MustStatus.STORED | typeof WineStatus.STORED
+  entityStatus: typeof MustStatus.STORED | typeof WineStatus.STORED,
 ) =>
   entities.filter(
     ({ status, vessels }) =>
       status === entityStatus &&
       !!vessels &&
       Array.isArray(vessels) &&
-      vessels.length > 0
+      vessels.length > 0,
   )?.length > 0;

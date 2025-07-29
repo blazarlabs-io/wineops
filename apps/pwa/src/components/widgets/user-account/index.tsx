@@ -1,4 +1,3 @@
-
 import { accounts } from "@/data/account-data-sample";
 import {
   Avatar,

@@ -1,4 +1,3 @@
-
 import { ColDef } from "ag-grid-enterprise";
 import { LotIdAndStatusCellRenderer } from "./cell-renderers/lot-id-and-status-cell-renderer";
 import { QuantityCellRenderer } from "./cell-renderers/quantity-cell-renderer";

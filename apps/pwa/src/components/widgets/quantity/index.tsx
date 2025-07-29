@@ -47,7 +47,7 @@ export default function QuantityWidget({
       status === GrapeStatus.STORED;
 
   const sortedValuesWithColors: SortedValueWithColor[] = Object.entries(
-    QUANTITY_COLORS
+    QUANTITY_COLORS,
   )
     .map(([type, colors]) => ({
       ...colors,
@@ -94,12 +94,12 @@ export default function QuantityWidget({
                 secondaryLightColor,
                 secondaryDarkColor,
               },
-              index
+              index,
             ) => {
               const percentage = Math.round(
                 ((value - (sortedValuesWithColors[index - 1]?.value || 0)) /
                   maxValue) *
-                  100
+                  100,
               );
 
               const isActual = type === Metric.ACTUAL;
@@ -172,7 +172,8 @@ export default function QuantityWidget({
                         />
                         {sortedValuesWithColors
                           .filter(
-                            (item) => item.type !== type && item.value === value
+                            (item) =>
+                              item.type !== type && item.value === value,
                           )
                           .map(({ type }) => (
                             <LegendItem
@@ -235,7 +236,7 @@ export default function QuantityWidget({
                   />
                 </Fragment>
               );
-            }
+            },
           )}
         </div>
 

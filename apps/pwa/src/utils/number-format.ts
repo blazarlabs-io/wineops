@@ -1,7 +1,7 @@
 export function formatNumber(
   value: number | null | undefined,
   decimals?: number,
-  fallback: string = "0"
+  fallback: string = "0",
 ): string {
   if (value === null || value === undefined) {
     return fallback;
@@ -34,7 +34,7 @@ export function formatNumberWithUnit(
   value: number | null | undefined,
   unit: string,
   decimals?: number,
-  fallback: string = "0"
+  fallback: string = "0",
 ): string {
   const formattedValue = formatNumber(value, decimals, fallback);
   return `${formattedValue}${unit}`;
@@ -44,7 +44,7 @@ export function formatNumberWithLowerCaseUnitAndSpace(
   value: number | null | undefined,
   unit: string,
   decimals?: number,
-  fallback: string = "0"
+  fallback: string = "0",
 ): string {
   const formattedValue = formatNumber(value, decimals, fallback);
   return `${formattedValue} ${unit.toLowerCase()}`;
@@ -54,7 +54,7 @@ export function formatNumberWithUnitAndSpace(
   value: number | null | undefined,
   unit: string,
   decimals?: number,
-  fallback: string = "0"
+  fallback: string = "0",
 ): string {
   const formattedValue = formatNumber(value, decimals, fallback);
   return `${formattedValue} ${unit}`;

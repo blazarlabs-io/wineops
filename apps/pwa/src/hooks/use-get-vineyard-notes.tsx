@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export const useGetVineyardNotes = (
   uid: string,
   vineyard: Vineyard,
-  notes: Note[]
+  notes: Note[],
 ) => {
   const [vineyardNotes, setVineyardNotes] = useState<Note[] | null>(null);
 
@@ -28,8 +28,7 @@ export const useGetVineyardNotes = (
           } else {
           }
         })
-        .catch((error: DbResponse) => {
-        });
+        .catch((error: DbResponse) => {});
     }
   }, [notes, uid, vineyard]);
 

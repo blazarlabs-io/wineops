@@ -1,5 +1,3 @@
-
-
 export function cleanUndefined(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map(cleanUndefined).filter((value) => value !== undefined);

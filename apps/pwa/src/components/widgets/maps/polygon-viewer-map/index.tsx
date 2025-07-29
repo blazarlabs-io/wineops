@@ -1,4 +1,3 @@
-
 import { getPolygonCenter } from "@/helpers/map-helpers";
 import { Coordinates } from "@/models/types/db";
 import { Map, useMap } from "@vis.gl/react-google-maps";
@@ -29,8 +28,7 @@ const PolygonOverlay = ({ initialCoordinates }: PolygonOverlayProps) => {
     polygon.setMap(map);
     polygonRef.current = polygon;
 
-    return () => {
-    };
+    return () => {};
   }, [map]);
 
   return null;

@@ -7,7 +7,7 @@ export const useGetVineyardsNames = (vineyards: Vineyard[]) => {
   useEffect(() => {
     if (!vineyards || vineyards.length === 0 || vineyards === undefined) return;
     const fVineyards = vineyards.filter(
-      (vineyard) => vineyard.rowType === "item"
+      (vineyard) => vineyard.rowType === "item",
     );
 
     const names = fVineyards.map((vineyard) => vineyard.name);

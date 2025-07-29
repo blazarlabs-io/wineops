@@ -1,4 +1,3 @@
-
 import TasksTable from "@/components/table/grapes/tasks-table";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { useAuth } from "@/lib/firebase/auth";
@@ -48,7 +47,7 @@ export default function TasksView({ tasks }: TasksViewProps) {
     setStatuses((prev) =>
       prev.includes(status)
         ? prev.filter((s) => s !== status)
-        : [...prev, status]
+        : [...prev, status],
     );
   };
 
@@ -56,27 +55,27 @@ export default function TasksView({ tasks }: TasksViewProps) {
     () =>
       tasks.filter(
         ({ assignedTo }) =>
-          !myTasksOnly || (myTasksOnly && user?.email === assignedTo?.email)
+          !myTasksOnly || (myTasksOnly && user?.email === assignedTo?.email),
       ),
-    [myTasksOnly, tasks, user?.email]
+    [myTasksOnly, tasks, user?.email],
   );
 
   const filteredTasks = useMemo(
     () =>
       myFilteredTasks.filter(
         ({ status }) =>
-          statuses.length === 0 || !status || statuses.includes(status)
+          statuses.length === 0 || !status || statuses.includes(status),
       ),
-    [myFilteredTasks, statuses]
+    [myFilteredTasks, statuses],
   );
 
   const statusCounts: Map<TaskStatus, number> = useMemo(
     () =>
       myFilteredTasks.reduce(
         (acc, { status }) => acc.set(status, (acc.get(status) || 0) + 1),
-        new Map()
+        new Map(),
       ),
-    [myFilteredTasks]
+    [myFilteredTasks],
   );
 
   useEffect(() => {

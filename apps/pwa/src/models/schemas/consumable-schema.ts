@@ -41,7 +41,7 @@ export const consumableSchema = Joi.object({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Order date must be a valid date.",
-      })
+      }),
     )
     .optional()
     .allow("")
@@ -59,7 +59,7 @@ export const consumableSchema = Joi.object({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Expiry date must be a valid date.",
-      })
+      }),
     )
     .optional()
     .allow("")

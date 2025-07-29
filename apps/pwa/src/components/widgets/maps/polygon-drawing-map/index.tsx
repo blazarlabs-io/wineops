@@ -1,4 +1,3 @@
-
 import { Coordinates } from "@/models/types/db";
 import {
   ControlPosition,
@@ -53,8 +52,7 @@ const PolygonOverlay = ({ initialCoordinates }: PolygonOverlayProps) => {
     polygon.setMap(map);
     polygonRef.current = polygon;
 
-    return () => {
-    };
+    return () => {};
   }, [map]);
 
   return null;
@@ -83,10 +81,10 @@ export default function PolygonDrawingMap({
         const coordinates: Coordinates[] = await polygonArray.map(
           (coordinate) => {
             return coordinate.toJSON();
-          }
+          },
         );
         if (onComplete) onComplete(coordinates);
-      }
+      },
     );
     return () => {
       polygonCompleteListener.remove();

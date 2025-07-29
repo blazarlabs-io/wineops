@@ -25,7 +25,6 @@ const grape = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -48,7 +47,6 @@ const grape = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -70,7 +68,6 @@ const grape = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -107,7 +104,6 @@ const grape = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -126,7 +122,6 @@ const grape = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,
@@ -152,7 +147,6 @@ const grape = {
         status: 200,
       };
     } catch (error) {
-
       return {
         data: null,
         error,

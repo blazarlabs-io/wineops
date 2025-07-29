@@ -31,7 +31,7 @@ export default function BottlingDetailsWidget({
     setLocalBottle(bottle);
     if (bottle.wines && bottle.wines.length > 0) {
       setWineQuantity(
-        bottle.wines.map((wine) => wine.quantity).reduce((a, b) => a + b, 0)
+        bottle.wines.map((wine) => wine.quantity).reduce((a, b) => a + b, 0),
       );
     }
   }, [bottle]);
@@ -103,7 +103,7 @@ export default function BottlingDetailsWidget({
                 value={
                   formatNumberWithLowerCaseUnitAndSpace(
                     localBottle?.losses,
-                    "l"
+                    "l",
                   ) || "N/A"
                 }
               />
@@ -131,7 +131,7 @@ export default function BottlingDetailsWidget({
                   localBottle?.bottlesPerBox !== undefined
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         localBottle?.bottlesPerBox,
-                        "kg"
+                        "kg",
                       )
                     : "N/A"
                 }
@@ -173,7 +173,7 @@ export default function BottlingDetailsWidget({
                 localBottle?.bottleSize !== undefined
                   ? formatNumberWithLowerCaseUnitAndSpace(
                       localBottle?.bottleSize,
-                      "ml"
+                      "ml",
                     )
                   : "N/A"
               }
@@ -208,7 +208,7 @@ export default function BottlingDetailsWidget({
                 localBottle?.bottleWeight !== undefined
                   ? formatNumberWithLowerCaseUnitAndSpace(
                       localBottle?.bottleWeight,
-                      "kg"
+                      "kg",
                     )
                   : "N/A"
               }

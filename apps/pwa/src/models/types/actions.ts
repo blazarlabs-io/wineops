@@ -195,7 +195,7 @@ export type MustActions = {
       uid: string,
       actionData: MustDecantAction,
       must: Must,
-      mustVessel?: MustWineVessel
+      mustVessel?: MustWineVessel,
     ) => void;
     form: any;
     icon: string;

@@ -30,9 +30,9 @@ export default function StorageTable({ storageType }: { storageType: number }) {
             (storageType === 1 ? WineStatus.STORED : MustStatus.STORED) &&
           !!vessels &&
           Array.isArray(vessels) &&
-          vessels.length > 0
+          vessels.length > 0,
       ),
-    [musts, storageType, wines]
+    [musts, storageType, wines],
   );
 
   const normalizedEntities = useMemo(
@@ -48,7 +48,7 @@ export default function StorageTable({ storageType }: { storageType: number }) {
                 ...entity.metrics,
                 actual: entity?.vessels?.reduce(
                   (sum, { qty = 0 }) => sum + qty,
-                  0
+                  0,
                 ),
                 status: entity.status,
               },
@@ -69,9 +69,9 @@ export default function StorageTable({ storageType }: { storageType: number }) {
               storageDate: entity?.actions?.[0]?.date,
             }),
           };
-        })
+        }),
       ),
-    [filteredEntities, vessels]
+    [filteredEntities, vessels],
   );
 
   return (

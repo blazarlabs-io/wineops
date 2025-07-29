@@ -116,7 +116,7 @@ export const GrapeVarietyCellRenderer = (params: CustomCellRendererProps) => {
                     )
                   )}
                 </Box>
-              )
+              ),
           )}
         </div>
       ) : (

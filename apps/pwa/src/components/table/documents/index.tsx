@@ -1,4 +1,3 @@
-
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
@@ -23,12 +22,12 @@ export default function DocumentsTable({
         ...rest,
         ownerNameAndEmail: responsible,
       })),
-    [docs]
+    [docs],
   );
 
   const columns: GridColDef[] = useMemo(
     () => documentsColumns as GridColDef[],
-    []
+    [],
   );
 
   return (

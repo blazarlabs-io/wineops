@@ -1,9 +1,7 @@
-
-
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db as fdb } from '../client';
-import { WINERY } from '../config';
-import { DbResponse } from '@/models/types/db';
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db as fdb } from "../client";
+import { WINERY } from "../config";
+import { DbResponse } from "@/models/types/db";
 
 let winery: any = {};
 
@@ -16,7 +14,7 @@ winery = {
       if (!docSnap.exists()) {
         return {
           data: null,
-          error: 'Winery not found',
+          error: "Winery not found",
           status: 404,
         };
       } else {

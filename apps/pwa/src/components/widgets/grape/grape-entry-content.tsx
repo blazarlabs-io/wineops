@@ -29,16 +29,32 @@ export default function GrapeEntryContent({
       <SimpleDataDisplay
         label="Gross weight"
         value={
-          grossWeight ? formatNumberWithLowerCaseUnitAndSpace(grossWeight, grossUnit || "kg") : "N/A"
+          grossWeight
+            ? formatNumberWithLowerCaseUnitAndSpace(
+                grossWeight,
+                grossUnit || "kg",
+              )
+            : "N/A"
         }
       />
       <SimpleDataDisplay
         label="Net weight"
-        value={netWeight ? formatNumberWithLowerCaseUnitAndSpace(netWeight, netUnit || "kg") : "N/A"}
+        value={
+          netWeight
+            ? formatNumberWithLowerCaseUnitAndSpace(netWeight, netUnit || "kg")
+            : "N/A"
+        }
       />
       <SimpleDataDisplay
         label="Tare weight"
-        value={tareWeight ? formatNumberWithLowerCaseUnitAndSpace(tareWeight, tareUnit || "kg") : "N/A"}
+        value={
+          tareWeight
+            ? formatNumberWithLowerCaseUnitAndSpace(
+                tareWeight,
+                tareUnit || "kg",
+              )
+            : "N/A"
+        }
       />
       <SimpleDataDisplay label="Weigher Name" value={weigherName ?? "N/A"} />
       <SimpleDataDisplay

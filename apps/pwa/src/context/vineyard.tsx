@@ -140,7 +140,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         db,
         WINERY,
         user?.uid as string,
-        VINEYARDS
+        VINEYARDS,
       );
 
       unsubVineyards = onSnapshot(vineyardsRef, (querySnapshot) => {
@@ -165,7 +165,7 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         db,
         WINERY,
         user?.uid as string,
-        LAB_REPORTS
+        LAB_REPORTS,
       );
 
       unsubLabReports = onSnapshot(labReportsRef, (querySnapshot) => {

@@ -72,7 +72,7 @@ export default function ChemistryForm() {
       setValue(name as keyof Chemistry, value);
       setFormData((prev) => ({ ...(prev as Chemistry), [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCreateChemistryItem = useCallback(
@@ -96,7 +96,7 @@ export default function ChemistryForm() {
           const updateRes: DbResponse = await db.chemistry.update(
             uid,
             id,
-            newData
+            newData,
           );
 
           setFormData(newData);
@@ -134,7 +134,7 @@ export default function ChemistryForm() {
       } catch (e) {
         console.error(
           "Error creating document or subcollection with data: ",
-          e
+          e,
         );
 
         enqueueSnackbar(`Error creating chemistry item`, {
@@ -142,7 +142,7 @@ export default function ChemistryForm() {
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: Chemistry) => {
@@ -233,7 +233,7 @@ export default function ChemistryForm() {
                           "orderDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : undefined
+                            : undefined,
                         )
                       }
                     />
@@ -399,7 +399,7 @@ export default function ChemistryForm() {
                         onChange={(e) =>
                           handleSelectChange(
                             "stageOfProduction",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                       >
@@ -504,7 +504,7 @@ export default function ChemistryForm() {
                           "expiryDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : undefined
+                            : undefined,
                         )
                       }
                     />

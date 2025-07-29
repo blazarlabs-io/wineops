@@ -1,4 +1,3 @@
-
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
@@ -139,7 +138,7 @@ export const DataTable = <T extends DashboardEntity>({
         headerBackgroundColor: "#212121aa",
         checkboxCheckedBackgroundColor: "#99C3FF",
       },
-      "dark"
+      "dark",
     )
     .withParams(
       {
@@ -150,7 +149,7 @@ export const DataTable = <T extends DashboardEntity>({
         headerBackgroundColor: "#FFFFFFCC",
         checkboxCheckedBackgroundColor: "#1565C0",
       },
-      "light"
+      "light",
     );
 
   const autoGroupColumnDef = useMemo<ColDef>(() => {
@@ -189,7 +188,7 @@ export const DataTable = <T extends DashboardEntity>({
       const entities = nodesToEntities<T>(selectedNodes);
       setSelected(entities, entityName);
     },
-    [entityName, setSelected]
+    [entityName, setSelected],
   );
 
   const { user } = useAuth();
@@ -204,7 +203,7 @@ export const DataTable = <T extends DashboardEntity>({
         Array.isArray(row.group) &&
         row.rowType === "group" &&
         row.group.length === group.length &&
-        row.group.every((val: any, i: any) => val === group[i])
+        row.group.every((val: any, i: any) => val === group[i]),
     );
 
     if (existingGroup) return;
@@ -240,7 +239,7 @@ export const DataTable = <T extends DashboardEntity>({
     const updatedRows = selectedRows.map((row) => {
       const groupPrefix = newGroup?.group ?? group;
       const foundGroupIndex = row.group.findIndex((item) =>
-        fullySelectedGroups.includes(item)
+        fullySelectedGroups.includes(item),
       );
 
       const hierarchyGroup =
@@ -258,7 +257,7 @@ export const DataTable = <T extends DashboardEntity>({
         if (
           !newGroups.find(
             (newGroup) =>
-              newGroup.group.join(",") === newHierarchyGroup.group.join(",")
+              newGroup.group.join(",") === newHierarchyGroup.group.join(","),
           )
         ) {
           newGroups.push(newHierarchyGroup);
@@ -282,7 +281,7 @@ export const DataTable = <T extends DashboardEntity>({
     const updatedMap = new Map(updatedRows.map((row) => [row.id, row]));
 
     const allRows = rowData.map(
-      (row) => (updatedMap.has(row.id) ? updatedMap.get(row.id) : row) as T
+      (row) => (updatedMap.has(row.id) ? updatedMap.get(row.id) : row) as T,
     );
 
     const unusedGroups = getUnusedGroups(allRows);
@@ -301,7 +300,7 @@ export const DataTable = <T extends DashboardEntity>({
       uid,
       newGroups.length > 0
         ? [...updatedRowsWithUnused, ...newGroups]
-        : updatedRowsWithUnused
+        : updatedRowsWithUnused,
     );
 
     if (updateRes.status === 200) {
@@ -326,7 +325,7 @@ export const DataTable = <T extends DashboardEntity>({
       const route = params.rowNode.getRoute();
       return !!route?.every((item, idx) => groupToExpand[idx] === item);
     },
-    [groupToExpand]
+    [groupToExpand],
   );
 
   const setPotentialParentForNode = useCallback(
@@ -353,7 +352,7 @@ export const DataTable = <T extends DashboardEntity>({
       setPotentialParent(newPotentialParent);
       refreshRows(api, rowsToRefresh);
     },
-    [potentialParent]
+    [potentialParent],
   );
 
   function refreshRows(api: GridApi, rowsToRefresh: IRowNode<T>[]) {
@@ -369,14 +368,14 @@ export const DataTable = <T extends DashboardEntity>({
       setDragOverRowId(event.node.id as string);
       setPotentialParentForNode(event.api, event.overNode);
     },
-    [setPotentialParentForNode]
+    [setPotentialParentForNode],
   );
 
   const onRowDragLeave = useCallback(
     (event: RowDragLeaveEvent) => {
       setPotentialParentForNode(event.api, null);
     },
-    [setPotentialParentForNode]
+    [setPotentialParentForNode],
   );
 
   const onRowDragEnd = useCallback(
@@ -398,7 +397,7 @@ export const DataTable = <T extends DashboardEntity>({
           event.api.setGridOption("rowData", newRowData);
 
           const unusedGroupsIds = getUnusedGroups(newRowData).map(
-            ({ id }) => id
+            ({ id }) => id,
           );
 
           const updatedNewRowData = newRowData.map((row) => ({
@@ -429,7 +428,7 @@ export const DataTable = <T extends DashboardEntity>({
       setPotentialParentForNode,
       setSelected,
       uid,
-    ]
+    ],
   );
 
   const treeData = gridRef.current?.api?.getGridOption("treeData");
@@ -457,7 +456,7 @@ export const DataTable = <T extends DashboardEntity>({
       const columnsToToggleVisibility = allCols.filter(
         (col: any) =>
           col?.getColDef()?.headerName === autoGroupColumnDef?.headerName ||
-          col?.getColDef()?.headerName === groupColumnDef?.headerName
+          col?.getColDef()?.headerName === groupColumnDef?.headerName,
       );
 
       if (columnsToToggleVisibility.length > 0) {
@@ -467,22 +466,17 @@ export const DataTable = <T extends DashboardEntity>({
       api.setColumnsVisible(
         ["vesselId"],
         isAlreadyGrouped &&
-          ["groupByVesselType", "groupByLocation"].includes(
-            groupedField || ""
-          ) 
+          ["groupByVesselType", "groupByLocation"].includes(groupedField || ""),
       );
 
-      api.setColumnsVisible(
-        ["statusData"],
-        groupedField !== "groupByStatus"
-      );
+      api.setColumnsVisible(["statusData"], groupedField !== "groupByStatus");
     },
     [
       autoGroupColumnDef?.headerName,
       gridRef,
       groupColumnDef?.headerName,
       groupedField,
-    ]
+    ],
   );
 
   const isRowPinned = useCallback(
@@ -490,7 +484,7 @@ export const DataTable = <T extends DashboardEntity>({
       const data = params.data;
       return pinned && pinned?.includes(data) ? "top" : undefined;
     },
-    [pinned]
+    [pinned],
   );
 
   const onFindChanged = useCallback((event: FindChangedEvent) => {
@@ -498,7 +492,7 @@ export const DataTable = <T extends DashboardEntity>({
     updateActiveMatchNum(
       findSearchValue?.length
         ? `${activeMatch?.numOverall ?? 0}/${totalMatches}`
-        : ""
+        : "",
     );
   }, []);
 
@@ -507,7 +501,7 @@ export const DataTable = <T extends DashboardEntity>({
   }, [groupedField, handleGroupBy]);
 
   const filteredData = rowData?.filter(
-    ({ rowType }) => rowType === "item" || rowType !== "group"
+    ({ rowType }) => rowType === "item" || rowType !== "group",
   );
 
   useEffect(() => {
@@ -565,7 +559,7 @@ export const DataTable = <T extends DashboardEntity>({
               },
               headerName:
                 groupByButtons?.find(
-                  ({ columnName }) => columnName === groupedField
+                  ({ columnName }) => columnName === groupedField,
                 )?.name ||
                 groupedField?.replace("groupBy", "") ||
                 autoGroupColumnDef.headerName,
@@ -582,7 +576,7 @@ export const DataTable = <T extends DashboardEntity>({
             suppressRowHoverHighlight={true}
             suppressCellFocus={true}
             suppressGroupChangesColumnVisibility={columns.some(({ field }) =>
-              field?.startsWith("groupBy")
+              field?.startsWith("groupBy"),
             )}
             enableRowPinning={enableRowPinning}
             isRowPinned={isRowPinned}
@@ -673,7 +667,7 @@ function getFullySelectedGroups(selected: any[], rows: any[]) {
   }
 
   const groupsToKeep: string[] = finalGroups.map(
-    (groupArray) => groupArray.at(-1)!
+    (groupArray) => groupArray.at(-1)!,
   );
 
   return groupsToKeep;

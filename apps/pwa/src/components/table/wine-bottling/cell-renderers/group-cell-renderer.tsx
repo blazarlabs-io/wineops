@@ -1,4 +1,3 @@
-
 import CollectionsDialog from "@/components/dialogs/collections-dialog";
 import BottlingDetailsWidget from "@/components/widgets/bottling/bottling-details-widget";
 import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED } from "@/data/constants";

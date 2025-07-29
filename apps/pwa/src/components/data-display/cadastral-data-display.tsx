@@ -49,7 +49,11 @@ export default function CadastralDataDisplay({
               onClick={() => setOpenCadastrals(true)}
             >
               {value?.length}{" "}
-              {label === "Cadastral Number" ? "cadastral numbers" : label === "Identificatorul unic al parcelei viticole" ? "Identificatori" : ""}
+              {label === "Cadastral Number"
+                ? "cadastral numbers"
+                : label === "Identificatorul unic al parcelei viticole"
+                  ? "Identificatori"
+                  : ""}
             </Button>
           )
         ) : (
