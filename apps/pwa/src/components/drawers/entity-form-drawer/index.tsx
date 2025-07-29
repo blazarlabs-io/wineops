@@ -62,7 +62,11 @@ export default function EntityFormDrawer({
         <Box padding={2} marginTop={4}>
           <Typography variant="h5" fontWeight={"medium"}>
             {entityName === "grape" ? (
-              "Register a grape batch"
+              formType === "create" ? (
+                "Register a grape batch"
+              ) : (
+                "Edit the grape batch"
+              )
             ) : entityName === "must" ? (
               "Buy Must"
             ) : (

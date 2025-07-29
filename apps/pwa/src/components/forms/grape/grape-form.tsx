@@ -25,7 +25,6 @@ import {
   FormControl,
   TextField as Input,
   InputLabel,
-  LinearProgress,
   Stack,
   TextareaAutosize,
   TextField,
@@ -42,7 +41,6 @@ import { ExpandMore } from "@mui/icons-material";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { hasKeyFromArray } from "../utils";
-import { grapeSample } from "@/data/grapeSample";
 import FileUploaderField from "../custom-fields/file-uploader-field";
 import { useWinery } from "@/context/winery";
 
@@ -91,7 +89,7 @@ export default function GrapeForm() {
 
   const { grapes } = useGrape();
 
-  const existingGrape: Grape = grapes?.find(
+  const existingGrape = grapes?.find(
     ({ id }) => id === selected[0]?.id
   ) as Grape;
 
@@ -107,20 +105,7 @@ export default function GrapeForm() {
 
   const [formData, setFormData] = useState<Grape | undefined>();
 
-  const scrollIntoView = useCallback(
-    () =>
-      setTimeout(
-        () =>
-          supportingDocumentsRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          }),
-        detailsExpanded ? 0 : 1000
-      ),
-    [detailsExpanded]
-  );
-
-  const handleSelectChange = useCallback(
+  const handleChange = useCallback(
     (name: string, value: any) => {
       setValue(name as keyof Grape, value);
       setFormData((prev) => ({ ...(prev as Grape), [name]: value }));
@@ -143,12 +128,12 @@ export default function GrapeForm() {
         uploadDate: Timestamp.now(),
         media: data.media.type,
       };
-      handleSelectChange("documents", [
+      handleChange("documents", [
         ...(formData?.documents as SingleDocument[]),
         newSingleDocument,
       ]);
     },
-    [formData?.documents, handleSelectChange, teamMembers, user?.uid]
+    [formData?.documents, handleChange, teamMembers, user?.uid]
   );
 
   const handleCreateGrape = useCallback(
@@ -220,6 +205,8 @@ export default function GrapeForm() {
   const onSubmit = async (data: Grape) => {
     setIsSubmitting(true);
 
+    console.log("[SUBMIT GRAPE FORM]", data);
+
     try {
       await handleCreateGrape(user?.uid || "", data);
     } finally {
@@ -227,24 +214,16 @@ export default function GrapeForm() {
     }
   };
 
-  // useEffect(() => {
-  //   if (grapeSample) {
-  //     reset(grapeSample);
-  //     setFormData(grapeSample);
-  //   }
-  // }, [grapeSample]);
-
   useEffect(() => {
     const name = `BatchID_${grapes?.filter(({ rowType }) => rowType !== "group")?.length + 1}`;
 
     const formatted = {
-      ...existingGrape,
       ...{
         id: crypto.randomUUID(),
         name,
-        group: [name],
-        status: existingGrape?.status ?? GrapeStatus.NEW,
+        status: GrapeStatus.NEW,
       },
+      ...existingGrape,
     } as Grape;
 
     reset(formatted);
@@ -253,7 +232,7 @@ export default function GrapeForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("[VESSEL FORM ERRORS]", errors);
+      console.log("[GRAPE FORM ERRORS]", errors);
 
       const hasGeneralErrors = hasKeyFromArray(
         ["date", "supplier", "name", "variety"],
@@ -336,7 +315,7 @@ export default function GrapeForm() {
                           : null
                       }
                       onChange={(newValue) =>
-                        handleSelectChange(
+                        handleChange(
                           "date",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
@@ -418,10 +397,10 @@ export default function GrapeForm() {
                       options={[]}
                       value={formData?.grapeVariety || ""}
                       onChange={(_event, newValue) => {
-                        handleSelectChange("grapeVariety", newValue);
+                        handleChange("grapeVariety", newValue);
                       }}
                       onInputChange={(_event, newInputValue) => {
-                        handleSelectChange("grapeVariety", newInputValue);
+                        handleChange("grapeVariety", newInputValue);
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -715,24 +694,21 @@ export default function GrapeForm() {
 
                     <FormControl>
                       <Input
-                        id="transportationInfo.acquisitionInvoiceNo"
+                        id="supplier.invoiceNo"
                         label="Invoice ID"
                         type="text"
                         variant="outlined"
-                        {...register("transportationInfo.acquisitionInvoiceNo")}
+                        {...register("supplier.invoiceNo")}
                       />
                     </FormControl>
 
-                    {errors?.transportationInfo?.acquisitionInvoiceNo && (
+                    {errors?.supplier?.invoiceNo && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {
-                          errors?.transportationInfo?.acquisitionInvoiceNo
-                            ?.message as string
-                        }
+                        {errors?.supplier?.invoiceNo?.message as string}
                       </Typography>
                     )}
                   </div>
@@ -747,10 +723,10 @@ export default function GrapeForm() {
                       options={[]}
                       value={formData?.entry?.weigherName || ""}
                       onChange={(_event, newValue) => {
-                        handleSelectChange("entry.weigherName", newValue);
+                        handleChange("entry.weigherName", newValue);
                       }}
                       onInputChange={(_event, newInputValue) => {
-                        handleSelectChange("entry.weigherName", newInputValue);
+                        handleChange("entry.weigherName", newInputValue);
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -1420,9 +1396,8 @@ export default function GrapeForm() {
                     borderRadius: "4px",
                     padding: "16px 8px",
                   }}
-                  onChange={(e) =>
-                    handleSelectChange("description", e.target.value)
-                  }
+                  value={formData?.description || ""}
+                  onChange={(e) => handleChange("description", e.target.value)}
                 />
                 <FileUploaderField
                   path="documents"

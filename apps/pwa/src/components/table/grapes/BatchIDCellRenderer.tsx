@@ -17,6 +17,7 @@ export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       alignItems="flex-start"
       justifyContent="center"
       height={ROW_HEIGHT_DEFAULT}
+      data-id={data?.id}
     >
       {isGroup ? (
         <>

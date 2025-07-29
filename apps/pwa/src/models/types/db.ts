@@ -395,7 +395,6 @@ export type GrapeEntry = {
 
 export type Supplier = {
   companyName: string;
-  dispatchInvoice: string;
   invoiceNo: string;
   vineyardName: string;
 };

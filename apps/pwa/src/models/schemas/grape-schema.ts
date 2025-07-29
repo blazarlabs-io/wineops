@@ -19,7 +19,6 @@ const supplierSchema = Joi.object({
     "string.max":
       "Supplier name must be less than or equal to 50 characters long",
   }),
-  dispatchInvoice: Joi.string().optional().allow(""),
   invoiceNo: Joi.string().optional().allow(""),
   vineyardName: Joi.string().optional().allow(""),
 });
