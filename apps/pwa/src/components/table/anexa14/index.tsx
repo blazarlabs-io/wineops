@@ -31,10 +31,10 @@ const rowSelection: RowSelectionOptions = {
 };
 
 const Anexa14Table = () => {
-  const { mode } = useColorScheme();
-  const [rowHeight] = useState(ROW_HEIGHT_DEFAULT / 1.5);
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
 
-  const isDarkMode = mode === "dark";
+  const [rowHeight] = useState(ROW_HEIGHT_DEFAULT / 1.5);
 
   const [colDefs] = useState<ColDef[]>(columns);
 

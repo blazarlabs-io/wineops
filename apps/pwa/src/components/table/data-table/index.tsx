@@ -96,8 +96,8 @@ export const DataTable = <T extends DashboardEntity>({
   entityName,
   defaultGroupedBy,
 }: DataTableProps<T>) => {
-  const { mode } = useColorScheme();
-  const isDarkMode = mode === "dark";
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
   const { pinned } = usePinnedEntitiesStore();
   const { enqueueSnackbar } = useSnackbar();
   const { gridRef, updateActiveMatchNum, findSearchValue } = useToolsbar();

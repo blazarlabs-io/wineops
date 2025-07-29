@@ -7,7 +7,7 @@ import {
   VineyardStatus,
 } from "@/models/types/db";
 import { MenuItem, Select, Typography } from "@mui/material";
-import { useColorScheme } from "@mui/material/styles";
+import { SupportedColorScheme, useColorScheme } from "@mui/material/styles";
 import { useCallback, useEffect, useState } from "react";
 
 export type TaskStatusDataDisplayProps = {
@@ -19,7 +19,7 @@ export default function TaskStatusDataDisplay({
   status,
   onSelect,
 }: TaskStatusDataDisplayProps) {
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const [statuses, setStatuses] = useState<TaskStatus[]>([]);
   const [selected, setSelected] = useState<TaskStatus>(status as TaskStatus);
 
@@ -43,13 +43,17 @@ export default function TaskStatusDataDisplay({
           variant="outlined"
           onChange={handleChange}
           sx={{
-            ...getStatusStyles(selected, mode),
+            ...getStatusStyles(selected, colorScheme),
             minWidth: "fit-content",
             borderRadius: "6px",
           }}
         >
           {statuses.map((s) => (
-            <MenuItem key={s} value={s} sx={{ ...getStatusStyles(s, mode) }}>
+            <MenuItem
+              key={s}
+              value={s}
+              sx={{ ...getStatusStyles(s, colorScheme) }}
+            >
               <Typography variant="caption">{s.toUpperCase()}</Typography>
             </MenuItem>
           ))}
@@ -59,8 +63,11 @@ export default function TaskStatusDataDisplay({
   );
 }
 
-const getStatusStyles = (status: TaskStatus, mode?: string) => {
-  const isLight = mode === "light";
+const getStatusStyles = (
+  status: TaskStatus,
+  colorScheme?: SupportedColorScheme
+) => {
+  const isLight = colorScheme === "light";
 
   const stylesMap: Partial<Record<TaskStatus, React.CSSProperties>> = {
     [TaskStatus.NEW]: {

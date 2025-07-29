@@ -49,7 +49,8 @@ export default function GrapeForm() {
   const { user } = useAuth();
   const { teamMembers } = useWinery();
   const { enqueueSnackbar } = useSnackbar();
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
   const [generalExpanded, setGeneralExpanded] = useState<boolean>(true);
   const [detailsExpanded, setDetailsExpanded] = useState<boolean>(false);
   const [parametersExpanded, setParametersExpanded] = useState<boolean>(false);
@@ -272,8 +273,9 @@ export default function GrapeForm() {
           <Box sx={{ p: 2, flex: 1, overflowY: "auto" }}>
             <Accordion
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               defaultExpanded
@@ -427,8 +429,9 @@ export default function GrapeForm() {
 
             <Accordion
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               disableGutters={true}
@@ -752,8 +755,9 @@ export default function GrapeForm() {
 
             <Accordion
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               disableGutters={true}
@@ -1195,8 +1199,9 @@ export default function GrapeForm() {
             </Accordion>
             <Accordion
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               disableGutters={true}
@@ -1363,8 +1368,9 @@ export default function GrapeForm() {
             {/* * ADDITIONAL INFORMATION */}
             <Accordion
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               disableGutters={true}

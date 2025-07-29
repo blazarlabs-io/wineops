@@ -4,7 +4,10 @@ import { MetricsOutput, MetricsOutput2, MetricsTotal } from "./types";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { TOTAL_QUANTITY_COLORS } from "./constants";
 import { useColorScheme } from "@mui/material";
-import { formatNumberWithLowerCaseUnitAndSpace, formatNumberWithUnit } from "@/utils/number-format";
+import {
+  formatNumberWithLowerCaseUnitAndSpace,
+  formatNumberWithUnit,
+} from "@/utils/number-format";
 
 const IS_PRE = (status?: EntityStatus) =>
   status === GrapeStatus.IN_TRANSIT ||
@@ -24,8 +27,9 @@ const IS_ENDED = (status?: EntityStatus) =>
   status === GrapeStatus.STORED;
 
 export const useChartOptions = (metrics: MetricsTotal[]) => {
-  const { mode } = useColorScheme();
-  const isDarkMode = mode === "dark";
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+
   const chartTheme = "ag-material";
   const themeClass = isDarkMode ? `${chartTheme}-dark` : chartTheme;
 

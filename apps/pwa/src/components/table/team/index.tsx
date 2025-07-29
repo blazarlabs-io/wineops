@@ -26,10 +26,10 @@ const rowSelection: RowSelectionOptions = {
 };
 
 const TeamTable = () => {
-  const { mode } = useColorScheme();
-  const [rowHeight] = useState(ROW_HEIGHT_DEFAULT / 1.5);
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
 
-  const isDarkMode = mode === "dark";
+  const [rowHeight] = useState(ROW_HEIGHT_DEFAULT / 1.5);
 
   // Column Definitions: Defines & controls grid columns.
   const [colDefs] = useState<ColDef[]>(columns);

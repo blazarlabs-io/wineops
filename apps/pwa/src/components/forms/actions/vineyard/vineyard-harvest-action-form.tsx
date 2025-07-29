@@ -99,7 +99,8 @@ export default function VineyardHarvestActionForm({
     mode: "onTouched",
     reValidateMode: "onChange",
   });
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
   const { teamMembers } = useWinery();
   const [formData, setFormData] = useState<VineyardHarvestAction>(
     vineyardHarvestActionSample
@@ -558,8 +559,9 @@ export default function VineyardHarvestActionForm({
             <Accordion
               defaultExpanded
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               disableGutters
@@ -890,8 +892,9 @@ export default function VineyardHarvestActionForm({
 
             <Accordion
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               disableGutters
@@ -1054,8 +1057,9 @@ export default function VineyardHarvestActionForm({
 
             <Accordion
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
               disableGutters
