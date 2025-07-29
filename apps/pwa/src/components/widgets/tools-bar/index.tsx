@@ -85,7 +85,9 @@ export type ToolsBarProps = {
 };
 
 export default function ToolsBar(props: ToolsBarProps) {
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+
   const { updateOpen, updateType } = useQuickDrawer();
   const { selected } = useSelectedEntitiesStore();
   const { pinned } = usePinnedEntitiesStore();
@@ -405,7 +407,7 @@ export default function ToolsBar(props: ToolsBarProps) {
               // edge="end"
               onClick={() => handleOpenDrawer("actions")}
               style={{
-                backgroundColor: mode === "dark" ? "transparent" : "#333",
+                backgroundColor: isDarkMode ? "transparent" : "#333",
               }}
             >
               <QuickActionsIcon />

@@ -6,7 +6,8 @@ import Image from "next/image";
 import ToolBarActions from "./tool-bar-actions";
 
 export default function Topbar() {
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+
   return (
     <AppBar
       suppressHydrationWarning
@@ -24,7 +25,7 @@ export default function Topbar() {
         <Typography variant="h6">WineOps</Typography> */}
             <Image
               src={
-                mode === "dark"
+                colorScheme === "dark"
                   ? "/images/logo-dark.png"
                   : "/images/logo-light.png"
               }

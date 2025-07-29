@@ -14,7 +14,7 @@ export default function LabResultsChart({ data }: LabResultsChartProps) {
   const { labData } = useSortChartData(data);
   const theme = useTheme();
 
-  const margin = { right: 24, left: -24, top: 8, bottom: 0 };
+  const margin = { right: 50, left: -20, top: 8, bottom: 0 };
 
   const primaryColor: string = theme.palette.primary.main;
   const secondaryColor: string = theme.palette.secondary.main;

@@ -1,5 +1,9 @@
 import { Priority, TaskStatus } from "@/models/types/db";
-import { Typography, useColorScheme } from "@mui/material";
+import {
+  SupportedColorScheme,
+  Typography,
+  useColorScheme,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 
 export type PriorityDataDisplayProps = {
@@ -9,7 +13,7 @@ export type PriorityDataDisplayProps = {
 export default function PriorityDataDisplay({
   status,
 }: PriorityDataDisplayProps) {
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const [statuses, setStatuses] = useState<Priority[]>([]);
   const [selected] = useState<Priority>(status as Priority);
 
@@ -22,7 +26,7 @@ export default function PriorityDataDisplay({
 
   return (
     <div
-      style={{ ...getStatusStyles(selected, mode) }}
+      style={{ ...getStatusStyles(selected, colorScheme) }}
       className="border px-2 rounded-full text-xs"
     >
       <Typography variant="body2">{selected}</Typography>
@@ -30,8 +34,11 @@ export default function PriorityDataDisplay({
   );
 }
 
-const getStatusStyles = (status: Priority, mode?: string) => {
-  const isLight = mode === "light";
+const getStatusStyles = (
+  status: Priority,
+  colorScheme?: SupportedColorScheme
+) => {
+  const isLight = colorScheme === "light";
 
   const stylesMap: Partial<Record<Priority, React.CSSProperties>> = {
     [Priority.LOW]: {

@@ -5,7 +5,8 @@ import Image from "next/image";
 
 export default function Logo() {
   const { openSidebar, updateOpenSidebar } = useSidebar();
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
 
   const handleSidebarCollapse = () => {
     console.log("handleSidebarCollapse");
@@ -32,9 +33,7 @@ export default function Logo() {
         {/* <Hub fontSize="medium" color="primary" />
         <Typography variant="h6">WineOps</Typography> */}
         <Image
-          src={
-            mode === "dark" ? "/images/logo-dark.png" : "/images/logo-light.png"
-          }
+          src={isDarkMode ? "/images/logo-dark.png" : "/images/logo-light.png"}
           alt="WineOps"
           height={48}
           width={150}
@@ -44,7 +43,7 @@ export default function Logo() {
         size="small"
         label="BETA"
         color="info"
-        variant={mode === "dark" ? "outlined" : "filled"}
+        variant={isDarkMode ? "outlined" : "filled"}
       />
       {/* <Tooltip title="Connected to production">
         <CheckCircle color="success" fontSize="small"  />

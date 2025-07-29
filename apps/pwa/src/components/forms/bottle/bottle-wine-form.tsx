@@ -86,7 +86,8 @@ export default function BottleWineForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
   const { wines, actions } = useWine();
 
   const { consumables } = useConsumable();
@@ -469,8 +470,9 @@ export default function BottleWineForm() {
               expanded={generalExpanded}
               onChange={handleGeneralExpansion}
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
             >
@@ -885,8 +887,9 @@ export default function BottleWineForm() {
               expanded={bottleSpecsExpanded}
               onChange={handleBottleSpecsExpansion}
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
             >
@@ -1117,8 +1120,9 @@ export default function BottleWineForm() {
               disableGutters={true}
               defaultExpanded={false}
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
             >
@@ -1227,8 +1231,9 @@ export default function BottleWineForm() {
               expanded={finalLabExpanded}
               onChange={handleFinalLabExpansion}
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
             >
@@ -1422,8 +1427,9 @@ export default function BottleWineForm() {
               expanded={quantityLossesExpanded}
               onChange={handleQuantityLossesExpanded}
               sx={{
-                background:
-                  mode === "dark" ? "#121212 !important" : "#ffffff !important",
+                background: isDarkMode
+                  ? "#121212 !important"
+                  : "#ffffff !important",
                 borderBottom: "1px solid var(--mui-palette-divider) !important",
               }}
             >

@@ -18,13 +18,14 @@ import * as React from "react";
 import { useState } from "react";
 
 function Button(props: React.HTMLAttributes<HTMLButtonElement>) {
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+
   return (
     <button
       type="button"
       {...props}
       className={clsx(
-        `${mode === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:active:bg-neutral-700" : ""} flex h-9 items-center justify-center rounded border border-neutral-200 cursor-pointer bg-neutral-50 px-2.5 text-sm font-bold text-neutral-700 whitespace-nowrap select-none hover:bg-neutral-100 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 active:bg-neutral-100`,
+        `${colorScheme === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:active:bg-neutral-700" : ""} flex h-9 items-center justify-center rounded border border-neutral-200 cursor-pointer bg-neutral-50 px-2.5 text-sm font-bold text-neutral-700 whitespace-nowrap select-none hover:bg-neutral-100 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 active:bg-neutral-100`,
         props.className
       )}
     />
@@ -32,12 +33,13 @@ function Button(props: React.HTMLAttributes<HTMLButtonElement>) {
 }
 
 function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+
   return (
     <input
       {...props}
       className={clsx(
-        `${mode === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200" : ""} h-9 w-full rounded border border-neutral-200 px-2.5 text-base text-neutral-900 focus:-outline-offset-2 focus:outline-blue-600`,
+        `${colorScheme === "dark" ? "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200" : ""} h-9 w-full rounded border border-neutral-200 px-2.5 text-base text-neutral-900 focus:-outline-offset-2 focus:outline-blue-600`,
         props.className
       )}
     />

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { LotStatus } from "@/models/types/db";
 import { MenuItem, Select, Typography } from "@mui/material";
-import { useColorScheme } from "@mui/material/styles";
 import { useCallback, useEffect, useState } from "react";
 
 export type BottlingStatusDataDisplayProps = {
@@ -13,7 +12,6 @@ export default function BottlingStatusDataDisplaySelect({
   status,
   onSelect,
 }: BottlingStatusDataDisplayProps) {
-  const { mode } = useColorScheme();
   const [statuses, setStatuses] = useState<LotStatus[]>([]);
   const [selected, setSelected] = useState<LotStatus>(status as LotStatus);
 

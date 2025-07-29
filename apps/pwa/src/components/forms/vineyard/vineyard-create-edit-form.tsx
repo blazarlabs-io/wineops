@@ -71,7 +71,8 @@ export default function VineyardForm({
 }: VineyardFormProps) {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
 
   const close = useDialogDrawerStore(({ close }) => close);
   const closeDrawer = useCallback(() => close("form-drawer"), [close]);
@@ -367,12 +368,6 @@ export default function VineyardForm({
     }
   }, [clicked, formData, onSave]);
 
-  useEffect(() => {
-    if (mode) {
-      console.log("MODE", mode);
-    }
-  }, [mode]);
-
   return (
     <>
       {formData && formData !== undefined && (
@@ -394,10 +389,9 @@ export default function VineyardForm({
                   disableGutters={true}
                   defaultExpanded={true}
                   sx={{
-                    background:
-                      mode === "dark"
-                        ? "#121212 !important"
-                        : "#ffffff !important",
+                    background: isDarkMode
+                      ? "#121212 !important"
+                      : "#ffffff !important",
                     borderBottom:
                       "1px solid var(--mui-palette-divider) !important",
                   }}
@@ -735,10 +729,9 @@ export default function VineyardForm({
                 </Accordion>
                 <Accordion
                   sx={{
-                    background:
-                      mode === "dark"
-                        ? "#121212 !important"
-                        : "#ffffff !important",
+                    background: isDarkMode
+                      ? "#121212 !important"
+                      : "#ffffff !important",
                     borderBottom:
                       "1px solid var(--mui-palette-divider) !important",
                   }}
@@ -1458,10 +1451,9 @@ export default function VineyardForm({
                 </Accordion>
                 <Accordion
                   sx={{
-                    background:
-                      mode === "dark"
-                        ? "#121212 !important"
-                        : "#ffffff !important",
+                    background: isDarkMode
+                      ? "#121212 !important"
+                      : "#ffffff !important",
                     borderBottom:
                       "1px solid var(--mui-palette-divider) !important",
                   }}

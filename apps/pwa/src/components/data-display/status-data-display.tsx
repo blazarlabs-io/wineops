@@ -1,15 +1,15 @@
 import { EntityStatus } from "@/models/types/dashboard";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
-import { useColorScheme } from "@mui/material/styles";
+import { SupportedColorScheme, useColorScheme } from "@mui/material/styles";
 
 export type StatusDataDisplayProps = {
   status: EntityStatus;
 };
 
 export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
-  const { mode } = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
-  const styles = getStatusStyles(status, mode);
+  const styles = getStatusStyles(status, colorScheme);
 
   return (
     <>
@@ -25,8 +25,11 @@ export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
   );
 }
 
-const getStatusStyles = (status: EntityStatus, mode?: string) => {
-  const isLight = mode === "light";
+const getStatusStyles = (
+  status: EntityStatus,
+  colorScheme?: SupportedColorScheme
+) => {
+  const isLight = colorScheme === "light";
 
   const stylesMap: Partial<Record<EntityStatus, React.CSSProperties>> = {
     [VineyardStatus.MAINTENANCE]: {
