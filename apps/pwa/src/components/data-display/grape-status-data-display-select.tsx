@@ -1,4 +1,3 @@
-import { vineyardStatus } from "@/data/system-variables";
 import { GrapeStatus } from "@/models/types/db";
 import { MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
@@ -37,7 +36,7 @@ export default function GrapeStatusDataDisplaySelect({
       variant="outlined"
       onChange={handleChange}
       sx={{
-        minWidth: "fit-content",
+        width: "fit-content",
         borderRadius: "6px",
       }}
     >

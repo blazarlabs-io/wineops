@@ -104,15 +104,15 @@ export default function LabDataContent({ labData }: LabDataProps) {
             }
           />
           <SimpleDataDisplay
-            label="% of the spoiled grapes"
+            label="(%) of grapes affected by diseases and pests"
             value={formatNumberWithUnit(spoiledGrapesPercentage, "%") ?? "N/A"}
           />
           <SimpleDataDisplay
-            label="% of crushed grapes"
+            label="(%) of crushed grapes"
             value={formatNumberWithUnit(crushedGrapesPercentage, "%") ?? "N/A"}
           />
           <SimpleDataDisplay
-            label="% of other grape varieties added"
+            label="(%) of mixed grape varieties"
             value={
               formatNumberWithUnit(addedGrapesVarietiesPercentage, "%") ?? "N/A"
             }

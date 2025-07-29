@@ -75,11 +75,11 @@ export const grapeIntakeAction = async (
       ...(driverId && { driverIdNo: driverId }),
       ...(certificatDeInofensivitate && {
         certificate: certificatDeInofensivitate,
+        ...(invoiceNumber && { acquisitionInvoiceNo: invoiceNumber }),
       }),
     },
     supplier: {
       ...grape?.supplier,
-      ...(invoiceNumber && { dispatchInvoice: invoiceNumber }),
       ...(supplier?.companyName && { companyName: supplier?.companyName }),
     },
     labData: {

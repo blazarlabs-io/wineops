@@ -44,7 +44,6 @@ export const grapeSample: Grape = {
   },
   supplier: {
     companyName: "Wine Shop",
-    dispatchInvoice: "din-123",
     invoiceNo: "invoiceNo-123",
     vineyardName: "Vineyard 1",
   },

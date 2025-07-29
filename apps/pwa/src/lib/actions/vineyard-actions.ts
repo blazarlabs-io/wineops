@@ -78,12 +78,11 @@ export const vineyardHarvestAction = async (
     name: actionData.batchId,
     date: actionData.executionDate,
     group: [actionData.batchId],
-    location: actionData.location as string,
+    location: actionData.location || "",
     rowType: "item",
     supplier: {
-      companyName: actionData.transportCompanyName as string,
-      dispatchInvoice: actionData.invoiceNumber as string,
-      invoiceNo: actionData.invoiceNumber as string,
+      companyName: "",
+      invoiceNo: "",
       vineyardName: actionData.subject.name,
     },
     entry: {
@@ -99,10 +98,6 @@ export const vineyardHarvestAction = async (
     status: "In Transit",
     grapeVariety: vineyard.grapeVariety,
     certifications: vineyard.info.certifications,
-
-    // TODO: if sugar & acidity from vineyard harverst action are the same as the latest vineyard lab report, take lab report date, otherwise take execution date
-    // TODO: make sure 100% that sugar have positive value greater than zero!!!
-    // TODO: make sure 100% that acidity have positive value greater than zero!!!
 
     labData: {
       date: labDate,
@@ -129,7 +124,7 @@ export const vineyardHarvestAction = async (
       companyName: actionData.transportCompanyName as string,
       driverIdNo: actionData.transportDriverName as string,
       certificate: actionData?.certificateOfInofensivitate ?? "",
-      acquisitionInvoiceNo: actionData.invoiceNumber as string,
+      acquisitionInvoiceNo: actionData.invoiceNumber ?? "",
     },
     processingInfo: {
       receivingBay: "",

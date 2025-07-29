@@ -43,27 +43,23 @@ export default function SupplierContent({
           value={certificate ?? "N/A"}
         />
 
-        {transportationInfo && (
-          <>
-            <SimpleDataDisplay
-              label="Supplier Name"
-              value={supplier.companyName ?? "N/A"}
-            />
-            <SimpleDataDisplay
-              label="Dispatch Invoice"
-              value={supplier.dispatchInvoice ?? "N/A"}
-            />
-            <SimpleDataDisplay
-              label="Invoice No"
-              value={acquisitionInvoiceNo ?? "N/A"}
-            />
-            <SimpleDataDisplay
-              label="Vineyard Name"
-              value={supplier.vineyardName ?? "N/A"}
-            />
-            <span></span>
-          </>
-        )}
+        <SimpleDataDisplay
+          label="Supplier Name"
+          value={supplier.companyName ?? "N/A"}
+        />
+        <SimpleDataDisplay
+          label="Dispatch Invoice"
+          value={acquisitionInvoiceNo ?? "N/A"}
+        />
+        <SimpleDataDisplay
+          label="Invoice No"
+          value={supplier.invoiceNo ?? "N/A"}
+        />
+        <SimpleDataDisplay
+          label="Vineyard Name"
+          value={supplier.vineyardName ?? "N/A"}
+        />
+        <span></span>
       </div>
     </Stack>
   );
