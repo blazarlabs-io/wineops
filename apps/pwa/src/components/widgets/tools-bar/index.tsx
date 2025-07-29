@@ -224,13 +224,17 @@ export default function ToolsBar(props: ToolsBarProps) {
                   handleIsRowPinned();
                 }
               }}
+              sx={{ width: "40px", aspectRatio: 1 }}
             >
-              {/* <PushPinOutlined className="" /> */}
-              {pinningState === "pin" ? (
-                <Icon icon="octicon:pin-16" width="20" height="20" />
-              ) : (
-                <Icon icon="octicon:pin-slash-16" width="20" height="20" />
-              )}
+              <Icon
+                icon={
+                  pinningState === "pin"
+                    ? "octicon:pin-16"
+                    : "octicon:pin-slash-16"
+                }
+                width="20"
+                height="20"
+              />
             </IconButton>
           )}
 

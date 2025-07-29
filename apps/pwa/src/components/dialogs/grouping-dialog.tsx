@@ -117,13 +117,7 @@ export default function GroupingDialog<T extends DashboardEntity>({
       ? `${selectedGroup}${newGroup ? ` > ${newGroup}` : ""}`
       : newGroup;
 
-  console.log("FULL PATH:", fullPath);
-
   const { uniqueGroups } = useGrouping<T>(data);
-
-  useEffect(() => {
-    console.log("\n\n\n\nSELECTED:", selected, "\n\n\n\n");
-  }, [selected]);
 
   return (
     <Dialog

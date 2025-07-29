@@ -45,6 +45,7 @@ export default function GrapesTable() {
           innerRenderer: GroupCellRenderer,
           suppressCount: true,
         },
+        minWidth: 250,
         cellRenderer: "agGroupCellRenderer",
         width: GROUP_COLUMN_WIDTH,
         lockPinned: true,
