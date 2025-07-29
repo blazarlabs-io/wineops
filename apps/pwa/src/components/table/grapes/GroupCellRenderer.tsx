@@ -9,14 +9,12 @@ import {
   ROW_HEIGHT_DEFAULT,
   ROW_HEIGHT_EXPANDED_GRAPE,
 } from "@/data/constants";
-import StatusDataDisplay from "@/components/data-display/status-data-display";
 import { ExpandMore } from "@mui/icons-material";
 import GrapeDetailsWidget from "@/components/widgets/grape/grape-details-widget";
 import EntityLocation from "../EntityLocation";
 import { Grape, GrapeStatus, LabReport } from "@/models/types/db";
 import { useGrape } from "@/context/grape";
 import { useGetLabData } from "@/hooks/use-get-lab-data";
-import StatusDataDisplaySelect from "@/components/data-display/status-data-display-select";
 import { EntityStatus } from "@/models/types/dashboard";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
@@ -85,13 +83,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       }
     }
   };
-
-  // console.log("\n\n\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-  // console.log("node", node);
-  // console.log("value", value);
-  // console.log("grapes", grapes);
-  // console.log("node.data?.id", node.data?.id);
-  // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n\n\n");
 
   return (
     <>

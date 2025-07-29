@@ -33,7 +33,7 @@ export const grapesColumns: ColDef<
         month: "2-digit",
         day: "2-digit",
       }),
-    keyCreator: (params) => params?.value || "Unknown date",
+    keyCreator: (params) => params?.value,
   },
   {
     headerName: "Group: Variety",
@@ -42,7 +42,7 @@ export const grapesColumns: ColDef<
     enableRowGroup: true,
     rowGroup: false,
     valueGetter: (params) => params?.data?.grapeVariety,
-    keyCreator: (params) => params?.value || "Unknown grape variety",
+    keyCreator: (params) => params?.value,
   },
   {
     headerName: "Group: Location",
@@ -51,12 +51,12 @@ export const grapesColumns: ColDef<
     enableRowGroup: true,
     rowGroup: false,
     valueGetter: (params) => params?.data?.location,
-    keyCreator: (params) => params?.value || "Unknown location",
+    keyCreator: (params) => params?.value,
   },
   {
     headerName: "Batch ID",
     field: "batchId",
-    minWidth: 200,
+    minWidth: 160,
     flex: 1,
     editable: false,
     cellRenderer: BatchIDCellRenderer,
@@ -64,7 +64,7 @@ export const grapesColumns: ColDef<
   {
     headerName: "Quantity Overview",
     field: "metrics",
-    minWidth: 270,
+    minWidth: 230,
     flex: 1,
     editable: false,
     cellRenderer: QuantityCellRenderer,
@@ -87,14 +87,14 @@ export const grapesColumns: ColDef<
   {
     headerName: "Tasks",
     field: "tasks",
-    minWidth: 124,
+    minWidth: 150,
     flex: 1,
     cellRenderer: TasksCellRenderer,
   },
   {
     headerName: "Notes",
     field: "notes",
-    minWidth: 200,
+    minWidth: 150,
     flex: 1,
     cellRenderer: NotesCellRenderer,
   },

@@ -14,20 +14,8 @@ import { usePinnedEntitiesStore } from "@/store/pinned-entities";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import getUnusedGroups from "@/utils/get-unused-groups";
 import { nodesToEntities } from "@/utils/notes-to-entities";
-import {
-  Add,
-  ConstructionOutlined,
-  NavigateBefore,
-  NavigateNext,
-} from "@mui/icons-material";
-import {
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-  useColorScheme,
-} from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { Button, Stack, Typography, useColorScheme } from "@mui/material";
 import {
   AllCommunityModule,
   ClientSideRowModelModule,
@@ -64,7 +52,7 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { usePathname } from "next/navigation";
 import { useSnackbar } from "notistack";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { shiftGroups } from "../utils";
 import "./style.css";
 
@@ -606,7 +594,7 @@ export const DataTable = <T extends DashboardEntity>({
             theme={myTheme}
             ref={gridRef}
             columnDefs={colDefs}
-            rowData={treeData ? rowData : filteredData}
+            rowData={groupedField ? filteredData : rowData}
             getDataPath={getDataPath}
             treeData
             autoGroupColumnDef={{
