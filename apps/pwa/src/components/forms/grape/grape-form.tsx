@@ -462,7 +462,6 @@ export default function GrapeForm() {
                         />
                       </FormControl>
 
-                      {}
                     </Stack>
 
                     {errors?.entry?.grossWeight && (
@@ -475,7 +474,6 @@ export default function GrapeForm() {
                       </Typography>
                     )}
 
-                    {}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -500,7 +498,6 @@ export default function GrapeForm() {
                         />
                       </FormControl>
 
-                      {}
                     </Stack>
 
                     {errors?.entry?.tareWeight && (
@@ -512,8 +509,6 @@ export default function GrapeForm() {
                         {errors?.entry?.tareWeight?.message as string}
                       </Typography>
                     )}
-
-                    {}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -538,7 +533,6 @@ export default function GrapeForm() {
                         />
                       </FormControl>
 
-                      {}
                     </Stack>
 
                     {errors?.entry?.netWeight && (
@@ -551,7 +545,6 @@ export default function GrapeForm() {
                       </Typography>
                     )}
 
-                    {}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -721,7 +714,6 @@ export default function GrapeForm() {
                         />
                       </FormControl>
 
-                      {}
                     </Stack>
 
                     {errors?.labData?.density?.value && (
@@ -734,7 +726,6 @@ export default function GrapeForm() {
                       </Typography>
                     )}
 
-                    {}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -759,7 +750,6 @@ export default function GrapeForm() {
                         />
                       </FormControl>
 
-                      {}
                     </Stack>
 
                     {errors?.labData?.sugar?.value && (
@@ -772,7 +762,6 @@ export default function GrapeForm() {
                       </Typography>
                     )}
 
-                    {}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -797,7 +786,6 @@ export default function GrapeForm() {
                         />
                       </FormControl>
 
-                      {}
                     </Stack>
 
                     {errors?.labData?.acidity?.value && (

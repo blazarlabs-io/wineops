@@ -207,7 +207,6 @@ export default function GroupingDialog<T extends DashboardEntity>({
                       }}
                       onClick={handleEnableNewGroup}
                     >
-                      {}
                       <Typography variant="body2" color="primary">
                         CREATE NEW GROUP
                       </Typography>
@@ -258,7 +257,6 @@ export default function GroupingDialog<T extends DashboardEntity>({
                             paddingBottom: "0px",
                           }}
                         />
-                        {}
                       </Select>
                     </FormControl>
                   </>

@@ -390,9 +390,7 @@ export default function VineyardForm({
                   </AccordionSummary>
                   <AccordionDetails>
                     <div className="flex flex-col gap-4">
-                      {}
                       <div className="hidden">
-                        {}
                         <FormControl>
                           <Input
                             id={formData.id as Vineyard["id"]}
@@ -402,9 +400,7 @@ export default function VineyardForm({
                           />
                         </FormControl>
                       </div>
-                      {}
                       <div className="flex flex-col gap-2">
-                        {}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter a name for the vineyard
                         </InputLabel>
@@ -447,9 +443,7 @@ export default function VineyardForm({
                           </Typography>
                         )}
                       </div>
-                      {}
                       <div className="flex flex-col gap-2">
-                        {}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter a grape variety for the vineyard
                         </InputLabel>
@@ -473,9 +467,7 @@ export default function VineyardForm({
                         )}
                       </div>
 
-                      {}
                       <div className="flex flex-col gap-2">
-                        {}
                         <Typography
                           color="textSecondary"
                           className="text-sm text-muted-foreground"
@@ -621,9 +613,7 @@ export default function VineyardForm({
                         )}
                       </div>
 
-                      {}
                       <div className="flex flex-col gap-2">
-                        {}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter the cadastral number(s)
                         </InputLabel>
@@ -735,9 +725,7 @@ export default function VineyardForm({
                         <h2 className="font-medium text-base">Location</h2>
                       </div>
                       <div className="flex flex-col gap-4">
-                        {}
 
-                        {}
                         <div className="w-full bg-muted rounded-md min-h-[320px] relative">
                           <PolygonDrawingMap
                             initialCoordinates={formData.info?.location?.map}
@@ -745,7 +733,6 @@ export default function VineyardForm({
                           />
                         </div>
 
-                        {}
                         <div className="flex flex-col gap-2">
                           <InputLabel className="text-sm text-muted-foreground">
                             Enter the surface area of the vineyard (Ha)
@@ -791,7 +778,6 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {}
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
                             <Typography
@@ -830,7 +816,6 @@ export default function VineyardForm({
                           </div>
                         </div>
 
-                        {}
                         <div className="flex flex-col gap-2">
                           <InputLabel className="text-sm text-muted-foreground">
                             Enter the City/Region of the vineyard
@@ -851,7 +836,6 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {}
                         <div className="flex flex-col gap-2 w-full">
                           <InputLabel className="text-sm text-muted-foreground">
                             Enter the elevation of the vineyard (m)
@@ -891,7 +875,6 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {}
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
                             <Typography
@@ -949,18 +932,13 @@ export default function VineyardForm({
                           </div>
                         </div>
 
-                        {}
-
-                        {}
-
-                        {}
                         <div className="flex items-center gap-2 mt-2">
                           <Leaf className="text-muted-foreground w-4 h-4" />
                           <Typography className="font-medium text-base">
                             Planting Scheme
                           </Typography>
                         </div>
-                        {}
+
                         <div className="flex flex-col gap-4">
                           <div className="flex flex-col gap-2 justify-between w-full">
                             <div className="flex flex-col gap-2">
@@ -1011,8 +989,6 @@ export default function VineyardForm({
                               </p>
                             )}
                           </div>
-
-                          {}
 
                           <div className="flex flex-col gap-2">
                             <div className="flex flex-col gap-2 w-full">
@@ -1068,7 +1044,6 @@ export default function VineyardForm({
                             </div>
                           </div>
 
-                          {}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
                               <InputLabel className="text-sm text-muted-foreground">
@@ -1120,7 +1095,6 @@ export default function VineyardForm({
                             )}
                           </div>
 
-                          {}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
                               <InputLabel className="text-sm text-muted-foreground">
@@ -1160,7 +1134,6 @@ export default function VineyardForm({
                             )}
                           </div>
 
-                          {}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
                               <InputLabel className="text-sm text-muted-foreground">
@@ -1186,7 +1159,7 @@ export default function VineyardForm({
                             )}
                           </div>
                         </div>
-                        {}
+
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
                             <Stack
@@ -1232,10 +1205,9 @@ export default function VineyardForm({
                             )}
                           </div>
                         </div>
-                        {}
+
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
-                            {}
                             <span className="text-sm text-muted-foreground">
                               Enter the sunlight hours your vineyard receives.
                             </span>
@@ -1266,10 +1238,8 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {}
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
-                            {}
                             <span className="text-sm text-muted-foreground">
                               Choose the soil type of your vineyard.
                             </span>
@@ -1290,8 +1260,6 @@ export default function VineyardForm({
                           </div>
                         </div>
 
-                        {}
-                        {}
                         <div className="flex items-center gap-2 mt-2">
                           <ReceiptLong className="text-muted-foreground w-4 h-4" />
                           <Typography className="font-medium text-base">
@@ -1301,10 +1269,8 @@ export default function VineyardForm({
 
                         <div>
                           <div className="grid grid-cols-2">
-                            {}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.eco.active"
@@ -1326,10 +1292,8 @@ export default function VineyardForm({
                               </div>
                             </div>
 
-                            {}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.bio"
@@ -1351,10 +1315,8 @@ export default function VineyardForm({
                               </div>
                             </div>
 
-                            {}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.igp.active"
@@ -1376,10 +1338,8 @@ export default function VineyardForm({
                               </div>
                             </div>
 
-                            {}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.dop.active"
@@ -1401,10 +1361,8 @@ export default function VineyardForm({
                               </div>
                             </div>
                           </div>
-                          {}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
-                              {}
                               <div className="flex items-center gap-2">
                                 <Checkbox
                                   id="info.certifications.ice.active"
@@ -1426,7 +1384,6 @@ export default function VineyardForm({
                           </div>
                         </div>
 
-                        {}
                       </div>
                     </div>
                   </AccordionDetails>
@@ -1450,7 +1407,6 @@ export default function VineyardForm({
                   </AccordionSummary>
                   <AccordionDetails>
                     <div className="p-4 flex flex-col gap-4">
-                      {}
                       <div className="flex flex-col gap-2 justify-between">
                         <div className="flex flex-col gap-2">
                           <Typography className="text-sm text-muted-foreground">
@@ -1465,7 +1421,6 @@ export default function VineyardForm({
                         />
                       </div>
 
-                      {}
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 w-full">
                           <Typography
@@ -1497,7 +1452,6 @@ export default function VineyardForm({
                         </div>
                       </div>
 
-                      {}
                       <div className="flex flex-col gap-2 justify-between">
                         <div className="flex flex-col gap-2">
                           <span className="text-sm text-muted-foreground">
@@ -1517,7 +1471,6 @@ export default function VineyardForm({
               </div>
             </Box>
 
-            {}
             <div className="hidden flex-col gap-2">
               <span className="text-sm text-muted-foreground">
                 Enter the forecasted yield of your vineyard.

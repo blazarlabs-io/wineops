@@ -29,7 +29,6 @@ export default function Logo() {
       )}
 
       <Stack direction="row" alignItems="center" spacing={1}>
-        {}
         <Image
           src={isDarkMode ? "/images/logo-dark.png" : "/images/logo-light.png"}
           alt="WineOps"
@@ -43,7 +42,6 @@ export default function Logo() {
         color="info"
         variant={isDarkMode ? "outlined" : "filled"}
       />
-      {}
     </Stack>
   );
 }
