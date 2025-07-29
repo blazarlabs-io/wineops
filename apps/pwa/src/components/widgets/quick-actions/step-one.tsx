@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { GridView, Search } from "@mui/icons-material";
 import {
@@ -18,7 +18,7 @@ import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { Grape, GrapeStatus } from "@/models/types/db";
 import { useGrape } from "@/context/grape";
 
-export interface QuickActionsWidgetStepOneProps<T extends ActionsEntity> {
+interface QuickActionsWidgetStepOneProps<T extends ActionsEntity> {
   actions?: T;
   onClick: (action: string) => void;
 }
@@ -56,7 +56,6 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
 
   useEffect(() => {
     if (actions) {
-      console.log("actions", actions);
       const keys = Object.keys(actions);
       keys.map((key, index) => {
         keys[index] = key.split("-").join(" ");
@@ -85,7 +84,7 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
         <Typography variant="h5">Actions</Typography>
       </Box>
       <Box sx={{ overflowX: "hidden" }}>
-        {/* * SEARCH */}
+        {}
         <TextField
           fullWidth
           size="small"
@@ -98,7 +97,7 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
             ),
           }}
         />
-        {/* * ACTIONS */}
+        {}
         <List
           sx={{
             width: "100%",

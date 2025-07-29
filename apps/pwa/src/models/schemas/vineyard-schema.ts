@@ -149,7 +149,7 @@ export const teamMemberSchema = Joi.object<TeamMember>({
   contactPhone: Joi.string().optional().allow(""),
 }).optional();
 
-export const actionRelationSchema = Joi.array()
+const actionRelationSchema = Joi.array()
   .items(
     Joi.object({
       id: Joi.string().optional().allow(""),
@@ -158,7 +158,7 @@ export const actionRelationSchema = Joi.array()
   )
   .optional();
 
-export const tasksSchema = Joi.object<Task>({
+const tasksSchema = Joi.object<Task>({
   id: Joi.string().optional().allow(""),
   title: Joi.string().optional().allow(""),
   description: Joi.string().optional().allow(""),
@@ -168,7 +168,7 @@ export const tasksSchema = Joi.object<Task>({
   createdBy: teamMemberSchema,
 }).optional();
 
-export const notesSchema = Joi.object<Note>({
+const notesSchema = Joi.object<Note>({
   id: Joi.string().optional().allow(""),
   title: Joi.string().optional().allow(""),
   content: Joi.string().optional().allow(""),

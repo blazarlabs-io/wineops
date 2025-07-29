@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
@@ -191,7 +191,6 @@ export default function VineyardGenericActionForm({
         (error: Error) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
         }
@@ -230,10 +229,8 @@ export default function VineyardGenericActionForm({
       );
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
         if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
-        console.log("Error deleting file");
       }
     },
     [actionKey, clearErrors, formData.supportingDocuments, setValue, user?.uid]
@@ -247,8 +244,6 @@ export default function VineyardGenericActionForm({
     );
 
     if (!subjectVineyard) return;
-
-    console.log("SUBJECT VINEYARD:", subjectVineyard);
 
     for (let index = 0; index < (data?.chemistry?.length || 0); index++) {
       const chemistryItem = data.chemistry?.[index];
@@ -330,7 +325,6 @@ export default function VineyardGenericActionForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS:", errors);
     }
   }, [errors]);
 

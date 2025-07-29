@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { DashboardEntity } from "@/models/types/dashboard";

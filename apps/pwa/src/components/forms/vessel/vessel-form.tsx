@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useVessel } from "@/context/vessel";
@@ -152,7 +152,6 @@ export default function VesselForm() {
           }
         }
       } catch (e) {
-        console.error(
           "Error creating document or subcollection with data: ",
           e
         );
@@ -201,7 +200,6 @@ export default function VesselForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("[VESSEL FORM ERRORS]", errors);
     }
   }, [errors]);
 

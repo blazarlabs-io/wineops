@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import winery from "./winery";
 import vineyard from "./vineyard";
 import grape from "./grape";

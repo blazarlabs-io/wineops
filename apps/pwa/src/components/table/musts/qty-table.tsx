@@ -10,7 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
-export type QtyTableProps = {
+type QtyTableProps = {
   data: QtyInfo[];
 };
 
@@ -57,11 +57,7 @@ export default function QtyTable({ data }: QtyTableProps) {
                 Losses
               </Typography>
             </TableCell>
-            {/*<TableCell key="graph">
-              <Typography variant="body2" color="textDisabled">
-                {`{graph}`}
-              </Typography>
-            </TableCell>*/}
+            {}
           </TableRow>
         </TableHead>
 

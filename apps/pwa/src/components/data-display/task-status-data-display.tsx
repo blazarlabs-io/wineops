@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { EntityStatus } from "@/models/types/dashboard";
 import {
   GrapeStatus,
@@ -10,7 +10,7 @@ import { MenuItem, Select, Typography } from "@mui/material";
 import { SupportedColorScheme, useColorScheme } from "@mui/material/styles";
 import { useCallback, useEffect, useState } from "react";
 
-export type TaskStatusDataDisplayProps = {
+type TaskStatusDataDisplayProps = {
   status: TaskStatus;
   onSelect?: (status: EntityStatus) => void;
 };
@@ -31,8 +31,6 @@ export default function TaskStatusDataDisplay({
   useEffect(() => {
     setStatuses(Object.values(TaskStatus));
   }, [TaskStatus]);
-
-  console.log("STATUS", status);
 
   return (
     <>

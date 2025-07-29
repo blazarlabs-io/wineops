@@ -1,7 +1,7 @@
 import { Task, TaskSummary } from "@/models/types/db";
 import { CalendarX, Calendar, CalendarClock } from "lucide-react";
 
-export type TasksDataDisplayProps = {
+type TasksDataDisplayProps = {
   todo: TaskSummary[];
   inProgress: TaskSummary[];
   completed: TaskSummary[];

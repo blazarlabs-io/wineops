@@ -25,7 +25,6 @@ export const NotesCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   const handleMouseEnter = useCallback(() => {
-    console.log("handleMouseEnter");
     setIsHovered(true);
   }, []);
 

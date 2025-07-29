@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useMust } from "@/context/must";
@@ -128,7 +128,6 @@ export default function MustForm() {
           }
         }
       } catch (e) {
-        console.error(
           "Error creating document or subcollection with data: ",
           e
         );
@@ -169,7 +168,6 @@ export default function MustForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("[MUST FORM ERRORS]", errors);
     }
   }, [errors]);
 

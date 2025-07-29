@@ -63,7 +63,6 @@ export const MustProvider = ({ children }: IMustProvider) => {
         const musts: Must[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No musts found");
           setMusts([]);
           return;
         }

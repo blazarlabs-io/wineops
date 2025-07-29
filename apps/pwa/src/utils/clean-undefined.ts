@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 export function cleanUndefined(obj: any): any {
   if (Array.isArray(obj)) {

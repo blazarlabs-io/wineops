@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
@@ -55,7 +55,6 @@ export default function TeamMemberCreateEditForm() {
 
   const handleChange = useCallback(
     (name: string, value: any) => {
-      console.log("name", name, "value", value);
       setFormData((prev) => ({
         ...(prev as TeamMember),
         [name]: value,
@@ -68,8 +67,6 @@ export default function TeamMemberCreateEditForm() {
   const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
 
     if (formType === "create") {
       const teamRes = await db.team.create(user?.uid, data);
@@ -119,7 +116,6 @@ export default function TeamMemberCreateEditForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 
@@ -135,9 +131,9 @@ export default function TeamMemberCreateEditForm() {
         >
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-              {/* * ID - HIDDEN */}
+              {}
               <div className="hidden">
-                {/* <Label htmlFor="id">Id</Label> */}
+                {}
                 <FormControl>
                   <Input
                     id={formData.id as VineyardGlobalAction["id"]}
@@ -149,9 +145,9 @@ export default function TeamMemberCreateEditForm() {
               </div>
 
               <div className="flex flex-col w-full">
-                {/* <DemoItem label="DatePicker"> */}
+                {}
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-                  {/* * FIRST NAME */}
+                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -162,7 +158,7 @@ export default function TeamMemberCreateEditForm() {
                       />
                     </FormControl>
                   </div>
-                  {/* * LAST NAME */}
+                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -173,7 +169,7 @@ export default function TeamMemberCreateEditForm() {
                       />
                     </FormControl>
                   </div>
-                  {/* * EMAIL */}
+                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -184,7 +180,7 @@ export default function TeamMemberCreateEditForm() {
                       />
                     </FormControl>
                   </div>
-                  {/* * ROLE */}
+                  {}
                   <FormControl fullWidth>
                     <InputLabel id="role-select">Role</InputLabel>
                     <Select
@@ -192,21 +188,19 @@ export default function TeamMemberCreateEditForm() {
                       id="role"
                       value={(formData.role as string) || ""}
                       label="Role"
-                      // className="capitalize"
                       onChange={(e) => handleChange("role", e.target.value)}
                     >
                       {Object.values(Role)?.map((role) => (
                         <MenuItem
                           key={role}
                           value={role}
-                          // className="capitalize"
                         >
                           {role}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                  {/* * DEPARTMENT */}
+                  {}
                   <FormControl fullWidth>
                     <InputLabel id="department-select">Department</InputLabel>
                     <Select
@@ -214,7 +208,6 @@ export default function TeamMemberCreateEditForm() {
                       id="department"
                       value={(formData.department as string) || ""}
                       label="Department"
-                      // className="capitalize"
                       onChange={(e) =>
                         handleChange("department", e.target.value)
                       }
@@ -225,14 +218,13 @@ export default function TeamMemberCreateEditForm() {
                           <MenuItem
                             key={department}
                             value={department}
-                            // className="capitalize"
                           >
                             {department}
                           </MenuItem>
                         ))}
                     </Select>
                   </FormControl>
-                  {/* * CONTACT PHONE */}
+                  {}
                   <Fragment>
                     <ReactPhoneInput
                       value={formData.contactPhone}

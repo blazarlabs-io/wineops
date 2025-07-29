@@ -2,7 +2,7 @@ import { GrapeStatus } from "@/models/types/db";
 import { MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
-export type StatusDataDisplayProps = {
+type StatusDataDisplayProps = {
   status: GrapeStatus;
   onSelect?: (status: GrapeStatus) => void;
 };

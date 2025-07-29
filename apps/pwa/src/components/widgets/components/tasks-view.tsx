@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import TasksTable from "@/components/table/grapes/tasks-table";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { useAuth } from "@/lib/firebase/auth";

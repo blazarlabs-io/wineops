@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";

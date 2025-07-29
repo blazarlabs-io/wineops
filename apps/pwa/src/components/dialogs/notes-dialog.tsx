@@ -14,7 +14,7 @@ import {
 import { enqueueSnackbar } from "notistack";
 import EditNoteForm from "../forms/notes/edit-note-form";
 
-export interface NotesDialogProps {
+interface NotesDialogProps {
   open: boolean;
   uid: string;
   onClose: () => void;
@@ -28,7 +28,6 @@ export default function NotesDialog({
   onClose,
 }: NotesDialogProps) {
   const handleEditNote = async (data: Note) => {
-    // * 1. Update note in DB
     const teamRes = await db.note.update(uid, data);
     if (teamRes.status === 200) {
       enqueueSnackbar("Note created successfully", {
@@ -42,7 +41,6 @@ export default function NotesDialog({
   };
 
   const handleDeleteNote = async (note: Note) => {
-    // * 1. Update note in DB
     const teamRes = await db.note.delete(uid, note.id);
     if (teamRes.status === 200) {
       enqueueSnackbar("Note deleted successfully", {

@@ -19,12 +19,6 @@ export const QuantityCellRenderer: FunctionComponent<
     batches.some((b: ActionRelation) => b.id === item.id)
   );
 
-  // const batch = grapes.filter((grape) => {
-  //   console.log("grape", grape.id, node.data);
-  //   if (!node.data?.batch?.id || !grape) return null;
-  //   if (grape?.id === node.data?.batch?.id) return grape;
-  // });
-
   const actualArr = result.map((item) => item.metrics?.actual || 0); //result[0]?.metrics?.actual || 0;
   const actual = actualArr.reduce(
     (accumulator, currentValue) => accumulator + currentValue,

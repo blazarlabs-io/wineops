@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import React from "react";
 
-export interface QuickActionsWidgetStepOneProps<T extends SingleActionEntity> {
+interface QuickActionsWidgetStepOneProps<T extends SingleActionEntity> {
   title: string;
   selectedAction?: T;
   onBackClick: () => void;
@@ -13,7 +13,6 @@ export interface QuickActionsWidgetStepOneProps<T extends SingleActionEntity> {
 export default function QuickActionsWidgetStepTwo<
   T extends SingleActionEntity,
 >({ title, selectedAction, onBackClick }: QuickActionsWidgetStepOneProps<T>) {
-  console.log("selectedAction", selectedAction);
   const FormComponent = selectedAction?.form;
 
   return (
@@ -60,10 +59,9 @@ export default function QuickActionsWidgetStepTwo<
           overflowX: "hidden",
           height: "100%",
         }}
-        // className="debug-red"
       >
         <Stack height="100%">
-          {/* *Form */}
+          {}
           <React.Fragment>
             {FormComponent && (
               <FormComponent
@@ -74,11 +72,7 @@ export default function QuickActionsWidgetStepTwo<
           </React.Fragment>
         </Stack>
       </Box>
-      {/* <Box display={"flex"} justifyContent={"end"}>
-        <Button variant="contained">
-          <Icon icon={"mdi:check"} width={24} height={24} />
-        </Button>
-      </Box> */}
+      {}
     </Box>
   );
 }

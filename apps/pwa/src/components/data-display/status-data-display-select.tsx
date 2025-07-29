@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { vineyardStatus } from "@/data/system-variables";
 import { VineyardStatus } from "@/models/types/db";
 import { MenuItem, Select, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
-export type StatusDataDisplayProps = {
+type StatusDataDisplayProps = {
   status: VineyardStatus;
   onSelect?: (status: VineyardStatus) => void;
 };

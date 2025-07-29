@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import {
@@ -199,7 +199,6 @@ export default function GrapeIntakeActionForm({
         (complete: string) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(complete);
           handleNewUpload("supportingDocuments", complete, file);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
@@ -207,7 +206,6 @@ export default function GrapeIntakeActionForm({
         (error: Error) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
         }
@@ -242,10 +240,8 @@ export default function GrapeIntakeActionForm({
       );
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
         if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
-        console.log("Error deleting file");
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid]
@@ -259,8 +255,6 @@ export default function GrapeIntakeActionForm({
     )[0];
 
     if (!subjectGrape) return;
-
-    console.log("SUBJECT GRAPE:", subjectGrape);
 
     setIsSubmitting(true);
 
@@ -327,7 +321,6 @@ export default function GrapeIntakeActionForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("[GRAPE INTAKE FORM ERRORS]", errors);
 
       const hasGeneralErrors = hasKeyFromArray(
         [

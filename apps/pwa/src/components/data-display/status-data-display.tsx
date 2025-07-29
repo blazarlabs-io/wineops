@@ -2,7 +2,7 @@ import { EntityStatus } from "@/models/types/dashboard";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { SupportedColorScheme, useColorScheme } from "@mui/material/styles";
 
-export type StatusDataDisplayProps = {
+type StatusDataDisplayProps = {
   status: EntityStatus;
 };
 

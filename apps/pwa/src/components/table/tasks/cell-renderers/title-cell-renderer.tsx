@@ -7,7 +7,6 @@ export const TitleCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  console.log("VALUE", value, node.data.lastName);
   return (
     <Stack
       sx={{

@@ -1,39 +1,4 @@
-/** 
- * 
- export type GrapeIntakeAction = {
-   id: string;
-   type: GrapeActionType;
-   executionDate: string | Timestamp;
-   supplier?: string;
-   grapeVariety?: string;
-   weigherName?: ResponsibleTeamMember;
-   mass?: {
-     gross?: number;
-     net?: number;
-     tare?: number;
-   };
-   qualityCharacteristics?: {
-     sugar?: number;
-     acidity?: number;
-     density?: number;
-     temperature?: number;
-     massFractionSpoiled?: number;
-     massFractionCrushed?: number;
-     massFractionMixed?: number;
-   };
-   labCertificateId?: string;
-   certificatDeInofensivitate?: string;
-   labTechnicianName?: string;
-   transportInfo?: {
-     vehicleId?: string;
-     companyName?: string;
-     driverId?: string;
-   };
-   invoiceNumber?: string;
-   supportingDocument?: SingleDocument;
- };
- * 
-*/
+
 
 import { GrapeIntakeAction } from "@/models/types/actions";
 import Joi from "joi";

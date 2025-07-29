@@ -16,7 +16,7 @@ export const rowOrientations = [
   "contour-planting",
 ];
 
-export const soilTypes = [
+const soilTypes = [
   "Clay",
   "Silt",
   "Sand",
@@ -48,7 +48,7 @@ export const vineyardStatus = [
   "Harvest Ended",
 ];
 
-export const quickActions = [
+const quickActions = [
   { name: "Harvest", icon: "hugeicons:grapes" },
   { name: "Weed removal", icon: "fluent:plant-grass-24-regular" },
   { name: "Fertilizer application", icon: "game-icons:fertilizer-bag" },

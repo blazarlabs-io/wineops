@@ -12,7 +12,7 @@ import { wineryNotes, wineryNotesTitles } from "@/data/notes-sample-data";
 const start = new Date("2024-01-01");
 const end = new Date("2025-01-01");
 
-export const generateLabData = () => {
+const generateLabData = () => {
   const data: LabDataSimple[] = [];
   for (let i = 0; i < 4; i++) {
     data.push({
@@ -45,7 +45,7 @@ const generateItems = (total: number) => {
   return items;
 };
 
-export const generateRandomFilenameWithWords = (
+const generateRandomFilenameWithWords = (
   extension: string = "",
   separator: string = "-",
   wordCount: number = 2
@@ -81,7 +81,7 @@ export const generateRandomFilenameWithWords = (
   return extension ? `${name}.${extension.replace(/^\./, "")}` : name;
 };
 
-export const generateDummyDocs = (count: number) => {
+const generateDummyDocs = (count: number) => {
   const items: SingleDocument[] = [];
   for (let i = 0; i < count; i++) {
     items.push({
@@ -107,7 +107,7 @@ export const generateDummyDocs = (count: number) => {
   return items;
 };
 
-export const generateTasks = (): TaskSummary[] => {
+const generateTasks = (): TaskSummary[] => {
   const tasks: TaskSummary[] = [];
   for (let i = 0; i < 10; i++) {
     tasks.push({
@@ -130,7 +130,7 @@ const getRandomNote = (notes: string[]): string => {
   return notes[randomIndex];
 };
 
-export const generateNotes = (): Note[] => {
+const generateNotes = (): Note[] => {
   const notes: Note[] = [];
   for (let i = 0; i < 4; i++) {
     notes.push({
@@ -142,7 +142,7 @@ export const generateNotes = (): Note[] => {
   return notes;
 };
 
-export function generateRandomId(length: number = 10): string {
+function generateRandomId(length: number = 10): string {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";

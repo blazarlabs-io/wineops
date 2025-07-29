@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { ColDef } from "ag-grid-enterprise";
 import { Grape } from "@/models/types/db";
 import { BatchIDCellRenderer } from "./BatchIDCellRenderer";

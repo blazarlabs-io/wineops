@@ -63,7 +63,6 @@ export const WineProvider = ({ children }: IWineProvider) => {
         const wines: Wine[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No wines found");
           setWines([]);
           return;
         }

@@ -9,7 +9,6 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  console.log(value);
   return (
     <Box
       sx={{
@@ -19,7 +18,7 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         height: "100%",
       }}
     >
-      {/* <Chip label={value} /> */}
+      {}
       {value && value !== undefined && (
         <TaskStatusDataDisplay
           status={value as TaskStatus}

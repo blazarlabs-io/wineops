@@ -54,7 +54,6 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
         const consumables: Consumable[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No consumables found");
           setConsumables([]);
           return;
         }
@@ -67,7 +66,6 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
         });
 
         setConsumables(consumables);
-        console.log("Consumables", consumables);
       });
     }
 

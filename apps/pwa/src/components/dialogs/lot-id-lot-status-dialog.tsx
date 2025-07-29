@@ -13,7 +13,7 @@ import {
 import { Grape } from "lucide-react";
 import { ReactNode } from "react";
 
-export interface LotIdAndLotStatusDialogProps {
+interface LotIdAndLotStatusDialogProps {
   open: boolean;
   onClose: () => void;
   ids: string[];

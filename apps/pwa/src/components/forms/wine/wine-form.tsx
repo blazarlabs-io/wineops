@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useVessel } from "@/context/vessel";
@@ -136,7 +136,6 @@ export default function WineForm() {
           }
         }
       } catch (e) {
-        console.error(
           "Error creating document or subcollection with data: ",
           e
         );
@@ -178,7 +177,6 @@ export default function WineForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("[WINE FORM ERRORS]", errors);
     }
   }, [errors]);
 

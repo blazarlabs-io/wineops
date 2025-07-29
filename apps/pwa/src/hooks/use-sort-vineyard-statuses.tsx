@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { VineyardStatus } from "@/models/types/db";
 import { useEffect, useState } from "react";
 
@@ -16,7 +16,6 @@ export const useSortVineyardStatuses = (statuses: VineyardStatus[]) => {
     const counts: Record<string, number> = {};
 
     arr.forEach((item: any) => {
-      console.log(typeof item);
       let key: string;
       if (typeof item === "string") {
         key = String(item); // Convert to string for object keys

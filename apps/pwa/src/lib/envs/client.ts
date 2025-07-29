@@ -21,7 +21,6 @@ export const clientEnvs = (() => {
   });
 
   if (!parsed.success) {
-    console.error('❌ Invalid environment variables:', parsed.error.format());
     throw new Error('Missing or invalid NEXT_PUBLIC_FIREBASE_ env vars');
   }
 

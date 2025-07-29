@@ -20,7 +20,6 @@ export const QuantityCellRenderer: FunctionComponent<
   );
 
   const batch = grapes.filter((grape) => {
-    // console.log("grape", grape.id, node.data);
     if (!node.data?.batch?.id || !grape) return null;
     if (grape?.id === node.data?.batch?.id) return grape;
   });
@@ -47,13 +46,6 @@ export const QuantityCellRenderer: FunctionComponent<
   );
 
   const isGroup = node?.group || node?.data?.rowType === "group";
-
-  // console.log("\n\n+++++++++++++++++++++++++++++++++++");
-  // console.log("value", value);
-  // console.log("node", node);
-  // console.log("result", result);
-  // console.log("metrics", metrics);
-  // console.log("+++++++++++++++++++++++++++++++++++\n\n");
 
   return (
     <Box

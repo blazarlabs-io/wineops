@@ -51,10 +51,8 @@ export default function GroupingDialog<T extends DashboardEntity>({
 
   const isAddToGroupDisabled = selectedGroup === "" && newGroup === "";
 
-  // console.log("\n\n\n\n", data, "\n\n\n\n");
 
   const handleGroupChange = (event: SelectChangeEvent) => {
-    console.log("GROUP CHANGE:", event.target.value);
     setSelectedGroup(event.target.value);
     setSelectedGroupDisplayName(event.target.value);
     if (selectedGroup === "new-group") {
@@ -63,14 +61,12 @@ export default function GroupingDialog<T extends DashboardEntity>({
   };
 
   const handleParentChange = (event: SelectChangeEvent) => {
-    console.log("PARENT CHANGE:", event.target.value);
     setSelectedParent(event.target.value);
     setSelectedGroup(event.target.value);
   };
 
   const handleNewGroupChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNewGroup(event.target.value);
-    console.log("NEW GROUP:", event.target.value);
   };
 
   const handleEnableNewGroup = () => {
@@ -211,7 +207,7 @@ export default function GroupingDialog<T extends DashboardEntity>({
                       }}
                       onClick={handleEnableNewGroup}
                     >
-                      {/* <AddCircleOutline className="text-lg" /> */}
+                      {}
                       <Typography variant="body2" color="primary">
                         CREATE NEW GROUP
                       </Typography>
@@ -262,19 +258,7 @@ export default function GroupingDialog<T extends DashboardEntity>({
                             paddingBottom: "0px",
                           }}
                         />
-                        {/* <MenuItem
-                          value="new-group"
-                          className="flex items-center gap-2 mt-2"
-                          style={{
-                            backgroundColor:
-                              "var(--mui-palette-paper-background-default)",
-                          }}
-                          onClick={handleEnableNewGroup}
-                        >
-                          <Typography variant="body2" color="primary">
-                            CREATE NEW GROUP
-                          </Typography>
-                        </MenuItem> */}
+                        {}
                       </Select>
                     </FormControl>
                   </>

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { CalendarMonth, Close } from "@mui/icons-material";
 import {
   Button,
@@ -12,7 +12,7 @@ import {
 import { Grape } from "lucide-react";
 import { ReactNode } from "react";
 
-export interface BottlingDateDialogProps {
+interface BottlingDateDialogProps {
   open: boolean;
   onClose: () => void;
   data: any;

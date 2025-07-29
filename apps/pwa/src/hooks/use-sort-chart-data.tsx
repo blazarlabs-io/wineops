@@ -2,7 +2,7 @@ import { LabDataChart } from "@/models/types/db";
 import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
-export type SortedLabData = {
+type SortedLabData = {
   sugar: number[];
   acidity: number[];
   labels: string[];

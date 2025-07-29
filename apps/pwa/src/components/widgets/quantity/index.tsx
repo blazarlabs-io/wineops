@@ -11,7 +11,7 @@ import LegendItem from "./legend-item";
 
 type Metrics = Partial<Record<Metric, number>>;
 
-export type QuantityWidgetProps = Metrics & {
+type QuantityWidgetProps = Metrics & {
   status?: EntityStatus;
   unit?: string;
 };

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useMemo, type FunctionComponent } from "react";
 

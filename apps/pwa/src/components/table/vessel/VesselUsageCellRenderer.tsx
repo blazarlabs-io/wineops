@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { BarrelInfoUsage, VesselType } from "@/models/types/db";
 import Stack from "@mui/material/Stack";

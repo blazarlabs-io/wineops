@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   GrapeDestination,
   ParcelClassification,
@@ -119,7 +119,6 @@ export const TextField = styled(Input)(({ theme: { palette } }) => ({
     fontSize: 14,
     fontWeight: 600,
     lineHeight: 1,
-    //height: "12px",
   },
   "& .MuiInput-underline:after": {
     borderBottomColor: "none",
@@ -165,7 +164,6 @@ export const StyledDatePicker = styled(DatePicker)(
       fontSize: 14,
       fontWeight: 600,
       lineHeight: 1,
-      //height: "12px",
       "&:focus": {
         outline: "none",
       },
@@ -205,7 +203,7 @@ export const StyledDatePicker = styled(DatePicker)(
   })
 );
 
-export const generateEmptyRows = (numberOfRows = 1) =>
+const generateEmptyRows = (numberOfRows = 1) =>
   Array.from({ length: numberOfRows }).map((_, index) => (
     <tr key={index}>
       {Array.from({ length: 17 }).map((_, indexCell) => (
@@ -216,7 +214,7 @@ export const generateEmptyRows = (numberOfRows = 1) =>
     </tr>
   ));
 
-export const generateEmptyCells = (numberOfCells = 1) =>
+const generateEmptyCells = (numberOfCells = 1) =>
   Array.from({ length: numberOfCells }).map((_, index) => (
     <td key={index}>&nbsp;</td>
   ));
@@ -229,7 +227,7 @@ export const filterByCategory = (
     ? arr.filter(({ category }) => category === productCategory)
     : [];
 
-export const getVineyardBatchesQty = (batches: any[], grapes: any[]): number =>
+const getVineyardBatchesQty = (batches: any[], grapes: any[]): number =>
   batches.length > 0 && grapes?.length > 0
     ? grapes
         .filter((grape) => batches.some((batch) => batch?.id === grape?.id))

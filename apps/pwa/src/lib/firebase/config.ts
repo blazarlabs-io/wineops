@@ -1,6 +1,5 @@
 import { clientEnvs } from "../envs/client";
 
-// Your web app's Firebase configuration
 export const firebaseConfig = {
   apiKey: clientEnvs.NEXT_PUBLIC_FIREBASE_API_KEY as string,
   authDomain: clientEnvs.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN as string,
@@ -14,7 +13,7 @@ export const WINERY = "winery";
 export const VINEYARDS = "vineyards";
 export const VINEYARDS_GROUPS = "vineyards_groups";
 export const GRAPES = "grapes";
-export const WINEWINES = "winewines";
+const WINEWINES = "winewines";
 export const VESSELS = "vessels";
 export const CONSUMABLES = "consumables";
 export const MUSTS = "musts";

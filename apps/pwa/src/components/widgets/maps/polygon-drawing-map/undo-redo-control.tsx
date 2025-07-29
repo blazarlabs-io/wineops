@@ -18,11 +18,6 @@ export const UndoRedoControl = ({ drawingManager }: Props) => {
     future: [],
   });
 
-  // We need this ref to prevent infinite loops in certain cases.
-  // For example when the radius of circle is set via code (and not by user interaction)
-  // the radius_changed event gets triggered again. This would cause an infinite loop.
-  // This solution can be improved by comparing old vs. new values. For now we turn
-  // off the "updating" when snapshot changes are applied back to the overlays.
   const overlaysShouldUpdateRef = useRef<boolean>(false);
 
   useDrawingManagerEvents(drawingManager, overlaysShouldUpdateRef, dispatch);

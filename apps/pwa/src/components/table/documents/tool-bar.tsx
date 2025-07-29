@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import UploadDocumentsDialog from "@/components/dialogs/upload-documents-dialog";
 import { Backup, FilterList } from "@mui/icons-material";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -89,19 +89,8 @@ export default function DocumentsTableToolbar({
             />
           }
         />
-        {/* <ExportCsv render={<ToolbarButton render={<Button>Export</Button>} />} /> */}
-        {/* <ExportPrint
-        render={
-          <ToolbarButton
-            render={
-              <Button>
-                <Print className="h-4! w-4! mr-1" />
-                Print
-              </Button>
-            }
-          />
-        }
-      /> */}
+        {}
+        {}
 
         <QuickFilter
           render={(props, state) => (

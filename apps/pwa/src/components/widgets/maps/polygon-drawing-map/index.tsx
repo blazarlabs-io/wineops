@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Coordinates } from "@/models/types/db";
 import {
   ControlPosition,
@@ -53,16 +53,14 @@ const PolygonOverlay = ({ initialCoordinates }: PolygonOverlayProps) => {
     polygon.setMap(map);
     polygonRef.current = polygon;
 
-    // Cleanup on unmount
     return () => {
-      // polygon.setMap(null);
     };
   }, [map]);
 
   return null;
 };
 
-export type PolygonDrawingMapProps = {
+type PolygonDrawingMapProps = {
   height?: string;
   initialCoordinates?: Coordinates[];
   onComplete?: (coordinates: Coordinates[]) => void;
@@ -75,12 +73,9 @@ export default function PolygonDrawingMap({
 }: PolygonDrawingMapProps = {}) {
   const drawingManager = useDrawingManager();
 
-  // const [coordinates, setCoordinates] = useState<Coordinates[]>([]);
-
   useEffect(() => {
     if (!drawingManager) return;
 
-    // * Listener for polygoncomplete
     const polygonCompleteListener = drawingManager.addListener(
       "polygoncomplete",
       async (polygon: google.maps.Polygon) => {

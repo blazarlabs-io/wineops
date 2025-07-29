@@ -16,9 +16,6 @@ import {
 
 export default function reducer(state: State, action: Action) {
   switch (action.type) {
-    // This action is called whenever anything changes on any overlay.
-    // We then take a snapshot of the relevant values of each overlay and
-    // save them as the new "now". The old "now" is added to the "past" stack
     case DrawingActionKind.UPDATE_OVERLAYS: {
       const overlays = state.now.map((overlay: Overlay) => {
         const snapshot: Snapshot = {};
@@ -48,9 +45,6 @@ export default function reducer(state: State, action: Action) {
       };
     }
 
-    // This action is called when a new overlay is added to the map.
-    // We then take a snapshot of the relevant values of the new overlay and
-    // add it to the "now" state. The old "now" is added to the "past" stack
     case DrawingActionKind.SET_OVERLAY: {
       const {overlay} = action.payload;
 
@@ -81,9 +75,6 @@ export default function reducer(state: State, action: Action) {
       };
     }
 
-    // This action is called when the undo button is clicked.
-    // Get the top item from the "past" stack and set it as the new "now".
-    // Add the old "now" to the "future" stack to enable redo functionality
     case DrawingActionKind.UNDO: {
       const last = state.past.slice(-1)[0];
 
@@ -96,9 +87,6 @@ export default function reducer(state: State, action: Action) {
       };
     }
 
-    // This action is called when the redo button is clicked.
-    // Get the top item from the "future" stack and set it as the new "now".
-    // Add the old "now" to the "past" stack to enable undo functionality
     case DrawingActionKind.REDO: {
       const next = state.future.slice(-1)[0];
 
@@ -113,7 +101,6 @@ export default function reducer(state: State, action: Action) {
   }
 }
 
-// Handle drawing manager events
 export function useDrawingManagerEvents(
   drawingManager: google.maps.drawing.DrawingManager | null,
   overlaysShouldUpdateRef: MutableRefObject<boolean>,
@@ -192,7 +179,6 @@ export function useDrawingManagerEvents(
   }, [dispatch, drawingManager, overlaysShouldUpdateRef]);
 }
 
-// Update overlays with the current "snapshot" when the "now" state changes
 export function useOverlaySnapshots(
   map: google.maps.Map | null,
   state: State,

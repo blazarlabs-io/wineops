@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Close } from "@mui/icons-material";
 import {
@@ -14,7 +14,7 @@ import {
 import { Grape } from "lucide-react";
 import { ReactNode } from "react";
 
-export interface CadastralDialogProps {
+interface CadastralDialogProps {
   open: boolean;
   onClose: () => void;
   data: any;
@@ -27,7 +27,6 @@ export default function CollectionsDialog({
   data,
   title = "Collections",
 }: CadastralDialogProps) {
-  console.log("DATA", data);
   return (
     <Dialog open={open} onClose={onClose}>
       <IconButton

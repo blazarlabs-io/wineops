@@ -24,7 +24,6 @@ export default function QuickTasksWidget() {
   const handleCreateNewTask = useCallback(async (data: Task) => {
     setOpen(false);
 
-    // * 1. Create task
     const taskRes = await db.task.create(user?.uid as string, data);
 
     if (taskRes.status === 200) {
@@ -33,7 +32,6 @@ export default function QuickTasksWidget() {
       enqueueSnackbar("Error creating task", { variant: "error" });
     }
 
-    // TODO 2. update dashboard and object here
   }, []);
 
   return (
@@ -65,9 +63,7 @@ export default function QuickTasksWidget() {
           </Box>
         )}
       </Box>
-      {/* <Box sx={{ width: RIGHT_DRAWER_WIDTH, overflowX: "hidden" }}>
-        <TaskCard />
-      </Box> */}
+      {}
     </>
   );
 }

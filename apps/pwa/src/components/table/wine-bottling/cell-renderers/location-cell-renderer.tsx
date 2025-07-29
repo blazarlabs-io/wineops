@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import LocationDialog from "@/components/dialogs/location-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
@@ -12,14 +12,6 @@ export const LocationCellRenderer: FunctionComponent<
   const [openLocations, setOpenLocations] = useState<boolean>(false);
 
   const isGroup = node?.group || node?.data?.rowType === "group";
-
-  if (isGroup) console.log(node);
-
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXx");
-  console.log("IS GROUP", isGroup);
-  console.log("VALUE", value);
-  console.log("NODE", node);
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXx");
 
   return (
     <Box

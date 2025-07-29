@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Timestamp, deleteField, FieldValue } from "firebase/firestore";
 
 type FirestoreCompatible =

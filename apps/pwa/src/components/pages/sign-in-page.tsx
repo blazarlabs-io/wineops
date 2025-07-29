@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 "use client";
 
 import { auth } from "@/lib/firebase/client";
@@ -35,7 +35,6 @@ export default function SignInPage() {
 
       return res;
     } catch (error) {
-      console.error(error);
       enqueueSnackbar("Sign in failed", { variant: "error" });
       return null;
     }

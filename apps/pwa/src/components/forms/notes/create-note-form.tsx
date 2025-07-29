@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
@@ -26,7 +26,7 @@ import { parseToDate } from "@/utils/date-format";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 
-export type CreateNoteFormProps = {
+type CreateNoteFormProps = {
   teamMembers: TeamMember[];
   uid: string;
   onDataSubmit: (data: any) => void;
@@ -60,15 +60,12 @@ export default function CreateNoteForm({
   const onSubmit = (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
     onDataSubmit(data);
     setFormData(data);
   };
 
   useEffect(() => {
     const member = teamMembers.filter((v) => v.id === uid)[0];
-    console.log("MEMBER", member, uid);
     const newNote: Note = {
       id: Date.now().toString(),
       title: "",
@@ -82,7 +79,6 @@ export default function CreateNoteForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 
@@ -92,7 +88,7 @@ export default function CreateNoteForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-              {/* * ID - HIDDEN */}
+              {}
               <div className="hidden">
                 <FormControl>
                   <Input
@@ -103,7 +99,7 @@ export default function CreateNoteForm({
                   />
                 </FormControl>
               </div>
-              {/* * DATE */}
+              {}
               <div className="flex flex-col gap-2">
                 <InputLabel className="text-sm text-muted-foreground">
                   Enter date
@@ -124,7 +120,7 @@ export default function CreateNoteForm({
               </div>
               <div className="flex flex-col w-full">
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-                  {/* * TITLE */}
+                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -135,7 +131,7 @@ export default function CreateNoteForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * CONTENT */}
+                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextareaAutosize

@@ -8,7 +8,6 @@ import { type FunctionComponent } from "react";
 export const PriorityCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ node, value }) => {
-  console.log("XXXXXXXXXXX", value);
   return (
     <Box
       sx={{

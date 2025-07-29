@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DEFAULT_LOCALE } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
 import { UploadedDocument } from "@/models/types/db";
@@ -20,7 +20,6 @@ const getApplyQuickFilterFnSameYear: GetApplyQuickFilterFn<any, unknown> = (
   value
 ) => {
   if (!value || value.length !== 4 || !/\d{4}/.test(value)) {
-    // If the value is not a 4-digit string, it cannot be a year so applying this filter is useless
     return null;
   }
   return (cellValue) => {
@@ -82,7 +81,6 @@ const ActionsComponent = (params: GridRenderCellParams) => {
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Download failed", err);
     }
   }, [params.row, user?.uid]);
 
@@ -91,20 +89,7 @@ const ActionsComponent = (params: GridRenderCellParams) => {
       <IconButton size="small" color="default" onClick={handleDownload}>
         <Download className="w-6! h-6!" />
       </IconButton>
-      {/* <Toolbar>
-          <ExportPrint
-            render={
-              <ToolbarButton
-                render={
-                  <Button>
-                    <Print className="h-4! w-4! mr-1" />
-                    Print
-                  </Button>
-                }
-              />
-            }
-          />
-        </Toolbar> */}
+      {}
       <IconButton size="small" color="error" onClick={handleDeleteClick}>
         <DeleteOutline className="w-6! h-6!" />
       </IconButton>

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { db } from "@/lib/firebase/services";
 import { Role, TeamMember } from "@/models/types/db";
 import { EditNote } from "@mui/icons-material";
@@ -13,7 +13,7 @@ import CreateTeamMemberForm from "../forms/team/team-member-create-edit-form";
 import CreateNoteForm from "../forms/notes/create-note-form";
 import { useVineyard } from "@/context/vineyard";
 
-export interface CreateNoteDialogProps {
+interface CreateNoteDialogProps {
   open: boolean;
   subject: string;
   uid: string;
@@ -31,7 +31,6 @@ export default function CreateNoteDialog({
   const { vineyards = [] } = useVineyard();
 
   const handleCreateNewNote = async (data: any) => {
-    // * 1. Create note in DB
     const teamRes = await db.note.create(uid, data);
     if (teamRes.status === 200) {
       enqueueSnackbar("Note created successfully", {
@@ -41,12 +40,9 @@ export default function CreateNoteDialog({
       enqueueSnackbar("Error creating note", { variant: "error" });
     }
 
-    // * 2. Update vineyard or group to reference new note.
     const subjectVineyard = vineyards.filter(
       (vineyard) => vineyard.name === subject
     )[0];
-
-    console.log("subjectVineyard", subjectVineyard, subject);
 
     const vineyardRes = await db.vineyard.update(uid, subjectVineyard.id, {
       ...subjectVineyard,

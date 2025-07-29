@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { IconButton, Link, Stack, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useCallback, useState, type FunctionComponent } from "react";
@@ -179,7 +179,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   onSelect={handleStatusChange}
                 />
               )}
-              {/* {<StatusDataDisplay status={node?.data?.status} />} */}
+              {}
             </Stack>
           </Stack>
         )}

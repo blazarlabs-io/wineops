@@ -29,7 +29,6 @@ interface IAuthContext {
 
 const AuthContext = createContext<IAuthContext | null>(null);
 
-// hook that we can use anywhere in the app
 export const useAuth = () => {
   const context = useContext(AuthContext);
 
@@ -50,8 +49,6 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
   const [user, setUser] = useState<User | null>(serverUser);
   const [loading, setLoading] = useState(true);
 
-  // NOTE: Register the service worker that sends auth state back to server
-  // The service worker is built with `npm run build-service-worker`
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       const serializedFirebaseConfig = encodeURIComponent(
@@ -62,10 +59,8 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
       navigator.serviceWorker
         .register(serviceWorkerUrl)
         .then((registration) =>
-          console.log("Registration scope is: ", registration.scope)
         )
         .catch((error) =>
-          console.log("Service worker registration failed: ", error)
         );
     }
   }, []);
@@ -83,7 +78,6 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
     onAuthStateChanged(auth, (authUser) => {
       if (user === undefined) return;
 
-      // refresh when user changed to ease testing
       if (user?.email !== authUser?.email) {
         router.refresh();
       }
@@ -91,18 +85,9 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
   }, [user]);
 
   const signUp = async (email: string, password: string) => {
-    // Firestore (optional): uncomment the next line if you want to create a database for your users
-    // const usersRef = collection(db, "users");
 
     await createUserWithEmailAndPassword(auth, email, password);
 
-    // Firestore (optional): uncomment the next block of code if you want to create a database for your users
-    // await addDoc(usersRef, {
-    //   // adds new user to 'users' collection
-    //   uuid: response.user.uid,
-    //   timestamp: Timestamp.now(),
-    //   email,
-    // });
   };
 
   const signIn = async (email: string, password: string) => {
@@ -114,7 +99,6 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
       }
       return res.user;
     } catch (error) {
-      console.error(error);
       return null;
     }
   };

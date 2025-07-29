@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Must, MustLabData, StorageCondition } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -22,7 +22,7 @@ import StorageConditionsContent from "./storage-conditions-content";
 import LabsContent from "./labs-content";
 import TasksView from "../components/tasks-view";
 
-export type StorageDetailsWidgetProps = {
+type StorageDetailsWidgetProps = {
   must: Must;
 };
 
@@ -54,7 +54,7 @@ export default function StorageDetailsWidget({
 
       const fetchActions = async () => {
         const filteredActions = (localMust?.actions || []).filter(
-          ({ name }) => name /*!== "lab-reports"*/
+          ({ name }) => name 
         );
 
         if (filteredActions.length === 0) return;
@@ -66,14 +66,12 @@ export default function StorageDetailsWidget({
 
         if (actions.length === 0) return;
 
-        // TODO:  change type to add storage conditions action name
         const storageConditions = (actions.filter(
           ({ type }) => type === "add-storage-condition"
         ) || []) as StorageCondition[];
 
         setStorageConditions(storageConditions);
 
-        // TODO:  change type to lab report action name
         const labsData = (actions.filter(({ type }) => type === "lab-report") ||
           []) as MustLabData[];
 

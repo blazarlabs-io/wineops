@@ -30,15 +30,7 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
                 value?.entry?.netUnit || "kg"
               )
             : "N/A"}
-          {/*
-          <QuantityWidget
-            actual={value?.actual}
-            supply={value?.supply}
-            demand={value?.demand}
-            status={value?.status}
-            unit={value?.unit}
-          />
-        */}
+          {}
         </>
       )}
     </Stack>

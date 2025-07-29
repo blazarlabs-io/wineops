@@ -1,6 +1,5 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import { Bottle } from "@/models/types/db";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/base/tabs';
 import ResponsibleTeamMemberDataDisplay from "@/components/data-display/responsible-team-member-data-display";
 import DocumentsTable from "@/components/table/documents";
 import { ROW_HEIGHT_EXPANDED_BOTTLING } from "@/data/constants";
@@ -13,7 +12,7 @@ import TasksView from "../components/tasks-view";
 import a11yProps from "../utils/a11y-props";
 import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 
-export type BottlingDetailsWidgetProps = {
+type BottlingDetailsWidgetProps = {
   bottle: Bottle;
 };
 
@@ -23,8 +22,6 @@ export default function BottlingDetailsWidget({
   const [value, setValue] = useState<number>(0);
   const [localBottle, setLocalBottle] = useState<Bottle>(bottle);
   const [wineQuantity, setWineQuantity] = useState<number>(0);
-  //   const mountRef = useRef<boolean>(false);
-  //   const { user } = useAuth();
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -219,45 +216,7 @@ export default function BottlingDetailsWidget({
           </div>
         </div>
       </TabPanel>
-      {/* <TabPanel value={value} index={2}>
-        <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
-          <SimpleDataDisplay
-            label="Packaging Type"
-            value={
-              localBottle?.packagingType !== undefined
-                ? localBottle?.packagingType
-                : "N/A"
-            }
-          />
-          <SimpleDataDisplay
-            label="Bottles Per Box"
-            value={
-              localBottle?.bottlesPerBox !== undefined
-                ? formatNumberWithLowerCaseUnitAndSpace(
-                    localBottle?.bottlesPerBox,
-                    "kg"
-                  )
-                : "N/A"
-            }
-          />
-          <SimpleDataDisplay
-            label="Packaging Material"
-            value={
-              localBottle?.packagingMaterial !== undefined
-                ? localBottle?.packagingMaterial
-                : "N/A"
-            }
-          />
-          <SimpleDataDisplay
-            label="Pallet ID"
-            value={
-              localBottle?.palletId !== undefined
-                ? localBottle?.palletId
-                : "N/A"
-            }
-          />
-        </div>
-      </TabPanel> */}
+      {}
       <TabPanel value={value} index={2}>
         <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
           <SimpleDataDisplay
@@ -330,23 +289,12 @@ export default function BottlingDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={5}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
-          {/* <div className="flex items-center justify-start w-full">
-            <Button variant="text" className="">
-              Upload
-            </Button>
-            <Button variant="text" className="">
-              View All
-            </Button>
-          </div> */}
-          {/* <DocumentsTable
-            docs={docs}
-            uploadedDocuments={localBottle?.documents || []}
-            onDocumentUpload={handleDocumentUpload}
-          /> */}
+          {}
+          {}
         </div>
       </TabPanel>
 
-      {/* <DeleteLabReportDialog onDelete={onDeleteLabReport} /> */}
+      {}
     </Box>
   );
 }

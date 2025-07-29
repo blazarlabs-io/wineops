@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { NAVIGATION } from "@/components/navigation/sidebar-navigation";
@@ -50,7 +50,6 @@ export default function WorkspaceLayout(props: MainProps) {
   const router = useDemoRouter("/workspace");
   const navRouter = useRouter();
 
-  // Remove this const when copying and pasting into your project.
   const demoWindow = window !== undefined ? window() : undefined;
 
   const [session, setSession] = useState<Session | null>(null);
@@ -70,10 +69,6 @@ export default function WorkspaceLayout(props: MainProps) {
         "/workspace/wine-production/"
       ) as unknown as ActionsEntity[];
       setCurrentDashboard(splitedPathname[1] as unknown as string);
-      // console.log(
-      //   "\n\nCURRENT DASHBOARD",
-      //   splitedPathname[1] as unknown as string
-      // );
       return;
     }
 
@@ -87,7 +82,6 @@ export default function WorkspaceLayout(props: MainProps) {
       ] as unknown as string;
 
       setCurrentDashboard(current);
-      // console.log("\n\nCURRENT DASHBOARD", current);
       navRouter.push(`/workspace/${router.pathname}`);
     }
   }, [navRouter, pathname, router.pathname]);
@@ -169,14 +163,14 @@ export default function WorkspaceLayout(props: MainProps) {
             {props.children}
           </Box>
         </DashboardLayout>
-        {/* * QUICK TASKS DRAWER */}
+        {}
         {open && type === "tasks" && (
           <QuickTasksDrawer
             open={open && type === "tasks"}
             onOpenChange={() => handleOpenChange("tasks", false)}
           />
         )}
-        {/* * Quick Actions DRAWER */}
+        {}
         {isActionsDrawerOpen && (
           <>
             {currentDashboard === "vineyards" && (

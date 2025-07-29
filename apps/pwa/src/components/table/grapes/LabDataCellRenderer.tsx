@@ -41,25 +41,7 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
                 } as unknown as LabReport
               }
             />
-            {/*
-            {value?.date && (
-              <Typography variant="caption" color="textDisabled">
-                {formatDate(value?.date, { locale: DEFAULT_LOCALE })}
-              </Typography>
-            )}
-
-            <Stack gap={1} direction="row">
-              <LabItem
-                variant="small"
-                label="Sugar"
-                data={value?.sugar ?? { value: "N/A" }}
-              />
-              <LabItem
-                variant="small"
-                label="Acidity"
-                data={value?.acidity ?? { value: "N/A" }}
-              />
-            </Stack>*/}
+            {}
           </Stack>
         )
       )}

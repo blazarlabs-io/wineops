@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   GrapeDestination,
   ParcelClassification,
@@ -143,7 +143,6 @@ export const TextField = styled(Input)(({ theme: { palette } }) => ({
     fontSize: 14,
     fontWeight: 600,
     lineHeight: 1,
-    //height: "12px",
   },
   "& .MuiInput-underline:after": {
     borderBottomColor: "none",
@@ -189,7 +188,6 @@ export const StyledDatePicker = styled(DatePicker)(
       fontSize: 14,
       fontWeight: 600,
       lineHeight: 1,
-      //height: "12px",
       "&:focus": {
         outline: "none",
       },

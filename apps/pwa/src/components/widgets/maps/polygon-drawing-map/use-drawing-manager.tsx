@@ -12,7 +12,6 @@ export function useDrawingManager(initialValue: google.maps.drawing.DrawingManag
   useEffect(() => {
     if (!map || !drawing) return;
 
-    // https://developers.google.com/maps/documentation/javascript/reference/drawing
     const newDrawingManager = new drawing.DrawingManager({
       map,
       drawingMode: google.maps.drawing.OverlayType.POLYGON,

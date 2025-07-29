@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 import { useAuth } from "@/lib/firebase/auth";
 import {
   Avatar,
@@ -16,7 +16,7 @@ import {
 import { ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 import { useState } from "react";
 
-export type ToolBarActionsProps = {
+type ToolBarActionsProps = {
   props?: any;
 };
 
@@ -36,7 +36,6 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
 
   const handleMenuItemClick = async (item: string) => {
     if (item === "Logout") {
-      console.log("signing out");
       await signOut();
       setAnchorElUser(null);
       if (typeof window !== "undefined") {
@@ -46,11 +45,6 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
   };
   const theme = useTheme();
   const scheme = useColorScheme();
-
-  console.log("scheme.mode:", scheme.mode);
-  console.log("scheme.colorScheme:", scheme.colorScheme);
-  console.log("scheme:", scheme);
-  console.log("theme:", theme);
 
   return (
     <Box display={"flex"} alignItems={"center"} gap={1} sx={{ flexGrow: 0 }}>

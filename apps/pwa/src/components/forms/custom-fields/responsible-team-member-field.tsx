@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   SortedTeamMembersNames,
   useSortTeamMembersNames,
@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
-export type ResponsibleTeamMemberFieldProps = {
+type ResponsibleTeamMemberFieldProps = {
   teamMembers: TeamMember[];
   onChange: (value: any) => void;
   currentValue?: any;
@@ -37,18 +37,14 @@ export default function ResponsibleTeamMemberField({
 
   useEffect(() => {
     setValue(currentValue);
-    console.log("currentValue", currentValue);
   }, [currentValue]);
 
   const handleRenderOption = useCallback(
     (props: { [x: string]: any; key: any }, option: string) => {
       const { key, ...optionProps } = props;
-      console.log("option", option);
-      console.log(key, optionProps);
       const selectedMember: SortedTeamMembersNames[] = sortedTeamMembers.filter(
         (member) => member?.fullName.includes(option)
       );
-      //   setValue(selectedMember[0]?.fullName);
       return (
         <Grid key={key} container spacing={2} columns={10} {...optionProps}>
           <Grid size={1}>
@@ -91,7 +87,6 @@ export default function ResponsibleTeamMemberField({
       id="responsible-team-member-field"
       options={sortedTeamMembers.map((member) => member?.fullName)}
       value={value}
-      // freeSolo
       filterSelectedOptions
       renderOption={handleRenderOption}
       renderInput={(params) => <TextField {...params} label={label} />}

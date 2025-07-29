@@ -5,7 +5,7 @@ import { useState } from "react";
 import EditNoteDialog from "../dialogs/edit-note-dialog";
 import NotesDialog from "../dialogs/notes-dialog";
 
-export type NotesDataDisplayProps = {
+type NotesDataDisplayProps = {
   notes: Note[];
   uid: string;
 };

@@ -13,15 +13,11 @@ import {
   PressPercentage,
 } from "@/models/types/actions";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const grapeIntakeAction = async (
   uid: string,
   actionData: GrapeIntakeAction,
   grape: Grape
 ) => {
-  console.log("grapeIntakeAction", uid, actionData, grape);
-
-  // * 1. write new action object into DB andreference it in the grape
 
   const actionRes = await db.action.create(uid, actionData);
 
@@ -30,8 +26,6 @@ export const grapeIntakeAction = async (
   } else {
     enqueueSnackbar("Error creating action", { variant: "error" });
   }
-
-  // * 2. update grape object into DB
 
   const {
     id,
@@ -121,8 +115,6 @@ export const grapeProcessingAction = async (
   actionData: any,
   grape: Grape
 ) => {
-  // * 1. write new action object into DB andreference it in the grape
-  console.log(
     "\n\nXXXXXXXXXXXXXXXXgrapeProcessingAction",
     uid,
     actionData,
@@ -137,7 +129,6 @@ export const grapeProcessingAction = async (
     enqueueSnackbar("Error creating action", { variant: "error" });
   }
 
-  // * 2. update grape object into DB
   const grapeRes = await db.grape.update(uid, grape.id, {
     actions: [
       ...(grape.actions || ([] as ActionRelation[])),
@@ -163,14 +154,12 @@ export const grapeProcessingAction = async (
 
   if (Array.isArray(actionData.pressPercentage)) {
     actionData.pressPercentage.map(async (press: PressPercentage) => {
-      // // * 3. create a new must
       const newMust: Must = {
         id: Date.now().toString(),
         name: press?.mustId,
         date: actionData.executionDate,
         group: [press?.mustId],
         rowType: RowType.ITEM,
-        // grapeVariety: grape?.grapeVariety,
         status: MustStatus.NEW_MUST,
         metrics: {
           actual: press?.inputQuantity,
@@ -181,7 +170,6 @@ export const grapeProcessingAction = async (
         vessels: press?.vessels,
       };
 
-      console.log("NEW MUST", newMust);
       const mustRes = await db.must.create(uid, newMust);
 
       if (mustRes.status === 200) {

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db as fdb } from '../client';
@@ -27,7 +27,6 @@ winery = {
         };
       }
     } catch (error) {
-      console.log('error', error);
       return {
         data: null,
         error,
@@ -45,7 +44,6 @@ winery = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
       return {
         data: null,
         error,

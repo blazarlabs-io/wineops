@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useAuth } from "@/lib/firebase/auth";
@@ -13,7 +13,6 @@ import {
   Winery,
 } from "@/models/types/db";
 import { collection, onSnapshot } from "firebase/firestore";
-// import { useSnackbar } from "notistack";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 interface WineryContextType {
@@ -24,7 +23,6 @@ interface WineryContextType {
 
 const WineryContext = createContext<WineryContextType | null>(null);
 
-// hook that we can use anywhere in the app
 export const useWinery = () => {
   const context = useContext(WineryContext);
 
@@ -37,7 +35,6 @@ export const useWinery = () => {
 
 export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  // const { enqueueSnackbar } = useSnackbar();
   const mountRef = useRef<boolean>(false);
   const [winery, setWinery] = useState<Winery | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -57,7 +54,6 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
           if (res.status === 200 && res.error === null) {
             setWinery(res.data);
           } else {
-            // * Create new winery
             sdb.winery
               .create(user.uid)
               .then((res: DbResponse) => {
@@ -67,31 +63,22 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
                     name: "",
                     id: user.uid,
                   });
-                  // enqueueSnackbar("winery created", { variant: "success" });
                 } else {
                   setWinery(null);
-                  // enqueueSnackbar("Error creating winery", {
-                  //   variant: "error",
-                  // });
                 }
               })
               .catch((err: DbResponse) => {
-                console.log("err", err);
                 setWinery(null);
-                // enqueueSnackbar("Error creating winery", { variant: "error" });
               });
           }
         })
         .catch((err: DbResponse) => {
-          console.log("err", err);
           setWinery(null);
-          // enqueueSnackbar("Error creating winery", { variant: "error" });
         });
     }
 
     const teamMembersRef = collection(db, WINERY, user?.uid as string, TEAM);
     const documentsRef = collection(db, WINERY, user?.uid as string, DOCUMENTS);
-    // const labReportsRef = collection(db, WINERY, user?.uid as string, LAB_REPORTS);
 
     let unsubTeamMembers = () => {};
     let unsubDocuments = () => {};
@@ -115,14 +102,12 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (querySnapshot.empty) {
-        console.log("No documents found");
         setDocuments([]);
         return;
       }
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log(data);
         documents.push(data);
       });
 
@@ -133,14 +118,12 @@ export const WineryProvider = ({ children }: { children: React.ReactNode }) => {
       const teamMembers: TeamMember[] = [];
 
       if (querySnapshot.empty) {
-        console.log("No team members found");
         setTeamMembers([]);
         return;
       }
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log(data);
         teamMembers.push(data as TeamMember);
       });
       setTeamMembers(teamMembers);

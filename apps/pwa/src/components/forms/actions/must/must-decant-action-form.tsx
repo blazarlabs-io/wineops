@@ -121,8 +121,6 @@ export default function MustDecantActionForm() {
   );
 
   const onSubmit = (data: MustDecantAction) => {
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
 
     const selectedQty =
       vesselsWithQty?.find(({ name }) => name === data?.vesselId)?.qty || 0;
@@ -180,8 +178,6 @@ export default function MustDecantActionForm() {
 
     if (!subjectMust) return;
 
-    console.log("SUBJECT MUST", subjectMust);
-
     setIsSubmitting(true);
     try {
       actions?.["must-decant"].exec(
@@ -216,7 +212,6 @@ export default function MustDecantActionForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 

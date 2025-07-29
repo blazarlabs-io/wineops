@@ -19,7 +19,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
 
       return {
         data: null,
@@ -49,7 +48,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
 
       return {
         data: null,
@@ -74,7 +72,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
 
       return {
         data: null,
@@ -94,7 +91,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
 
       return {
         data: null,
@@ -121,7 +117,6 @@ const anexa7 = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error deleting many:", error);
 
       return {
         data: null,

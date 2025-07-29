@@ -24,10 +24,6 @@ function getParts({
           column,
         })
       : [];
-  console.log("\n\n############################");
-  console.log("CELL VALUE", cellDisplayValue);
-  console.log("PARTS", parts);
-  console.log("############################\n\n");
   return parts.length ? parts : [{ value: cellDisplayValue }];
 }
 
@@ -72,26 +68,7 @@ export const GrapeVarietyCellRenderer = (params: CustomCellRendererProps) => {
         data={uniqueValues}
         onClose={handleClose}
       />
-      {/* <div className="">
-        {getParts(params).map((part, index) => {
-          if ("match" in part) {
-            console.log("PART", part);
-            const { value: partValue, match, activeMatch } = part;
-            return (
-              match && (
-                <mark
-                  key={index}
-                  className={`ag-find-match${activeMatch ? " ag-find-active-match" : ""} debug-red`}
-                >
-                  {partValue}
-                </mark>
-              )
-            );
-          } else {
-            return part.value;
-          }
-        })}
-      </div> */}
+      {}
       {uniqueValues.length > 0 ? (
         <div
           style={{

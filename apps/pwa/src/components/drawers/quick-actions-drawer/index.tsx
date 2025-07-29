@@ -4,7 +4,7 @@ import { ActionsEntity } from "@/models/types/actions";
 import { Close } from "@mui/icons-material";
 import { Drawer, IconButton, styled } from "@mui/material";
 
-export type QuickActionsDrawerProps<T extends ActionsEntity> = {
+type QuickActionsDrawerProps<T extends ActionsEntity> = {
   open: boolean;
   onOpenChange?: (open: boolean) => void;
   actions?: T;
@@ -32,7 +32,6 @@ export default function QuickActionsDrawer<T extends ActionsEntity>({
   };
 
   const handleActionClick = (action: string) => {
-    console.log("ACTION CLICKED", action);
   };
 
   return (
@@ -58,7 +57,7 @@ export default function QuickActionsDrawer<T extends ActionsEntity>({
           <Close className="w-4 h-4" />
         </IconButton>
       </DrawerHeader>
-      {/* * QUICK ACTIONS WIDGET */}
+      {}
       <QuickActionsWidget
         onClick={handleActionClick}
         actions={actions}

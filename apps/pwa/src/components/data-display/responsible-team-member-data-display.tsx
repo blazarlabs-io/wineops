@@ -1,7 +1,7 @@
 import { cn } from "@/utils/styling";
 import { Avatar, Card, Typography } from "@mui/material";
 
-export type ResponsibleTeamMemberDataDisplayProps = {
+type ResponsibleTeamMemberDataDisplayProps = {
   label: string;
   name: string;
   avatar: string;

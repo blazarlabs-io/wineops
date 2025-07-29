@@ -1,4 +1,4 @@
-export const ENTITY_DETAILS = "ENTITY_DETAILS";
+const ENTITY_DETAILS = "ENTITY_DETAILS";
 export const GROUP_ITEMS_TO_SHOW = 3;
 export const RIGHT_DRAWER_WIDTH = 364;
 export const ROW_HEIGHT_DEFAULT = 112;
@@ -9,7 +9,7 @@ export const ROW_HEIGHT_EXPANDED_BOTTLING = 248;
 
 export const MASS_UNITS = ["kg"];
 
-export const DENSITY_UNITS = ["kg/L"];
+const DENSITY_UNITS = ["kg/L"];
 
 export const CONCENTRATION_UNITS = ["g/dm³"];
 export const ROW_HEIGHT_EXPANDED_VESSEL = 304;

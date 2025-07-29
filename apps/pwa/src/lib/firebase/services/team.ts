@@ -22,7 +22,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
 
       return {
         data: null,
@@ -32,14 +31,11 @@ const team = {
     }
   },
   getMembers: async (uid: string) => {
-    console.log("UID", uid);
     try {
       const docRef = doc(fdb, WINERY, uid);
       const subcollectionRef = collection(docRef, TEAM);
       const docSnap = await getDocs(subcollectionRef);
       const data = docSnap.docs.map((doc) => doc.data());
-
-      console.log("data", data);
 
       return {
         data: data,
@@ -47,7 +43,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
 
       return {
         data: null,
@@ -68,7 +63,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
 
       return {
         data: null,
@@ -94,7 +88,6 @@ const team = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error deleting many:", error);
 
       return {
         data: null,

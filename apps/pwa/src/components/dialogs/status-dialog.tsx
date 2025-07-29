@@ -10,7 +10,7 @@ import {
   IconButton,
 } from "@mui/material";
 
-export interface StatusDialogProps {
+interface StatusDialogProps {
   open: boolean;
   onClose: () => void;
   data: SortedVineyardStatus[];

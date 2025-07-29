@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { REPORTS } from "@/components/dashboards/reports/reports-dashboard";
@@ -259,7 +259,6 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
           }
         }
       } catch (e) {
-        console.error(
           "Error creating document or subcollection with data: ",
           e
         );
@@ -353,7 +352,6 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
   }, [anexa14, defaultAnexa14Data]);
 
   useEffect(() => {
-    console.log("ERRORS:", errors);
   }, [errors]);
 
   const handleBackClick = () => {
@@ -452,8 +450,6 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                   gap: 1,
                   fontFamily: "Times New Roman",
                   fontSize: "16px",
-                  //border: "1px solid #e0e0e0",
-                  //maxWidth: "700px",
                 }}
               >
                 <Stack
@@ -863,7 +859,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                       {PARCELS.map(({ type, title }, index) => (
                         <Fragment key={`${type}-${index}`}>
                           <tr>
-                            <td /*style={{ minWidth: "106px" }}*/>
+                            <td >
                               <Stack
                                 direction="row"
                                 sx={{ alignItems: "center" }}
@@ -1069,8 +1065,6 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
                                             renderInput={(params) => (
                                               <TextField
                                                 {...params}
-                                                //label="Vineyard"
-                                                //variant="outlined"
                                                 fullWidth
                                                 size="small"
                                               />

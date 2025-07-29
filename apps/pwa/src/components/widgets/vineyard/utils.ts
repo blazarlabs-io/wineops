@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import { db as dbClients } from "@/lib/firebase/client";
 import { ACTIONS, WINERY } from "@/lib/firebase/config";

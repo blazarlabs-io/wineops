@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Grape, LabReport } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -12,7 +12,7 @@ import LabDataContent from "./lab-data-content";
 import DocumentsTable from "@/components/table/documents";
 import TasksView from "../components/tasks-view";
 
-export type GrapeDetailsWidgetProps = {
+type GrapeDetailsWidgetProps = {
   grape: Grape;
   labReports: LabReport[];
 };

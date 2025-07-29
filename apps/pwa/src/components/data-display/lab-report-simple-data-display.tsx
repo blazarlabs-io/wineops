@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
-export type LabSimpleDataDisplayProps = {
+type LabSimpleDataDisplayProps = {
   data: LabReport;
   prevData?: LabReport;
 };

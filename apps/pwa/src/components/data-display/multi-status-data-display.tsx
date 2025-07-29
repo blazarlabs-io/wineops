@@ -2,7 +2,7 @@ import { SortedVineyardStatus } from "@/hooks/use-sort-vineyard-statuses";
 import { Badge, Box, Button, Tooltip, Typography } from "@mui/material";
 import { Fragment } from "react";
 
-export type StatusDataDisplayProps = {
+type StatusDataDisplayProps = {
   status: SortedVineyardStatus[];
   onOpen?: () => void;
 };

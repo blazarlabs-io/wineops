@@ -10,7 +10,7 @@ import WineInfoContent from "./wine-info-content";
 import QtyContent from "./qty-content";
 import TasksView from "../components/tasks-view";
 
-export type WineDetailsWidgetProps = {
+type WineDetailsWidgetProps = {
   wine: Wine;
 };
 

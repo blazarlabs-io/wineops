@@ -54,7 +54,6 @@ export const ChemistryProvider = ({ children }: IChemistryProvider) => {
         const chemistry: Chemistry[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No chemistry found");
           setChemistry([]);
           return;
         }

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { getPolygonCenter } from "@/helpers/map-helpers";
 import { Coordinates } from "@/models/types/db";
 import { Map, useMap } from "@vis.gl/react-google-maps";
@@ -29,16 +29,14 @@ const PolygonOverlay = ({ initialCoordinates }: PolygonOverlayProps) => {
     polygon.setMap(map);
     polygonRef.current = polygon;
 
-    // Cleanup on unmount
     return () => {
-      // polygon.setMap(null);
     };
   }, [map]);
 
   return null;
 };
 
-export type PolygonViewerMapProps = {
+type PolygonViewerMapProps = {
   height?: string;
   initialCoordinates: Coordinates[];
 };
@@ -53,7 +51,6 @@ export default function PolygonViewerMap({
   });
   const [polygon, setPolygon] = useState<Coordinates[] | null>(null);
 
-  // * lets validate initialCoordinates
   useEffect(() => {
     if (
       initialCoordinates === undefined ||

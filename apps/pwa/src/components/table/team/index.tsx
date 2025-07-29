@@ -1,16 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
-// React Grid Logic
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-// Theme
 import type { ColDef, RowSelectionOptions } from "ag-grid-community";
 import {
   AllCommunityModule,
   ModuleRegistry,
   themeBalham,
 } from "ag-grid-community";
-// Core CSS
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useColorScheme } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
@@ -31,10 +28,8 @@ const TeamTable = () => {
 
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT / 1.5);
 
-  // Column Definitions: Defines & controls grid columns.
   const [colDefs] = useState<ColDef[]>(columns);
 
-  // * Theming
   const themeClass = isDarkMode ? `ag-theme-quartz-dark` : `ag-theme-quartz`;
   const myTheme = themeBalham
     .withParams({
@@ -65,11 +60,8 @@ const TeamTable = () => {
       "light"
     );
 
-  // Apply settings across all columns
   const defaultColDef = useMemo<ColDef>(() => {
     return {
-      //   filter: true,
-      //   editable: true,
     };
   }, []);
 
@@ -83,7 +75,6 @@ const TeamTable = () => {
     [setSelected]
   );
 
-  // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
       document.body.dataset.agThemeMode = "dark";

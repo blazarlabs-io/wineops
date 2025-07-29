@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { default as LabResultsChart } from "@/components/charts/lab-results";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import { LabReport, Vineyard } from "@/models/types/db";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/base/tabs';
 import CadastralDataDisplay from "@/components/data-display/cadastral-data-display";
 import LabReportResponsibleDataDisplay from "@/components/data-display/lab-report-responsible-data-display";
 import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
@@ -33,7 +32,7 @@ import { ActionsEntity } from "@/models/types/actions";
 import { useSelectedItemsStore } from "@/store/selected-items";
 import TasksView from "../components/tasks-view";
 
-export type VineyardDetailsWidgetProps = {
+type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
   labReports: LabReport[];
 };
@@ -238,7 +237,7 @@ export default function VineyardDetailsWidget({
         <Tab label="Documents" {...a11yProps(6)} sx={sx} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        {/* * GENERAL INFO */}
+        {}
         <div className="flex items-center gap-8 w-full">
           <>
             <div className="min-w-[448px]">
@@ -464,7 +463,7 @@ export default function VineyardDetailsWidget({
                       border: "1px solid var(--mui-palette-divider)",
                     }}
                   >
-                    {/* {index < 3 && ( */}
+                    {}
                     <div className="flex items-center min-w-fit w-full gap-1 px-2 py-1 h-full ">
                       <LabReportResponsibleDataDisplay
                         data={item}
@@ -483,7 +482,7 @@ export default function VineyardDetailsWidget({
                         <DeleteOutline className="max-w-4 max-h-4" />
                       </IconButton>
                     </div>
-                    {/* )} */}
+                    {}
                   </div>
                 );
               })}
@@ -511,14 +510,7 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={6}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
-          {/* <div className="flex items-center justify-start w-full">
-            <Button variant="text" className="">
-              Upload
-            </Button>
-            <Button variant="text" className="">
-              View All
-            </Button>
-          </div> */}
+          {}
           <DocumentsTable docs={docs} onDocumentUpload={handleDocumentUpload} />
         </div>
       </TabPanel>

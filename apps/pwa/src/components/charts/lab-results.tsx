@@ -6,7 +6,7 @@ import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { useSortChartData } from "@/hooks/use-sort-chart-data";
 import { useTheme } from "@mui/material/styles";
 
-export type LabResultsChartProps = {
+type LabResultsChartProps = {
   data: LabDataChart;
 };
 
@@ -66,8 +66,6 @@ export default function LabResultsChart({ data }: LabResultsChartProps) {
             backgroundPosition: "0px 0px, 0px 0px",
             ...theme.applyStyles("dark", {
               borderColor: "rgba(255,255,255, 0.1)",
-              // backgroundImage:
-              //   "linear-gradient(rgba(255,255,255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255, 0.1) 1px, transparent 1px)",
             }),
           })}
         />

@@ -3,7 +3,7 @@ import { cn } from "@/utils/styling";
 import { Tooltip } from "@mui/material";
 import { Leaf, MapPinned, ShieldCheck, Snowflake, Sprout } from "lucide-react";
 
-export type CertificationsDataDisplayProps = {
+type CertificationsDataDisplayProps = {
   certifications: Certifications;
 };
 

@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import { Button, Card, Typography } from "@mui/material";
 import CadastralDialog from "../dialogs/cadastral-dialog";
 
-export type SimpleDataDisplayProps = {
+type SimpleDataDisplayProps = {
   label: ReactNode;
   value: string[];
 };

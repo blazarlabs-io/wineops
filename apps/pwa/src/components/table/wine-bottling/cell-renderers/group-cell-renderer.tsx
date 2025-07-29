@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import CollectionsDialog from "@/components/dialogs/collections-dialog";
 import BottlingDetailsWidget from "@/components/widgets/bottling/bottling-details-widget";
 import { ROW_HEIGHT_DEFAULT, ROW_HEIGHT_EXPANDED } from "@/data/constants";
@@ -15,7 +15,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   const [expanded, setExpanded] = useState<boolean>(node.expanded);
   const [openCollections, setOpenCollections] = useState<boolean>(false);
 
-  // * master detail custom renderer
   const handleMasterDetailExpansion = useCallback(() => {
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
@@ -27,7 +26,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   return (
     <Box
       display={"flex"}
-      //flexDirection={"column"}
       justifyContent={"center"}
       gap={1}
       justifyItems={"flex-start"}

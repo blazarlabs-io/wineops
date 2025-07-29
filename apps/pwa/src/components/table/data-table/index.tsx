@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import DeleteEntitiesDialog from "@/components/dialogs/delete-entities-dialog";
 import GroupingDialog from "@/components/dialogs/grouping-dialog";
 import UngroupingDialog from "@/components/dialogs/ungrouping-dialog";
@@ -102,29 +102,18 @@ export const DataTable = <T extends DashboardEntity>({
   const { enqueueSnackbar } = useSnackbar();
   const { gridRef, updateActiveMatchNum, findSearchValue } = useToolsbar();
 
-  // const [findSearchValue, setFindSearchValue] = useState<string>();
-
-  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
-
-  // * Main Data Grid Ref
-  // const gridRef = useRef<AgGridReact>(null);
-
-  // * Column Definitions
   const colDefs = useMemo(() => columns, [columns]);
 
-  // * Row Data
   const [rowData, setRowData] = useState<T[]>();
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [potentialParent, setPotentialParent] = useState<any>(null);
   const [dragOverRowId, setDragOverRowId] = useState<string | null>(null);
   const enableRowPinning = true;
 
-  // * Get Data Path ["group", "item name"]
   const getDataPath = useCallback<GetDataPath>((data) => {
     return data.group;
   }, []);
 
-  // * Theming
   const themeClass = isDarkMode ? `${gridTheme}-dark` : gridTheme;
   const myTheme = themeMaterial
     .withParams({
@@ -145,7 +134,6 @@ export const DataTable = <T extends DashboardEntity>({
       {
         backgroundColor: "#121212",
         foregroundColor: "#FFFFFFCC",
-        // pinnedRowBackgroundColor: "#121212",
         selectedRowBackgroundColor: "#99C3FF22",
         browserColorScheme: "dark",
         headerBackgroundColor: "#212121aa",
@@ -157,7 +145,6 @@ export const DataTable = <T extends DashboardEntity>({
       {
         backgroundColor: "#FFFFFFCC",
         foregroundColor: "#361008CC",
-        // pinnedRowBackgroundColor: "#FFFFFFCC",
         selectedRowBackgroundColor: "#99C3FF22",
         browserColorScheme: "light",
         headerBackgroundColor: "#FFFFFFCC",
@@ -166,7 +153,6 @@ export const DataTable = <T extends DashboardEntity>({
       "light"
     );
 
-  // * Define the auto-group column
   const autoGroupColumnDef = useMemo<ColDef>(() => {
     return { ...groupColumnDef };
   }, [groupColumnDef]);
@@ -178,16 +164,13 @@ export const DataTable = <T extends DashboardEntity>({
     };
   }, []);
 
-  // * Row Selection Options
   const rowSelection = useMemo<RowSelectionOptions>(() => {
     return {
       mode: "multiRow",
       groupSelects: "descendants",
-      // checkboxLocation: "autoGroupColumn",
     };
   }, []);
 
-  // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
@@ -199,15 +182,12 @@ export const DataTable = <T extends DashboardEntity>({
   }, [gridTheme, isDarkMode]);
 
   const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
-  // const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const handleOnSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
       const selectedNodes: IRowNode[] = event.api.getSelectedNodes();
-      // * Selected items in an array format, Only list of items grouping is ignored
       const entities = nodesToEntities<T>(selectedNodes);
       setSelected(entities, entityName);
-      console.log("SELECTED:", entities, entityName);
     },
     [entityName, setSelected]
   );
@@ -354,10 +334,8 @@ export const DataTable = <T extends DashboardEntity>({
       let newPotentialParent: IRowNode<T> | null = null;
       if (overNode) {
         if (overNode.data?.rowType === "group") {
-          // over a group, we take the immediate row
           newPotentialParent = overNode;
         } else if (overNode.parent) {
-          // over a item, we take the parent row (which will be a group)
           newPotentialParent = overNode.parent;
         }
       }
@@ -365,8 +343,6 @@ export const DataTable = <T extends DashboardEntity>({
       if (alreadySelected) {
         return; // no change
       }
-      // we refresh the previous selection (if it exists) to clear
-      // the highlighted and then the new selection.
       const rowsToRefresh = [];
       if (potentialParent) {
         rowsToRefresh.push(potentialParent);
@@ -382,18 +358,12 @@ export const DataTable = <T extends DashboardEntity>({
 
   function refreshRows(api: GridApi, rowsToRefresh: IRowNode<T>[]) {
     const params: RefreshCellsParams<T> = {
-      // refresh these rows only.
       rowNodes: rowsToRefresh,
-      // because the grid does change detection, the refresh
-      // will not happen because the underlying value has not
-      // changed. to get around this, we force the refresh,
-      // which skips change detection.
       force: true,
     };
     api.refreshCells(params);
   }
 
-  // * DRAGGING EVENTS
   const onRowDragMove = useCallback(
     (event: RowDragMoveEvent) => {
       setDragOverRowId(event.node.id as string);
@@ -422,13 +392,10 @@ export const DataTable = <T extends DashboardEntity>({
       if (rowData && source && source !== target) {
         const newRowData = shiftGroups<T>(rowData, source, target);
         if (!newRowData) {
-          console.log("invalid move");
         } else if (newRowData !== rowData) {
           if (!entityName || !db[entityName]) return;
 
-          console.log("onRowDragEnd, modifying grid row data");
           event.api.setGridOption("rowData", newRowData);
-          console.log("newRowData:", newRowData);
 
           const unusedGroupsIds = getUnusedGroups(newRowData).map(
             ({ id }) => id
@@ -452,7 +419,6 @@ export const DataTable = <T extends DashboardEntity>({
         }
         gridRef.current!.api.clearFocusedCell();
       }
-      // clear node to highlight
       setPotentialParentForNode(event.api, null);
     },
     [
@@ -503,13 +469,12 @@ export const DataTable = <T extends DashboardEntity>({
         isAlreadyGrouped &&
           ["groupByVesselType", "groupByLocation"].includes(
             groupedField || ""
-          ) /*|| !["groupByVesselType", "groupByLocation"].includes(field ?? "")*/
+          ) 
       );
 
       api.setColumnsVisible(
         ["statusData"],
         groupedField !== "groupByStatus"
-        //groupedField === "groupByStatus" || field !== "groupByStatus"
       );
     },
     [
@@ -528,7 +493,6 @@ export const DataTable = <T extends DashboardEntity>({
     [pinned]
   );
 
-  // ? /////////////////////////////////////////////////
   const onFindChanged = useCallback((event: FindChangedEvent) => {
     const { activeMatch, totalMatches, findSearchValue } = event;
     updateActiveMatchNum(
@@ -536,13 +500,7 @@ export const DataTable = <T extends DashboardEntity>({
         ? `${activeMatch?.numOverall ?? 0}/${totalMatches}`
         : ""
     );
-    // console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    // console.log("activeMatch", activeMatch);
-    // console.log("totalMatches", totalMatches);
-    // console.log("findSearchValue", findSearchValue);
-    // console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
   }, []);
-  // TODO ///////////////////////////////////////////////////////////
 
   useEffect(() => {
     handleGroupBy(groupedField);
@@ -626,7 +584,6 @@ export const DataTable = <T extends DashboardEntity>({
             suppressGroupChangesColumnVisibility={columns.some(({ field }) =>
               field?.startsWith("groupBy")
             )}
-            //  * ROW PINNING
             enableRowPinning={enableRowPinning}
             isRowPinned={isRowPinned}
             rowClassRules={{
@@ -636,10 +593,8 @@ export const DataTable = <T extends DashboardEntity>({
               },
               "cell-drag-over": (params) => params.node.id === dragOverRowId,
             }}
-            // * SEARCH
             findSearchValue={findSearchValue}
             onFindChanged={onFindChanged}
-            // * OTHER
             enableCellTextSelection={true}
             selectionColumnDef={selectionColumnDef}
             onGridReady={handleOnGridReady}

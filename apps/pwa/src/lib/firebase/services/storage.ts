@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DbResponse } from "@/models/types/db";
 import {
   deleteObject,
@@ -67,7 +67,6 @@ const storage: any = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,

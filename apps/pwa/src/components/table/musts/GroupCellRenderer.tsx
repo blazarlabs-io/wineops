@@ -18,10 +18,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 ) => {
   const { value, data, node } = params;
 
-  /**
-   * node?.group - AG Grid group
-   * node?.data?.rowType === "group" - Our custom grouping system
-   */
+  
   const isGroup = node?.group || node?.data?.rowType === "group";
   const groupField = isGroup ? node?.field : node?.parent?.field;
 

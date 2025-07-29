@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function cleanObject<T>(obj: T): Partial<T> | undefined {
   if (Array.isArray(obj)) {
     const cleanedArray = obj

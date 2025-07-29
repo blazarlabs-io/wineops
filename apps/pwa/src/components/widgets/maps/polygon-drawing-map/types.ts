@@ -1,4 +1,4 @@
-export type OverlayGeometry =
+type OverlayGeometry =
   | google.maps.Marker
   | google.maps.Polygon
   | google.maps.Polyline
@@ -37,11 +37,11 @@ export enum DrawingActionKind {
   REDO = 'REDO'
 }
 
-export interface ActionWithTypeOnly {
+interface ActionWithTypeOnly {
   type: Exclude<DrawingActionKind, DrawingActionKind.SET_OVERLAY>;
 }
 
-export interface SetOverlayAction {
+interface SetOverlayAction {
   type: DrawingActionKind.SET_OVERLAY;
   payload: DrawResult;
 }

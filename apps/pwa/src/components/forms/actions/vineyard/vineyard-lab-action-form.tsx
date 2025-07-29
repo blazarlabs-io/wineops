@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
@@ -178,7 +178,6 @@ export default function VineyardLabActionForm({
 
       clearErrors("supportingDocuments");
 
-      // TODO: upload file and show upload progress...
       db.storage.uploadFile(
         file,
         user?.uid,
@@ -190,7 +189,6 @@ export default function VineyardLabActionForm({
         (complete: string) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(complete);
           handleNewUpload("supportingDocuments", complete, file);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
@@ -198,7 +196,6 @@ export default function VineyardLabActionForm({
         (error: Error) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
         }
@@ -232,10 +229,8 @@ export default function VineyardLabActionForm({
       );
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
         if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
-        console.log("Error deleting file");
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid]
@@ -244,8 +239,6 @@ export default function VineyardLabActionForm({
   const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT:", data);
-    console.log("ERRORS:", errors);
 
     const subjectVineyard = selectedVineyards.filter(
       (v) => v.id === data.inUseVineyard.id
@@ -310,7 +303,6 @@ export default function VineyardLabActionForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 

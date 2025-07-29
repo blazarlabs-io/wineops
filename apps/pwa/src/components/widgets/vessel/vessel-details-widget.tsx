@@ -10,7 +10,7 @@ import BarrelInfoContent from "./barrel-info-content";
 import HistoryContent from "./history-content";
 import TasksView from "../components/tasks-view";
 
-export type VesselDetailsWidgetProps = {
+type VesselDetailsWidgetProps = {
   vessel: Vessel;
 };
 

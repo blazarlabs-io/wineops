@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { EntityStatus } from "@/models/types/dashboard";
 import { MetricsOutput, MetricsOutput2, MetricsTotal } from "./types";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
@@ -465,11 +465,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
           thickness: 50,
         },
       ],
-      /*overlays: {
-      noData: {
-        text: "",
-      },
-    },*/
+      
     },
   };
 };

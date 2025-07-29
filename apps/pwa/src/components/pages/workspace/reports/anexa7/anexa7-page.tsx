@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { REPORTS } from "@/components/dashboards/reports/reports-dashboard";
@@ -249,7 +249,6 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
           }
         }
       } catch (e) {
-        console.error(
           "Error creating document or subcollection with data: ",
           e
         );
@@ -361,11 +360,9 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
   }, [anexa7, defaultAnexa7Data]);
 
   useEffect(() => {
-    console.log("ERRORS:", errors);
   }, [errors]);
 
   useEffect(() => {
-    console.log("formData:", formData);
   }, [formData]);
 
   const handleBackClick = () => {
@@ -464,8 +461,6 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                   gap: 1,
                   fontFamily: "Times New Roman",
                   fontSize: "16px",
-                  //border: "1px solid #e0e0e0",
-                  //maxWidth: "700px",
                 }}
               >
                 <Stack

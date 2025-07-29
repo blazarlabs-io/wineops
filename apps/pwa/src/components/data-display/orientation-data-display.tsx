@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Card, Typography } from "@mui/material";
 
-export type SimpleDataDisplayProps = {
+type SimpleDataDisplayProps = {
   label: ReactNode;
   value: ReactNode;
 };

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { GrapeProcessingAction, PressPercentage } from "@/models/types/actions";
@@ -88,8 +88,6 @@ export default function GrapeProcessingActionForm({
   const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
 
     const totalPressPercentage = (data?.pressPercentage ?? []).reduce(
       (sum: number, { newPressPercentage = 0 }) => sum + newPressPercentage,
@@ -155,8 +153,6 @@ export default function GrapeProcessingActionForm({
 
       return;
     }
-
-    console.log("SUBJECT GRAPE", subjectGrape);
 
     setIsSubmitting(true);
 
@@ -263,15 +259,12 @@ export default function GrapeProcessingActionForm({
     }
 
     if (labReports && labReports.length > 0) {
-      console.log("LAB REPORTS", labReports);
     } else {
     }
 
     reset(grapeProcessingActionSample);
     setFormData(grapeProcessingActionSample);
 
-    console.log("selectedGrapes", selectedGrapes);
-    console.log("grapeProcessingActionSample", grapeProcessingActionSample);
   }, [grapes, selectedGrapes]);
 
   const filteredMusts = musts.filter(({ rowType }) => rowType === "item");
@@ -303,7 +296,6 @@ export default function GrapeProcessingActionForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 
@@ -332,15 +324,13 @@ export default function GrapeProcessingActionForm({
         >
           <div className="flex flex-col gap-4 w-full">
             <div className="flex flex-col w-full">
-              {/* <DemoItem label="DatePicker"> */}
+              {}
               <Stack gap={2} sx={{ p: 2 }}>
-                {/* * ID */}
-                {/* * QUANTITY */}
+                {}
+                {}
                 <div className="hidden">
                   <FormControl fullWidth>
-                    {/* <InputLabel id="quantity-select">
-                          Grape Quantity (Kg)
-                        </InputLabel> */}
+                    {}
                     <TextField
                       type="number"
                       id="id-field"
@@ -360,7 +350,7 @@ export default function GrapeProcessingActionForm({
                   )}
                 </div>
 
-                {/* * BATCH ID */}
+                {}
                 <FormControl fullWidth>
                   <InputLabel id="batchId-select">
                     {formData?.batchId ? "Selected batch ID" : "Batch ID"}
@@ -368,7 +358,6 @@ export default function GrapeProcessingActionForm({
                   <Select
                     disabled={disableSubject}
                     name="batchId"
-                    // labelId="subject-select"
                     id="batchId-select"
                     value={(formData?.batchId as string) || ""}
                     label={formData?.batchId ? "Selected batch ID" : "Batch ID"}
@@ -391,7 +380,7 @@ export default function GrapeProcessingActionForm({
                     {errors?.batchId?.message as string}
                   </Typography>
                 )}
-                {/* * EXECUTION DATE */}
+                {}
                 <Stack gap={1} className="w-full">
                   <DatePicker
                     name="executionDate"
@@ -440,7 +429,7 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {/* * QUANTITY */}
+                {}
                 <div className="">
                   <FormControl fullWidth>
                     <TextField
@@ -462,8 +451,8 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {/* TODO */}
-                {/* * RECEIVING BAY */}
+                {}
+                {}
                 <FormControl>
                   <Autocomplete
                     options={[]}
@@ -494,7 +483,7 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {/* * DESTEMMER */}
+                {}
                 <FormControl>
                   <Autocomplete
                     options={[]}
@@ -525,7 +514,7 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {/* * PRESS */}
+                {}
                 <FormControl>
                   <Autocomplete
                     options={[]}
@@ -554,9 +543,7 @@ export default function GrapeProcessingActionForm({
 
                 <div className="">
                   <FormControl fullWidth>
-                    {/* <InputLabel id="wasteQuantity-select">
-                          Waste Quantity
-                        </InputLabel> */}
+                    {}
                     <TextField
                       type="number"
                       id="wasteQuantity"
@@ -570,7 +557,7 @@ export default function GrapeProcessingActionForm({
                   </FormControl>
                 </div>
 
-                {/* * PRESS PERCENTAGE */}
+                {}
                 <Stack
                   direction="row"
                   sx={{ alignItems: "center", justifyContent: "space-between" }}

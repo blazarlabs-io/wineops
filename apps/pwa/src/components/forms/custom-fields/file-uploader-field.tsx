@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useAuth } from "@/lib/firebase/auth";
@@ -14,7 +14,7 @@ import {
 import { File } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
-export type FileUploaderFieldProps = {
+type FileUploaderFieldProps = {
   path: string;
   data: any;
   onDocumentUpload?: (data: any) => void;
@@ -39,7 +39,6 @@ export default function FileUploaderField({
   const handleFile = useCallback(
     (e: any) => {
       const file = e.target.files[0];
-      console.log(file);
 
       if (!file) {
         setError({
@@ -61,7 +60,6 @@ export default function FileUploaderField({
 
       setError(undefined);
 
-      // TODO: upload file and show upload progress...
       db.storage.uploadFile(
         file,
         user?.uid,
@@ -102,7 +100,6 @@ export default function FileUploaderField({
         (error: Error) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
         }
@@ -120,11 +117,8 @@ export default function FileUploaderField({
       const deleteFileRes = await db.storage.deleteFile(user?.uid, path, name);
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
-        // setDocuments((prev) => prev.filter((doc, i) => i !== index));
         if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
-        console.log("Error deleting file");
       }
     },
     [onDocumentUpload, path, user?.uid]
