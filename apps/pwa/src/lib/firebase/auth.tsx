@@ -58,10 +58,10 @@ export const AuthProvider = ({ serverUser, children }: IAuthProvider) => {
 
       navigator.serviceWorker
         .register(serviceWorkerUrl)
-        .then((registration) =>
-        )
-        .catch((error) =>
-        );
+        .then((registration) => {
+        })
+        .catch((error) => {
+        });
     }
   }, []);
 

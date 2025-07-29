@@ -15,18 +15,6 @@ export function shiftGroups<T extends DashboardEntity>(
   if (target) {
     newParentPath = target.group;
 
-      "\nSource:",
-      source,
-      "Target:",
-      target,
-      "SourcePath:",
-      sourcePath,
-      "NewParentPath:",
-      newParentPath,
-      "isTargetGroup:",
-      target.rowType
-    );
-
     if (target.rowType !== "group") {
       newParentPath = pathParent(newParentPath as string[]); // if over a file, we take the parent folder
     }

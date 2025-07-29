@@ -115,11 +115,6 @@ export const grapeProcessingAction = async (
   actionData: any,
   grape: Grape
 ) => {
-    "\n\nXXXXXXXXXXXXXXXXgrapeProcessingAction",
-    uid,
-    actionData,
-    grape
-  );
 
   const actionRes = await db.action.create(uid, actionData);
 

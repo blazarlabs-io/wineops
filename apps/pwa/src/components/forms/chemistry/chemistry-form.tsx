@@ -132,6 +132,7 @@ export default function ChemistryForm() {
           }
         }
       } catch (e) {
+        console.error(
           "Error creating document or subcollection with data: ",
           e
         );

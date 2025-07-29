@@ -116,10 +116,6 @@ export default function GrapeForm() {
 
   const onDocumentUpload = useCallback(
     (data: any) => {
-        "onDocumentUpload",
-        ...(formData?.documents as SingleDocument[]),
-        data
-      );
       const newSingleDocument = {
         id: crypto.randomUUID(),
         name: data.name,
@@ -189,6 +185,7 @@ export default function GrapeForm() {
           }
         }
       } catch (e) {
+        console.error(
           "Error creating document or subcollection with data: ",
           e
         );
