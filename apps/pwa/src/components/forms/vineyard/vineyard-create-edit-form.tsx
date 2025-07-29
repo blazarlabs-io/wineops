@@ -196,7 +196,7 @@ export default function VineyardForm({
 
       setFormData(() => newFormData);
     },
-    [formData, setValue]
+    [setValue]
   );
 
   const handleCheckboxChange = (name: string, value: boolean) => {
@@ -787,10 +787,17 @@ export default function VineyardForm({
                                 type="number"
                                 variant="outlined"
                                 label="Surface (Ha)"
-                                inputProps={{
-                                  step: "0.01",
-                                  min: 0,
-                                  max: 100000,
+                                slotProps={{
+                                  htmlInput: {
+                                    min: 0,
+                                    step: 0.01,
+                                    max: 100000,
+                                  },
+                                  inputLabel: {
+                                    ...(formData?.info?.location?.surface && {
+                                      shrink: true,
+                                    }),
+                                  },
                                 }}
                                 {...register("info.location.surface")}
                               />
@@ -885,9 +892,16 @@ export default function VineyardForm({
                                 type="number"
                                 variant="outlined"
                                 label="Elevation (m)"
-                                inputProps={{
-                                  step: "0.1",
-                                  min: 0,
+                                slotProps={{
+                                  htmlInput: {
+                                    min: 0,
+                                    step: 0.1,
+                                  },
+                                  inputLabel: {
+                                    ...(formData?.info?.location?.elevation && {
+                                      shrink: true,
+                                    }),
+                                  },
                                 }}
                                 {...register("info.location.elevation")}
                               />
@@ -992,9 +1006,17 @@ export default function VineyardForm({
                                   type="number"
                                   variant="outlined"
                                   label="Spacing (m)"
-                                  inputProps={{
-                                    step: "0.1",
-                                    min: 0,
+                                  slotProps={{
+                                    htmlInput: {
+                                      min: 0,
+                                      step: 0.1,
+                                    },
+                                    inputLabel: {
+                                      ...(formData?.info?.vines?.plantingScheme
+                                        ?.spacing && {
+                                        shrink: true,
+                                      }),
+                                    },
                                   }}
                                   {...register(
                                     "info.vines.plantingScheme.spacing"
@@ -1090,10 +1112,18 @@ export default function VineyardForm({
                                   type="number"
                                   variant="outlined"
                                   label="Distance (m)"
-                                  inputProps={{
-                                    step: "0.01",
-                                    min: 0,
-                                    max: 100,
+                                  slotProps={{
+                                    htmlInput: {
+                                      min: 0,
+                                      step: 0.01,
+                                      max: 100,
+                                    },
+                                    inputLabel: {
+                                      ...(formData?.info?.vines?.plantingScheme
+                                        ?.density && {
+                                        shrink: true,
+                                      }),
+                                    },
                                   }}
                                   {...register(
                                     "info.vines.plantingScheme.density"
@@ -1125,10 +1155,18 @@ export default function VineyardForm({
                               type="number"
                               variant="outlined"
                               label="Plants per Ha"
-                              inputProps={{
-                                step: "1",
-                                min: 0,
-                                max: 100000,
+                              slotProps={{
+                                htmlInput: {
+                                  min: 0,
+                                  step: 1,
+                                  max: 100000,
+                                },
+                                inputLabel: {
+                                  ...(formData?.info?.vines?.plantingScheme
+                                    ?.plantsPerHa && {
+                                    shrink: true,
+                                  }),
+                                },
                               }}
                               {...register(
                                 "info.vines.plantingScheme.plantsPerHa"
@@ -1189,7 +1227,10 @@ export default function VineyardForm({
                             <Autocomplete
                               id="info.vines.yearOfPlantation"
                               options={generateYearsList()}
-                              value={formData?.info?.vines?.yearOfPlantation}
+                              value={
+                                formData?.info?.vines?.yearOfPlantation || null
+                              }
+                              getOptionLabel={(option) => `${option}`}
                               filterSelectedOptions
                               renderInput={(params) => (
                                 <TextField
@@ -1198,9 +1239,11 @@ export default function VineyardForm({
                                 />
                               )}
                               onChange={(e, value) => {
+                                if (!value) return;
+
                                 handleSelectChange(
                                   "info.vines.yearOfPlantation",
-                                  value as number
+                                  value
                                 );
                               }}
                             />
@@ -1225,9 +1268,13 @@ export default function VineyardForm({
                             type="number"
                             variant="outlined"
                             label="Sunlight hours"
-                            inputProps={{
-                              step: "0.1",
-                              min: 0,
+                            slotProps={{
+                              htmlInput: { min: 0, step: 0.1, max: 3000 },
+                              inputLabel: {
+                                ...(formData?.info?.vines?.sunlightHours && {
+                                  shrink: true,
+                                }),
+                              },
                             }}
                             {...register("info.vines.sunlightHours")}
                           />

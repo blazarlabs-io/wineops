@@ -43,7 +43,7 @@ const locationSchema = Joi.object<Location>({
 });
 
 const vinesSchema = Joi.object<Vines>({
-  yearOfPlantation: Joi.number().empty("").default(1900),
+  yearOfPlantation: Joi.number().empty(""),
   plantingScheme: Joi.object({
     spacing: Joi.number().empty("").min(0.01).max(100).messages({
       "string.min": "Row orientation must be between 0.01 and 100",
