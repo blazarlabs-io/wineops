@@ -274,9 +274,8 @@ export default function VineyardForm({
           }
         }
       } catch (e) {
-          "Error creating document or subcollection with data: ",
-          e
-        );
+        console.error("Error creating document or subcollection with data: ", e);
+
         enqueueSnackbar(`Error creating vineyard`, {
           variant: "error",
         });

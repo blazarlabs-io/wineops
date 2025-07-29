@@ -259,9 +259,7 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
           }
         }
       } catch (e) {
-          "Error creating document or subcollection with data: ",
-          e
-        );
+        console.error("Error creating document or subcollection with data: ", e);
 
         enqueueSnackbar(`Error creating`, {
           variant: "error",

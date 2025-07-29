@@ -128,9 +128,7 @@ export default function MustForm() {
           }
         }
       } catch (e) {
-          "Error creating document or subcollection with data: ",
-          e
-        );
+        console.error("Error creating document or subcollection with data: ", e);
 
         enqueueSnackbar(`Error creating must`, {
           variant: "error",

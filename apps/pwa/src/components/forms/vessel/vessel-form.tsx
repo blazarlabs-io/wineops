@@ -152,9 +152,7 @@ export default function VesselForm() {
           }
         }
       } catch (e) {
-          "Error creating document or subcollection with data: ",
-          e
-        );
+        console.error("Error creating document or subcollection with data: ", e);
 
         enqueueSnackbar(`Error creating vessel`, {
           variant: "error",
