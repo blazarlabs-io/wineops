@@ -265,9 +265,9 @@ export default function BottleWineActionForm({
         }
       }
 
-      const subjectRecipe = filteredRecipes.filter(
+      const subjectRecipe = filteredRecipes.find(
         ({ name }) => name === data.subjectRecipe?.name,
-      )[0];
+      );
 
       setIsSubmitting(true);
 
@@ -318,8 +318,7 @@ export default function BottleWineActionForm({
   }, [filteredRecipes, reset, teamMembers]);
 
   useEffect(() => {
-    if (errors) {
-      const hasGeneralErrors = hasKeyFromArray(
+    const hasGeneralErrors = hasKeyFromArray(
         ["executionDate", "wines"],
         errors,
       );
@@ -346,7 +345,6 @@ export default function BottleWineActionForm({
       );
 
       if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
-    }
   }, [errors]);
 
   if (!formData) return null;

@@ -1,32 +1,28 @@
-import VineyardCreateEditForm from "@/components/forms/vineyard/vineyard-create-edit-form";
-import { Vineyard } from "@/models/types/db";
+import VineyardCreateEditForm, { VineyardFormRef } from "@/components/forms/vineyard/vineyard-create-edit-form";
 import { Box, Button } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import EntityFormDrawer from "../entity-form-drawer";
 
 export default function VineyardFormDrawer() {
-  const [clicked, setClicked] = useState<boolean>(false);
+  const formRef = useRef<VineyardFormRef>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [nameError, setNameError] = useState<boolean>(false);
 
-  const handleClick = () => {
-    setClicked(true);
-  };
+  const handleClick = useCallback(async () => {
+    if (formRef.current) {
+      await formRef.current.save();
+    }
+  }, []);
 
-  const handleOnSave = (data: Vineyard) => {
-    setClicked(false);
-  };
-
-  const handleNameError = (isError: boolean) => {
+  const handleNameError = useCallback((isError: boolean) => {
     setNameError(isError);
-  };
+  }, []);
 
   return (
     <EntityFormDrawer entityName="vineyard">
       <Box sx={{ flexGrow: 1, overflowY: "auto" }} className="">
         <VineyardCreateEditForm
-          onSave={handleOnSave}
-          clicked={clicked}
+          ref={formRef}
           setIsSubmitting={setIsSubmitting}
           onNameError={handleNameError}
         />

@@ -120,7 +120,7 @@ export default function MustDecantActionForm() {
     [setValue],
   );
 
-  const onSubmit = (data: MustDecantAction) => {
+  const onSubmit = useCallback((data: MustDecantAction) => {
     const selectedQty =
       vesselsWithQty?.find(({ name }) => name === data?.vesselId)?.qty || 0;
 
@@ -190,7 +190,7 @@ export default function MustDecantActionForm() {
     }
 
     setFormData(data);
-  };
+  }, [actions, filteredMusts, vesselsWithQty, user?.uid]);
 
   useEffect(() => {
     const now = new Date();
@@ -209,10 +209,6 @@ export default function MustDecantActionForm() {
     setFormData(mustDecantActionSample);
   }, [reset, selectedMusts]);
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   return (
     <>

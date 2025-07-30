@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { vineyardHarvestActionSample } from "@/data/actions-samples";
@@ -121,7 +120,7 @@ export default function VineyardHarvestActionForm({
   const handleChange = useCallback(
     (name: string, value: any) => {
       if (name === "subject.name") {
-        const selected = vineyards.filter((v) => v.name === value)[0];
+        const selected = vineyards.find((v) => v.name === value);
 
         value = {
           id: selected?.id as string,
@@ -135,7 +134,7 @@ export default function VineyardHarvestActionForm({
         setLocalVineyard(selected as Vineyard);
         return;
       } else if (name === "responsible") {
-        const selectedMember = teamMembers.filter((m) => m.name === value)[0];
+        const selectedMember = teamMembers.find((m) => m.name === value);
         setValue("responsible" as string, selectedMember);
         setFormData((prevData: VineyardHarvestAction) => {
           return {
@@ -283,6 +282,7 @@ export default function VineyardHarvestActionForm({
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
+      } else {
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid],
@@ -290,41 +290,13 @@ export default function VineyardHarvestActionForm({
 
   const onSubmit = useCallback(
     async (data: any) => {
-      const selected = vineyards.filter((v) => v.id === localVineyard?.id)[0];
+      const selected = vineyards.find((v) => v.id === localVineyard?.id);
 
       if (!selected) {
         setError("subject.name", {
           type: "manual",
           message: "Please select a vineyard",
         });
-        return;
-      }
-
-      if (!data.batchId) {
-        setError("batchId", {
-          type: "manual",
-          message: "Please enter a Batch ID",
-        });
-
-        return;
-      }
-
-      const existingBatchId = grapes?.some(
-        ({ name, group, rowType }) =>
-          (rowType === "item" &&
-            name.trim().toLowerCase() === data.batchId.trim().toLowerCase()) ||
-          (rowType !== "item" &&
-            group?.[0]?.trim().toLowerCase() ===
-              data.batchId.trim().toLowerCase()),
-      );
-
-      if (existingBatchId) {
-        setError("batchId", {
-          type: "manual",
-          message:
-            "This Batch ID is already taken. Please enter a different one",
-        });
-
         return;
       }
 
@@ -366,7 +338,7 @@ export default function VineyardHarvestActionForm({
     },
     [
       actions?.harvest,
-      grapes,
+      errors,
       localVineyard?.id,
       onBackClick,
       setError,
@@ -384,7 +356,7 @@ export default function VineyardHarvestActionForm({
         name: formData.subject.name,
       };
 
-      const selected = vineyards.filter((v) => v.id === formData.subject.id)[0];
+      const selected = vineyards.find((v) => v.id === formData.subject.id);
 
       const latestVineyardLabReport = labData
         ?.filter((l) => selected?.labData?.some((ld) => ld.id === l.id))
@@ -430,6 +402,7 @@ export default function VineyardHarvestActionForm({
 
   useEffect(() => {
     vineyardHarvestActionSample.id = crypto.randomUUID();
+    vineyardHarvestActionSample.batchId = `BatchID_${grapes?.length + 1}`;
     vineyardHarvestActionSample.type = "harvest";
     vineyardHarvestActionSample.weight = "";
     vineyardHarvestActionSample.executionDate = Timestamp.now();
@@ -1261,7 +1234,6 @@ export default function VineyardHarvestActionForm({
             <Checkbox
               checked={!!harvestEnded || false}
               color="error"
-              // {...register("harvestEnded")}
               onChange={(e) => {
                 setHarvestEnded(e.target.checked);
                 setValue("harvestEnded", e.target.checked);

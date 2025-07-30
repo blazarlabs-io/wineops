@@ -55,22 +55,18 @@ export default function EditNoteForm({
     }));
   }, []);
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = useCallback((data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     onDataSubmit(data);
     setFormData(data);
-  };
+  }, [onDataSubmit]);
 
   useEffect(() => {
     reset(note);
     setFormData(note);
   }, [formData?.id, note]);
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   return (
     <>

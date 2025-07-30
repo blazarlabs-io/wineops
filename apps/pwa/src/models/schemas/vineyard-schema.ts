@@ -187,7 +187,8 @@ export const vineyardSchema = Joi.object<Vineyard>().keys({
     "string.max": `Grape variety cannot be longer than 50 characters`,
   }),
   grapeColor: Joi.string().max(50).required().messages({
-    "string.empty": `Grape color cannot be empty`,
+    "string.empty": `Please select a grape color`,
+    "any.required": `Please select a grape color`,
     "string.max": `Grape color cannot be longer than 50 characters`,
   }),
   cadastralNumber: Joi.array().items(

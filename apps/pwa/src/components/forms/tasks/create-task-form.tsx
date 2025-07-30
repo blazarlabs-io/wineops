@@ -60,16 +60,16 @@ export default function CreateTaskForm({
     [setValue],
   );
 
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = useCallback((data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
     onDataSubmit(data);
     setFormData(data);
-  };
+  }, [onDataSubmit]);
 
   useEffect(() => {
     if (teamMembers) {
-      const member = teamMembers.filter((v) => v.id === uid)[0];
+      const member = teamMembers.find((v) => v.id === uid);
       const newTask: Task = {
         id: Date.now().toString(),
         title: "",
@@ -86,10 +86,6 @@ export default function CreateTaskForm({
     }
   }, [teamMembers]);
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   return (
     <>
@@ -149,9 +145,9 @@ export default function CreateTaskForm({
                         variant="outlined"
                         value={(formData?.assignedTo?.name as string) || ""}
                         onChange={(e) => {
-                          const member = teamMembers.filter(
+                          const member = teamMembers.find(
                             (v) => v.id === e.target.value,
-                          )[0];
+                          );
 
                           handleChange("assignedTo.name", member.name);
                           handleChange("assignedTo.lastName", member.lastName);

@@ -84,7 +84,7 @@ export default function GrapeProcessingActionForm({
     [setValue],
   );
 
-  const onSubmit = async (data: any, e: any) => {
+  const onSubmit = useCallback(async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -131,7 +131,7 @@ export default function GrapeProcessingActionForm({
       },
     );
 
-    const subjectGrape = grapes.filter((g) => g?.name === data?.batchId)[0];
+    const subjectGrape = grapes.find((g) => g?.name === data?.batchId);
 
     const grapeActual = subjectGrape?.metrics?.actual || 0;
 
@@ -168,7 +168,7 @@ export default function GrapeProcessingActionForm({
     setFormData(data);
 
     onBackClick?.();
-  };
+  }, [actions, grapes, user?.uid, onBackClick]);
 
   useEffect(() => {
     const grapeProcessingActionSample: GrapeProcessingAction = {
@@ -292,10 +292,6 @@ export default function GrapeProcessingActionForm({
     [formData.pressPercentage],
   );
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   if (!formData) return null;
 

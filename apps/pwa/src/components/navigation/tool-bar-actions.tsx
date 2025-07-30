@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ThemeSwitcher } from "@toolpad/core/DashboardLayout";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export type ToolBarActionsProps = {
   props?: any;
@@ -24,15 +24,15 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
   const { user, signOut } = useAuth();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenUserMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
+  }, []);
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = useCallback(() => {
     setAnchorElUser(null);
-  };
+  }, []);
 
-  const handleMenuItemClick = async (item: string) => {
+  const handleMenuItemClick = useCallback(async (item: string) => {
     if (item === "Logout") {
       await signOut();
       setAnchorElUser(null);
@@ -40,7 +40,7 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
         window.location.href = "/sign-in";
       }
     }
-  };
+  }, [signOut]);
 
   return (
     <Box display={"flex"} alignItems={"center"} gap={1} sx={{ flexGrow: 0 }}>
@@ -91,11 +91,11 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
         <Button
           variant="contained"
           sx={{ cursor: "pointer" }}
-          onClick={() => {
+          onClick={useCallback(() => {
             if (typeof window !== "undefined") {
               window.location.href = "/sign-in";
             }
-          }}
+          }, [])}
         >
           Sign in
         </Button>

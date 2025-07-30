@@ -63,7 +63,7 @@ export default function TeamMemberCreateEditForm() {
     [setValue],
   );
 
-  const onSubmit = async (data: any, e: any) => {
+  const onSubmit = useCallback(async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -92,7 +92,7 @@ export default function TeamMemberCreateEditForm() {
     closeDrawer();
 
     setFormData(data);
-  };
+  }, [formType, user?.uid, enqueueSnackbar, closeDrawer]);
 
   useEffect(() => {
     const formatted = {
@@ -113,10 +113,6 @@ export default function TeamMemberCreateEditForm() {
     setFormData(formatted);
   }, [existingMember, reset, selected]);
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   return (
     <>

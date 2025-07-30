@@ -47,8 +47,11 @@ import { useSnackbar } from "notistack";
 import {
   Dispatch,
   SetStateAction,
+  forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -56,18 +59,18 @@ import { Controller, useForm } from "react-hook-form";
 
 type VineyardFormProps = {
   children?: React.ReactNode;
-  onSave?: (data: Vineyard) => void;
-  clicked?: boolean;
   setIsSubmitting: Dispatch<SetStateAction<boolean>>;
   onNameError?: (isError: boolean) => void;
 };
 
-export default function VineyardForm({
-  onSave,
-  clicked,
-  setIsSubmitting,
-  onNameError,
-}: VineyardFormProps) {
+type VineyardFormRef = {
+  save: () => Promise<void>;
+};
+
+const VineyardForm = forwardRef<VineyardFormRef, VineyardFormProps>((
+  { setIsSubmitting, onNameError },
+  ref,
+) => {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { colorScheme } = useColorScheme();
@@ -81,6 +84,16 @@ export default function VineyardForm({
   const formType: FormMode = selected.length > 0 ? "edit" : "create";
 
   const { vineyards = [] } = useVineyard();
+
+  // Memoized options for better performance
+  const countryOptions = useMemo(
+    () => countries.map((country) => country?.name),
+    []
+  );
+
+  const yearOptions = useMemo(() => generateYearsList(), []);
+
+  const wineColorOptions = useMemo(() => Object.values(WineColor), []);
 
   const {
     register,
@@ -96,7 +109,6 @@ export default function VineyardForm({
   const [formData, setFormData] = useState<Vineyard | null>();
   const [cadastral, setCadastral] = useState<string>("");
   const [nameError, setNameError] = useState<string | null>(null);
-  const btnRef = useRef<HTMLButtonElement>(null);
 
   const [identificatorUnicParcela, setIdentificatorUnicParcela] = useState("");
 
@@ -120,7 +132,7 @@ export default function VineyardForm({
       });
       setValue("name", event.target.value);
     },
-    [checkIfNameExists],
+    [checkIfNameExists, onNameError, setValue],
   );
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
@@ -132,46 +144,43 @@ export default function VineyardForm({
     });
   };
 
-  const handleArrayChange = (name: string, value: string) => {
+  const handleArrayChange = useCallback((name: string, value: string) => {
     if (!value) return;
 
-    const data: string[] =
-      (formData?.[name as keyof Vineyard] as string[]) || [];
-    data.push(value);
-    setValue(name, data);
     setFormData((prevData) => {
       if (!prevData) {
         return null;
       }
-      const result = {
+      const data: string[] =
+        (prevData?.[name as keyof Vineyard] as string[]) || [];
+      const newData = [...data, value];
+      setValue(name, newData);
+      return {
         ...prevData,
-        [name]: data,
+        [name]: newData,
       };
-
-      return result;
     });
-  };
+  }, [setValue]);
 
-  const handleDeleteFromArray = (name: string, value: any) => {
-    const data: string[] =
-      (formData?.[name as keyof Vineyard] as string[]) || [];
-    const index = data.indexOf(value);
-    if (index > -1) {
-      data.splice(index, 1);
-    }
-    setValue(name, data);
+  const handleDeleteFromArray = useCallback((name: string, value: any) => {
     setFormData((prevData) => {
       if (!prevData) {
         return null;
       }
-      const result = {
+      const data: string[] =
+        (prevData?.[name as keyof Vineyard] as string[]) || [];
+      const index = data.indexOf(value);
+      const newData = [...data];
+      if (index > -1) {
+        newData.splice(index, 1);
+      }
+      setValue(name, newData);
+      return {
         ...prevData,
-        [name]: data,
+        [name]: newData,
       };
-
-      return result;
     });
-  };
+  }, [setValue]);
 
   const handleSelectChange = useCallback(
     (name: string, value: string | number) => {
@@ -188,10 +197,10 @@ export default function VineyardForm({
 
       setValue(_path as string, _value as typeof value);
 
-      const path = _path.split(".");
-      const newFormData = setNestedValue(formData, path, value);
-
-      setFormData(() => newFormData);
+      setFormData((prevData) => {
+        const path = _path.split(".");
+        return setNestedValue(prevData, path, value);
+      });
     },
     [setValue],
   );
@@ -285,9 +294,9 @@ export default function VineyardForm({
     [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
-  const onSubmit = async (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const saveData = useCallback(async () => {
+    const data = formData;
+    if (!data) return;
 
     setIsSubmitting(true);
 
@@ -296,6 +305,16 @@ export default function VineyardForm({
     } finally {
       setIsSubmitting(false);
     }
+  }, [formData, handleCreateVineyard, setIsSubmitting, user?.uid]);
+
+  useImperativeHandle(ref, () => ({
+    save: saveData
+  }), [saveData]);
+
+  const onSubmit = async (data: any, e: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    await saveData();
   };
 
   const existingVineyard = vineyards?.find(({ id }) => id === selected[0]?.id);
@@ -341,17 +360,6 @@ export default function VineyardForm({
     reset(formatted);
   }, [existingVineyard, reset, vineyards?.length]);
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
-
-  useEffect(() => {
-    if (clicked && btnRef.current) {
-      btnRef.current.click();
-      onSave?.(formData || ({} as Vineyard));
-    }
-  }, [clicked, formData, onSave]);
 
   return (
     <>
@@ -491,7 +499,7 @@ export default function VineyardForm({
                             }}
                             className="capitalize"
                           >
-                            {Object.values(WineColor).map(
+                            {wineColorOptions.map(
                               (grapeColor, index) => (
                                 <MenuItem
                                   key={grapeColor + index}
@@ -787,9 +795,7 @@ export default function VineyardForm({
                             </Typography>
                             <Autocomplete
                               id="info.location.country"
-                              options={countries.map(
-                                (country) => country?.name,
-                              )}
+                              options={countryOptions}
                               filterSelectedOptions
                               renderInput={(params) => (
                                 <TextField
@@ -1175,7 +1181,7 @@ export default function VineyardForm({
                             </Stack>
                             <Autocomplete
                               id="info.vines.yearOfPlantation"
-                              options={generateYearsList()}
+                              options={yearOptions}
                               value={
                                 formData?.info?.vines?.yearOfPlantation || null
                               }
@@ -1429,7 +1435,7 @@ export default function VineyardForm({
                           </Typography>
                           <Autocomplete
                             id="grape.countryOfOrigin"
-                            options={countries.map((country) => country.name)}
+                            options={countryOptions}
                             filterSelectedOptions
                             renderInput={(params) => (
                               <TextField {...params} label="Select a country" />
@@ -1481,7 +1487,7 @@ export default function VineyardForm({
             </div>
             <Box display={"flex"} justifyContent={"end"} visibility={"hidden"}>
               <FormControl>
-                <Button ref={btnRef} type="submit" variant="contained">
+                <Button type="submit" variant="contained">
                   Save
                 </Button>
               </FormControl>
@@ -1491,4 +1497,9 @@ export default function VineyardForm({
       )}
     </>
   );
-}
+});
+
+VineyardForm.displayName = 'VineyardForm';
+
+export default VineyardForm;
+export type { VineyardFormRef };

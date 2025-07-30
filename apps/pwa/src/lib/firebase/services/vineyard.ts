@@ -63,9 +63,9 @@ vineyard = {
       const docSnap = await getDocs(subcollectionRef);
       const data = docSnap.docs.map((doc) => doc.data());
       const vineyards = data.map((item) => item as Vineyard);
-      const filteredData = vineyards.filter((item) => item.id === id);
+      const vineyard = vineyards.find((item) => item.id === id);
       return {
-        data: filteredData[0],
+        data: vineyard || null,
         error: null,
         status: 200,
       };
