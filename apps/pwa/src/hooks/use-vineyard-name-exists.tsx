@@ -1,16 +1,6 @@
 import { useVineyard } from "@/context/vineyard";
 import { useCallback, useState } from "react";
 
-// export const useVineyardNameExists = () => {
-//   const { vineyards } = useVineyard();
-
-//   const checkIfNameExists = async (name: string): Promise<boolean> => {
-//     if (!name || !vineyards) return false;
-//     const exists = vineyards.some((vineyard) => vineyard.name === name);
-//     console.log("exists", name);
-//     return exists;
-//   };
-// }
 export const useVineyardNameExists = () => {
   const { vineyards } = useVineyard();
 
@@ -29,14 +19,14 @@ export const useVineyardNameExists = () => {
 
       return _name;
     },
-    [vineyardNames]
+    [vineyardNames],
   );
 
   const checkIfNameExists = useCallback(
     (baseName: string): boolean => {
       return vineyardNames?.some((name) => name === baseName) as boolean;
     },
-    [vineyardNames]
+    [vineyardNames],
   );
 
   return {

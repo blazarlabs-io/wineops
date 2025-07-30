@@ -14,14 +14,10 @@ import { Vessel } from "@/models/types/db";
 import EntityLocation from "../EntityLocation";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, data, node } = params;
 
-  /**
-   * node?.group - AG Grid group
-   * node?.data?.rowType === "group" - Our custom grouping system
-   */
   const isGroup = node?.group || node?.data?.rowType === "group";
   const groupField = isGroup ? node?.field : node?.parent?.field;
 
@@ -31,7 +27,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(
-      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT
+      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT,
     );
   }, [node]);
 

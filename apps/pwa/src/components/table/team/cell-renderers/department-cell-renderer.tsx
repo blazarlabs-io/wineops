@@ -5,8 +5,6 @@ import { type FunctionComponent } from "react";
 export const DepartmentCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ node, value }) => {
-  console.log("VALUE", value, node.data.lastName);
-
   const normalizeData = (data: string) => {
     if (data.includes("-")) {
       return data.split("-").join(" ");

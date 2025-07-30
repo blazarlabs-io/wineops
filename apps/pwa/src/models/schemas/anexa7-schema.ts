@@ -14,7 +14,7 @@ export const anexa7Schema = Joi.object<Anexa7Data>({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Date must be a valid date.",
-      })
+      }),
     )
     .required()
     .messages({
@@ -67,7 +67,7 @@ export const anexa7Schema = Joi.object<Anexa7Data>({
         white: Joi.number().optional().empty("").messages({
           "number.base": "Please enter a valid number",
         }),
-      }).optional()
+      }).optional(),
     )
     .optional(),
   modifications: Joi.array().items(Joi.object().optional()).optional(),
@@ -79,7 +79,7 @@ export const anexa7Schema = Joi.object<Anexa7Data>({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Date must be a valid date.",
-      })
+      }),
     )
     .required()
     .messages({
@@ -95,7 +95,7 @@ export const anexa7Schema = Joi.object<Anexa7Data>({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Date must be a valid date.",
-      })
+      }),
     )
     .optional(),
   modifiedBy: Joi.string().optional(),

@@ -1,4 +1,4 @@
-import {Dispatch, MutableRefObject, useEffect} from 'react';
+import { Dispatch, MutableRefObject, useEffect } from "react";
 
 import {
   Action,
@@ -11,18 +11,15 @@ import {
   isMarker,
   isPolygon,
   isPolyline,
-  isRectangle
-} from './types';
+  isRectangle,
+} from "./types";
 
 export default function reducer(state: State, action: Action) {
   switch (action.type) {
-    // This action is called whenever anything changes on any overlay.
-    // We then take a snapshot of the relevant values of each overlay and
-    // save them as the new "now". The old "now" is added to the "past" stack
     case DrawingActionKind.UPDATE_OVERLAYS: {
       const overlays = state.now.map((overlay: Overlay) => {
         const snapshot: Snapshot = {};
-        const {geometry} = overlay;
+        const { geometry } = overlay;
 
         if (isCircle(geometry)) {
           snapshot.center = geometry.getCenter()?.toJSON();
@@ -37,22 +34,19 @@ export default function reducer(state: State, action: Action) {
 
         return {
           ...overlay,
-          snapshot
+          snapshot,
         };
       });
 
       return {
         now: [...overlays],
         past: [...state.past, state.now],
-        future: []
+        future: [],
       };
     }
 
-    // This action is called when a new overlay is added to the map.
-    // We then take a snapshot of the relevant values of the new overlay and
-    // add it to the "now" state. The old "now" is added to the "past" stack
     case DrawingActionKind.SET_OVERLAY: {
-      const {overlay} = action.payload;
+      const { overlay } = action.payload;
 
       const snapshot: Snapshot = {};
 
@@ -74,16 +68,13 @@ export default function reducer(state: State, action: Action) {
           {
             type: action.payload.type,
             geometry: action.payload.overlay,
-            snapshot
-          }
+            snapshot,
+          },
         ],
-        future: []
+        future: [],
       };
     }
 
-    // This action is called when the undo button is clicked.
-    // Get the top item from the "past" stack and set it as the new "now".
-    // Add the old "now" to the "future" stack to enable redo functionality
     case DrawingActionKind.UNDO: {
       const last = state.past.slice(-1)[0];
 
@@ -92,13 +83,10 @@ export default function reducer(state: State, action: Action) {
       return {
         past: [...state.past].slice(0, -1),
         now: last,
-        future: state.now ? [...state.future, state.now] : state.future
+        future: state.now ? [...state.future, state.now] : state.future,
       };
     }
 
-    // This action is called when the redo button is clicked.
-    // Get the top item from the "future" stack and set it as the new "now".
-    // Add the old "now" to the "past" stack to enable undo functionality
     case DrawingActionKind.REDO: {
       const next = state.future.slice(-1)[0];
 
@@ -107,17 +95,16 @@ export default function reducer(state: State, action: Action) {
       return {
         past: state.now ? [...state.past, state.now] : state.past,
         now: next,
-        future: [...state.future].slice(0, -1)
+        future: [...state.future].slice(0, -1),
       };
     }
   }
 }
 
-// Handle drawing manager events
 export function useDrawingManagerEvents(
   drawingManager: google.maps.drawing.DrawingManager | null,
   overlaysShouldUpdateRef: MutableRefObject<boolean>,
-  dispatch: Dispatch<Action>
+  dispatch: Dispatch<Action>,
 ) {
   useEffect(() => {
     if (!drawingManager) return;
@@ -129,18 +116,18 @@ export function useDrawingManagerEvents(
         drawResult.overlay,
         eventName,
         () => {
-          if (eventName === 'dragstart') {
+          if (eventName === "dragstart") {
             overlaysShouldUpdateRef.current = false;
           }
 
-          if (eventName === 'dragend') {
+          if (eventName === "dragend") {
             overlaysShouldUpdateRef.current = true;
           }
 
           if (overlaysShouldUpdateRef.current) {
-            dispatch({type: DrawingActionKind.UPDATE_OVERLAYS});
+            dispatch({ type: DrawingActionKind.UPDATE_OVERLAYS });
           }
-        }
+        },
       );
 
       eventListeners.push(updateListener);
@@ -148,55 +135,54 @@ export function useDrawingManagerEvents(
 
     const overlayCompleteListener = google.maps.event.addListener(
       drawingManager,
-      'overlaycomplete',
+      "overlaycomplete",
       (drawResult: DrawResult) => {
         switch (drawResult.type) {
           case google.maps.drawing.OverlayType.CIRCLE:
-            ['center_changed', 'radius_changed'].forEach(eventName =>
-              addUpdateListener(eventName, drawResult)
+            ["center_changed", "radius_changed"].forEach((eventName) =>
+              addUpdateListener(eventName, drawResult),
             );
             break;
 
           case google.maps.drawing.OverlayType.MARKER:
-            ['dragend'].forEach(eventName =>
-              addUpdateListener(eventName, drawResult)
+            ["dragend"].forEach((eventName) =>
+              addUpdateListener(eventName, drawResult),
             );
 
             break;
 
           case google.maps.drawing.OverlayType.POLYGON:
           case google.maps.drawing.OverlayType.POLYLINE:
-            ['mouseup'].forEach(eventName =>
-              addUpdateListener(eventName, drawResult)
+            ["mouseup"].forEach((eventName) =>
+              addUpdateListener(eventName, drawResult),
             );
 
           case google.maps.drawing.OverlayType.RECTANGLE:
-            ['bounds_changed', 'dragstart', 'dragend'].forEach(eventName =>
-              addUpdateListener(eventName, drawResult)
+            ["bounds_changed", "dragstart", "dragend"].forEach((eventName) =>
+              addUpdateListener(eventName, drawResult),
             );
 
             break;
         }
 
-        dispatch({type: DrawingActionKind.SET_OVERLAY, payload: drawResult});
-      }
+        dispatch({ type: DrawingActionKind.SET_OVERLAY, payload: drawResult });
+      },
     );
 
     eventListeners.push(overlayCompleteListener);
 
     return () => {
-      eventListeners.forEach(listener =>
-        google.maps.event.removeListener(listener)
+      eventListeners.forEach((listener) =>
+        google.maps.event.removeListener(listener),
       );
     };
   }, [dispatch, drawingManager, overlaysShouldUpdateRef]);
 }
 
-// Update overlays with the current "snapshot" when the "now" state changes
 export function useOverlaySnapshots(
   map: google.maps.Map | null,
   state: State,
-  overlaysShouldUpdateRef: MutableRefObject<boolean>
+  overlaysShouldUpdateRef: MutableRefObject<boolean>,
 ) {
   useEffect(() => {
     if (!map || !state.now) return;
@@ -206,7 +192,7 @@ export function useOverlaySnapshots(
 
       overlay.geometry.setMap(map);
 
-      const {radius, center, position, path, bounds} = overlay.snapshot;
+      const { radius, center, position, path, bounds } = overlay.snapshot;
 
       if (isCircle(overlay.geometry)) {
         overlay.geometry.setRadius(radius ?? 0);

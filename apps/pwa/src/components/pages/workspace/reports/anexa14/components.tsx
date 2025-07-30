@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   GrapeDestination,
   ParcelClassification,
@@ -143,7 +142,6 @@ export const TextField = styled(Input)(({ theme: { palette } }) => ({
     fontSize: 14,
     fontWeight: 600,
     lineHeight: 1,
-    //height: "12px",
   },
   "& .MuiInput-underline:after": {
     borderBottomColor: "none",
@@ -189,7 +187,6 @@ export const StyledDatePicker = styled(DatePicker)(
       fontSize: 14,
       fontWeight: 600,
       lineHeight: 1,
-      //height: "12px",
       "&:focus": {
         outline: "none",
       },
@@ -226,7 +223,7 @@ export const StyledDatePicker = styled(DatePicker)(
       height: "16px",
       margin: "0px",
     },
-  })
+  }),
 );
 
 export const generateEmptyRows = (numberOfRows = 1) =>
@@ -247,11 +244,11 @@ export const generateEmptyCells = (numberOfCells = 1) =>
 
 export const filterByClassification = (
   arr: any[],
-  classification: ParcelClassification
+  classification: ParcelClassification,
 ) =>
   Array.isArray(arr)
     ? arr.filter(
-        ({ parcelClassification }) => parcelClassification === classification
+        ({ parcelClassification }) => parcelClassification === classification,
       )
     : [];
 

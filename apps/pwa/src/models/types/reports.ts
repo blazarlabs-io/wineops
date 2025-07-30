@@ -54,19 +54,12 @@ interface OtherGrapeDestination extends BaseDestination {
   mustVol: number;
 }
 
-/*export type Destination = {
-  id: string;
-  parcelClassification: ParcelClassification;
-} & (WineDestination | OtherGrapeDestination);*/
-
-export type Destination = {
+type Destination = {
   id: string;
   parcelClassification: ParcelClassification;
   grapeDestination: GrapeDestination;
-  // if grapeDestination === WINE
   unit?: "tone" | "string";
   qty?: number;
-  // else
   grapesUnit?: "tone" | "string";
   grapesQty?: number;
   mustUnit?: "dal" | "string";

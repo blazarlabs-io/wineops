@@ -6,7 +6,7 @@ import { Add } from "@mui/icons-material";
 import { Tooltip, IconButton } from "@mui/material";
 import { useState } from "react";
 
-export type NotesWidgetProps = {
+type NotesWidgetProps = {
   subject: string;
   onClick?: () => void;
   onClose?: () => void;

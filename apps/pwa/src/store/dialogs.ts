@@ -22,7 +22,7 @@ type DialogValueMap = {
 type DialogFn = <T extends DialogKey>(
   key: T,
   value?: DialogValueMap[T],
-  vineyard?: Vineyard
+  vineyard?: Vineyard,
 ) => void;
 
 interface DialogDrawerStore {

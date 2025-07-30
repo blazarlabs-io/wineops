@@ -9,7 +9,7 @@ import GeneralInfoContent from "./general-info-content";
 import TechnicalInfoContent from "./technical-info-content";
 import UsageContent from "../components/usage-content";
 
-export type ConsumableDetailsWidgetProps = {
+type ConsumableDetailsWidgetProps = {
   consumable: Consumable;
 };
 

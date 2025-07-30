@@ -22,7 +22,7 @@ export default function MustsTable() {
                 ...must.metrics,
                 actual: must?.vessels?.reduce(
                   (sum, { qty = 0 }) => sum + qty,
-                  0
+                  0,
                 ),
                 status: must.status,
               },
@@ -41,7 +41,7 @@ export default function MustsTable() {
                 `${must.name}-${vessel?.name}`,
               ],
             }),
-          }))
+          })),
         )
         .sort((a, b) => {
           if (a.status === MustStatus.STORED && b.status !== MustStatus.STORED)
@@ -50,7 +50,7 @@ export default function MustsTable() {
             return -1;
           return 0;
         }),
-    [musts]
+    [musts],
   );
 
   return (

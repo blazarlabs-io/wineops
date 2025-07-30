@@ -14,8 +14,6 @@ import {
 } from "./db";
 import { DashboardEntity } from "./dashboard";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export interface Subject<T extends DashboardEntity | Recipe = DashboardEntity> {
   id: T["id"];
   name: T["name"];
@@ -42,11 +40,11 @@ export type VineyardActions = {
   "pesticide-application": VineyardSingleAction;
 };
 
-export type ActionIcons = {
+type ActionIcons = {
   [key: string]: string;
 };
 
-export type GrapeSingleAction = {
+type GrapeSingleAction = {
   exec: (uid: string, actionData: any, grape: Grape) => void;
   form: any;
   icon: string;
@@ -60,7 +58,7 @@ export type GrapeActions = {
 };
 
 export type VineyardActionType = "harvest" | "lab-report" | "irrigation" | null;
-export type GrapeActionType = "grape-intake" | "grape-process" | null;
+type GrapeActionType = "grape-intake" | "grape-process" | null;
 
 export type GrapeIntakeAction = {
   id: string;
@@ -130,7 +128,6 @@ export type GrapeProcessingAction = {
 };
 
 export interface VineyardHarvestAction {
-  // * General Info
   id: string;
   type: VineyardActionType;
   subject: Subject;
@@ -145,17 +142,14 @@ export interface VineyardHarvestAction {
     stockConsumableQty?: number; // total consumable quantity
   }[];
   equipment?: ActionRelation[];
-  // * Transport Info
   location?: string;
   invoiceNumber?: string;
   transportCompanyName?: string;
   transportVehicleId?: string;
   transportDriverName?: string;
-  // * QUALITY PARAMS
   sugar: Partial<LabElement>;
   acidity?: Partial<LabElement>;
   certificateOfInofensivitate?: string;
-  // * ADDITIONAL INFO
   description?: string;
   harvestEnded?: boolean;
   supportingDocuments?: Array<{
@@ -192,8 +186,8 @@ export interface VineyardGlobalAction {
   createdBy?: TeamMember["id"] | TeamMember["email"];
 }
 
-export const MUST_ACTION_TYPES = ["must-decant"] as const;
-export type MustActionType = (typeof MUST_ACTION_TYPES)[number];
+const MUST_ACTION_TYPES = ["must-decant"] as const;
+type MustActionType = (typeof MUST_ACTION_TYPES)[number];
 
 export type MustActions = {
   [K in MustActionType]: {
@@ -201,7 +195,7 @@ export type MustActions = {
       uid: string,
       actionData: MustDecantAction,
       must: Must,
-      mustVessel?: MustWineVessel
+      mustVessel?: MustWineVessel,
     ) => void;
     form: any;
     icon: string;
@@ -287,13 +281,10 @@ export type BottleWineAction = {
     actions: ActionRelation[];
   }>;
   responsible?: TeamMember;
-  //
   lotId: string;
   lotStatus?: LotStatus;
-  //
   bottlingLine?: string;
 
-  // Bottle specs
   bottleType: string; // Consumable["id"] with category Bottle
   bottleSize: BottleSize;
   closureType: string; // "Screw cap" | Consumable["id"] with category Cork
@@ -301,13 +292,11 @@ export type BottleWineAction = {
   labelType?: string; // Consumable["id"] with category Label
   bottleWeight?: number; // gramms
 
-  // Packaging details
   packagingType?: PackagingType;
   bottlesPerBox?: number;
   packagingMaterial?: string;
   palletId?: string;
 
-  // Final Lab Results
   alcohol: number;
   sugar: number;
   pH: number;
@@ -316,7 +305,6 @@ export type BottleWineAction = {
   turbidity?: number;
   labCertificateId?: string;
 
-  // Quantity & Losses
   numberOfBottles: number;
   losses: number;
 

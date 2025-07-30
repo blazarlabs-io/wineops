@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { vineyardHarvestActionSample } from "@/data/actions-samples";
@@ -81,7 +80,7 @@ export default function VineyardHarvestActionForm({
   const { vineyards = [], actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
-    ({ selected }) => selected
+    ({ selected }) => selected,
   ) as Vineyard[];
 
   const { user } = useAuth();
@@ -103,7 +102,7 @@ export default function VineyardHarvestActionForm({
   const isDarkMode = colorScheme === "dark";
   const { teamMembers } = useWinery();
   const [formData, setFormData] = useState<VineyardHarvestAction>(
-    vineyardHarvestActionSample
+    vineyardHarvestActionSample,
   );
   const { labReports: labData } = useVineyard();
   const { consumables } = useConsumable();
@@ -175,7 +174,7 @@ export default function VineyardHarvestActionForm({
         }));
       }
     },
-    [formData, setValue, teamMembers, vineyards]
+    [formData, setValue, teamMembers, vineyards],
   );
 
   const handleNewUpload = useCallback(
@@ -194,7 +193,7 @@ export default function VineyardHarvestActionForm({
 
       setValue(name, filesUrls);
     },
-    [formData.supportingDocuments, setValue]
+    [formData.supportingDocuments, setValue],
   );
 
   const handleFile = useCallback(
@@ -241,7 +240,6 @@ export default function VineyardHarvestActionForm({
         (complete: string) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(complete);
           handleNewUpload("supportingDocuments", complete, file);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
@@ -249,10 +247,9 @@ export default function VineyardHarvestActionForm({
         (error: Error) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
     [
@@ -261,7 +258,7 @@ export default function VineyardHarvestActionForm({
       handleNewUpload,
       setError,
       user?.uid,
-    ]
+    ],
   );
 
   const handleDeleteFile = useCallback(
@@ -280,17 +277,15 @@ export default function VineyardHarvestActionForm({
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
         "vineyardHarvest",
-        name
+        name,
       );
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
         if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
-        console.log("Error deleting file");
       }
     },
-    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
   const onSubmit = useCallback(
@@ -305,12 +300,7 @@ export default function VineyardHarvestActionForm({
         return;
       }
 
-      console.log("SUBMIT", user?.uid, data, selected);
-      console.log("ERRORS:", errors);
-
       const cleanData = cleanObject(data);
-
-      console.log("CLEANED", cleanData);
 
       for (let index = 0; index < (data?.consumables?.length || 0); index++) {
         const consumable = data.consumables?.[index];
@@ -354,7 +344,7 @@ export default function VineyardHarvestActionForm({
       setError,
       user?.uid,
       vineyards,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -373,7 +363,7 @@ export default function VineyardHarvestActionForm({
         ?.sort(
           (a, b) =>
             (b.date as Timestamp).toDate().getTime() -
-            (a.date as Timestamp).toDate().getTime()
+            (a.date as Timestamp).toDate().getTime(),
         )?.[0];
 
       vineyardHarvestActionSample.sugar = {
@@ -411,7 +401,6 @@ export default function VineyardHarvestActionForm({
   }, [localVineyard]);
 
   useEffect(() => {
-    // * General
     vineyardHarvestActionSample.id = crypto.randomUUID();
     vineyardHarvestActionSample.batchId = `BatchID_${grapes?.length + 1}`;
     vineyardHarvestActionSample.type = "harvest";
@@ -421,7 +410,6 @@ export default function VineyardHarvestActionForm({
     vineyardHarvestActionSample.consumables = [];
     vineyardHarvestActionSample.sugar.value = undefined;
 
-    // * One vineyard is selected
     if (selectedVineyards && selectedVineyards.length === 1) {
       setDisableSubject(true);
 
@@ -430,13 +418,10 @@ export default function VineyardHarvestActionForm({
         name: selectedVineyards[0].name,
       };
 
-      console.log("\n\n\n\n", selectedVineyards[0], "\n\n\n\n");
-
       setLocalVineyard(selectedVineyards[0]);
 
-      // ? We get the corresponding lab report
       const labReport = labData?.filter((l) =>
-        selectedVineyards[0]?.labData?.some((ld) => ld.id === l.id)
+        selectedVineyards[0]?.labData?.some((ld) => ld.id === l.id),
       )[0];
 
       vineyardHarvestActionSample.sugar = {
@@ -473,7 +458,6 @@ export default function VineyardHarvestActionForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("[VINEYARD HARVEST FORM ERRORS]", errors);
     }
 
     const hasGeneralErrors = hasKeyFromArray(
@@ -486,7 +470,7 @@ export default function VineyardHarvestActionForm({
         "consumables",
         "equipment",
       ],
-      errors
+      errors,
     );
     if (hasGeneralErrors) setGeneralExpanded(true);
 
@@ -498,13 +482,13 @@ export default function VineyardHarvestActionForm({
         "transportVehicleId",
         "transportDriverName",
       ],
-      errors
+      errors,
     );
     if (hasTransportInfoError) setTransportInfoExpanded(true);
 
     const hasQualityParamsErrors = hasKeyFromArray(
       ["sugar", "acidity", "certificateOfInofensivitate"],
-      errors
+      errors,
     );
     if (hasQualityParamsErrors) setQualityParamsExpanded(true);
   }, [errors]);
@@ -515,9 +499,9 @@ export default function VineyardHarvestActionForm({
         ({ id, rowType, qty = 0 }) =>
           rowType === "item" &&
           qty > 0 &&
-          !formData.consumables?.some((consumable) => consumable.id === id)
+          !formData.consumables?.some((consumable) => consumable.id === id),
       ),
-    [consumables, formData.consumables]
+    [consumables, formData.consumables],
   );
 
   if (!formData) return null;
@@ -634,7 +618,7 @@ export default function VineyardHarvestActionForm({
 
                       handleChange(
                         "executionDate",
-                        Timestamp.fromDate(date.toDate())
+                        Timestamp.fromDate(date.toDate()),
                       );
                     }}
                   />
@@ -763,7 +747,7 @@ export default function VineyardHarvestActionForm({
                       {formData?.consumables?.map(
                         (
                           { id, name, qty = "", stockConsumableQty = 0 },
-                          index
+                          index,
                         ) => (
                           <Fragment key={id}>
                             <Stack
@@ -818,7 +802,7 @@ export default function VineyardHarvestActionForm({
                                 disabled={false}
                                 onClick={() => {
                                   const updated = formData.consumables?.filter(
-                                    (item) => item.id !== id
+                                    (item) => item.id !== id,
                                   );
                                   handleChange("consumables", updated);
                                 }}
@@ -839,7 +823,7 @@ export default function VineyardHarvestActionForm({
                                   ?.message as string)}
                             </Typography>
                           </Fragment>
-                        )
+                        ),
                       )}
                     </Stack>
                   )}
@@ -869,7 +853,7 @@ export default function VineyardHarvestActionForm({
 
                       handleChange(
                         "equipment",
-                        newValue.map(({ id, name }) => ({ id, name }))
+                        newValue.map(({ id, name }) => ({ id, name })),
                       );
                     }}
                     renderInput={(params) => (
@@ -1253,7 +1237,6 @@ export default function VineyardHarvestActionForm({
             <Checkbox
               checked={!!harvestEnded || false}
               color="error"
-              // {...register("harvestEnded")}
               onChange={(e) => {
                 setHarvestEnded(e.target.checked);
                 setValue("harvestEnded", e.target.checked);

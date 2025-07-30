@@ -63,7 +63,6 @@ export const MustProvider = ({ children }: IMustProvider) => {
         const musts: Must[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No musts found");
           setMusts([]);
           return;
         }
@@ -101,14 +100,14 @@ export const MustProvider = ({ children }: IMustProvider) => {
         return { ...must, vessels: updatedVessels as MustWineVessel[] };
       });
     },
-    []
+    [],
   );
 
   const { vessels } = useVessel();
 
   const hydratedMusts = useMemo(
     () => hydrateMustsWithUpdatedVessels(musts, vessels),
-    [hydrateMustsWithUpdatedVessels, musts, vessels]
+    [hydrateMustsWithUpdatedVessels, musts, vessels],
   );
 
   return (

@@ -17,10 +17,6 @@ export const GroupCellRenderer: FunctionComponent<
 > = (params) => {
   const { value, data, node, storageType } = params;
 
-  /**
-   * node?.group - AG Grid group
-   * node?.data?.rowType === "group" - Our custom grouping system
-   */
   const isGroup = node?.group || node?.data?.rowType === "group";
   const groupField = isGroup ? node?.field : node?.parent?.field;
 
@@ -30,7 +26,7 @@ export const GroupCellRenderer: FunctionComponent<
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(
-      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT
+      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT,
     );
   }, [node]);
 
@@ -157,33 +153,7 @@ export const GroupCellRenderer: FunctionComponent<
                     </Typography>
                   )}
                   {<StatusDataDisplay status={data?.status} />}
-                </> /*: groupField === "groupByVesselType" ||
-                groupField === "groupByLocation" ? (
-                <Stack my={2} sx={{ height: "100%", justifyContent: "center" }}>
-                  {(data?.vesselId
-                    ? [
-                        {
-                          id: data?.vesselId,
-                          name: data?.vesselName,
-                          location: data?.vesselLocation,
-                          type: data?.vesselType,
-                        },
-                      ]
-                    : data?.vessels
-                  )?.map((vessel: Vessel) => (
-                    <Stack
-                      key={vessel?.id}
-                      direction="row"
-                      sx={{ flexWrap: "wrap", whiteSpace: "wrap" }}
-                    >
-                      <Typography key={vessel?.id} variant="body1">
-                        {vessel?.name}
-                      </Typography>
-                      <EntityLocation location={vessel?.location || ""} />
-                    </Stack>
-                  ))}
-                </Stack>
-              )*/
+                </>
               ) : (
                 <>
                   <Typography variant="body1">{data?.name}</Typography>

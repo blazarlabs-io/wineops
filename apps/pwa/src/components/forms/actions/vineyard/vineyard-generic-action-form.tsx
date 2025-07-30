@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
@@ -58,7 +57,7 @@ export default function VineyardGenericActionForm({
   const { vineyards = [], actions } = useVineyard();
 
   const selectedVineyards = useSelectedEntitiesStore(
-    ({ selected }) => selected
+    ({ selected }) => selected,
   ) as Vineyard[];
 
   const filteredVineyards = useMemo(
@@ -66,11 +65,11 @@ export default function VineyardGenericActionForm({
       (selectedVineyards.length > 0
         ? selectedVineyards.map(
             (selected) =>
-              vineyards.find(({ id }) => id === selected.id) ?? selected
+              vineyards.find(({ id }) => id === selected.id) ?? selected,
           )
         : vineyards
       ).filter(({ rowType }) => rowType === "item"),
-    [selectedVineyards, vineyards]
+    [selectedVineyards, vineyards],
   );
 
   const { user } = useAuth();
@@ -80,7 +79,7 @@ export default function VineyardGenericActionForm({
 
   const userId =
     teamMembers?.find(
-      ({ id, email }) => email === user?.email || id === user?.uid
+      ({ id, email }) => email === user?.email || id === user?.uid,
     )?.id ||
     user?.email ||
     user?.uid ||
@@ -101,7 +100,7 @@ export default function VineyardGenericActionForm({
   });
 
   const [formData, setFormData] = useState<VineyardGlobalAction>(
-    vineyardGlobalActionSample
+    vineyardGlobalActionSample,
   );
 
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -118,7 +117,7 @@ export default function VineyardGenericActionForm({
 
       setValue(name, value, { shouldTouch: true, shouldValidate: true });
     },
-    [setValue]
+    [setValue],
   );
 
   const handleNewUpload = useCallback(
@@ -137,7 +136,7 @@ export default function VineyardGenericActionForm({
 
       setValue(name, filesUrls, { shouldTouch: true, shouldValidate: true });
     },
-    [formData.supportingDocuments, setValue]
+    [formData.supportingDocuments, setValue],
   );
 
   const handleFile = useCallback(
@@ -191,10 +190,9 @@ export default function VineyardGenericActionForm({
         (error: Error) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
     [
@@ -204,7 +202,7 @@ export default function VineyardGenericActionForm({
       handleNewUpload,
       setError,
       user?.uid,
-    ]
+    ],
   );
 
   const handleDeleteFile = useCallback(
@@ -226,29 +224,25 @@ export default function VineyardGenericActionForm({
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
         actionKey,
-        name
+        name,
       );
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
         if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
-        console.log("Error deleting file");
       }
     },
-    [actionKey, clearErrors, formData.supportingDocuments, setValue, user?.uid]
+    [actionKey, clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
   const onSubmit = async (data: any) => {
     if (!user?.uid || !actions[actionKey]) return;
 
     const subjectVineyard = filteredVineyards.find(
-      ({ id }) => id === data.inUseVineyard.id
+      ({ id }) => id === data.inUseVineyard.id,
     );
 
     if (!subjectVineyard) return;
-
-    console.log("SUBJECT VINEYARD:", subjectVineyard);
 
     for (let index = 0; index < (data?.chemistry?.length || 0); index++) {
       const chemistryItem = data.chemistry?.[index];
@@ -330,7 +324,6 @@ export default function VineyardGenericActionForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS:", errors);
     }
   }, [errors]);
 
@@ -340,9 +333,9 @@ export default function VineyardGenericActionForm({
         ({ id, rowType, qty = 0 }) =>
           rowType === "item" &&
           qty > 0 &&
-          !formData.consumables?.some((consumable) => consumable.id === id)
+          !formData.consumables?.some((consumable) => consumable.id === id),
       ),
-    [allConsumables, formData.consumables]
+    [allConsumables, formData.consumables],
   );
 
   const filteredChemistry = useMemo(
@@ -351,9 +344,9 @@ export default function VineyardGenericActionForm({
         ({ id, rowType, qty = 0 }) =>
           rowType === "item" &&
           qty > 0 &&
-          !formData.chemistry?.some((chemistryItem) => chemistryItem.id === id)
+          !formData.chemistry?.some((chemistryItem) => chemistryItem.id === id),
       ),
-    [allChemistry, formData.chemistry]
+    [allChemistry, formData.chemistry],
   );
 
   if (!formData) return null;
@@ -450,7 +443,7 @@ export default function VineyardGenericActionForm({
 
                   handleChange(
                     "executionDate",
-                    Timestamp.fromDate(date.toDate())
+                    Timestamp.fromDate(date.toDate()),
                   );
                 }}
               />
@@ -474,7 +467,7 @@ export default function VineyardGenericActionForm({
                     if (!value) return;
 
                     const responsible = teamMembers.find(({ name }) =>
-                      value.startsWith(name)
+                      value.startsWith(name),
                     );
 
                     handleChange("responsible", responsible);
@@ -496,7 +489,7 @@ export default function VineyardGenericActionForm({
             </Stack>
 
             {["fertilizer-application", "pesticide-application"].includes(
-              actionKey
+              actionKey,
             ) && (
               <Stack gap={1}>
                 <InputLabel className="text-sm text-muted-foreground">
@@ -544,7 +537,7 @@ export default function VineyardGenericActionForm({
                     {formData?.chemistry?.map(
                       (
                         { id, name, qty = "", stockChemistryQty = 0 },
-                        index
+                        index,
                       ) => (
                         <Fragment key={id}>
                           <Stack
@@ -599,7 +592,7 @@ export default function VineyardGenericActionForm({
                               disabled={false}
                               onClick={() => {
                                 const updated = formData.chemistry?.filter(
-                                  (item) => item.id !== id
+                                  (item) => item.id !== id,
                                 );
                                 handleChange("chemistry", updated);
                               }}
@@ -620,7 +613,7 @@ export default function VineyardGenericActionForm({
                                 ?.message as string)}
                           </Typography>
                         </Fragment>
-                      )
+                      ),
                     )}
                   </Stack>
                 )}
@@ -730,7 +723,7 @@ export default function VineyardGenericActionForm({
                             disabled={false}
                             onClick={() => {
                               const updated = formData.consumables?.filter(
-                                (item) => item.id !== id
+                                (item) => item.id !== id,
                               );
                               handleChange("consumables", updated);
                             }}
@@ -751,7 +744,7 @@ export default function VineyardGenericActionForm({
                               ?.message as string)}
                         </Typography>
                       </Fragment>
-                    )
+                    ),
                   )}
                 </Stack>
               )}
@@ -781,7 +774,7 @@ export default function VineyardGenericActionForm({
 
                   handleChange(
                     "equipment",
-                    newValue.map(({ id, name }) => ({ id, name }))
+                    newValue.map(({ id, name }) => ({ id, name })),
                   );
                 }}
                 renderInput={(params) => (

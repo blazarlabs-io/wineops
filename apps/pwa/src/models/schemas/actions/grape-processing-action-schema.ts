@@ -18,7 +18,7 @@ export const grapeProcessingActionSchema = Joi.object<GrapeProcessingAction>({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Date must be a valid date.",
-      })
+      }),
     )
     .required()
     .messages({
@@ -108,10 +108,10 @@ export const grapeProcessingActionSchema = Joi.object<GrapeProcessingAction>({
                 }),
               location: Joi.string().allow("").optional(),
               type: Joi.string().allow("").optional(),
-            }).optional()
+            }).optional(),
           )
           .optional(),
-      }).optional()
+      }).optional(),
     )
     .optional(),
   wasteQuantity: Joi.number().optional(),

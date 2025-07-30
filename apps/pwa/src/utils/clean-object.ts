@@ -1,6 +1,5 @@
 import { Timestamp } from "firebase/firestore";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export function cleanObject<T>(obj: T): Partial<T> | undefined {
   if (Array.isArray(obj)) {
     const cleanedArray = obj
@@ -11,7 +10,7 @@ export function cleanObject<T>(obj: T): Partial<T> | undefined {
           item !== null &&
           !(typeof item === "string" && `${item}`.trim() === "") &&
           !(Array.isArray(item) && item.length === 0) &&
-          !(isPlainObject(item) && Object.keys(item).length === 0)
+          !(isPlainObject(item) && Object.keys(item).length === 0),
       );
 
     return cleanedArray.length > 0 ? (cleanedArray as T) : undefined;

@@ -13,7 +13,7 @@ const TimestampOrString = Joi.alternatives().try(
   Joi.object().custom((value, helpers) => {
     if (value instanceof Timestamp) return value;
     return helpers.error("any.invalid");
-  }, "Timestamp validation")
+  }, "Timestamp validation"),
 );
 
 const sugarSchema = Joi.object({
@@ -66,7 +66,6 @@ const aciditySchema = Joi.object({
 });
 
 export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
-  // * General info
   id: Joi.string().required(),
   type: Joi.string().required(),
   subject: Joi.object({
@@ -103,13 +102,11 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
     })
     .optional(),
   equipment: Joi.array().items(relationSchema).optional(),
-  //  * Transport info
   location: Joi.string().optional().allow(""),
   invoiceNumber: Joi.string().optional().allow(""),
   transportCompanyName: Joi.string().optional().allow(""),
   transportVehicleId: Joi.string().optional().allow(""),
   transportDriverName: Joi.string().optional().allow(""),
-  // * Quality params
   sugar: sugarSchema.required(),
   acidity: aciditySchema.optional(),
   certificateOfInofensivitate: Joi.string()
@@ -124,7 +121,6 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
       "string.max":
         "Certificat de inofensivitate ID must be less than or equal to 50 characters long",
     }),
-  // * Additional info
   description: Joi.string().allow("").max(250).messages({
     "string.max":
       "Description must be less than or equal to 250 characters long",

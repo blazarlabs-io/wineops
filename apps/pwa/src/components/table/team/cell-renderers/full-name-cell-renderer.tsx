@@ -5,7 +5,6 @@ import { type FunctionComponent } from "react";
 export const FullNameCellRenderer: FunctionComponent<
   CustomCellRendererProps
 > = ({ node, value }) => {
-  console.log("VALUE", value, node.data.lastName);
   return (
     <Box
       sx={{

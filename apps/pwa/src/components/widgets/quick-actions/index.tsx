@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   GrapeActions,
   VineyardActions,
@@ -12,7 +11,7 @@ import QuickActionsWidgetStepTwo from "./step-two";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { useDialogDrawerStore } from "@/store/dialogs";
 
-export interface QuickActionsWidgetProps {
+interface QuickActionsWidgetProps {
   actions?: any;
   onClick: (action: string) => void;
   dashboard?: string;
@@ -37,10 +36,8 @@ export default function QuickActionsWidget({
       setFormTitle(selected?.title ?? `${action} action`);
       setStep(2);
     },
-    [actions, onClick]
+    [actions, onClick],
   );
-
-  console.log("selectedAction:", selectedAction);
 
   const handleBackClick = useCallback(() => {
     setStep(1);
@@ -52,7 +49,7 @@ export default function QuickActionsWidget({
     if (!dialogs["action-drawer"]) return;
 
     const existingAction = Object.keys(actions).find(
-      (key) => key === `${dialogs["action-drawer"]}`
+      (key) => key === `${dialogs["action-drawer"]}`,
     );
 
     if (!existingAction) return;

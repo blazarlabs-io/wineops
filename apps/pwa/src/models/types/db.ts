@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
 import {
   ActionRelation,
@@ -91,7 +90,7 @@ export const Role = {
 
 export type Role = (typeof Role)[keyof typeof Role];
 
-export type MediaType = {
+type MediaType = {
   type: string;
   subtype: string;
   sizeMb: number;
@@ -177,16 +176,16 @@ export const Department = {
 
 export type Department = (typeof Department)[keyof typeof Department];
 
-export const CoreResponsibilities = {
+const CoreResponsibilities = {
   FERMENTATION_MONITORING: "Fermentation Monitoring",
   BOTTLING_AND_PACKAGING: "Bottling and Packaging",
   EQUIPMENT_MAINTENANCE: "Equipment Maintenance",
 };
 
-export type CoreResponsibility =
+type CoreResponsibility =
   (typeof CoreResponsibilities)[keyof typeof CoreResponsibilities];
 
-export const Shift = {
+const Shift = {
   MONDAY: "Mo",
   TUESDAY: "Tu",
   WEDNESDAY: "We",
@@ -196,7 +195,7 @@ export const Shift = {
   SUNDAY: "Su",
 } as const;
 
-export type Shift = (typeof Shift)[keyof typeof Shift];
+type Shift = (typeof Shift)[keyof typeof Shift];
 
 export type TeamMember = ResponsibleTeamMember & {
   id: string;
@@ -209,18 +208,8 @@ export type TeamMember = ResponsibleTeamMember & {
   contactPhone?: string;
   labData?: ActionRelation[];
 };
-// export type TeamMember extends ResponsibleTeamMember  = Entity &  ={
-//   id: string;
-//   name: string;
-//   lastName: string;
-//   email: string;
-//   role?: Role | string;
-//   avatar?: string;
-//   department?: Department | string;
-//   contactPhone?: string;
-// }
 
-export type EmergencyContact = {
+type EmergencyContact = {
   id: string;
   name: string;
   lastName: string;
@@ -291,7 +280,7 @@ export type Certifications = {
   };
 };
 
-export type VineyardGrape = {
+type VineyardGrape = {
   id: string;
   clonalSelection: string;
   vivcNumber: string;
@@ -339,7 +328,6 @@ export type Vineyard = Entity & {
   notes: ActionRelation[];
   documents: SingleDocument[];
   createdAt?: string | Timestamp;
-  // * RELATIONS * //
   vessels?: ActionRelation[];
   batches?: ActionRelation[];
   equipment?: ActionRelation[];
@@ -365,7 +353,7 @@ export interface Group extends Vineyard {
   };
 }
 
-export type VineyardItemGroup = {
+type VineyardItemGroup = {
   groupName: string | null;
   vineyards: Vineyard[];
 };
@@ -438,7 +426,7 @@ export const Metric = {
 
 export type Metric = (typeof Metric)[keyof typeof Metric];
 
-export type Metrics = Partial<Record<Metric, number>> & { unit?: string };
+type Metrics = Partial<Record<Metric, number>> & { unit?: string };
 
 export type Grape = Entity & {
   entry: GrapeEntry;
@@ -779,13 +767,10 @@ export type Bottle = Entity & {
     actions: ActionRelation[];
   }>;
   responsible?: TeamMember;
-  //
   lotId: string;
   lotStatus?: LotStatus;
-  //
   bottlingLine?: string;
 
-  // Bottle specs
   bottleType?: string; // Consumable["id"] with category Bottle
   bottleSize?: BottleSize;
   closureType?: string; // "Screw cap" | Consumable["id"] with category Cork
@@ -793,13 +778,11 @@ export type Bottle = Entity & {
   labelType?: string; // Consumable["id"] with category Label
   bottleWeight?: number; // gramms
 
-  // Packaging details
   packagingType?: PackagingType;
   bottlesPerBox?: number;
   packagingMaterial?: string;
   palletId?: string;
 
-  // Final Lab Results
   alcohol?: number;
   sugar?: number;
   pH?: number;
@@ -808,7 +791,6 @@ export type Bottle = Entity & {
   turbidity?: number;
   labCertificateId?: string;
 
-  // Quantity & Losses
   numberOfBottles?: number;
   losses?: number;
 

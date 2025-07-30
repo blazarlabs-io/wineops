@@ -23,8 +23,6 @@ const labReport = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -48,7 +46,6 @@ const labReport = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -74,8 +71,6 @@ const labReport = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error deleting many:", error);
-
       return {
         data: null,
         error,

@@ -43,7 +43,7 @@ export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
                   + {uniqueSuppliers.length - GROUP_ITEMS_TO_SHOW} more
                 </Link>
               )
-            )
+            ),
           )}
         </>
       ) : (

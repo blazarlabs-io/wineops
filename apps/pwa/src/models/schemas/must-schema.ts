@@ -13,7 +13,7 @@ const labDataSchema = Joi.object({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Date must be a valid date.",
-      })
+      }),
     )
     .messages({
       "alternatives.types": "Date must be a valid date.",
@@ -49,7 +49,7 @@ export const mustSchema = Joi.object({
       }),
       Joi.object().instance(Timestamp).messages({
         "object.base": "Date must be a valid date.",
-      })
+      }),
     )
     .required()
     .messages({

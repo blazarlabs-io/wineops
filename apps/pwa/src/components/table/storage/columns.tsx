@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef, ColGroupDef } from "ag-grid-enterprise";
 import { Must, MustWineVessel, Vessel } from "@/models/types/db";
 import { VesselIDCellRenderer } from "./VesselIDCellRenderer";

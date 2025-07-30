@@ -52,7 +52,7 @@ export default function ConsumableForm() {
 
   const { consumables } = useConsumable();
   const existingConsumable = consumables?.find(
-    ({ id }) => id === selected[0]?.id
+    ({ id }) => id === selected[0]?.id,
   );
 
   const {
@@ -73,7 +73,7 @@ export default function ConsumableForm() {
       setValue(name as keyof Consumable, value);
       setFormData((prev) => ({ ...(prev as Consumable), [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCreateConsumable = useCallback(
@@ -97,7 +97,7 @@ export default function ConsumableForm() {
           const updateRes: DbResponse = await db.consumable.update(
             uid,
             id,
-            newData
+            newData,
           );
 
           setFormData(newData);
@@ -135,7 +135,7 @@ export default function ConsumableForm() {
       } catch (e) {
         console.error(
           "Error creating document or subcollection with data: ",
-          e
+          e,
         );
 
         enqueueSnackbar(`Error creating consumable`, {
@@ -143,7 +143,7 @@ export default function ConsumableForm() {
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: Consumable) => {
@@ -173,7 +173,6 @@ export default function ConsumableForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("[CONSUMABLE FORM ERRORS]", errors);
     }
   }, [errors]);
 
@@ -442,7 +441,7 @@ export default function ConsumableForm() {
                           "orderDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : undefined
+                            : undefined,
                         )
                       }
                     />
@@ -566,7 +565,7 @@ export default function ConsumableForm() {
                           "expiryDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : undefined
+                            : undefined,
                         )
                       }
                     />

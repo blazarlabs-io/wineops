@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import PolygonDrawingMap from "@/components/widgets/maps/polygon-drawing-map";
@@ -55,7 +54,7 @@ import {
 } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export type VineyardFormProps = {
+type VineyardFormProps = {
   children?: React.ReactNode;
   onSave?: (data: Vineyard) => void;
   clicked?: boolean;
@@ -105,12 +104,9 @@ export default function VineyardForm({
 
   const handleNameChange = useCallback(
     (event: any) => {
-      console.log("handleNameChange", event.target.value);
       const nameIsValid = checkIfNameExists(event.target.value);
-      console.log("Validating", nameIsValid);
 
       if (nameIsValid) {
-        // * we generate the joi error message
         setNameError("Vineyard name already exists");
         onNameError?.(true);
       } else {
@@ -124,7 +120,7 @@ export default function VineyardForm({
       });
       setValue("name", event.target.value);
     },
-    [checkIfNameExists]
+    [checkIfNameExists],
   );
 
   const handlePolygonDrawingComplete = (data: Coordinates[]) => {
@@ -197,7 +193,7 @@ export default function VineyardForm({
 
       setFormData(() => newFormData);
     },
-    [setValue]
+    [setValue],
   );
 
   const handleCheckboxChange = (name: string, value: boolean) => {
@@ -211,8 +207,6 @@ export default function VineyardForm({
 
   const handleCreateVineyard = useCallback(
     async (uid: string, data: any) => {
-      console.log("DATA", formType, data);
-
       if (formType === "create") {
         data.group = [data.name];
         data.status = VineyardStatus.MAINTENANCE;
@@ -221,7 +215,6 @@ export default function VineyardForm({
       data.createdAt = Timestamp.now();
 
       try {
-        // * Check if vineyard already exists
         const getOneRes: DbResponse = await db.vineyard.getOne(uid, data.id);
 
         if (
@@ -245,7 +238,7 @@ export default function VineyardForm({
           const updateRes: DbResponse = await db.vineyard.update(
             uid,
             id,
-            newData
+            newData,
           );
 
           setFormData(() => newData);
@@ -281,20 +274,18 @@ export default function VineyardForm({
       } catch (e) {
         console.error(
           "Error creating document or subcollection with data: ",
-          e
+          e,
         );
+
         enqueueSnackbar(`Error creating vineyard`, {
           variant: "error",
         });
       }
     },
-    [closeDrawer, enqueueSnackbar, formData?.group, formType]
+    [closeDrawer, enqueueSnackbar, formData?.group, formType],
   );
 
   const onSubmit = async (data: any, e: any) => {
-    console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    console.log("[VINEYARD FORM SUBMIT]", data);
-    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
     e.stopPropagation();
     e.preventDefault();
 
@@ -321,15 +312,10 @@ export default function VineyardForm({
           formData.name = name;
         }
         setValue("name", name);
-      } catch (err: any) {
-        console.error("❌ Error:", err);
-      }
+      } catch (err: any) {}
     };
 
-    // * Check if name already exists
     check(name);
-
-    console.log("NEW NAME", name);
 
     const formatted: Vineyard = {
       ...existingVineyard,
@@ -357,7 +343,6 @@ export default function VineyardForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("[VINEYARD FORM ERRORS]", errors);
     }
   }, [errors]);
 
@@ -405,9 +390,7 @@ export default function VineyardForm({
                   </AccordionSummary>
                   <AccordionDetails>
                     <div className="flex flex-col gap-4">
-                      {/* * ID - HIDDEN */}
                       <div className="hidden">
-                        {/* <Label htmlFor="id">Id</Label> */}
                         <FormControl>
                           <Input
                             id={formData.id as Vineyard["id"]}
@@ -417,9 +400,7 @@ export default function VineyardForm({
                           />
                         </FormControl>
                       </div>
-                      {/* * VINEYARD NAME */}
                       <div className="flex flex-col gap-2">
-                        {/* <Label htmlFor="name">Vineyard Name</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter a name for the vineyard
                         </InputLabel>
@@ -441,7 +422,6 @@ export default function VineyardForm({
                             }}
                             value={(formData?.name as string) || ""}
                             onChange={handleNameChange}
-                            // {...register("name")}
                           />
                         </FormControl>
                         {nameError && (
@@ -463,9 +443,7 @@ export default function VineyardForm({
                           </Typography>
                         )}
                       </div>
-                      {/* * GRAPE VARIETY - MANDATORY */}
                       <div className="flex flex-col gap-2">
-                        {/* <Label htmlFor="grapeVariety">Grape Variety</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter a grape variety for the vineyard
                         </InputLabel>
@@ -489,9 +467,7 @@ export default function VineyardForm({
                         )}
                       </div>
 
-                      {/* * GRAPE COLOR - MANDATORY */}
                       <div className="flex flex-col gap-2">
-                        {/* <Label htmlFor="grapeColor">Grape Color</Label> */}
                         <Typography
                           color="textSecondary"
                           className="text-sm text-muted-foreground"
@@ -524,7 +500,7 @@ export default function VineyardForm({
                                 >
                                   {grapeColor}
                                 </MenuItem>
-                              )
+                              ),
                             )}
                           </Select>
                         </FormControl>
@@ -563,7 +539,7 @@ export default function VineyardForm({
                                     {field.value.map(
                                       (
                                         identificator: string,
-                                        index: number
+                                        index: number,
                                       ) => (
                                         <Chip
                                           key={identificator + index}
@@ -573,11 +549,11 @@ export default function VineyardForm({
                                               "identificatorUnicParcela",
                                               field.value[
                                                 field.value.length - 1
-                                              ]
+                                              ],
                                             );
                                           }}
                                         />
-                                      )
+                                      ),
                                     )}
                                   </Stack>
                                 );
@@ -612,7 +588,7 @@ export default function VineyardForm({
                               onClick={() => {
                                 handleArrayChange(
                                   "identificatorUnicParcela",
-                                  identificatorUnicParcela
+                                  identificatorUnicParcela,
                                 );
                                 setIdentificatorUnicParcela("");
                               }}
@@ -637,9 +613,7 @@ export default function VineyardForm({
                         )}
                       </div>
 
-                      {/* * CADASTRAL NUMBER */}
                       <div className="flex flex-col gap-2">
-                        {/* <Label htmlFor="cadastralNumber">Cadastral Number</Label> */}
                         <InputLabel className="text-sm text-muted-foreground">
                           Enter the cadastral number(s)
                         </InputLabel>
@@ -669,11 +643,11 @@ export default function VineyardForm({
                                               "cadastralNumber",
                                               field.value[
                                                 field.value.length - 1
-                                              ]
+                                              ],
                                             );
                                           }}
                                         />
-                                      )
+                                      ),
                                     )}
                                   </Stack>
                                 );
@@ -751,9 +725,6 @@ export default function VineyardForm({
                         <h2 className="font-medium text-base">Location</h2>
                       </div>
                       <div className="flex flex-col gap-4">
-                        {/* ? LOCATION */}
-
-                        {/* * MAP */}
                         <div className="w-full bg-muted rounded-md min-h-[320px] relative">
                           <PolygonDrawingMap
                             initialCoordinates={formData.info?.location?.map}
@@ -761,7 +732,6 @@ export default function VineyardForm({
                           />
                         </div>
 
-                        {/* * SURFACE */}
                         <div className="flex flex-col gap-2">
                           <InputLabel className="text-sm text-muted-foreground">
                             Enter the surface area of the vineyard (Ha)
@@ -807,7 +777,6 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {/* * COUNTRY */}
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
                             <Typography
@@ -819,7 +788,7 @@ export default function VineyardForm({
                             <Autocomplete
                               id="info.location.country"
                               options={countries.map(
-                                (country) => country?.name
+                                (country) => country?.name,
                               )}
                               filterSelectedOptions
                               renderInput={(params) => (
@@ -834,7 +803,7 @@ export default function VineyardForm({
                               onChange={(e, value) => {
                                 handleSelectChange(
                                   "info.location.country",
-                                  value as string
+                                  value as string,
                                 );
                               }}
                             />
@@ -846,7 +815,6 @@ export default function VineyardForm({
                           </div>
                         </div>
 
-                        {/* * CITY */}
                         <div className="flex flex-col gap-2">
                           <InputLabel className="text-sm text-muted-foreground">
                             Enter the City/Region of the vineyard
@@ -867,7 +835,6 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {/* * ELEVATION */}
                         <div className="flex flex-col gap-2 w-full">
                           <InputLabel className="text-sm text-muted-foreground">
                             Enter the elevation of the vineyard (m)
@@ -907,7 +874,6 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {/* * ORIENTATION */}
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
                             <Typography
@@ -936,7 +902,7 @@ export default function VineyardForm({
                                 onChange={(e) =>
                                   handleSelectChange(
                                     "info.location.orientation",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 className="capitalize"
@@ -953,7 +919,7 @@ export default function VineyardForm({
                                           {orientation.split("-").join(" ")}
                                         </MenuItem>
                                       );
-                                    }
+                                    },
                                   )}
                               </Select>
                             </FormControl>
@@ -965,18 +931,13 @@ export default function VineyardForm({
                           </div>
                         </div>
 
-                        {/* ? END OF LOCATION */}
-
-                        {/* ? VINES */}
-
-                        {/* * PLANTING SCHEME */}
                         <div className="flex items-center gap-2 mt-2">
                           <Leaf className="text-muted-foreground w-4 h-4" />
                           <Typography className="font-medium text-base">
                             Planting Scheme
                           </Typography>
                         </div>
-                        {/* * SPACING */}
+
                         <div className="flex flex-col gap-4">
                           <div className="flex flex-col gap-2 justify-between w-full">
                             <div className="flex flex-col gap-2">
@@ -1012,7 +973,7 @@ export default function VineyardForm({
                                     },
                                   }}
                                   {...register(
-                                    "info.vines.plantingScheme.spacing"
+                                    "info.vines.plantingScheme.spacing",
                                   )}
                                 />
                               </FormControl>
@@ -1027,8 +988,6 @@ export default function VineyardForm({
                               </p>
                             )}
                           </div>
-
-                          {/* * ROW ORIENTATION */}
 
                           <div className="flex flex-col gap-2">
                             <div className="flex flex-col gap-2 w-full">
@@ -1055,7 +1014,7 @@ export default function VineyardForm({
                                   onChange={(e) =>
                                     handleSelectChange(
                                       "info.vines.plantingScheme.rowOrientation",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="capitalize"
@@ -1072,7 +1031,7 @@ export default function VineyardForm({
                                             {orientation}
                                           </MenuItem>
                                         );
-                                      }
+                                      },
                                     )}
                                 </Select>
                               </FormControl>
@@ -1084,7 +1043,6 @@ export default function VineyardForm({
                             </div>
                           </div>
 
-                          {/* * DENSITY */}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
                               <InputLabel className="text-sm text-muted-foreground">
@@ -1119,7 +1077,7 @@ export default function VineyardForm({
                                     },
                                   }}
                                   {...register(
-                                    "info.vines.plantingScheme.density"
+                                    "info.vines.plantingScheme.density",
                                   )}
                                 />
                               </FormControl>
@@ -1136,7 +1094,6 @@ export default function VineyardForm({
                             )}
                           </div>
 
-                          {/* * PLANTS PER HA */}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
                               <InputLabel className="text-sm text-muted-foreground">
@@ -1162,7 +1119,7 @@ export default function VineyardForm({
                                 },
                               }}
                               {...register(
-                                "info.vines.plantingScheme.plantsPerHa"
+                                "info.vines.plantingScheme.plantsPerHa",
                               )}
                             />
                             {(errors?.info as any)?.vines?.plantingScheme
@@ -1176,7 +1133,6 @@ export default function VineyardForm({
                             )}
                           </div>
 
-                          {/* * TRELLIS SYSTEM  */}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
                               <InputLabel className="text-sm text-muted-foreground">
@@ -1188,7 +1144,7 @@ export default function VineyardForm({
                               variant="outlined"
                               label="Trellis system type"
                               {...register(
-                                "info.vines.plantingScheme.trellisSystem"
+                                "info.vines.plantingScheme.trellisSystem",
                               )}
                             />
                             {(errors?.info as any)?.vines?.plantingScheme
@@ -1202,7 +1158,7 @@ export default function VineyardForm({
                             )}
                           </div>
                         </div>
-                        {/* * YEAR OF PLANTATION */}
+
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
                             <Stack
@@ -1236,7 +1192,7 @@ export default function VineyardForm({
 
                                 handleSelectChange(
                                   "info.vines.yearOfPlantation",
-                                  value
+                                  value,
                                 );
                               }}
                             />
@@ -1248,10 +1204,9 @@ export default function VineyardForm({
                             )}
                           </div>
                         </div>
-                        {/* * SUNLIGHT HOURS */}
+
                         <div className="flex flex-col gap-2 justify-between">
                           <div className="flex flex-col gap-2">
-                            {/* <Label htmlFor="info.vines.sunlightHours">Sunlight hours</Label> */}
                             <span className="text-sm text-muted-foreground">
                               Enter the sunlight hours your vineyard receives.
                             </span>
@@ -1282,10 +1237,8 @@ export default function VineyardForm({
                           )}
                         </div>
 
-                        {/* * SOIL TYPE */}
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-col gap-2 w-full">
-                            {/* <Label htmlFor="info.vines.soilType">Soil Type</Label> */}
                             <span className="text-sm text-muted-foreground">
                               Choose the soil type of your vineyard.
                             </span>
@@ -1306,8 +1259,6 @@ export default function VineyardForm({
                           </div>
                         </div>
 
-                        {/* ? END OF VINES */}
-                        {/* ? CERTIFICATIONS */}
                         <div className="flex items-center gap-2 mt-2">
                           <ReceiptLong className="text-muted-foreground w-4 h-4" />
                           <Typography className="font-medium text-base">
@@ -1317,10 +1268,8 @@ export default function VineyardForm({
 
                         <div>
                           <div className="grid grid-cols-2">
-                            {/* * ECO */}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {/* <Label htmlFor="info.certifications.eco.active">Eco/Bio</Label> */}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.eco.active"
@@ -1331,10 +1280,9 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.eco.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
-                                    // {...register("info.certifications.eco.active")}
                                   />
                                   <span className="text-sm text-muted-foreground">
                                     ECO certified
@@ -1343,10 +1291,8 @@ export default function VineyardForm({
                               </div>
                             </div>
 
-                            {/* * BIO */}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {/* <Label htmlFor="info.certifications.bio.active">Eco/Bio</Label> */}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.bio"
@@ -1357,10 +1303,9 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.bio.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
-                                    // {...register("info.certifications.bio.active")}
                                   />
                                   <span className="text-sm text-muted-foreground">
                                     BIO certified
@@ -1369,10 +1314,8 @@ export default function VineyardForm({
                               </div>
                             </div>
 
-                            {/* * IGP */}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {/* <Label htmlFor="info.certifications.igp.active">IGP</Label> */}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.igp.active"
@@ -1383,7 +1326,7 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.igp.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                   />
@@ -1394,10 +1337,8 @@ export default function VineyardForm({
                               </div>
                             </div>
 
-                            {/* * DOP */}
                             <div className="flex flex-col gap-2 justify-between">
                               <div className="flex flex-col gap-2">
-                                {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="info.certifications.dop.active"
@@ -1408,7 +1349,7 @@ export default function VineyardForm({
                                     onChange={(e) =>
                                       handleCheckboxChange(
                                         "info.certifications.dop.active",
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                   />
@@ -1419,10 +1360,8 @@ export default function VineyardForm({
                               </div>
                             </div>
                           </div>
-                          {/* * ICO */}
                           <div className="flex flex-col gap-2 justify-between">
                             <div className="flex flex-col gap-2">
-                              {/* <Label htmlFor="info.certifications.dop.active">DOP</Label> */}
                               <div className="flex items-center gap-2">
                                 <Checkbox
                                   id="info.certifications.ice.active"
@@ -1432,7 +1371,7 @@ export default function VineyardForm({
                                   onChange={(e) =>
                                     handleCheckboxChange(
                                       "info.certifications.ice.active",
-                                      e.target.checked
+                                      e.target.checked,
                                     )
                                   }
                                 />
@@ -1443,8 +1382,6 @@ export default function VineyardForm({
                             </div>
                           </div>
                         </div>
-
-                        {/* ? END OF CERTIFICATIONS */}
                       </div>
                     </div>
                   </AccordionDetails>
@@ -1468,7 +1405,6 @@ export default function VineyardForm({
                   </AccordionSummary>
                   <AccordionDetails>
                     <div className="p-4 flex flex-col gap-4">
-                      {/* * CLONAL SELECTION */}
                       <div className="flex flex-col gap-2 justify-between">
                         <div className="flex flex-col gap-2">
                           <Typography className="text-sm text-muted-foreground">
@@ -1483,7 +1419,6 @@ export default function VineyardForm({
                         />
                       </div>
 
-                      {/* * COUNTRY OF ORIGIN */}
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2 w-full">
                           <Typography
@@ -1503,7 +1438,7 @@ export default function VineyardForm({
                             onChange={(e, value) => {
                               handleSelectChange(
                                 "grape.countryOfOrigin",
-                                value as string
+                                value as string,
                               );
                             }}
                           />
@@ -1515,7 +1450,6 @@ export default function VineyardForm({
                         </div>
                       </div>
 
-                      {/* * VIVC NUMBER */}
                       <div className="flex flex-col gap-2 justify-between">
                         <div className="flex flex-col gap-2">
                           <span className="text-sm text-muted-foreground">
@@ -1535,7 +1469,6 @@ export default function VineyardForm({
               </div>
             </Box>
 
-            {/* * FORECASTED YIELD - HIDDEN */}
             <div className="hidden flex-col gap-2">
               <span className="text-sm text-muted-foreground">
                 Enter the forecasted yield of your vineyard.

@@ -49,7 +49,6 @@ export const Anexa7Provider = ({ children }: IAnexa7Provider) => {
         const anexa7List: Anexa7Data[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No anexa 7 found");
           setAnexa7List([]);
           return;
         }

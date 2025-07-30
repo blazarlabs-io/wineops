@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { ActionRelation } from "@/models/types/actions";
@@ -27,7 +26,7 @@ export default function DeleteUploadedDialog() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { selectedItems, setSelectedItems, itemType } = useSelectedItemsStore(
-    (state) => state
+    (state) => state,
   );
 
   const { dialogs, close } = useDialogDrawerStore((state) => state);
@@ -71,7 +70,7 @@ export default function DeleteUploadedDialog() {
             (row: any) =>
               row.name !== name &&
               row.type === type &&
-              row.actionId === actionId
+              row.actionId === actionId,
           )
           .map(({ name, url }: any) => ({
             name,
@@ -86,7 +85,7 @@ export default function DeleteUploadedDialog() {
           actions: actions.map((action: ActionRelation) =>
             action.id === actionId
               ? { ...action, updatedAt: Timestamp.now() }
-              : action
+              : action,
           ),
         });
 
@@ -105,7 +104,7 @@ export default function DeleteUploadedDialog() {
         const entityDocuments = allRows
           ?.filter(
             (row: any) =>
-              row.name !== name && !type && row.vineyardId === vineyardId
+              row.name !== name && !type && row.vineyardId === vineyardId,
           )
           .map(({ id, name, fileUrl, owner, uploadDate }: any) => ({
             id,
@@ -126,7 +125,6 @@ export default function DeleteUploadedDialog() {
         }
       }
     } catch (e) {
-      console.log("ERROR DELETING:", e);
     } finally {
       onClose();
       setIsDeleting(false);

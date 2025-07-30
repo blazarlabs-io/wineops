@@ -41,7 +41,6 @@ interface VineyardContextType {
 
 const VineyardContext = createContext<VineyardContextType | null>(null);
 
-// hook that we can use anywhere in the app
 export const useVineyard = () => {
   const context = useContext(VineyardContext);
 
@@ -137,19 +136,17 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
     let unsubTasks = () => {};
 
     if (user && db) {
-      // * Vineyards Realtime Updates
       const vineyardsRef = collection(
         db,
         WINERY,
         user?.uid as string,
-        VINEYARDS
+        VINEYARDS,
       );
 
       unsubVineyards = onSnapshot(vineyardsRef, (querySnapshot) => {
         const vineyards: Vineyard[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No vineyards found");
           setVineyards([]);
           return;
         }
@@ -164,26 +161,23 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         setVineyards(vineyards);
       });
 
-      // * Lab Reports Realtime Updates
       const labReportsRef = collection(
         db,
         WINERY,
         user?.uid as string,
-        LAB_REPORTS
+        LAB_REPORTS,
       );
 
       unsubLabReports = onSnapshot(labReportsRef, (querySnapshot) => {
         const labReports: LabReport[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No lab reports found");
           setLabReports([]);
           return;
         }
 
         querySnapshot.forEach((doc) => {
           labReports.push(doc.data() as LabReport);
-          // sort reports by date
           labReports.sort((a, b) => {
             return (
               (b.date as Timestamp).toDate().getTime() -
@@ -194,14 +188,12 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         setLabReports(labReports);
       });
 
-      // * Notes Realtime Updates
       const notesRef = collection(db, WINERY, user?.uid as string, NOTES);
 
       unsubNotes = onSnapshot(notesRef, (querySnapshot) => {
         const notes: Note[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No notes found");
           setNotes([]);
           return;
         }
@@ -212,14 +204,12 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         setNotes(notes);
       });
 
-      // * Tasks Realtime Updates
       const tasksRef = collection(db, WINERY, user?.uid as string, TASKS);
 
       unsubTasks = onSnapshot(tasksRef, (querySnapshot) => {
         const tasks: Task[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No tasks found");
           setTasks([]);
           return;
         }
@@ -227,7 +217,6 @@ export const VineyardProvider = ({ children }: IAuthProvider) => {
         querySnapshot.forEach((doc) => {
           tasks.push(doc.data() as Task);
         });
-        console.log("TASKS", tasks);
         setTasks(tasks);
       });
     }

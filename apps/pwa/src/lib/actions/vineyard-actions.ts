@@ -17,7 +17,7 @@ import { db } from "../firebase/services";
 export const vineyardHarvestAction = async (
   uid: string,
   actionData: VineyardHarvestAction,
-  vineyard: Vineyard
+  vineyard: Vineyard,
 ) => {
   const updatedVineyard: Vineyard = {
     ...vineyard,
@@ -40,7 +40,6 @@ export const vineyardHarvestAction = async (
     ],
   };
 
-  // * 1. Update Vineyard
   const vineyardRes = await db.vineyard.update(uid, vineyard.id, {
     ...updatedVineyard,
   });
@@ -51,7 +50,6 @@ export const vineyardHarvestAction = async (
     enqueueSnackbar("Vineyard status update failed", { variant: "error" });
   }
 
-  // * 2. Add Action
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
@@ -60,7 +58,6 @@ export const vineyardHarvestAction = async (
     enqueueSnackbar("Error creating action", { variant: "error" });
   }
 
-  // * 3. Add batch of grapes
   const latestResults = actionData?.latestVineyardLabReport?.results;
   const latestResultsDate = actionData?.latestVineyardLabReport?.date;
 
@@ -150,26 +147,13 @@ export const vineyardHarvestAction = async (
       variant: "error",
     });
   }
-
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("HARVEST ACTION DATA", actionData);
-  console.log("SELECTED-VINEYARD", vineyard);
-  console.log("UPDATED-VINEYARD", updatedVineyard);
-  console.log("NEW-BATCH", newBatch);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
 };
 
 export const vineyardLabAction = async (
   uid: string,
   actionData: VineyardGlobalAction,
-  vineyard: Vineyard
+  vineyard: Vineyard,
 ) => {
-  console.log("\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
-  console.log("UID", uid);
-  console.log("vineyardLabAction", actionData);
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
-
   const labReportId = Date.now().toString();
 
   const {
@@ -182,16 +166,13 @@ export const vineyardLabAction = async (
     inputData,
   } = actionData;
 
-  // 0. Delete lab reports results for the same date
   if (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0) {
     const deleteRes = await db.labReport.deleteMany(uid, labDataToDeleteIds);
 
     if (deleteRes.status === 200) {
-      console.log(`DELETED[]:`, labDataToDeleteIds);
     }
   }
 
-  // * 1. write new lab object into DB andreference it in the vineyard
   const labRes = await db.labReport.create(uid, {
     id: labReportId,
     units: CONCENTRATION_UNITS,
@@ -219,7 +200,6 @@ export const vineyardLabAction = async (
     enqueueSnackbar("Error creating lab report", { variant: "error" });
   }
 
-  // * 2. Add Action
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
@@ -228,12 +208,10 @@ export const vineyardLabAction = async (
     enqueueSnackbar("Error creating action", { variant: "error" });
   }
 
-  // * 3. Update Vineyard
-
   const filteredLabData =
     (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0
       ? vineyard.labData?.filter(
-          (labData) => !labDataToDeleteIds?.includes(labData.id)
+          (labData) => !labDataToDeleteIds?.includes(labData.id),
         )
       : vineyard.labData) || ([] as ActionRelation[]);
 
@@ -266,18 +244,14 @@ export const vineyardLabAction = async (
 export const vineyardGenericAction = async (
   uid: string,
   actionData: VineyardGlobalAction,
-  vineyard: Vineyard
+  vineyard: Vineyard,
 ) => {
-  console.log(`\n\n--- GENERIC ACTION: ${actionData.type} ---`);
-  console.log("UID | Action Data | Vineyard:\n", uid, actionData, vineyard);
-  console.log("----------------------------------------------\n\n");
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
     enqueueSnackbar(
       `Action "${actionData.type?.split("-").join(" ")}" created`,
-      { variant: "success" }
+      { variant: "success" },
     );
   } else {
     enqueueSnackbar("Error creating action", { variant: "error" });
@@ -294,7 +268,7 @@ export const vineyardGenericAction = async (
           name: actionData.type,
         },
       ],
-    }
+    },
   );
 
   if (vineyardRes.status === 200) {

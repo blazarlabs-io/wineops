@@ -47,14 +47,13 @@ export const ChemistryProvider = ({ children }: IChemistryProvider) => {
         db,
         WINERY,
         user?.uid as string,
-        CHEMISTRY
+        CHEMISTRY,
       );
 
       unsubChemistry = onSnapshot(chemistryRef, (querySnapshot) => {
         const chemistry: Chemistry[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No chemistry found");
           setChemistry([]);
           return;
         }

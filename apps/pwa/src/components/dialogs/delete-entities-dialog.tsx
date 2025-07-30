@@ -29,7 +29,7 @@ export default function DeleteEntitiesDialog<T extends DashboardEntity>({
   const { enqueueSnackbar } = useSnackbar();
 
   const { selected, setSelected, entityName } = useSelectedEntitiesStore(
-    (state) => state
+    (state) => state,
   );
 
   const { dialogs, close } = useDialogDrawerStore((state) => state);
@@ -51,20 +51,20 @@ export default function DeleteEntitiesDialog<T extends DashboardEntity>({
       (row) =>
         (updatedMap.has(row.id)
           ? updatedMap.get(row.id)
-          : row) as DashboardEntity
+          : row) as DashboardEntity,
     );
 
     const unusedGroups = getUnusedGroups(allRows);
 
     const updatedRows2Delete = [...rows2Delete, ...unusedGroups].map(
-      ({ id }) => id
+      ({ id }) => id,
     );
 
     onClose();
 
     const res = await db[entityName].deleteMany(
       user?.uid as string,
-      updatedRows2Delete
+      updatedRows2Delete,
     );
 
     if (res.status === 200) {
@@ -74,7 +74,7 @@ export default function DeleteEntitiesDialog<T extends DashboardEntity>({
         `${selected?.length > 1 ? many : one} deleted successfully`,
         {
           variant: "success",
-        }
+        },
       );
     } else {
       enqueueSnackbar(`Error deleting ${selected?.length > 1 ? many : one}`, {

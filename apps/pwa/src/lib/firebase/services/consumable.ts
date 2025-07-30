@@ -17,8 +17,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -47,8 +45,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -59,7 +55,7 @@ const consumable = {
   update: async (
     uid: string,
     id: string,
-    data: Consumable
+    data: Consumable,
   ): Promise<DbResponse> => {
     try {
       const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
@@ -72,8 +68,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -95,7 +89,6 @@ const consumable = {
 
         const docRef = doc(fdb, WINERY, uid, CONSUMABLES, id);
 
-        // Empty groups
         if (rowType === "group" && (!group || group.length === 0)) {
           batch.delete(docRef);
         } else {
@@ -111,8 +104,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error updating group:", error);
-
       return {
         data: null,
         error,
@@ -131,8 +122,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -158,8 +147,6 @@ const consumable = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error deleting many:", error);
-
       return {
         data: null,
         error,

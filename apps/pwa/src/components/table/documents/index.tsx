@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
@@ -7,9 +6,7 @@ import DocumentsTableToolbar from "./tool-bar";
 import Stack from "@mui/material/Stack";
 import DeleteUploadedDialog from "@/components/dialogs/delete-uploaded-dialog";
 
-// const VISIBLE_FIELDS = ["name", "rating", "country", "dateCreated", "isAdmin"];
-
-export type DocumentProps = {
+type DocumentProps = {
   docs?: any[];
   onDocumentUpload?: (data: any) => Promise<void>;
 };
@@ -25,12 +22,12 @@ export default function DocumentsTable({
         ...rest,
         ownerNameAndEmail: responsible,
       })),
-    [docs]
+    [docs],
   );
 
   const columns: GridColDef[] = useMemo(
     () => documentsColumns as GridColDef[],
-    []
+    [],
   );
 
   return (

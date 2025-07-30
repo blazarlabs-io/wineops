@@ -11,7 +11,7 @@ import {
 import { Grape } from "lucide-react";
 import { ReactNode } from "react";
 
-export interface CadastralDialogProps {
+interface CadastralDialogProps {
   open: boolean;
   onClose: () => void;
   data: string[];

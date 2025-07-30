@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export type PriorityDataDisplayProps = {
+type PriorityDataDisplayProps = {
   status: Priority;
 };
 
@@ -17,11 +17,8 @@ export default function PriorityDataDisplay({
   const [statuses, setStatuses] = useState<Priority[]>([]);
   const [selected] = useState<Priority>(status as Priority);
 
-  console.log(status);
-
   useEffect(() => {
     setStatuses(Object.values(Priority));
-    console.log("STATUSES", Object.values(Priority));
   }, [Priority]);
 
   return (
@@ -36,7 +33,7 @@ export default function PriorityDataDisplay({
 
 const getStatusStyles = (
   status: Priority,
-  colorScheme?: SupportedColorScheme
+  colorScheme?: SupportedColorScheme,
 ) => {
   const isLight = colorScheme === "light";
 

@@ -10,7 +10,7 @@ export const useSortToolsBarStates = () => {
   const [enableUngrouping, setEnableUngrouping] = useState<boolean>(false);
   const [enablePinning, setEnablePinning] = useState<boolean>(false);
   const [pinningState, setPinningState] = useState<"pin" | "unpin" | null>(
-    null
+    null,
   );
 
   const selected = useSelectedEntitiesStore(({ selected }) => selected);
@@ -24,13 +24,13 @@ export const useSortToolsBarStates = () => {
     setEnablePinning(selected?.length > 0);
 
     const isDataGrouped = selected?.some(
-      ({ group }) => Array.isArray(group) && group.length > 1
+      ({ group }) => Array.isArray(group) && group.length > 1,
     );
 
     setEnableUngrouping(isDataGrouped);
 
     const selectedPinnedCount = selected.filter((item) =>
-      pinned.includes(item)
+      pinned.includes(item),
     ).length;
     const selectedUnpinnedCount = selected.length - selectedPinnedCount;
 

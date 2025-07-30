@@ -9,7 +9,6 @@ export default function Logo() {
   const isDarkMode = colorScheme === "dark";
 
   const handleSidebarCollapse = () => {
-    console.log("handleSidebarCollapse");
     updateOpenSidebar(false);
   };
 
@@ -30,8 +29,6 @@ export default function Logo() {
       )}
 
       <Stack direction="row" alignItems="center" spacing={1}>
-        {/* <Hub fontSize="medium" color="primary" />
-        <Typography variant="h6">WineOps</Typography> */}
         <Image
           src={isDarkMode ? "/images/logo-dark.png" : "/images/logo-light.png"}
           alt="WineOps"
@@ -45,9 +42,6 @@ export default function Logo() {
         color="info"
         variant={isDarkMode ? "outlined" : "filled"}
       />
-      {/* <Tooltip title="Connected to production">
-        <CheckCircle color="success" fontSize="small"  />
-      </Tooltip> */}
     </Stack>
   );
 }

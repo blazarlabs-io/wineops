@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { DashboardEntity } from "@/models/types/dashboard";
@@ -29,7 +28,7 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
   const { enqueueSnackbar } = useSnackbar();
 
   const { selectedItems, setSelectedItems, itemType } = useSelectedItemsStore(
-    (state) => state
+    (state) => state,
   );
 
   const { dialogs, close } = useDialogDrawerStore((state) => state);
@@ -46,7 +45,7 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
 
     const res = await db[itemType].deleteMany(
       user?.uid as string,
-      selectedItems.map(({ id }) => id)
+      selectedItems.map(({ id }) => id),
     );
 
     if (res.status === 200) {
@@ -58,14 +57,14 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
         `${selectedItems?.length > 1 ? many : one} deleted successfully`,
         {
           variant: "success",
-        }
+        },
       );
     } else {
       enqueueSnackbar(
         `Error deleting ${selectedItems?.length > 1 ? many : one}`,
         {
           variant: "error",
-        }
+        },
       );
     }
   };

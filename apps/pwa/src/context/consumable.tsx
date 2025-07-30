@@ -47,14 +47,13 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
         db,
         WINERY,
         user?.uid as string,
-        CONSUMABLES
+        CONSUMABLES,
       );
 
       unsubConsumables = onSnapshot(consumablesRef, (querySnapshot) => {
         const consumables: Consumable[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No consumables found");
           setConsumables([]);
           return;
         }
@@ -67,7 +66,6 @@ export const ConsumableProvider = ({ children }: IConsumableProvider) => {
         });
 
         setConsumables(consumables);
-        console.log("Consumables", consumables);
       });
     }
 

@@ -1,5 +1,5 @@
 export function capitalize(str: string): string {
-  if (!str || typeof str !== 'string' || str.length === 0) {
+  if (!str || typeof str !== "string" || str.length === 0) {
     return str;
   }
 

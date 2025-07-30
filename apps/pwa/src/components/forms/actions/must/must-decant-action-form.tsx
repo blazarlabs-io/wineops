@@ -70,13 +70,13 @@ export default function MustDecantActionForm() {
           rowType === "item" &&
           Array.isArray(vessels) &&
           vessels?.length > 0 &&
-          vessels.reduce((sum, { qty = 0 }) => sum + qty, 0) > 0
+          vessels.reduce((sum, { qty = 0 }) => sum + qty, 0) > 0,
       ),
-    [allMusts]
+    [allMusts],
   );
 
   const selectedMusts = useSelectedEntitiesStore(
-    ({ selected }) => selected
+    ({ selected }) => selected,
   ) as unknown as MustWithVessel[];
 
   const { vessels: allVessels } = useVessel();
@@ -87,7 +87,7 @@ export default function MustDecantActionForm() {
 
   const selectedMust = useMemo(
     () => filteredMusts.find(({ name }) => name === formData.mustId),
-    [filteredMusts, formData.mustId]
+    [filteredMusts, formData.mustId],
   );
 
   const selectedMustsVessels = useMemo(
@@ -95,7 +95,7 @@ export default function MustDecantActionForm() {
       filteredMusts
         .flatMap(({ vessels = [] }) => vessels)
         .filter((vessel) => vessel),
-    [filteredMusts]
+    [filteredMusts],
   );
 
   const vesselsWithQty = (
@@ -107,9 +107,9 @@ export default function MustDecantActionForm() {
       allVessels.filter(
         ({ id, rowType }) =>
           rowType === "item" &&
-          vesselsWithQty?.map(({ id }) => id)?.includes(id)
+          vesselsWithQty?.map(({ id }) => id)?.includes(id),
       ),
-    [allVessels, vesselsWithQty]
+    [allVessels, vesselsWithQty],
   );
 
   const handleSelectChange = useCallback(
@@ -117,13 +117,10 @@ export default function MustDecantActionForm() {
       setValue(name, value);
       setFormData((prev) => ({ ...prev, [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const onSubmit = (data: MustDecantAction) => {
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
-
     const selectedQty =
       vesselsWithQty?.find(({ name }) => name === data?.vesselId)?.qty || 0;
 
@@ -160,7 +157,7 @@ export default function MustDecantActionForm() {
 
     const totalVesselQty = (data?.vessels ?? []).reduce(
       (sum, { qty = 0 }) => sum + qty,
-      0
+      0,
     );
 
     if (totalVesselQty > (data?.obtainedWineQty || 0)) {
@@ -175,12 +172,10 @@ export default function MustDecantActionForm() {
     const subjectMust = filteredMusts.find(({ name }) => name === data?.mustId);
 
     const subjectVessel = vesselsWithQty?.find(
-      ({ name }) => name === data?.vesselId
+      ({ name }) => name === data?.vesselId,
     );
 
     if (!subjectMust) return;
-
-    console.log("SUBJECT MUST", subjectMust);
 
     setIsSubmitting(true);
     try {
@@ -188,7 +183,7 @@ export default function MustDecantActionForm() {
         user?.uid as string,
         data,
         subjectMust,
-        subjectVessel
+        subjectVessel,
       );
     } finally {
       setIsSubmitting(false);
@@ -216,7 +211,6 @@ export default function MustDecantActionForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 
@@ -262,7 +256,7 @@ export default function MustDecantActionForm() {
                   onChange={(date) => {
                     handleSelectChange(
                       "executionDate",
-                      date ? Timestamp.fromDate(date.toDate()) : undefined
+                      date ? Timestamp.fromDate(date.toDate()) : undefined,
                     );
                   }}
                 />
@@ -352,7 +346,7 @@ export default function MustDecantActionForm() {
                   options={allConsumables.filter(
                     (vessel) =>
                       vessel.rowType !== "group" &&
-                      !formData.consumables?.some(({ id }) => id === vessel.id)
+                      !formData.consumables?.some(({ id }) => id === vessel.id),
                   )}
                   value={[]}
                   getOptionLabel={(option) => option.name}
@@ -430,7 +424,7 @@ export default function MustDecantActionForm() {
                                 disabled={false}
                                 onClick={() => {
                                   const updated = formData.consumables?.filter(
-                                    (vessel) => vessel.id !== id
+                                    (vessel) => vessel.id !== id,
                                   );
                                   handleSelectChange("consumables", updated);
                                 }}
@@ -451,7 +445,7 @@ export default function MustDecantActionForm() {
                                   ?.message as string)}
                             </Typography>
                           </Fragment>
-                        )
+                        ),
                       )}
                     </Stack>
                   </>
@@ -505,7 +499,7 @@ export default function MustDecantActionForm() {
                   options={allVessels.filter(
                     (vessel) =>
                       vessel.rowType !== "group" &&
-                      !formData.vessels?.some(({ id }) => id === vessel.id)
+                      !formData.vessels?.some(({ id }) => id === vessel.id),
                   )}
                   value={[]}
                   getOptionLabel={(option) => option.name}
@@ -583,7 +577,7 @@ export default function MustDecantActionForm() {
                                 disabled={false}
                                 onClick={() => {
                                   const updated = formData.vessels?.filter(
-                                    (vessel) => vessel.id !== id
+                                    (vessel) => vessel.id !== id,
                                   );
                                   handleSelectChange("vessels", updated);
                                 }}
@@ -604,7 +598,7 @@ export default function MustDecantActionForm() {
                                   ?.message as string)}
                             </Typography>
                           </Fragment>
-                        )
+                        ),
                       )}
                     </Stack>
                   </>

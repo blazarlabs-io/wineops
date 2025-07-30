@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -9,7 +8,7 @@ export const DefaultCellRenderer = (
     alignItems?: string;
     shouldAggregate?: boolean;
     aggField?: string;
-  }
+  },
 ) => {
   const { value, node, data, alignItems, shouldAggregate, aggField } = params;
   const isGroup = node.group || data.rowType === "group";
@@ -33,7 +32,7 @@ export const DefaultCellRenderer = (
   const summedValue = groupData.reduce(
     (sum: number, item: any) =>
       sum + (groupField && item[groupField] ? item[groupField] : 0),
-    0
+    0,
   );
 
   return (

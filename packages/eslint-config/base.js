@@ -21,11 +21,7 @@ export const config = [
       "turbo/no-undeclared-env-vars": "warn",
     },
   },
-  {
-    plugins: {
-      onlyWarn,
-    },
-  },
+  onlyWarn,
   {
     ignores: ["dist/**"],
   },

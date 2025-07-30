@@ -77,14 +77,16 @@ export default function TotalQuantityPieWidget({
         {...((width || height) && { width: width || height })}
       >
         {getStripedPatterns(
-          data.map(({ id }) => id.replace("striped", "").toLowerCase())
+          data.map(({ id }) => id.replace("striped", "").toLowerCase()),
         )}
       </PieChart>
       <Stack>
         {Object.entries(relatedData).map(([key, value]) => (
           <Typography key={key} variant="caption">
             {LABELS[key as keyof typeof LABELS] || key}:{" "}
-            <strong>{formatNumberWithLowerCaseUnitAndSpace(value, "T", 2)}</strong>
+            <strong>
+              {formatNumberWithLowerCaseUnitAndSpace(value, "T", 2)}
+            </strong>
           </Typography>
         ))}
       </Stack>

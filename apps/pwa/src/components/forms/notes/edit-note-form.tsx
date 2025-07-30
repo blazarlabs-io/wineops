@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
@@ -25,7 +24,7 @@ import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export type EditNoteFormProps = {
+type EditNoteFormProps = {
   note: Note;
   onDataSubmit: (data: any) => void;
   onClose: () => void;
@@ -59,8 +58,6 @@ export default function EditNoteForm({
   const onSubmit = (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
     onDataSubmit(data);
     setFormData(data);
   };
@@ -72,7 +69,6 @@ export default function EditNoteForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 
@@ -82,7 +78,6 @@ export default function EditNoteForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-              {/* * ID - HIDDEN */}
               <div className="hidden">
                 <FormControl>
                   <Input
@@ -93,7 +88,6 @@ export default function EditNoteForm({
                   />
                 </FormControl>
               </div>
-              {/* * DATE */}
               <div className="flex flex-col gap-2">
                 <InputLabel className="text-sm text-muted-foreground">
                   Enter date
@@ -107,14 +101,13 @@ export default function EditNoteForm({
                   onChange={(newValue) =>
                     handleChange(
                       "date",
-                      newValue ? Timestamp.fromDate(newValue.toDate()) : null
+                      newValue ? Timestamp.fromDate(newValue.toDate()) : null,
                     )
                   }
                 />
               </div>
               <div className="flex flex-col w-full">
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-                  {/* * TITLE */}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -125,7 +118,6 @@ export default function EditNoteForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * CONTENT */}
                   <div className="">
                     <FormControl fullWidth>
                       <TextareaAutosize

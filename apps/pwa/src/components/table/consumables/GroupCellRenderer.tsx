@@ -10,7 +10,7 @@ import ConsumableDetailsWidget from "@/components/widgets/consumable/consumable-
 import GroupBadge from "../group-badge";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, data, node } = params;
 
@@ -20,7 +20,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(
-      node.expanded ? ROW_HEIGHT_EXPANDED_VESSEL : ROW_HEIGHT_DEFAULT
+      node.expanded ? ROW_HEIGHT_EXPANDED_VESSEL : ROW_HEIGHT_DEFAULT,
     );
   }, [node]);
 

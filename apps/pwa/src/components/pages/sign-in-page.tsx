@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { auth } from "@/lib/firebase/client";
@@ -19,12 +17,12 @@ export default function SignInPage() {
   const signIn = async (
     provider: AuthProvider,
     formData: FormData,
-    callbackUrl?: string
+    callbackUrl?: string,
   ) => {
     try {
       const res: any = await fbSignIn(
         formData.get("email") as string,
-        formData.get("password") as string
+        formData.get("password") as string,
       );
 
       if (res) {
@@ -35,7 +33,6 @@ export default function SignInPage() {
 
       return res;
     } catch (error) {
-      console.error(error);
       enqueueSnackbar("Sign in failed", { variant: "error" });
       return null;
     }
@@ -50,7 +47,7 @@ export default function SignInPage() {
       signIn={async (
         provider: AuthProvider,
         formData: FormData,
-        callbackUrl?: string
+        callbackUrl?: string,
       ) => {
         try {
           return await signIn(provider, formData);

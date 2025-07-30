@@ -49,7 +49,6 @@ export const BottleProvider = ({ children }: IBottleProvider) => {
         const _bottles: Bottle[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No bottles found");
           setBottles([]);
           return;
         }
@@ -62,7 +61,6 @@ export const BottleProvider = ({ children }: IBottleProvider) => {
         });
 
         setBottles(_bottles);
-        console.log("Bottles", _bottles);
       });
     }
 

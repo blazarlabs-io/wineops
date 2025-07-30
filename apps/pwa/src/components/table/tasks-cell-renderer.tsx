@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import TasksDataDisplay from "@/components/data-display/tasks-data-display";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useSortTasks } from "@/hooks/use-sort-tasks";
@@ -24,7 +23,7 @@ function flattenArray<T>(arr: any[]): T[] {
 }
 
 export const TasksCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, data, node } = params;
   const isGroup = node.group || data.rowType === "group";

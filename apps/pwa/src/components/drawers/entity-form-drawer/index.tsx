@@ -6,7 +6,7 @@ import { Box, Drawer, IconButton, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-export type EntityFormDrawerProps = {
+type EntityFormDrawerProps = {
   entityName: EntityName;
   children?: React.ReactNode;
 };
@@ -29,7 +29,6 @@ export default function EntityFormDrawer({
     if (isOpen) {
       close("form-drawer");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   if (!isOpen) return null;

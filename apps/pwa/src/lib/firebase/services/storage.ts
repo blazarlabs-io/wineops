@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DbResponse } from "@/models/types/db";
 import {
   deleteObject,
@@ -15,7 +14,7 @@ const storage: any = {
     path: string,
     onProgress: (progress: number) => void,
     onComplete: (downloadUrl: string) => void,
-    onError: (error: Error) => void
+    onError: (error: Error) => void,
   ) => {
     try {
       if (!file) {
@@ -46,7 +45,7 @@ const storage: any = {
           } catch (err) {
             onError(err as Error);
           }
-        }
+        },
       );
     } catch (error) {
       onError(error as Error);
@@ -55,7 +54,7 @@ const storage: any = {
   deleteFile: async (
     uid: string,
     path: string,
-    fileName: string
+    fileName: string,
   ): Promise<DbResponse> => {
     try {
       const storage = getStorage(); // assumes firebase app is already initialized
@@ -67,7 +66,6 @@ const storage: any = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,

@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { default as LabResultsChart } from "@/components/charts/lab-results";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import { LabReport, Vineyard } from "@/models/types/db";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/base/tabs';
 import CadastralDataDisplay from "@/components/data-display/cadastral-data-display";
 import LabReportResponsibleDataDisplay from "@/components/data-display/lab-report-responsible-data-display";
 import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
@@ -34,7 +32,7 @@ import { useSelectedItemsStore } from "@/store/selected-items";
 import TasksView from "../components/tasks-view";
 import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 
-export type VineyardDetailsWidgetProps = {
+type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
   labReports: LabReport[];
 };
@@ -66,7 +64,7 @@ export default function VineyardDetailsWidget({
 
         const actions = await getActionsByIds(
           localVineyard.actions.map(({ id }) => id),
-          user?.uid
+          user?.uid,
         );
 
         if (actions.length === 0) return;
@@ -74,7 +72,7 @@ export default function VineyardDetailsWidget({
         const actionDocs: any[] = actions.reduce(
           (
             acc,
-            { id, type, responsible, executionDate, supportingDocuments = [] }
+            { id, type, responsible, executionDate, supportingDocuments = [] },
           ) => [
             ...acc,
             ...supportingDocuments.map((doc: any) => ({
@@ -88,7 +86,7 @@ export default function VineyardDetailsWidget({
               actions: localVineyard?.actions,
             })),
           ],
-          []
+          [],
         );
 
         if (actionDocs.length === 0) return;
@@ -126,7 +124,7 @@ export default function VineyardDetailsWidget({
   };
 
   const setSelectedItem = useSelectedItemsStore(
-    (state) => state.setSelectedItems
+    (state) => state.setSelectedItems,
   );
   const open = useDialogDrawerStore(({ open }) => open);
   const openDeleteEntityDataDialog = () => open("delete-entity-data");
@@ -142,7 +140,7 @@ export default function VineyardDetailsWidget({
     if (!user?.uid || !vineyard.id || !labReportId) return;
 
     const filteredLabData = vineyard.labData?.filter(
-      ({ id }) => id !== labReportId
+      ({ id }) => id !== labReportId,
     );
 
     await db.vineyard.update(user?.uid, vineyard.id, {
@@ -171,12 +169,12 @@ export default function VineyardDetailsWidget({
 
       const oldDocuments =
         localVineyard?.documents?.filter(
-          (document) => !deletedNames.includes(document.name)
+          (document) => !deletedNames.includes(document.name),
         ) || [];
 
       const filteredNewDocuments = newDocuments?.filter(
         (document) =>
-          !oldDocuments.map((file) => file.name).includes(document.name)
+          !oldDocuments.map((file) => file.name).includes(document.name),
       );
 
       const updatedDocuments = [...oldDocuments, ...filteredNewDocuments];
@@ -193,7 +191,7 @@ export default function VineyardDetailsWidget({
         enqueueSnackbar("Error updating vineyard", { variant: "error" });
       }
     },
-    [user?.email, user?.uid, localVineyard?.documents, vineyard.id]
+    [user?.email, user?.uid, localVineyard?.documents, vineyard.id],
   );
 
   const openLabReportAction = useCallback(
@@ -201,9 +199,9 @@ export default function VineyardDetailsWidget({
       open(
         "action-drawer",
         "lab-report" as unknown as ActionsEntity,
-        localVineyard
+        localVineyard,
       ),
-    [localVineyard, open]
+    [localVineyard, open],
   );
 
   const handleNewReport = useCallback(() => {
@@ -239,7 +237,6 @@ export default function VineyardDetailsWidget({
         <Tab label="Documents" {...a11yProps(6)} sx={sx} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        {/* * GENERAL INFO */}
         <div className="flex items-center gap-8 w-full">
           <>
             <div className="min-w-[448px]">
@@ -262,7 +259,7 @@ export default function VineyardDetailsWidget({
                   localVineyard.info?.location?.surface
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         +localVineyard.info?.location?.surface,
-                        "ha"
+                        "ha",
                       )
                     : "N/A"
                 }
@@ -274,7 +271,7 @@ export default function VineyardDetailsWidget({
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         new Date().getFullYear() -
                           localVineyard.info?.vines?.yearOfPlantation,
-                        "years"
+                        "years",
                       )
                     : "N/A"
                 }
@@ -285,7 +282,7 @@ export default function VineyardDetailsWidget({
                   localVineyard.info?.location?.elevation
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         +localVineyard.info?.location?.elevation,
-                        "m"
+                        "m",
                       )
                     : "N/A"
                 }
@@ -306,7 +303,7 @@ export default function VineyardDetailsWidget({
                   localVineyard.info?.vines?.sunlightHours
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         +localVineyard.info?.vines?.sunlightHours,
-                        "h/year"
+                        "h/year",
                       )
                     : "N/A"
                 }
@@ -410,7 +407,7 @@ export default function VineyardDetailsWidget({
                     localVineyard.info?.vines?.plantingScheme?.density
                       ? formatNumberWithLowerCaseUnitAndSpace(
                           +localVineyard.info?.vines?.plantingScheme?.density,
-                          "m"
+                          "m",
                         )
                       : "N/A"
                   }
@@ -467,7 +464,7 @@ export default function VineyardDetailsWidget({
                 ...labReports.sort(
                   (a, b) =>
                     (b.date as Timestamp).toDate().getTime() -
-                    (a.date as Timestamp).toDate().getTime()
+                    (a.date as Timestamp).toDate().getTime(),
                 ),
               ]?.map((item, index) => {
                 return (
@@ -478,7 +475,6 @@ export default function VineyardDetailsWidget({
                       border: "1px solid var(--mui-palette-divider)",
                     }}
                   >
-                    {/* {index < 3 && ( */}
                     <div className="flex items-center min-w-fit w-full gap-1 px-2 py-1 h-full ">
                       <LabReportResponsibleDataDisplay
                         data={item}
@@ -497,7 +493,6 @@ export default function VineyardDetailsWidget({
                         <DeleteOutline className="max-w-4 max-h-4" />
                       </IconButton>
                     </div>
-                    {/* )} */}
                   </div>
                 );
               })}
@@ -525,14 +520,6 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={6}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
-          {/* <div className="flex items-center justify-start w-full">
-            <Button variant="text" className="">
-              Upload
-            </Button>
-            <Button variant="text" className="">
-              View All
-            </Button>
-          </div> */}
           <DocumentsTable docs={docs} onDocumentUpload={handleDocumentUpload} />
         </div>
       </TabPanel>

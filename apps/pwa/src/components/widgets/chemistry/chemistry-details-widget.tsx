@@ -9,7 +9,7 @@ import GeneralInfoContent from "./general-info-content";
 import SupplyContent from "./supply-content";
 import UsageContent from "../components/usage-content";
 
-export type ChemistryDetailsWidgetProps = {
+type ChemistryDetailsWidgetProps = {
   chemistryItem: Chemistry;
 };
 

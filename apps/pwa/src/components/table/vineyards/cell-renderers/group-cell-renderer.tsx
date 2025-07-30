@@ -20,12 +20,11 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
     value,
     node.data?.labData,
     labReports,
-    vineyards
+    vineyards,
   );
   const [expanded, setExpanded] = useState<boolean>(node.expanded);
   const [openCadastrals, setOpenCadastrals] = useState<boolean>(false);
 
-  // * master detail custom renderer
   const handleMasterDetailExpansion = useCallback(() => {
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
@@ -34,12 +33,9 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
 
   const isGroup = node?.group || node?.data?.rowType === "group";
 
-  // console.log("GROUP DATA", isGroup ? node : "Not a group");
-
   return (
     <Box
       display={"flex"}
-      //flexDirection={"column"}
       justifyContent={"center"}
       gap={1}
       justifyItems={"flex-start"}
@@ -159,7 +155,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                         </>
                       )}
                     </div>
-                  )
+                  ),
                 )}
             </div>
           )}

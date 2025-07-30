@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-page-custom-font */
 import Providers from "@/context/providers";
 import { AuthProvider } from "@/lib/firebase/auth";
 import { getAuthenticatedAppForUser } from "@/lib/firebase/server";

@@ -11,21 +11,20 @@ import NotesDataDisplay from "@/components/data-display/notes-data-display";
 import { Note } from "@/models/types/db";
 
 export const NotesCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { notes } = useVineyard();
   const { user } = useAuth();
   const { vineyardNotes } = useGetVineyardNotes(
     user?.uid as string,
     params.node.data,
-    notes
+    notes,
   );
 
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   const handleMouseEnter = useCallback(() => {
-    console.log("handleMouseEnter");
     setIsHovered(true);
   }, []);
 

@@ -1,12 +1,10 @@
 import QuickTasksWidget from "@/components/widgets/tasks/quick-tasks-widget";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
-import { useDialogDrawerStore } from "@/store/dialogs";
 import { Close, TaskAlt } from "@mui/icons-material";
 import { Box, Drawer, IconButton, styled, Typography } from "@mui/material";
-import { useCallback } from "react";
 
-export type QuickTasksDrawerProps = {
+type QuickTasksDrawerProps = {
   open: boolean;
   onOpenChange?: (open: boolean) => void;
 };
@@ -53,7 +51,6 @@ export default function QuickTasksDrawer({
           <Close className="w-4 h-4" />
         </IconButton>
       </DrawerHeader>
-      {/* * QUICK TASKS */}
       <Box px={2} display={"flex"} flexDirection={"column"} gap={2}>
         <Box display={"flex"} alignItems={"center"} gap={1}>
           <TaskAlt />

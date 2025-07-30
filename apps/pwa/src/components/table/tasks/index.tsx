@@ -1,16 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-// React Grid Logic
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-// Theme
 import type { ColDef, RowSelectionOptions } from "ag-grid-community";
 import {
   AllCommunityModule,
   ModuleRegistry,
   themeBalham,
 } from "ag-grid-community";
-// Core CSS
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { useColorScheme } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
@@ -31,10 +27,8 @@ const TasksTable = () => {
 
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
 
-  // Column Definitions: Defines & controls grid columns.
   const [colDefs] = useState<ColDef[]>(columns);
 
-  // * Theming
   const themeClass = isDarkMode ? `ag-theme-quartz-dark` : `ag-theme-quartz`;
   const myTheme = themeBalham
     .withParams({
@@ -54,7 +48,7 @@ const TasksTable = () => {
         foregroundColor: "#FFFFFFCC",
         browserColorScheme: "dark",
       },
-      "dark"
+      "dark",
     )
     .withParams(
       {
@@ -62,15 +56,11 @@ const TasksTable = () => {
         foregroundColor: "#361008CC",
         browserColorScheme: "light",
       },
-      "light"
+      "light",
     );
 
-  // Apply settings across all columns
   const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      //   filter: true,
-      //   editable: true,
-    };
+    return {};
   }, []);
 
   const { tasks } = useVineyard();
@@ -81,10 +71,9 @@ const TasksTable = () => {
     (data: any) => {
       setSelected(data.api.getSelectedRows(), "task");
     },
-    [setSelected]
+    [setSelected],
   );
 
-  // * Change GRID Theme Mode on Mount
   useEffect(() => {
     if (isDarkMode) {
       document.body.dataset.agThemeMode = "dark";

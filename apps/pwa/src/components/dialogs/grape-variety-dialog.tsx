@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Grape } from "lucide-react";
 
-export interface GrapeVarietyDialogProps {
+interface GrapeVarietyDialogProps {
   open: boolean;
   onClose: () => void;
   data: string[];

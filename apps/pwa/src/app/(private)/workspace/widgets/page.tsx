@@ -22,7 +22,7 @@ export default function Widgets() {
   };
 
   const metrics = METRICS.filter(
-    (metric) => !excludeV.includes(metric.vineyard)
+    (metric) => !excludeV.includes(metric.vineyard),
   );
 
   return (

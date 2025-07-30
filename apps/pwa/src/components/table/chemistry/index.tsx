@@ -22,12 +22,12 @@ export default function ChemistryTable() {
             inUseToday: reversedUsage.find(({ inUseToday }) => inUseToday)
               ?.inUseToday,
             inUseThisWeek: reversedUsage.find(
-              ({ inUseThisWeek }) => inUseThisWeek
+              ({ inUseThisWeek }) => inUseThisWeek,
             )?.inUseThisWeek,
           }),
         };
       }),
-    [chemistry]
+    [chemistry],
   );
 
   return (

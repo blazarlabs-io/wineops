@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { LotStatus } from "@/models/types/db";
 import { MenuItem, Select, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
-export type BottlingStatusDataDisplayProps = {
+type BottlingStatusDataDisplayProps = {
   status: LotStatus;
   onSelect?: (status: LotStatus) => void;
 };
@@ -37,17 +36,12 @@ export default function BottlingStatusDataDisplaySelect({
           variant="outlined"
           onChange={handleChange}
           sx={{
-            // ...getStatusStyles(selected, mode),
             minWidth: "fit-content",
             borderRadius: "6px",
           }}
         >
           {statuses.map((s) => (
-            <MenuItem
-              key={s}
-              value={s}
-              // sx={{ ...getStatusStyles(s, mode) }}
-            >
+            <MenuItem key={s} value={s}>
               <Typography variant="caption">{s.toUpperCase()}</Typography>
             </MenuItem>
           ))}

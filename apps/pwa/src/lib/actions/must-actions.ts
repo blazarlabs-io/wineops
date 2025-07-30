@@ -15,12 +15,8 @@ export const mustDecantAction = async (
   uid: string,
   actionData: MustDecantAction,
   must: MustWithVessel,
-  mustVessel?: MustWineVessel
+  mustVessel?: MustWineVessel,
 ) => {
-  console.log("mustDecantAction1:", { uid, actionData, must, mustVessel });
-
-  // * 1. write new action object into DB andreference it in the must
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
@@ -29,8 +25,6 @@ export const mustDecantAction = async (
     enqueueSnackbar("Error creating action", { variant: "error" });
     return;
   }
-
-  // * 2. update must object into DB
 
   const updatedMust = {
     actions: [
@@ -58,8 +52,6 @@ export const mustDecantAction = async (
     })),
   };
 
-  console.log("UPDATED MUST:", updatedMust);
-
   const mustRes = await db.must.update(uid, must.id, updatedMust);
 
   if (mustRes.status === 200) {
@@ -78,7 +70,7 @@ export const mustDecantAction = async (
           name,
           location,
           qty,
-        })
+        }),
       ),
     }),
   };
@@ -93,8 +85,6 @@ export const mustDecantAction = async (
   ];
 
   if (actionData?.moveToWine) {
-    // * 3. create a new wine
-
     const newWine: Wine = {
       id: Date.now().toString(),
       name: actionData.wineName || "WineName",
@@ -121,8 +111,6 @@ export const mustDecantAction = async (
       ...(actionData?.consumables && { consumables: actionData.consumables }),
     };
 
-    console.log("NEW WINE", newWine);
-
     const wineRes = await db.wine.create(uid, newWine);
 
     if (wineRes.status === 200) {
@@ -132,8 +120,6 @@ export const mustDecantAction = async (
       return;
     }
   } else {
-    // * 3. create a new must
-
     const newMust: Must = {
       id: Date.now().toString(),
       name: actionData.wineName || "MustName",
@@ -151,8 +137,6 @@ export const mustDecantAction = async (
       ...(actionData.notes && { notes }),
       ...(actionData?.consumables && { consumables: actionData.consumables }),
     };
-
-    console.log("NEW MUST", newMust);
 
     const mustRes = await db.must.create(uid, newMust);
 

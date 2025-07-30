@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Backup } from "@mui/icons-material";
 import {
   Button,
@@ -11,7 +10,7 @@ import {
 import FileUploaderField from "../forms/custom-fields/file-uploader-field";
 import { useCallback, useEffect, useState } from "react";
 
-export interface CreateNoteDialogProps {
+interface CreateNoteDialogProps {
   open: boolean;
   subject: string;
   uid: string;
@@ -36,10 +35,10 @@ export default function UploadDocumentsDialog({
       setCurrentUploads((prevFiles) =>
         file?.url
           ? [...prevFiles, file]
-          : prevFiles?.filter(({ name }) => name !== file.name)
+          : prevFiles?.filter(({ name }) => name !== file.name),
       );
     },
-    []
+    [],
   );
 
   const handleClose = () => {
@@ -86,12 +85,6 @@ export default function UploadDocumentsDialog({
           data={[]}
           onDocumentUpload={handleUploadDocuments}
         />
-        {/* <CreateNoteForm
-          teamMembers={teamMembers}
-          uid={uid}
-          onDataSubmit={handleCreateNewNote}
-          onClose={onClose}
-        /> */}
       </DialogContent>
       <DialogActions>
         <Button onClick={onDoneClick}>Done</Button>

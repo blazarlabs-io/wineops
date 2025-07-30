@@ -1,6 +1,5 @@
 "use client";
 
-// import { useSnackbar } from "notistack";
 import { createContext, useContext, useState } from "react";
 
 interface SidebarContextType {
@@ -10,7 +9,6 @@ interface SidebarContextType {
 
 const SidebarContext = createContext<SidebarContextType | null>(null);
 
-// hook that we can use anywhere in the app
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
 

@@ -2,7 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export default function formatDate(
   date: number | string | Date | Timestamp,
-  options?: { locale?: string } & Intl.DateTimeFormatOptions
+  options?: { locale?: string } & Intl.DateTimeFormatOptions,
 ) {
   if (!date) return "";
 
@@ -20,7 +20,7 @@ export default function formatDate(
 }
 
 export function parseToDate(
-  date: number | string | Date | Timestamp | undefined
+  date: number | string | Date | Timestamp | undefined,
 ): Date | null {
   if (!date) return null;
 

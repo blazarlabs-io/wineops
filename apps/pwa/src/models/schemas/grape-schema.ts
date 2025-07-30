@@ -8,7 +8,7 @@ export const TimestampOrString = Joi.alternatives().try(
   Joi.object().custom((value, helpers) => {
     if (value instanceof Timestamp) return value;
     return helpers.error("any.invalid");
-  }, "Timestamp validation")
+  }, "Timestamp validation"),
 );
 
 const supplierSchema = Joi.object({
@@ -29,19 +29,16 @@ const entrySchema = Joi.object({
     "number.empty": "Please enter a valid number for the gross weight",
     "number.base": "Please enter a valid number for the gross weight",
   }),
-  //grossUnit: Joi.string().optional().allow(""),
   netWeight: Joi.number().min(0).max(1_000_000).required().messages({
     "any.required": "Please enter a valid number for the net weight",
     "number.empty": "Please enter a valid number for the net weight",
     "number.base": "Please enter a valid number for the net weight",
   }),
-  //netUnit: Joi.string().optional().allow(""),
   tareWeight: Joi.number().min(0).max(1_000_000).required().messages({
     "any.required": "Please enter a valid number for the tare weight",
     "number.empty": "Please enter a valid number for the tare weight",
     "number.base": "Please enter a valid number for the tare weight",
   }),
-  //tareUnit: Joi.string().optional().allow(""),
   weigherName: Joi.string().required().min(2).max(50).messages({
     "any.required": "Please enter a weighbridge operator name",
     "string.empty": "Please enter a weighbridge operator name",

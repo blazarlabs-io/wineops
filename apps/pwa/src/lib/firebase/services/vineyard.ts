@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DbResponse, Group, Vineyard } from "@/models/types/db";
 import {
   collection,
@@ -25,7 +24,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -51,7 +49,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -73,7 +70,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -84,10 +80,9 @@ vineyard = {
   update: async (
     uid: string,
     id: string,
-    data: Vineyard
+    data: Vineyard,
   ): Promise<DbResponse> => {
     try {
-      console.log("uid:", uid, "id:", id, "data:", data);
       const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
       await setDoc(docRef, data, { merge: true });
       return {
@@ -96,7 +91,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -118,7 +112,6 @@ vineyard = {
 
         const docRef = doc(fdb, WINERY, uid, VINEYARDS, id);
 
-        // Empty groups
         if (rowType === "group" && (!group || group.length === 0)) {
           batch.delete(docRef);
         } else {
@@ -134,8 +127,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error updating group:", error);
-
       return {
         data: null,
         error,
@@ -153,7 +144,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -173,7 +163,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -191,7 +180,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
       return {
         data: null,
         error,
@@ -217,8 +205,6 @@ vineyard = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error deleting many:", error);
-
       return {
         data: null,
         error,

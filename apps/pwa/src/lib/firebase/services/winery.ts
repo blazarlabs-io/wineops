@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db as fdb } from '../client';
-import { WINERY } from '../config';
-import { DbResponse } from '@/models/types/db';
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db as fdb } from "../client";
+import { WINERY } from "../config";
+import { DbResponse } from "@/models/types/db";
 
 let winery: any = {};
 
@@ -16,7 +14,7 @@ winery = {
       if (!docSnap.exists()) {
         return {
           data: null,
-          error: 'Winery not found',
+          error: "Winery not found",
           status: 404,
         };
       } else {
@@ -27,7 +25,6 @@ winery = {
         };
       }
     } catch (error) {
-      console.log('error', error);
       return {
         data: null,
         error,
@@ -45,7 +42,6 @@ winery = {
         status: 200,
       };
     } catch (error) {
-      console.log('error', error);
       return {
         data: null,
         error,

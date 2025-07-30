@@ -2,7 +2,7 @@ import { EntityStatus } from "@/models/types/dashboard";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
 import { SupportedColorScheme, useColorScheme } from "@mui/material/styles";
 
-export type StatusDataDisplayProps = {
+type StatusDataDisplayProps = {
   status: EntityStatus;
 };
 
@@ -27,7 +27,7 @@ export default function StatusDataDisplay({ status }: StatusDataDisplayProps) {
 
 const getStatusStyles = (
   status: EntityStatus,
-  colorScheme?: SupportedColorScheme
+  colorScheme?: SupportedColorScheme,
 ) => {
   const isLight = colorScheme === "light";
 

@@ -11,22 +11,7 @@ import { columns } from "./columns";
 export default function WineBottlingTable() {
   const { bottles } = useBottle();
 
-  //   const normalizedBottles = useMemo(
-  //     () =>
-  //       vineyards?.map((vineyard) => ({
-  //         ...vineyard,
-  //         ...(vineyard.rowType !== "group" && {
-  //           forcastedYield: {
-  //             status: vineyard?.status || "",
-  //           },
-  //         }),
-  //       })
-  //     ),
-  //     [vineyards]
-  //   );
-
   const normalizedBottles = useMemo(() => bottles, [bottles]);
-  console.log("normalizedBottles", normalizedBottles);
   return (
     <DataTable<Bottle>
       data={normalizedBottles}

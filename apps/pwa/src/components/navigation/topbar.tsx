@@ -21,8 +21,6 @@ export default function Topbar() {
       >
         <Toolbar disableGutters>
           <Stack direction="row" alignItems="center" spacing={1}>
-            {/* <Hub fontSize="medium" color="primary" />
-        <Typography variant="h6">WineOps</Typography> */}
             <Image
               src={
                 colorScheme === "dark"

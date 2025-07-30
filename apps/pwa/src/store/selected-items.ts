@@ -1,7 +1,7 @@
 import { LabReport, UploadedDocument } from "@/models/types/db";
 import { create } from "zustand";
 
-export type SelectedItem = "UNKNOWN" | "labReport" | "document";
+type SelectedItem = "UNKNOWN" | "labReport" | "document";
 
 interface SelectedItemsStore<T> {
   itemType: SelectedItem;
@@ -15,7 +15,7 @@ const createSelectedItemsStore = <T>() =>
     selectedItems: [],
     setSelectedItems: (
       selectedItems: T[],
-      itemType: SelectedItem = "UNKNOWN"
+      itemType: SelectedItem = "UNKNOWN",
     ) => set({ selectedItems, itemType }),
   }));
 

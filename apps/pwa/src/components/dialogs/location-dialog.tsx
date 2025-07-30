@@ -11,7 +11,7 @@ import {
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { ReactNode } from "react";
 
-export interface LocationDialogProps {
+interface LocationDialogProps {
   open: boolean;
   onClose: () => void;
   data: string[];

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -41,8 +40,7 @@ import {
 } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useWine } from "@/context/wine";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { Wine, Consumable, ConsumableCategory } from "@/models/types/db";
+import { Consumable, ConsumableCategory } from "@/models/types/db";
 import { parseToDate } from "@/utils/date-format";
 import { File } from "lucide-react";
 import { db } from "@/lib/firebase/services";
@@ -84,31 +82,19 @@ export default function BottleWineActionForm({
   const { consumables } = useConsumable();
 
   const bottleTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.BOTTLE
+    ({ category }) => category === ConsumableCategory.BOTTLE,
   );
   const closureTypes = [
     { id: "0", name: "Screw cap" },
     ...consumables?.filter(
-      ({ category }) => category === ConsumableCategory.CORK
+      ({ category }) => category === ConsumableCategory.CORK,
     ),
   ] as Consumable[];
   const capsuleTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.CAPSULE
+    ({ category }) => category === ConsumableCategory.CAPSULE,
   );
   const labelTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.LABEL
-  );
-
-  const selectedWines = useSelectedEntitiesStore(
-    ({ selected }) => selected
-  ) as Wine[];
-
-  const updatedSelectedWines = useMemo(
-    () =>
-      selectedWines.map(
-        (selected) => wines.find((g) => g.id === selected.id) ?? selected
-      ),
-    [wines, selectedWines]
+    ({ category }) => category === ConsumableCategory.LABEL,
   );
 
   const { teamMembers } = useWinery();
@@ -128,18 +114,10 @@ export default function BottleWineActionForm({
 
   const filteredRecipes = useMemo(() => [] as Recipe[], []);
 
-  const filteredWines = useMemo(
-    () =>
-      (updatedSelectedWines.length > 0 ? updatedSelectedWines : wines).filter(
-        ({ rowType }) => rowType === "item"
-      ),
-    [wines, updatedSelectedWines]
-  );
-
   const [formData, setFormData] = useState<BottleWineAction>(
-    {} as BottleWineAction
+    {} as BottleWineAction,
   );
-  const [disableSubject, setDisableSubject] = useState<boolean>(false);
+  const [, setDisableSubject] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -150,7 +128,7 @@ export default function BottleWineActionForm({
       setValue(name, value);
       setFormData((prev) => ({ ...prev, [name]: value }));
     },
-    [setValue]
+    [setValue],
   );
 
   const handleNewUpload = useCallback(
@@ -169,7 +147,7 @@ export default function BottleWineActionForm({
 
       setValue(name, filesUrls);
     },
-    [formData.supportingDocuments, setValue]
+    [formData.supportingDocuments, setValue],
   );
 
   const handleFile = useCallback(
@@ -216,18 +194,16 @@ export default function BottleWineActionForm({
         (complete: string) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(complete);
           handleNewUpload("supportingDocuments", complete, file);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
         },
-        (error: Error) => {
+        () => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
     [
@@ -236,7 +212,7 @@ export default function BottleWineActionForm({
       handleNewUpload,
       setError,
       user?.uid,
-    ]
+    ],
   );
 
   const handleDeleteFile = useCallback(
@@ -255,62 +231,62 @@ export default function BottleWineActionForm({
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
         "bottleWine",
-        name
+        name,
       );
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
-        console.log("Error deleting file");
       }
     },
-    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
-  const onSubmit = async (data: any) => {
-    for (let index = 0; index < (data?.wines?.length || 0); index++) {
-      const wine = data.wines?.[index];
+  const onSubmit = useCallback(
+    async (data: any) => {
+      for (let index = 0; index < (data?.wines?.length || 0); index++) {
+        const wine = data.wines?.[index];
 
-      if ((wine?.quantity || 0) <= 0) {
-        setError(`wines.${index}.quantity`, {
-          type: "manual",
-          message: `Please enter a valid quantity for the wine`,
-        });
+        if ((wine?.quantity || 0) <= 0) {
+          setError(`wines.${index}.quantity`, {
+            type: "manual",
+            message: `Please enter a valid quantity for the wine`,
+          });
 
-        return;
+          return;
+        }
+
+        if (wine?.quantity > (wine?.qty || 0)) {
+          setError(`wines.${index}.quantity`, {
+            type: "manual",
+            message: `Wine quantity (${wine?.quantity}) must be less or equal with ${wine?.qty || 0}`,
+          });
+
+          return;
+        }
       }
 
-      if (wine?.quantity > (wine?.qty || 0)) {
-        setError(`wines.${index}.quantity`, {
-          type: "manual",
-          message: `Wine quantity (${wine?.quantity}) must be less or equal with ${wine?.qty || 0}`,
-        });
+      const subjectRecipe = filteredRecipes.filter(
+        ({ name }) => name === data.subjectRecipe?.name,
+      )[0];
 
-        return;
+      setIsSubmitting(true);
+
+      try {
+        await actions?.["bottle-a-wine"].exec(
+          user?.uid as string,
+          data,
+          subjectRecipe,
+        );
+      } finally {
+        setIsSubmitting(false);
       }
-    }
 
-    const subjectRecipe = filteredRecipes.filter(
-      ({ name }) => name === data.subjectRecipe?.name
-    )[0];
+      setFormData(data);
 
-    setIsSubmitting(true);
-
-    try {
-      await actions?.["bottle-a-wine"].exec(
-        user?.uid as string,
-        data,
-        subjectRecipe
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-
-    setFormData(data);
-
-    onBackClick?.();
-  };
+      onBackClick?.();
+    },
+    [filteredRecipes, onBackClick, setError, actions, user?.uid],
+  );
 
   useEffect(() => {
     const bottleWineActionSample: BottleWineAction = {
@@ -343,43 +319,35 @@ export default function BottleWineActionForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
-
       const hasGeneralErrors = hasKeyFromArray(
         ["executionDate", "wines"],
-        errors
+        errors,
       );
 
       if (hasGeneralErrors) setGeneralExpanded(true);
 
       const hasBottleSpecsErrors = hasKeyFromArray(
         ["bottleType", "bottleSize", "closureType"],
-        errors
+        errors,
       );
 
       if (hasBottleSpecsErrors) setBottleSpecsExpanded(true);
 
       const hasFinalLabErrors = hasKeyFromArray(
         ["alcohol", "sugar", "ph", "totalSO2", "freeSO2"],
-        errors
+        errors,
       );
 
       if (hasFinalLabErrors) setFinalLabExpanded(true);
 
       const hasQuantityLossesErrors = hasKeyFromArray(
         ["numberOfBottles", "losses"],
-        errors
+        errors,
       );
 
       if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
     }
   }, [errors]);
-
-  useEffect(() => {
-    if (formData) {
-      console.log("formData", formData);
-    }
-  }, [formData]);
 
   if (!formData) return null;
 
@@ -454,7 +422,7 @@ export default function BottleWineActionForm({
                       onChange={(date) => {
                         handleChange(
                           "executionDate",
-                          date ? Timestamp.fromDate(date.toDate()) : null
+                          date ? Timestamp.fromDate(date.toDate()) : null,
                         );
                       }}
                     />
@@ -595,7 +563,7 @@ export default function BottleWineActionForm({
                         (wine) =>
                           wine.rowType !== "group" &&
                           (wine?.qty || 0) > 0 &&
-                          !formData.wines?.some(({ id }) => id === wine.id)
+                          !formData.wines?.some(({ id }) => id === wine.id),
                       )}
                       value={[]}
                       getOptionLabel={(option) => option.name}
@@ -679,7 +647,7 @@ export default function BottleWineActionForm({
                                         ];
 
                                         updated[index].quantity = Number(
-                                          e.target.value
+                                          e.target.value,
                                         );
 
                                         handleChange("wines", updated);
@@ -696,7 +664,7 @@ export default function BottleWineActionForm({
                                     disabled={false}
                                     onClick={() => {
                                       const updated = formData.wines?.filter(
-                                        (wine) => wine.id !== id
+                                        (wine) => wine.id !== id,
                                       );
 
                                       handleChange("wines", updated);
@@ -718,13 +686,13 @@ export default function BottleWineActionForm({
                                       ?.message as string)}
                                 </Typography>
                               </Fragment>
-                            )
+                            ),
                           )}
                           <Typography variant="body2">
                             Quantity used:{" "}
                             {formData?.wines?.reduce(
                               (sum, wine) => (sum += wine?.quantity || 0),
-                              0
+                              0,
                             )}
                           </Typography>
                         </Stack>
@@ -748,7 +716,7 @@ export default function BottleWineActionForm({
                         teamMembers={teamMembers}
                         onChange={(value) => {
                           const responsible = teamMembers.find(
-                            ({ name }) => name === value
+                            ({ name }) => name === value,
                           );
 
                           handleChange("responsible", responsible);

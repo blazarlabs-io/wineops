@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export const useGetVineyardNotes = (
   uid: string,
   vineyard: Vineyard,
-  notes: Note[]
+  notes: Note[],
 ) => {
   const [vineyardNotes, setVineyardNotes] = useState<Note[] | null>(null);
 
@@ -24,15 +24,11 @@ export const useGetVineyardNotes = (
         .then((res: DbResponse) => {
           if (res.status === 200) {
             setVineyardNotes(res.data);
-            console.log("vineyardNotes", vineyardNotes);
             setVineyardNotes(res.data.reverse());
           } else {
-            console.log("Error loading notes");
           }
         })
-        .catch((error: DbResponse) => {
-          console.log("error", error);
-        });
+        .catch((error: DbResponse) => {});
     }
   }, [notes, uid, vineyard]);
 

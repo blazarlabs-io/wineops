@@ -74,7 +74,6 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
         const grapes: Grape[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No grapes found");
           setGrapes([]);
           return;
         }
@@ -89,26 +88,23 @@ export const GrapeProvider = ({ children }: IGrapeProvider) => {
         setGrapes(grapes);
       });
 
-      // * Lab Reports Realtime Updates
       const labReportsRef = collection(
         db,
         WINERY,
         user?.uid as string,
-        LAB_REPORTS
+        LAB_REPORTS,
       );
 
       unsubLabReports = onSnapshot(labReportsRef, (querySnapshot) => {
         const labReports: LabReport[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No lab reports found");
           setLabReports([]);
           return;
         }
 
         querySnapshot.forEach((doc) => {
           labReports.push(doc.data() as LabReport);
-          // sort reports by date
           labReports.sort((a, b) => {
             return (
               (b.date as Timestamp).toDate().getTime() -

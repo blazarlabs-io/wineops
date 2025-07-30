@@ -10,7 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
-export type StorageConditionsTableProps = {
+type StorageConditionsTableProps = {
   data: StorageCondition[];
 };
 
@@ -118,7 +118,7 @@ export default function StorageConditionsTable({
                     <Typography>{iotRoom}</Typography>
                   </TableCell>
                 </TableRow>
-              )
+              ),
             )
           )}
         </TableBody>

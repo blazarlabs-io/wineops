@@ -26,7 +26,6 @@ export const columns: ColDef[] = [
     field: "subjectOfAction",
     minWidth: 56,
     flex: 1,
-    // cellRenderer: RoleCellRenderer,
   },
   {
     headerName: "Priority",

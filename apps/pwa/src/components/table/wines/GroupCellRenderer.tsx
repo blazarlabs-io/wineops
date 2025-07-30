@@ -8,7 +8,7 @@ import { GrapeVariety } from "@/models/types/db";
 import { formatNumberWithUnit } from "@/utils/number-format";
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { value, data, node } = params;
 
@@ -21,7 +21,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     setExpanded(!node.expanded);
     node.setExpanded(!node.expanded);
     node.setRowHeight(
-      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT
+      node.expanded ? ROW_HEIGHT_EXPANDED_MUST : ROW_HEIGHT_DEFAULT,
     );
   }, [node]);
 
@@ -111,7 +111,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                           -{" "}
                           {formatNumberWithUnit(
                             grapeVarieties[0]?.percentage,
-                            "%"
+                            "%",
                           )}
                         </>
                       )}

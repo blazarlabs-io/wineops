@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bottle, Chemistry, ChemistryType } from "@/models/types/db";
 import {
   InputLabel,
@@ -11,7 +10,7 @@ import { useCallback } from "react";
 
 type LocalEntity = Chemistry | Bottle;
 
-export type AutocompleteWithTextFieldProps = {
+type AutocompleteWithTextFieldProps = {
   title?: string | null;
   key: any;
   label: any;
@@ -36,17 +35,16 @@ export default function AutocompleteWithTextField({
     (name: keyof LocalEntity, value: LocalEntity[keyof LocalEntity]) => {
       onValueChange(name, value);
     },
-    [onValueChange]
+    [onValueChange],
   );
 
   const handleInputChange = useCallback(
     (name: any, value: string) => {
       onTextChange(name, value);
     },
-    [onTextChange]
+    [onTextChange],
   );
 
-  console.log("AAAAAAA", value);
   return (
     <div className="flex flex-col gap-2 w-full">
       {title && (
@@ -60,10 +58,8 @@ export default function AutocompleteWithTextField({
           freeSolo
           options={Object.values(options)}
           value={value}
-          //   getOptionLabel={(option) => option.name }
           filterSelectedOptions
           onChange={(_event, newValue) => {
-            console.log("newValue", newValue);
             handleSelectChange(key, newValue as LocalEntity[keyof LocalEntity]);
           }}
           onInputChange={(_event, newInputValue) => {

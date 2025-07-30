@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
 export const InUseTodayCellRenderer = (
-  params: CustomCellRendererProps & { alignItems?: string }
+  params: CustomCellRendererProps & { alignItems?: string },
 ) => {
   const { value, node, data, alignItems } = params;
   const isGroup = node.group || data.rowType === "group";
@@ -12,7 +12,7 @@ export const InUseTodayCellRenderer = (
   const notifications = isGroup
     ? node?.aggData?.qty.filter(
         (qty: number, index: number) =>
-          (qty || 0) < (node?.aggData?.inUseToday[index] || 0)
+          (qty || 0) < (node?.aggData?.inUseToday[index] || 0),
       )?.length
     : 0;
 

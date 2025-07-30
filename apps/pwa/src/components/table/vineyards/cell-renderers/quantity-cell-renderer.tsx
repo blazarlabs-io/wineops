@@ -16,19 +16,13 @@ export const QuantityCellRenderer: FunctionComponent<
   const batches = node.data?.batches || [];
 
   const result = grapes.filter((item: Grape) =>
-    batches.some((b: ActionRelation) => b.id === item.id)
+    batches.some((b: ActionRelation) => b.id === item.id),
   );
-
-  // const batch = grapes.filter((grape) => {
-  //   console.log("grape", grape.id, node.data);
-  //   if (!node.data?.batch?.id || !grape) return null;
-  //   if (grape?.id === node.data?.batch?.id) return grape;
-  // });
 
   const actualArr = result.map((item) => item.metrics?.actual || 0); //result[0]?.metrics?.actual || 0;
   const actual = actualArr.reduce(
     (accumulator, currentValue) => accumulator + currentValue,
-    0
+    0,
   );
   const supply = 0;
   const demand = 0;
@@ -48,7 +42,7 @@ export const QuantityCellRenderer: FunctionComponent<
         status: data?.status,
         unit: grape?.metrics?.unit,
       };
-    })
+    }),
   );
 
   return (

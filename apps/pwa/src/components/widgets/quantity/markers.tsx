@@ -15,7 +15,7 @@ export default function Markers({ maxValue, markers }: MarkersProps) {
       {markers.map(
         ({ type, value, color, textColor, secondaryDarkColor }, index) => {
           const percentage = Math.round(
-            ((value - (markers[index - 1]?.value || 0)) / maxValue) * 100
+            ((value - (markers[index - 1]?.value || 0)) / maxValue) * 100,
           );
 
           const isLowerDemand = type === Metric.DEMAND && value <= actual;
@@ -34,7 +34,7 @@ export default function Markers({ maxValue, markers }: MarkersProps) {
               {formatNumberWithLowerCaseUnitAndSpace(value, "T", 1)}
             </div>
           );
-        }
+        },
       )}
     </div>
   );

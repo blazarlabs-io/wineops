@@ -1,4 +1,4 @@
-export type OverlayGeometry =
+type OverlayGeometry =
   | google.maps.Marker
   | google.maps.Polygon
   | google.maps.Polyline
@@ -31,17 +31,17 @@ export interface State {
 }
 
 export enum DrawingActionKind {
-  SET_OVERLAY = 'SET_OVERLAY',
-  UPDATE_OVERLAYS = 'UPDATE_OVERLAYS',
-  UNDO = 'UNDO',
-  REDO = 'REDO'
+  SET_OVERLAY = "SET_OVERLAY",
+  UPDATE_OVERLAYS = "UPDATE_OVERLAYS",
+  UNDO = "UNDO",
+  REDO = "REDO",
 }
 
-export interface ActionWithTypeOnly {
+interface ActionWithTypeOnly {
   type: Exclude<DrawingActionKind, DrawingActionKind.SET_OVERLAY>;
 }
 
-export interface SetOverlayAction {
+interface SetOverlayAction {
   type: DrawingActionKind.SET_OVERLAY;
   payload: DrawResult;
 }
@@ -49,31 +49,31 @@ export interface SetOverlayAction {
 export type Action = ActionWithTypeOnly | SetOverlayAction;
 
 export function isCircle(
-  overlay: OverlayGeometry
+  overlay: OverlayGeometry,
 ): overlay is google.maps.Circle {
   return (overlay as google.maps.Circle).getCenter !== undefined;
 }
 
 export function isMarker(
-  overlay: OverlayGeometry
+  overlay: OverlayGeometry,
 ): overlay is google.maps.Marker {
   return (overlay as google.maps.Marker).getPosition !== undefined;
 }
 
 export function isPolygon(
-  overlay: OverlayGeometry
+  overlay: OverlayGeometry,
 ): overlay is google.maps.Polygon {
   return (overlay as google.maps.Polygon).getPath !== undefined;
 }
 
 export function isPolyline(
-  overlay: OverlayGeometry
+  overlay: OverlayGeometry,
 ): overlay is google.maps.Polyline {
   return (overlay as google.maps.Polyline).getPath !== undefined;
 }
 
 export function isRectangle(
-  overlay: OverlayGeometry
+  overlay: OverlayGeometry,
 ): overlay is google.maps.Rectangle {
   return (overlay as google.maps.Rectangle).getBounds !== undefined;
 }

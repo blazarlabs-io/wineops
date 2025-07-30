@@ -5,7 +5,6 @@ export const useGetGrapesNames = (grapes: Grape[]) => {
   const [grapesNames, setGrapesNames] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("grapes", grapes);
     if (!grapes || grapes.length === 0 || grapes === undefined) return;
     const fVineyards = grapes.filter((grape) => grape.rowType === "item");
 

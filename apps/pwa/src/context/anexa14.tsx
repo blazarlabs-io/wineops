@@ -47,14 +47,13 @@ export const Anexa14Provider = ({ children }: IAnexa14Provider) => {
         db,
         WINERY,
         user?.uid as string,
-        ANEXA14
+        ANEXA14,
       );
 
       unsubAnexa14List = onSnapshot(Anexa14ListRef, (querySnapshot) => {
         const anexa14List: Anexa14Data[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No anexa 14 found");
           setAnexa14List([]);
           return;
         }

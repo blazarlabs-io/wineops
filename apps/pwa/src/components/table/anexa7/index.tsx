@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -58,7 +57,7 @@ const Anexa7Table = () => {
         foregroundColor: "#FFFFFFCC",
         browserColorScheme: "dark",
       },
-      "dark"
+      "dark",
     )
     .withParams(
       {
@@ -66,7 +65,7 @@ const Anexa7Table = () => {
         foregroundColor: "#361008CC",
         browserColorScheme: "light",
       },
-      "light"
+      "light",
     );
 
   const defaultColDef = useMemo<ColDef>(() => {
@@ -82,7 +81,7 @@ const Anexa7Table = () => {
     (data: any) => {
       setSelected(data.api.getSelectedRows(), "anexa7");
     },
-    [setSelected]
+    [setSelected],
   );
 
   useEffect(() => {
@@ -93,12 +92,12 @@ const Anexa7Table = () => {
     (user: TeamMember["id"] | TeamMember["email"]) =>
       teamMembers.find(
         ({ id, email }) =>
-          user === id || user?.toLowerCase() === email?.toLowerCase()
+          user === id || user?.toLowerCase() === email?.toLowerCase(),
       ) ||
       (user.includes("@")
         ? { email: user.includes("@") ? user : "" }
         : { id: user }),
-    [teamMembers]
+    [teamMembers],
   );
 
   const { selected, entityName } = useSelectedEntitiesStore((state) => state);
@@ -110,7 +109,7 @@ const Anexa7Table = () => {
         createdByUser: createdBy ? getUser(createdBy) : "",
         modifiedByUser: modifiedBy ? getUser(modifiedBy) : "",
       })),
-    [anexa7List, getUser]
+    [anexa7List, getUser],
   );
 
   const selectedIds = useMemo(() => selected.map(({ id }) => id), [selected]);
@@ -127,7 +126,7 @@ const Anexa7Table = () => {
         }
       });
     },
-    [entityName, selectedIds]
+    [entityName, selectedIds],
   );
 
   useEffect(() => {

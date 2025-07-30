@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef, ColGroupDef } from "ag-grid-enterprise";
 import { Vessel, Wine } from "@/models/types/db";
 import { DefaultCellRenderer } from "../DefaultCellRenderer";

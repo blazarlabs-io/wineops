@@ -10,17 +10,14 @@ export default function VineyardFormDrawer() {
   const [nameError, setNameError] = useState<boolean>(false);
 
   const handleClick = () => {
-    console.log("clicked");
     setClicked(true);
   };
 
   const handleOnSave = (data: Vineyard) => {
-    console.log("handleOnSave", data);
     setClicked(false);
   };
 
   const handleNameError = (isError: boolean) => {
-    console.log("handleNameError");
     setNameError(isError);
   };
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -93,32 +92,20 @@ export default function BottleWineForm() {
   const { consumables } = useConsumable();
 
   const bottleTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.BOTTLE
+    ({ category }) => category === ConsumableCategory.BOTTLE,
   );
   const closureTypes = [
     { id: "0", name: "Screw cap" },
     ...consumables?.filter(
-      ({ category }) => category === ConsumableCategory.CORK
+      ({ category }) => category === ConsumableCategory.CORK,
     ),
   ] as Consumable[];
   const capsuleTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.CAPSULE
+    ({ category }) => category === ConsumableCategory.CAPSULE,
   );
   const labelTypes = consumables?.filter(
-    ({ category }) => category === ConsumableCategory.LABEL
+    ({ category }) => category === ConsumableCategory.LABEL,
   );
-
-  //   const selectedWines = useSelectedEntitiesStore(
-  //     ({ selected }) => selected
-  //   ) as Wine[];
-
-  //   const updatedSelectedWines = useMemo(
-  //     () =>
-  //       selectedWines.map(
-  //         (selected) => wines.find((g) => g.id === selected.id) ?? selected
-  //       ),
-  //     [wines, selectedWines]
-  //   );
 
   const { teamMembers } = useWinery();
   const { user } = useAuth();
@@ -147,11 +134,6 @@ export default function BottleWineForm() {
       setValue(name, value);
       setFormData((prev) => ({ ...prev, [name]: value }));
 
-      console.log("\n\n\n\n+++++++++++++++++++++++++++++++++++");
-      console.log(name);
-      console.log(value);
-      console.log("+++++++++++++++++++++++++++++++++++\n\n\n\n");
-
       if (name === "subjectRecipe") {
         setValue("subjectRecipe", value);
         formData.subjectRecipe = value;
@@ -168,19 +150,14 @@ export default function BottleWineForm() {
           [name]: value,
         }));
       } else {
-        // const path = name.split(".");
-        // const newFormData = setNestedValue(formData, path, value);
-        // setFormData(newFormData as Bottle);
         setValue(name, value);
         setFormData((prev) => ({
           ...(prev as Bottle),
           [name]: value,
         }));
       }
-
-      // setValue(name, value);
     },
-    [setValue]
+    [setValue],
   );
 
   const handleNewUpload = useCallback(
@@ -199,7 +176,7 @@ export default function BottleWineForm() {
 
       setValue(name, filesUrls);
     },
-    [formData.supportingDocuments, setValue]
+    [formData.supportingDocuments, setValue],
   );
 
   const handleFile = useCallback(
@@ -246,7 +223,6 @@ export default function BottleWineForm() {
         (complete: string) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(complete);
           handleNewUpload("supportingDocuments", complete, file);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
@@ -254,10 +230,9 @@ export default function BottleWineForm() {
         (error: Error) => {
           setIsUploading(false);
           setUploadProgress(0);
-          console.log(error);
 
           if (fileInputRef.current) fileInputRef.current.value = "";
-        }
+        },
       );
     },
     [
@@ -266,7 +241,7 @@ export default function BottleWineForm() {
       handleNewUpload,
       setError,
       user?.uid,
-    ]
+    ],
   );
 
   const handleDeleteFile = useCallback(
@@ -285,24 +260,20 @@ export default function BottleWineForm() {
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
         "bottleWine",
-        name
+        name,
       );
 
       if (deleteFileRes.status == 200) {
-        console.log("File deleted");
         if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
-        console.log("Error deleting file");
       }
     },
-    [clearErrors, formData.supportingDocuments, setValue, user?.uid]
+    [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
   const onSubmit = async (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
 
     for (let index = 0; index < (data?.wines?.length || 0); index++) {
       const wine = data.wines?.[index];
@@ -326,25 +297,14 @@ export default function BottleWineForm() {
       }
     }
 
-    // const subjectRecipe = filteredRecipes.filter(
-    //   ({ name }) => name === data.subjectRecipe.name
-    // )[0];
-
     setIsSubmitting(true);
 
     try {
-      //   await actions?.["bottle-a-wine"].exec(
-      //     user?.uid as string,
-      //     data,
-      //     subjectRecipe
-      //   );
       const res = await db.bottle.create(user?.uid, data);
 
       if (res.status == 200) {
-        console.log("Bottle created");
         enqueueSnackbar("Bottle created successfully", { variant: "success" });
       } else {
-        console.log("Error creating bottle");
         enqueueSnackbar("Error creating bottle", { variant: "error" });
       }
     } finally {
@@ -358,14 +318,6 @@ export default function BottleWineForm() {
   const existingBottle = bottles?.find(({ id }) => id === selected[0]?.id);
 
   useEffect(() => {
-    console.log("\n\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    console.log("BOTTLES", bottles);
-    console.log("SELECTED", selected);
-    console.log("EXISTING BOTTLE", existingBottle);
-    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n\n");
-
-    console.log("EXISTING BOTTLE", selected, existingBottle);
-
     if (existingBottle && existingBottle !== undefined) {
       reset(existingBottle);
       setFormData(() => existingBottle);
@@ -398,32 +350,30 @@ export default function BottleWineForm() {
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
-
       const hasGeneralErrors = hasKeyFromArray(
         ["executionDate", "wines"],
-        errors
+        errors,
       );
 
       if (hasGeneralErrors) setGeneralExpanded(true);
 
       const hasBottleSpecsErrors = hasKeyFromArray(
         ["bottleType", "bottleSize", "closureType"],
-        errors
+        errors,
       );
 
       if (hasBottleSpecsErrors) setBottleSpecsExpanded(true);
 
       const hasFinalLabErrors = hasKeyFromArray(
         ["alcohol", "sugar", "ph", "totalSO2", "freeSO2"],
-        errors
+        errors,
       );
 
       if (hasFinalLabErrors) setFinalLabExpanded(true);
 
       const hasQuantityLossesErrors = hasKeyFromArray(
         ["numberOfBottles", "losses"],
-        errors
+        errors,
       );
 
       if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
@@ -451,13 +401,10 @@ export default function BottleWineForm() {
           }}
         >
           <div className="flex flex-col gap-4 w-full">
-            {/* * ID - HIDDEN */}
             <div className="hidden">
-              {/* <Label htmlFor="id">Id</Label> */}
               <FormControl>
                 <Input
                   id={formData.id as VineyardGlobalAction["id"]}
-                  // value={formData.id}
                   type="hidden"
                   {...register("id")}
                 />
@@ -505,7 +452,7 @@ export default function BottleWineForm() {
                       onChange={(date) => {
                         handleChange(
                           "executionDate",
-                          date ? Timestamp.fromDate(date.toDate()) : null
+                          date ? Timestamp.fromDate(date.toDate()) : null,
                         );
                       }}
                     />
@@ -582,64 +529,17 @@ export default function BottleWineForm() {
                     )}
                   </div>
 
-                  {/* TODO: Start here */}
                   <AutocompleteWithTextField
                     key="subjectRecipe"
                     label="Wine Recipe"
                     errors={errors}
                     value={formData?.subjectRecipe || ""}
                     options={[]}
-                    onValueChange={(name: any, value: any) => {
-                      console.log("subjectRecipe", name, value);
-                      // handleChange(name, value);
-                    }}
+                    onValueChange={(name: any, value: any) => {}}
                     onTextChange={(name: any, value: any) => {
-                      console.log("subjectRecipe", name, value);
                       handleChange("subjectRecipe", value);
                     }}
                   />
-
-                  {/* <div className="flex flex-col gap-2">
-                    <Autocomplete<Recipe, false, false, false>
-                      noOptionsText="No recipes available"
-                      options={[]}
-                      value={(formData?.subjectRecipe as Recipe) || null}
-                      getOptionLabel={(option) => option.name}
-                      filterSelectedOptions
-                      onChange={(_event, newValue) => {
-                        if (!newValue) return;
-
-                        handleChange("subjectRecipe", {
-                          id: newValue.id,
-                          name: newValue.name,
-                        });
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label={
-                            params.inputProps.value ? "Recipe" : "Select recipe"
-                          }
-                        />
-                      )}
-                    />
-
-                    {((errors?.subjectRecipe as any)?.id ||
-                      (errors?.subjectRecipe as any)?.name) && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        className="mt-1"
-                      >
-                        {
-                          ((errors?.subjectRecipe as any)?.id?.message ||
-                            (errors?.subjectRecipe as any)?.name
-                              ?.message) as string
-                        }
-                      </Typography>
-                    )}
-                  </div> */}
 
                   <div className="flex flex-col gap-2">
                     <Autocomplete
@@ -649,7 +549,7 @@ export default function BottleWineForm() {
                         (wine) =>
                           wine.rowType !== "group" &&
                           (wine?.qty || 0) > 0 &&
-                          !formData.wines?.some(({ id }) => id === wine.id)
+                          !formData.wines?.some(({ id }) => id === wine.id),
                       )}
                       value={[]}
                       getOptionLabel={(option) => option.name}
@@ -733,7 +633,7 @@ export default function BottleWineForm() {
                                         ];
 
                                         updated[index].quantity = Number(
-                                          e.target.value
+                                          e.target.value,
                                         );
 
                                         handleChange("wines", updated);
@@ -750,7 +650,7 @@ export default function BottleWineForm() {
                                     disabled={false}
                                     onClick={() => {
                                       const updated = formData.wines?.filter(
-                                        (wine) => wine.id !== id
+                                        (wine) => wine.id !== id,
                                       );
 
                                       handleChange("wines", updated);
@@ -772,13 +672,13 @@ export default function BottleWineForm() {
                                       ?.message as string)}
                                 </Typography>
                               </Fragment>
-                            )
+                            ),
                           )}
                           <Typography variant="body2">
                             Quantity used:{" "}
                             {formData?.wines?.reduce(
                               (sum, wine) => (sum += wine?.quantity || 0),
-                              0
+                              0,
                             )}
                           </Typography>
                         </Stack>
@@ -802,7 +702,7 @@ export default function BottleWineForm() {
                         teamMembers={teamMembers}
                         onChange={(value: any) => {
                           const responsible = teamMembers.find(({ name }) =>
-                            value.startsWith(name)
+                            value.startsWith(name),
                           );
                           handleChange("responsible", responsible);
                         }}
@@ -1137,19 +1037,14 @@ export default function BottleWineForm() {
               <AccordionDetails>
                 <Stack gap={2}>
                   <AutocompleteWithTextField
-                    //  id="packagingType"
                     key="packagingType"
                     label="Packaging Type"
                     errors={errors}
                     options={Object.values(PackagingType).map((name) => name)}
                     onValueChange={(name, value) => {
-                      // handleChange(name, value);
                       handleChange("packagingType", value);
                     }}
-                    onTextChange={(name, value) => {
-                      console.log("onTextChange", name, value);
-                      // handleChange("packagingType", value);
-                    }}
+                    onTextChange={(name, value) => {}}
                     value={formData?.packagingType || ""}
                   />
 

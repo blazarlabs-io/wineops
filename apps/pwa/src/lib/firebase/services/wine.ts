@@ -17,8 +17,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -47,8 +45,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -68,8 +64,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -91,7 +85,6 @@ const wine = {
 
         const docRef = doc(fdb, WINERY, uid, WINES, id);
 
-        // Empty groups
         if (rowType === "group" && (!group || group.length === 0)) {
           batch.delete(docRef);
         } else {
@@ -107,8 +100,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error updating group:", error);
-
       return {
         data: null,
         error,
@@ -127,8 +118,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-      console.log("error", error);
-
       return {
         data: null,
         error,
@@ -154,8 +143,6 @@ const wine = {
         status: 200,
       };
     } catch (error) {
-      console.error("Error deleting many:", error);
-
       return {
         data: null,
         error,

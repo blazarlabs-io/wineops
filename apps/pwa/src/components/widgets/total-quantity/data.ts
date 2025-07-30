@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EntityStatus } from "@/models/types/dashboard";
 import { MetricsOutput, MetricsOutput2, MetricsTotal } from "./types";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
@@ -157,7 +156,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         def = 0,
         ar = 0,
         co = 0,
-      }
+      },
     ) => {
       const barPercent =
         (totu || 0) > 0
@@ -181,16 +180,16 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
           : 0;
 
       const stripedGreenPercent = Number.parseFloat(
-        ((stripedGreen * barPercent) / 100).toFixed(4)
+        ((stripedGreen * barPercent) / 100).toFixed(4),
       );
       const stripedRedPercent = Number.parseFloat(
-        ((stripedRed * barPercent) / 100).toFixed(4)
+        ((stripedRed * barPercent) / 100).toFixed(4),
       );
       const stripedGreyPercent = Number.parseFloat(
-        ((stripedGrey * barPercent) / 100).toFixed(4)
+        ((stripedGrey * barPercent) / 100).toFixed(4),
       );
       const whitePercent = Number.parseFloat(
-        (((!IS_ENDED(status) ? white : 0) * barPercent) / 100).toFixed(4)
+        (((!IS_ENDED(status) ? white : 0) * barPercent) / 100).toFixed(4),
       );
 
       return [
@@ -216,7 +215,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         },
       ];
     },
-    [] as MetricsOutput2[]
+    [] as MetricsOutput2[],
   );
 
   const normalized3 = normalized2.reduce(
@@ -235,30 +234,30 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         def = 0,
         ar = 0,
         co = 0,
-      }
+      },
     ) => {
       return {
         barPercent,
         greenPercent: Number.parseFloat(
-          ((acc?.greenPercent || 0) + greenPercent).toFixed(4)
+          ((acc?.greenPercent || 0) + greenPercent).toFixed(4),
         ),
         redPercent: Number.parseFloat(
-          ((acc?.redPercent || 0) + redPercent).toFixed(4)
+          ((acc?.redPercent || 0) + redPercent).toFixed(4),
         ),
         greyPercent: Number.parseFloat(
-          ((acc?.greyPercent || 0) + greyPercent).toFixed(4)
+          ((acc?.greyPercent || 0) + greyPercent).toFixed(4),
         ),
         stripedGreenPercent: Number.parseFloat(
-          ((acc?.stripedGreenPercent || 0) + stripedGreenPercent).toFixed(4)
+          ((acc?.stripedGreenPercent || 0) + stripedGreenPercent).toFixed(4),
         ),
         stripedRedPercent: Number.parseFloat(
-          ((acc?.stripedRedPercent || 0) + stripedRedPercent).toFixed(4)
+          ((acc?.stripedRedPercent || 0) + stripedRedPercent).toFixed(4),
         ),
         stripedGreyPercent: Number.parseFloat(
-          ((acc?.stripedGreyPercent || 0) + stripedGreyPercent).toFixed(4)
+          ((acc?.stripedGreyPercent || 0) + stripedGreyPercent).toFixed(4),
         ),
         whitePercent: Number.parseFloat(
-          ((acc?.whitePercent || 0) + whitePercent).toFixed(4)
+          ((acc?.whitePercent || 0) + whitePercent).toFixed(4),
         ),
 
         sur: (acc?.sur || 0) + sur,
@@ -268,7 +267,7 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
         totu,
       };
     },
-    {} as MetricsOutput2
+    {} as MetricsOutput2,
   );
 
   const {
@@ -465,11 +464,6 @@ export const useChartOptions = (metrics: MetricsTotal[]) => {
           thickness: 50,
         },
       ],
-      /*overlays: {
-      noData: {
-        text: "",
-      },
-    },*/
     },
   };
 };

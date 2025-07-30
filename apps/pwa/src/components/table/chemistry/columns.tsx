@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
 import { Chemistry } from "@/models/types/db";
 import { DefaultCellRenderer } from "../DefaultCellRenderer";

@@ -10,7 +10,7 @@ import MustInfoContent from "./must-info-content";
 import QtyContent from "./qty-content";
 import TasksView from "../components/tasks-view";
 
-export type MustDetailsWidgetProps = {
+type MustDetailsWidgetProps = {
   must: Must;
 };
 

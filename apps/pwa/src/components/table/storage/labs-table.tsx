@@ -10,7 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
-export type LabsTableProps = {
+type LabsTableProps = {
   data: MustLabData[];
 };
 
@@ -123,7 +123,7 @@ export default function LabsTable({ data }: LabsTableProps) {
                     <Typography>{labTechnicianName}</Typography>
                   </TableCell>
                 </TableRow>
-              )
+              ),
             )
           )}
         </TableBody>

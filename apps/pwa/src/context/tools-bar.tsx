@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { AgGridReact } from "ag-grid-react";
@@ -50,12 +49,10 @@ export const ToolsbarProvider = ({ children }: IQuickDrawerProvider) => {
   };
 
   const onNext = useCallback(() => {
-    console.log("NEXT", gridRef);
     gridRef?.current?.api.findNext();
   }, [gridRef]);
 
   const onPrevious = useCallback(() => {
-    console.log("PREVIOUS", gridRef);
     gridRef?.current?.api.findPrevious();
   }, [gridRef]);
 

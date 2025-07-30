@@ -22,12 +22,12 @@ export default function ConsumablesTable() {
             inUseToday: reversedUsage.find(({ inUseToday }) => inUseToday)
               ?.inUseToday,
             inUseThisWeek: reversedUsage.find(
-              ({ inUseThisWeek }) => inUseThisWeek
+              ({ inUseThisWeek }) => inUseThisWeek,
             )?.inUseThisWeek,
           }),
         };
       }),
-    [consumables]
+    [consumables],
   );
 
   return (

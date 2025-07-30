@@ -10,7 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
-export type TasksTableProps = {
+type TasksTableProps = {
   data: Task[];
 };
 
@@ -98,7 +98,7 @@ export default function TasksTable({ data }: TasksTableProps) {
                     </Typography>
                   </TableCell>
                 </TableRow>
-              )
+              ),
             )
           )}
         </TableBody>

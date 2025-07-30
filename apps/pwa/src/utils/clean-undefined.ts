@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export function cleanUndefined(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map(cleanUndefined).filter((value) => value !== undefined);

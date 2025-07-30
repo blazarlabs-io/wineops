@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { accounts } from "@/data/account-data-sample";
 import {
   Avatar,

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import QuickActionsIcon from "@/components/icons/quick-actions-icon";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { useToolsbar } from "@/context/tools-bar";
@@ -78,7 +77,7 @@ type GroupByButtons = {
   columnName: GroupBy;
 };
 
-export type ToolsBarProps = {
+type ToolsBarProps = {
   buttons?: Partial<Record<ButtonType, ButtonProps>>;
   groupByButtons?: GroupByButtons[];
   entityName?: EntityName;
@@ -94,7 +93,6 @@ export default function ToolsBar(props: ToolsBarProps) {
   const { updateSearchValue, activeMatchNum, onNext, onPrevious } =
     useToolsbar();
 
-  // const setSelected = useSelectedEntitiesStore((state) => state.setSelected);
   const setPinned = usePinnedEntitiesStore((state) => state.setPinned);
 
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
@@ -122,9 +120,6 @@ export default function ToolsBar(props: ToolsBarProps) {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openPivot = Boolean(anchorEl);
-
-  // const [findSearchValue, setFindSearchValue] = useState<string>("e");
-  // const [activeMatchNum, setActiveMatchNum] = useState<string>();
 
   const next = useCallback(() => {
     onNext();
@@ -170,7 +165,6 @@ export default function ToolsBar(props: ToolsBarProps) {
     }
 
     setPinned(result, props.entityName);
-    // setSelected([]);
   }, [pinned, pinningState, props.entityName, selected, setPinned]);
 
   const handleOpenSearchBox = () => {
@@ -329,24 +323,6 @@ export default function ToolsBar(props: ToolsBarProps) {
             alignItems="center"
             justifyContent="flex-end"
           >
-            {/*  <IconButton
-              color="inherit"
-              aria-label="filter"
-              onClick={handleFilters}
-              className="ml-auto"
-              disabled={false}
-            >
-              <Tune />
-            </IconButton>
-            <IconButton
-              color="inherit"
-              aria-label="filter"
-              onClick={() => {}}
-              className=""
-              disabled
-            >
-              <SwapVert />
-            </IconButton> */}
             <div className="flex gap-2 items-center w-full">
               <IconButton
                 color="inherit"
@@ -395,7 +371,6 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              // edge="end"
               onClick={() => handleOpenDrawer("tasks")}
               className=""
             >
@@ -404,7 +379,6 @@ export default function ToolsBar(props: ToolsBarProps) {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              // edge="end"
               onClick={() => handleOpenDrawer("actions")}
               style={{
                 backgroundColor: isDarkMode ? "transparent" : "#333",

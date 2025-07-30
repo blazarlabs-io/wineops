@@ -32,7 +32,7 @@ export default function GrapesTable() {
           },
         }),
       })),
-    [grapes]
+    [grapes],
   );
 
   return (

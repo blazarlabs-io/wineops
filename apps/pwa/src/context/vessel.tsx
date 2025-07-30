@@ -49,7 +49,6 @@ export const VesselProvider = ({ children }: IVesselProvider) => {
         const vessels: Vessel[] = [];
 
         if (querySnapshot.empty) {
-          console.log("No vessels found");
           setVessels([]);
           return;
         }

@@ -10,10 +10,8 @@ import {
 export const bottleWineAction = async (
   uid: string,
   actionData: BottleWineAction,
-  recipe: Recipe
+  recipe: Recipe,
 ) => {
-  console.log("BottleWineAction", uid, actionData, recipe);
-
   const actionRes = await db.action.create(uid, actionData);
 
   if (actionRes.status === 200) {
@@ -68,7 +66,6 @@ export const bottleWineAction = async (
     ...otherData,
   };
 
-  console.log("NEW BOTTLE COLLECTION", newCollection);
   const bottleRes = await db.bottle.create(uid, newCollection);
 
   if (bottleRes.status === 200) {

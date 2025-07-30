@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { VineyardGlobalAction } from "@/models/types/actions";
@@ -25,7 +24,7 @@ import { Timestamp } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export type CreateTaskFormProps = {
+type CreateTaskFormProps = {
   teamMembers: TeamMember[];
   uid: string;
   onDataSubmit: (data: any) => void;
@@ -58,14 +57,12 @@ export default function CreateTaskForm({
       }));
       setValue(name, value);
     },
-    [setValue]
+    [setValue],
   );
 
   const onSubmit = (data: any, e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log("SUBMIT", data);
-    console.log("ERRORS:", errors);
     onDataSubmit(data);
     setFormData(data);
   };
@@ -73,7 +70,6 @@ export default function CreateTaskForm({
   useEffect(() => {
     if (teamMembers) {
       const member = teamMembers.filter((v) => v.id === uid)[0];
-      console.log("MEMBER", member, uid);
       const newTask: Task = {
         id: Date.now().toString(),
         title: "",
@@ -92,7 +88,6 @@ export default function CreateTaskForm({
 
   useEffect(() => {
     if (errors) {
-      console.log("ERRORS", errors);
     }
   }, [errors]);
 
@@ -102,7 +97,6 @@ export default function CreateTaskForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-              {/* * ID - HIDDEN */}
               <div className="hidden">
                 <FormControl>
                   <Input
@@ -116,7 +110,6 @@ export default function CreateTaskForm({
 
               <div className="flex flex-col w-full">
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-                  {/* * TITLE */}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -127,7 +120,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * DESCRIPTION */}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextareaAutosize
@@ -143,7 +136,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * ASSIGNED TO   */}
+
                   <div className="">
                     <FormControl fullWidth>
                       <InputLabel id="assignedTo.name">Assigned To</InputLabel>
@@ -155,10 +148,9 @@ export default function CreateTaskForm({
                         label="Assigned To"
                         variant="outlined"
                         value={(formData?.assignedTo?.name as string) || ""}
-                        // {...register("assignedTo")}
                         onChange={(e) => {
                           const member = teamMembers.filter(
-                            (v) => v.id === e.target.value
+                            (v) => v.id === e.target.value,
                           )[0];
 
                           handleChange("assignedTo.name", member.name);
@@ -168,11 +160,11 @@ export default function CreateTaskForm({
                           handleChange("assignedTo.avatar", member.avatar);
                           handleChange(
                             "assignedTo.department",
-                            member.department
+                            member.department,
                           );
                           handleChange(
                             "assignedTo.contactPhone",
-                            member.contactPhone
+                            member.contactPhone,
                           );
                         }}
                       >
@@ -184,7 +176,7 @@ export default function CreateTaskForm({
                       </Select>
                     </FormControl>
                   </div>
-                  {/* * DURATION */}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -196,9 +188,9 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * SUBJECT OF ACTION */}
+
                   <Typography variant="body1">Subject of Action</Typography>
-                  {/* * DASHBOARD */}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -209,7 +201,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * OBJECT */}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -220,7 +212,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {/* * PRIORITY  */}
+
                   <div className="">
                     <FormControl fullWidth>
                       <InputLabel id="assignedTo">Priority</InputLabel>
@@ -239,7 +231,7 @@ export default function CreateTaskForm({
                       </Select>
                     </FormControl>
                   </div>
-                  {/* * START DATE */}
+
                   <div className="flex flex-col gap-2">
                     <DatePicker
                       label="Start Date"
@@ -253,12 +245,12 @@ export default function CreateTaskForm({
                           "startDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : null
+                            : null,
                         )
                       }
                     />
                   </div>
-                  {/* * DUE DATE */}
+
                   <div className="flex flex-col gap-2">
                     <DatePicker
                       label="Due Date"
@@ -272,7 +264,7 @@ export default function CreateTaskForm({
                           "dueDate",
                           newValue
                             ? Timestamp.fromDate(newValue.toDate())
-                            : null
+                            : null,
                         )
                       }
                     />

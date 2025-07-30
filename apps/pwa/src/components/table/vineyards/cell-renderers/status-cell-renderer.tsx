@@ -16,10 +16,10 @@ import { enqueueSnackbar } from "notistack";
 import { useCallback, useState, type FunctionComponent } from "react";
 
 export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
-  params
+  params,
 ) => {
   const { vineyardStatuses } = useSortVineyardStatuses(
-    params?.node?.aggData?.status
+    params?.node?.aggData?.status,
   );
 
   const sortedStatuses = Object.values(VineyardStatus).reduce(
@@ -33,7 +33,7 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = (
 
       return acc;
     },
-    [] as unknown as Array<SortedVineyardStatus>
+    [] as unknown as Array<SortedVineyardStatus>,
   );
 
   const { user } = useAuth();
