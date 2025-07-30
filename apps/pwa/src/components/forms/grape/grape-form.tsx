@@ -212,8 +212,9 @@ export default function GrapeForm() {
     }
 
     const existingBatchId = grapes?.some(
-      ({ name, group, rowType }) =>
-        (rowType === "item" &&
+      ({ id, name, group, rowType }) =>
+        (id !== data.id &&
+          rowType === "item" &&
           name.trim().toLowerCase() === data.name.trim().toLowerCase()) ||
         (rowType !== "item" &&
           group?.[0]?.trim().toLowerCase() === data.name.trim().toLowerCase()),
