@@ -84,91 +84,94 @@ export default function GrapeProcessingActionForm({
     [setValue],
   );
 
-  const onSubmit = useCallback(async (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const onSubmit = useCallback(
+    async (data: any, e: any) => {
+      e.stopPropagation();
+      e.preventDefault();
 
-    const totalPressPercentage = (data?.pressPercentage ?? []).reduce(
-      (sum: number, { newPressPercentage = 0 }) => sum + newPressPercentage,
-      0,
-    );
+      const totalPressPercentage = (data?.pressPercentage ?? []).reduce(
+        (sum: number, { newPressPercentage = 0 }) => sum + newPressPercentage,
+        0,
+      );
 
-    if (totalPressPercentage !== 100) {
-      setError(`pressPercentage`, {
-        type: "manual",
-        message: `Total Press percentage % (${totalPressPercentage}) must be equal with 100%`,
-      });
-
-      return;
-    }
-
-    (data?.pressPercentage || []).forEach(
-      (item: PressPercentage, index: number) => {
-        const totalVesselsQty = (item.vessels ?? []).reduce(
-          (sum: number, { qty = 0 }) => sum + qty,
-          0,
-        );
-
-        if ((item?.inputQuantity || 0) === 0) {
-          setError(`pressPercentage.${index}.inputQuantity`, {
-            type: "manual",
-            message: `Please enter a valid number for the must quantity`,
-          });
-
-          return;
-        }
-
-        if (totalVesselsQty !== (item?.inputQuantity || 0)) {
-          setError(`pressPercentage.${index}.vessels`, {
-            type: "manual",
-            message: `Total vessels quantity (${totalVesselsQty}) must be equal with must quantity (${item.inputQuantity})`,
-          });
-
-          return;
-        }
+      if (totalPressPercentage !== 100) {
+        setError(`pressPercentage`, {
+          type: "manual",
+          message: `Total Press percentage % (${totalPressPercentage}) must be equal with 100%`,
+        });
 
         return;
-      },
-    );
+      }
 
-    const subjectGrape = grapes.find((g) => g?.name === data?.batchId);
+      (data?.pressPercentage || []).forEach(
+        (item: PressPercentage, index: number) => {
+          const totalVesselsQty = (item.vessels ?? []).reduce(
+            (sum: number, { qty = 0 }) => sum + qty,
+            0,
+          );
 
-    const grapeActual = subjectGrape?.metrics?.actual || 0;
+          if ((item?.inputQuantity || 0) === 0) {
+            setError(`pressPercentage.${index}.inputQuantity`, {
+              type: "manual",
+              message: `Please enter a valid number for the must quantity`,
+            });
 
-    if (grapeActual <= 0) {
-      setError(`quantity`, {
-        type: "manual",
-        message: `Batch quantity (${subjectGrape?.metrics?.actual}) must be greater than 0)`,
-      });
+            return;
+          }
 
-      return;
-    }
+          if (totalVesselsQty !== (item?.inputQuantity || 0)) {
+            setError(`pressPercentage.${index}.vessels`, {
+              type: "manual",
+              message: `Total vessels quantity (${totalVesselsQty}) must be equal with must quantity (${item.inputQuantity})`,
+            });
 
-    if (grapeActual < (data?.quantity || 0)) {
-      setError(`quantity`, {
-        type: "manual",
-        message: `Grape quantity (${data?.quantity || 0}) must be less or equal with batch quantity (${grapeActual})`,
-      });
+            return;
+          }
 
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      await actions?.["grape-process"].exec(
-        user?.uid as string,
-        data,
-        subjectGrape,
+          return;
+        },
       );
-    } finally {
-      setIsSubmitting(false);
-    }
 
-    setFormData(data);
+      const subjectGrape = grapes.find((g) => g?.name === data?.batchId);
 
-    onBackClick?.();
-  }, [actions, grapes, user?.uid, onBackClick]);
+      const grapeActual = subjectGrape?.metrics?.actual || 0;
+
+      if (grapeActual <= 0) {
+        setError(`quantity`, {
+          type: "manual",
+          message: `Batch quantity (${subjectGrape?.metrics?.actual}) must be greater than 0)`,
+        });
+
+        return;
+      }
+
+      if (grapeActual < (data?.quantity || 0)) {
+        setError(`quantity`, {
+          type: "manual",
+          message: `Grape quantity (${data?.quantity || 0}) must be less or equal with batch quantity (${grapeActual})`,
+        });
+
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      try {
+        await actions?.["grape-process"].exec(
+          user?.uid as string,
+          data,
+          subjectGrape,
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+
+      setFormData(data);
+
+      onBackClick?.();
+    },
+    [actions, grapes, user?.uid, onBackClick],
+  );
 
   useEffect(() => {
     const grapeProcessingActionSample: GrapeProcessingAction = {
@@ -291,7 +294,6 @@ export default function GrapeProcessingActionForm({
       ),
     [formData.pressPercentage],
   );
-
 
   if (!formData) return null;
 

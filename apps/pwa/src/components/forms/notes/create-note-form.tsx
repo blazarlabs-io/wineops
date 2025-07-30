@@ -56,12 +56,15 @@ export default function CreateNoteForm({
     }));
   }, []);
 
-  const onSubmit = useCallback((data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onDataSubmit(data);
-    setFormData(data);
-  }, [onDataSubmit]);
+  const onSubmit = useCallback(
+    (data: any, e: any) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onDataSubmit(data);
+      setFormData(data);
+    },
+    [onDataSubmit],
+  );
 
   useEffect(() => {
     const member = teamMembers.find((v) => v.id === uid);
@@ -75,7 +78,6 @@ export default function CreateNoteForm({
     reset(newNote);
     setFormData(newNote);
   }, []);
-
 
   return (
     <>

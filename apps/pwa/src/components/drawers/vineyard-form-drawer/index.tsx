@@ -1,4 +1,6 @@
-import VineyardCreateEditForm, { VineyardFormRef } from "@/components/forms/vineyard/vineyard-create-edit-form";
+import VineyardCreateEditForm, {
+  VineyardFormRef,
+} from "@/components/forms/vineyard/vineyard-create-edit-form";
 import { Box, Button } from "@mui/material";
 import { useCallback, useRef, useState } from "react";
 import EntityFormDrawer from "../entity-form-drawer";
@@ -10,7 +12,15 @@ export default function VineyardFormDrawer() {
 
   const handleClick = useCallback(async () => {
     if (formRef.current) {
-      await formRef.current.save();
+      console.log("Attempting to save vineyard form...");
+      const isValid = await formRef.current.validate();
+
+      if (isValid) {
+        console.log("Validation passed, proceeding with save");
+        await formRef.current.save();
+      } else {
+        console.warn("Validation failed, submission blocked");
+      }
     }
   }, []);
 

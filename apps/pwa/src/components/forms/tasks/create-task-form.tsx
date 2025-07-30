@@ -60,12 +60,15 @@ export default function CreateTaskForm({
     [setValue],
   );
 
-  const onSubmit = useCallback((data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onDataSubmit(data);
-    setFormData(data);
-  }, [onDataSubmit]);
+  const onSubmit = useCallback(
+    (data: any, e: any) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onDataSubmit(data);
+      setFormData(data);
+    },
+    [onDataSubmit],
+  );
 
   useEffect(() => {
     if (teamMembers) {
@@ -85,7 +88,6 @@ export default function CreateTaskForm({
       setFormData(newTask);
     }
   }, [teamMembers]);
-
 
   return (
     <>

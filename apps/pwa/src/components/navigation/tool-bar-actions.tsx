@@ -24,23 +24,29 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
   const { user, signOut } = useAuth();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  const handleOpenUserMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  }, []);
+  const handleOpenUserMenu = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorElUser(event.currentTarget);
+    },
+    [],
+  );
 
   const handleCloseUserMenu = useCallback(() => {
     setAnchorElUser(null);
   }, []);
 
-  const handleMenuItemClick = useCallback(async (item: string) => {
-    if (item === "Logout") {
-      await signOut();
-      setAnchorElUser(null);
-      if (typeof window !== "undefined") {
-        window.location.href = "/sign-in";
+  const handleMenuItemClick = useCallback(
+    async (item: string) => {
+      if (item === "Logout") {
+        await signOut();
+        setAnchorElUser(null);
+        if (typeof window !== "undefined") {
+          window.location.href = "/sign-in";
+        }
       }
-    }
-  }, [signOut]);
+    },
+    [signOut],
+  );
 
   return (
     <Box display={"flex"} alignItems={"center"} gap={1} sx={{ flexGrow: 0 }}>

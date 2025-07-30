@@ -319,32 +319,32 @@ export default function BottleWineActionForm({
 
   useEffect(() => {
     const hasGeneralErrors = hasKeyFromArray(
-        ["executionDate", "wines"],
-        errors,
-      );
+      ["executionDate", "wines"],
+      errors,
+    );
 
-      if (hasGeneralErrors) setGeneralExpanded(true);
+    if (hasGeneralErrors) setGeneralExpanded(true);
 
-      const hasBottleSpecsErrors = hasKeyFromArray(
-        ["bottleType", "bottleSize", "closureType"],
-        errors,
-      );
+    const hasBottleSpecsErrors = hasKeyFromArray(
+      ["bottleType", "bottleSize", "closureType"],
+      errors,
+    );
 
-      if (hasBottleSpecsErrors) setBottleSpecsExpanded(true);
+    if (hasBottleSpecsErrors) setBottleSpecsExpanded(true);
 
-      const hasFinalLabErrors = hasKeyFromArray(
-        ["alcohol", "sugar", "ph", "totalSO2", "freeSO2"],
-        errors,
-      );
+    const hasFinalLabErrors = hasKeyFromArray(
+      ["alcohol", "sugar", "ph", "totalSO2", "freeSO2"],
+      errors,
+    );
 
-      if (hasFinalLabErrors) setFinalLabExpanded(true);
+    if (hasFinalLabErrors) setFinalLabExpanded(true);
 
-      const hasQuantityLossesErrors = hasKeyFromArray(
-        ["numberOfBottles", "losses"],
-        errors,
-      );
+    const hasQuantityLossesErrors = hasKeyFromArray(
+      ["numberOfBottles", "losses"],
+      errors,
+    );
 
-      if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
+    if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
   }, [errors]);
 
   if (!formData) return null;
