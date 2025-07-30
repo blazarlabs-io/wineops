@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GROUP_ITEMS_TO_SHOW, ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { Icon } from "@iconify/react";
 import { Link } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -16,6 +18,11 @@ export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
     : [];
 
   const uniqueSuppliers = [...new Set(batchesSuppliers)];
+
+  const isHarvested = !!(value?.vineyardName || data?.vineyardName);
+  const hasTransportationInfo =
+    data?.transportationInfo?.vehicleIdNo ||
+    data?.transportationInfo?.companyName;
 
   return (
     <Stack
@@ -36,11 +43,47 @@ export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
                   + {uniqueSuppliers.length - GROUP_ITEMS_TO_SHOW} more
                 </Link>
               )
-            ),
+            )
           )}
         </>
       ) : (
-        <Typography>{value?.companyName}</Typography>
+        <Stack>
+          {value?.companyName && (
+            <Stack
+              sx={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Icon
+                icon={
+                  isHarvested
+                    ? "lucide:shopping-basket"
+                    : "lucide:shopping-cart"
+                }
+                width={16}
+              />
+              <Typography>{value?.companyName}</Typography>
+            </Stack>
+          )}
+
+          {hasTransportationInfo && (
+            <Stack direction="row" alignItems="center" gap={1}>
+              <Icon icon="tabler:truck" width={16} />
+
+              <Stack>
+                <Typography variant="body2" color="text.secondary">
+                  {data?.transportationInfo?.vehicleIdNo}
+                </Typography>
+
+                <Typography variant="body2">
+                  {data?.transportationInfo?.companyName}
+                </Typography>
+              </Stack>
+            </Stack>
+          )}
+        </Stack>
       )}
     </Stack>
   );

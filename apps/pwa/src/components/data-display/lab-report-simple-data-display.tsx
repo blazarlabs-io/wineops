@@ -27,8 +27,8 @@ export default function LabReportSimpleDataDisplay({
   return (
     <>
       {data && data !== undefined && (
-        <div className="flex flex-col gap-1">
-          {data.date && (
+        <div className="flex flex-col">
+          {data.date && (sugar || acidity) && (
             <Typography
               variant="caption"
               color="textDisabled"

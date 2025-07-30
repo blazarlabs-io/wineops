@@ -4,7 +4,6 @@ import { Grape } from "@/models/types/db";
 import { BatchIDCellRenderer } from "./BatchIDCellRenderer";
 import { QuantityCellRenderer } from "../QuantityCellRenderer";
 import { SupplierCellRenderer } from "./SupplierCellRenderer";
-import { LabDataCellRenderer } from "./LabDataCellRenderer";
 import { NotesCellRenderer } from "../NotesCellRenderer";
 import formatDate from "@/utils/date-format";
 import { TasksCellRenderer } from "../tasks-cell-renderer";
@@ -72,17 +71,10 @@ export const grapesColumns: ColDef<
   {
     headerName: "Supplier",
     field: "supplier",
-    minWidth: 150,
+    minWidth: 250,
     flex: 1,
     editable: false,
     cellRenderer: SupplierCellRenderer,
-  },
-  {
-    headerName: "Lab Results",
-    field: "labData",
-    minWidth: 200,
-    flex: 1,
-    cellRenderer: LabDataCellRenderer,
   },
   {
     headerName: "Tasks",

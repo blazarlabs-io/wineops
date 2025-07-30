@@ -1,10 +1,7 @@
-import LabItem from "@/components/data-display/lab-item";
 import LabReportSimpleDataDisplay from "@/components/data-display/lab-report-simple-data-display";
-import { DEFAULT_LOCALE, ROW_HEIGHT_DEFAULT } from "@/data/constants";
+import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
 import { LabReport } from "@/models/types/db";
-import formatDate from "@/utils/date-format";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import type { CustomCellRendererProps } from "ag-grid-react";
 
 export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
