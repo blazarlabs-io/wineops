@@ -56,7 +56,7 @@ export const grapesColumns: ColDef<
   {
     headerName: "Batch ID",
     field: "batchId",
-    minWidth: 160,
+    minWidth: 210,
     flex: 1,
     editable: false,
     cellRenderer: BatchIDCellRenderer,
