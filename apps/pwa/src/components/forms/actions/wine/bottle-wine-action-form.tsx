@@ -3,12 +3,15 @@
 import {
   BottleWineAction,
   PackagingType,
+  Recipe,
+  VineyardGlobalAction,
 } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
+import { useWinery } from "@/context/winery";
 import { useAuth } from "@/lib/firebase/auth";
 import { bottleWineActionSchema } from "@/models/schemas/actions/bottle-wine-action-schema";
-import { ExpandMore } from "@mui/icons-material";
+import { Attachment, DeleteOutline, ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -31,12 +34,15 @@ import {
   Fragment,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useWine } from "@/context/wine";
 import { Consumable, ConsumableCategory } from "@/models/types/db";
+import { parseToDate } from "@/utils/date-format";
+import { File } from "lucide-react";
 import { db } from "@/lib/firebase/services";
 import ClearIcon from "@mui/icons-material/Clear";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
@@ -91,6 +97,7 @@ export default function BottleWineActionForm({
     ({ category }) => category === ConsumableCategory.LABEL,
   );
 
+  const { teamMembers } = useWinery();
   const { user } = useAuth();
   const {
     register,
@@ -104,6 +111,8 @@ export default function BottleWineActionForm({
   } = useForm({
     resolver: joiResolver(bottleWineActionSchema),
   });
+
+  const filteredRecipes = useMemo(() => [] as Recipe[], []);
 
   const [formData, setFormData] = useState<BottleWineAction>(
     {} as BottleWineAction,
@@ -189,7 +198,7 @@ export default function BottleWineActionForm({
 
           if (fileInputRef.current) fileInputRef.current.value = "";
         },
-        (error: Error) => {
+        () => {
           setIsUploading(false);
           setUploadProgress(0);
 
@@ -227,55 +236,57 @@ export default function BottleWineActionForm({
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
-  const onSubmit = async (data: any) => {
-    for (let index = 0; index < (data?.wines?.length || 0); index++) {
-      const wine = data.wines?.[index];
+  const onSubmit = useCallback(
+    async (data: any) => {
+      for (let index = 0; index < (data?.wines?.length || 0); index++) {
+        const wine = data.wines?.[index];
 
-      if ((wine?.quantity || 0) <= 0) {
-        setError(`wines.${index}.quantity`, {
-          type: "manual",
-          message: `Please enter a valid quantity for the wine`,
-        });
+        if ((wine?.quantity || 0) <= 0) {
+          setError(`wines.${index}.quantity`, {
+            type: "manual",
+            message: `Please enter a valid quantity for the wine`,
+          });
 
-        return;
+          return;
+        }
+
+        if (wine?.quantity > (wine?.qty || 0)) {
+          setError(`wines.${index}.quantity`, {
+            type: "manual",
+            message: `Wine quantity (${wine?.quantity}) must be less or equal with ${wine?.qty || 0}`,
+          });
+
+          return;
+        }
       }
 
-      if (wine?.quantity > (wine?.qty || 0)) {
-        setError(`wines.${index}.quantity`, {
-          type: "manual",
-          message: `Wine quantity (${wine?.quantity}) must be less or equal with ${wine?.qty || 0}`,
-        });
+      const subjectRecipe = filteredRecipes.filter(
+        ({ name }) => name === data.subjectRecipe?.name,
+      )[0];
 
-        return;
+      setIsSubmitting(true);
+
+      try {
+        await actions?.["bottle-a-wine"].exec(
+          user?.uid as string,
+          data,
+          subjectRecipe,
+        );
+      } finally {
+        setIsSubmitting(false);
       }
-    }
 
-    const subjectRecipe = filteredRecipes.filter(
-      ({ name }) => name === data.subjectRecipe?.name,
-    )[0];
+      setFormData(data);
 
-    setIsSubmitting(true);
-
-    try {
-      await actions?.["bottle-a-wine"].exec(
-        user?.uid as string,
-        data,
-        subjectRecipe,
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-
-    setFormData(data);
-
-    onBackClick?.();
-  };
+      onBackClick?.();
+    },
+    [filteredRecipes, onBackClick, setError, actions, user?.uid],
+  );
 
   useEffect(() => {
     const bottleWineActionSample: BottleWineAction = {
@@ -338,11 +349,6 @@ export default function BottleWineActionForm({
     }
   }, [errors]);
 
-  useEffect(() => {
-    if (formData) {
-    }
-  }, [formData]);
-
   if (!formData) return null;
 
   return (
@@ -368,10 +374,13 @@ export default function BottleWineActionForm({
           }}
         >
           <div className="flex flex-col gap-4 w-full ">
+            {/* * ID - HIDDEN */}
             <div className="hidden">
+              {/* <Label htmlFor="id">Id</Label> */}
               <FormControl>
                 <Input
                   id={formData.id as VineyardGlobalAction["id"]}
+                  // value={formData.id}
                   type="hidden"
                   {...register("id")}
                 />

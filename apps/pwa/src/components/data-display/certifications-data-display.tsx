@@ -50,7 +50,7 @@ export default function CertificationsDataDisplay({
               <Icon
                 className={cn(
                   "w-4 h-4",
-                  isActive ? "opacity-100" : "opacity-30"
+                  isActive ? "opacity-100" : "opacity-30",
                 )}
               />
             </button>

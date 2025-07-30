@@ -97,7 +97,6 @@ export default function CreateTaskForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-
               <div className="hidden">
                 <FormControl>
                   <Input
@@ -111,7 +110,6 @@ export default function CreateTaskForm({
 
               <div className="flex flex-col w-full">
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-
                   <div className="">
                     <FormControl fullWidth>
                       <TextField

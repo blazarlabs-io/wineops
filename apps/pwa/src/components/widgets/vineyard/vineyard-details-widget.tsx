@@ -237,7 +237,6 @@ export default function VineyardDetailsWidget({
         <Tab label="Documents" {...a11yProps(6)} sx={sx} />
       </Tabs>
       <TabPanel value={value} index={0}>
-
         <div className="flex items-center gap-8 w-full">
           <>
             <div className="min-w-[448px]">
@@ -260,7 +259,7 @@ export default function VineyardDetailsWidget({
                   localVineyard.info?.location?.surface
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         +localVineyard.info?.location?.surface,
-                        "ha"
+                        "ha",
                       )
                     : "N/A"
                 }
@@ -272,7 +271,7 @@ export default function VineyardDetailsWidget({
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         new Date().getFullYear() -
                           localVineyard.info?.vines?.yearOfPlantation,
-                        "years"
+                        "years",
                       )
                     : "N/A"
                 }
@@ -283,7 +282,7 @@ export default function VineyardDetailsWidget({
                   localVineyard.info?.location?.elevation
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         +localVineyard.info?.location?.elevation,
-                        "m"
+                        "m",
                       )
                     : "N/A"
                 }
@@ -304,7 +303,7 @@ export default function VineyardDetailsWidget({
                   localVineyard.info?.vines?.sunlightHours
                     ? formatNumberWithLowerCaseUnitAndSpace(
                         +localVineyard.info?.vines?.sunlightHours,
-                        "h/year"
+                        "h/year",
                       )
                     : "N/A"
                 }
@@ -408,7 +407,7 @@ export default function VineyardDetailsWidget({
                     localVineyard.info?.vines?.plantingScheme?.density
                       ? formatNumberWithLowerCaseUnitAndSpace(
                           +localVineyard.info?.vines?.plantingScheme?.density,
-                          "m"
+                          "m",
                         )
                       : "N/A"
                   }

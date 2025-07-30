@@ -50,7 +50,7 @@ export default function GrapeEntryContent({
           tareWeight
             ? formatNumberWithLowerCaseUnitAndSpace(
                 tareWeight,
-                tareUnit || "kg"
+                tareUnit || "kg",
               )
             : "N/A"
         }
@@ -62,7 +62,7 @@ export default function GrapeEntryContent({
           grossWeight
             ? formatNumberWithLowerCaseUnitAndSpace(
                 grossWeight,
-                grossUnit || "kg"
+                grossUnit || "kg",
               )
             : "N/A"
         }

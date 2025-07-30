@@ -287,10 +287,8 @@ export default function BottlingDetailsWidget({
         </div>
       </TabPanel>
       <TabPanel value={value} index={5}>
-        <div className="flex flex-col max-h-[300px] overflow-hidden">
-        </div>
+        <div className="flex flex-col max-h-[300px] overflow-hidden"></div>
       </TabPanel>
-
     </Box>
   );
 }
