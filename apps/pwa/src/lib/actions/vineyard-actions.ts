@@ -71,7 +71,7 @@ export const vineyardHarvestAction = async (
       : actionData.executionDate;
 
   const newBatch: Grape = {
-    id: actionData.batchId,
+    id: actionData.id || crypto.randomUUID(),
     name: actionData.batchId,
     date: actionData.executionDate,
     group: [actionData.batchId],
@@ -139,11 +139,11 @@ export const vineyardHarvestAction = async (
   const createRes: DbResponse = await db.grape.create(uid, newBatch);
 
   if (createRes.status === 200) {
-    enqueueSnackbar(`Grape batch created successfully`, {
+    enqueueSnackbar(`Grape batch ${actionData.batchId} created successfully`, {
       variant: "success",
     });
   } else {
-    enqueueSnackbar(`Error creating grape batch`, {
+    enqueueSnackbar(`Error creating grape batch ${actionData.batchId}`, {
       variant: "error",
     });
   }
@@ -168,9 +168,6 @@ export const vineyardLabAction = async (
 
   if (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0) {
     const deleteRes = await db.labReport.deleteMany(uid, labDataToDeleteIds);
-
-    if (deleteRes.status === 200) {
-    }
   }
 
   const labRes = await db.labReport.create(uid, {

@@ -21,7 +21,8 @@ export default function GrapesTable() {
             grapeVariety: grape?.grapeVariety,
             certifications: grape?.certifications,
             date: grape?.date,
-            location: grape?.location,
+            location:
+              grape?.transportationInfo?.processingLocation ?? grape?.location,
             status: grape?.status,
           },
           metrics: {
