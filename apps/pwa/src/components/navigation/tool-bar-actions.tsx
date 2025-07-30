@@ -34,7 +34,6 @@ export default function ToolBarActions({ props }: ToolBarActionsProps) {
 
   const handleMenuItemClick = async (item: string) => {
     if (item === "Logout") {
-      console.log("signing out");
       await signOut();
       setAnchorElUser(null);
       if (typeof window !== "undefined") {
