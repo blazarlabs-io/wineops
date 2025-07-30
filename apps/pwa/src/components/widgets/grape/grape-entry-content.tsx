@@ -27,21 +27,6 @@ export default function GrapeEntryContent({
   return (
     <div className="grid grid-cols-4 w-full p-0 py-2">
       <SimpleDataDisplay
-        label="Gross weight"
-        value={
-          grossWeight ? formatNumberWithLowerCaseUnitAndSpace(grossWeight, grossUnit || "kg") : "N/A"
-        }
-      />
-      <SimpleDataDisplay
-        label="Net weight"
-        value={netWeight ? formatNumberWithLowerCaseUnitAndSpace(netWeight, netUnit || "kg") : "N/A"}
-      />
-      <SimpleDataDisplay
-        label="Tare weight"
-        value={tareWeight ? formatNumberWithLowerCaseUnitAndSpace(tareWeight, tareUnit || "kg") : "N/A"}
-      />
-      <SimpleDataDisplay label="Weigher Name" value={weigherName ?? "N/A"} />
-      <SimpleDataDisplay
         label="Grape Intake Date"
         value={
           intakeDate
@@ -51,13 +36,50 @@ export default function GrapeEntryContent({
       />
 
       <SimpleDataDisplay
+        label="Net weight"
+        value={
+          netWeight
+            ? formatNumberWithLowerCaseUnitAndSpace(netWeight, netUnit || "kg")
+            : "N/A"
+        }
+      />
+
+      <SimpleDataDisplay
+        label="Tare weight"
+        value={
+          tareWeight
+            ? formatNumberWithLowerCaseUnitAndSpace(
+                tareWeight,
+                tareUnit || "kg"
+              )
+            : "N/A"
+        }
+      />
+
+      <SimpleDataDisplay
+        label="Gross weight"
+        value={
+          grossWeight
+            ? formatNumberWithLowerCaseUnitAndSpace(
+                grossWeight,
+                grossUnit || "kg"
+              )
+            : "N/A"
+        }
+      />
+
+      <SimpleDataDisplay label="Weigher Name" value={weigherName ?? "N/A"} />
+
+      <SimpleDataDisplay
         label="Receiving Bay"
         value={processingInfo.receivingBay || "N/A"}
       />
+
       <SimpleDataDisplay
         label="Destemmer"
         value={processingInfo.destemmer || "N/A"}
       />
+
       <SimpleDataDisplay
         label="Press (used)"
         value={processingInfo.pressUsed || "N/A"}
