@@ -145,13 +145,25 @@ export const grapeSchema = Joi.object().keys({
     "string.base": "Supplier name must be a string",
     "string.empty": "Please enter a supplier name",
   }),
-  name: Joi.string().required().min(2).max(50).messages({
-    "any.required": "Please enter a Batch ID",
-    "string.base": "Batch ID must be a string",
-    "string.empty": "Please enter a Batch ID",
-    "string.min": "Batch ID name must be at least 2 characters long",
-    "string.max": "Batch ID must be less than or equal to 50 characters long",
-  }),
+  name: Joi.string()
+    .custom((value, helpers) => {
+      const trimmed = value.trim();
+      if (trimmed.length === 0) return helpers.error("string.empty");
+      if (trimmed.length < 2) return helpers.error("string.min");
+      if (trimmed.length > 50) return helpers.error("string.max");
+
+      return trimmed;
+    })
+    .required()
+    .min(2)
+    .max(50)
+    .messages({
+      "any.required": "Please enter a Batch ID",
+      "string.base": "Batch ID must be a string",
+      "string.empty": "Please enter a Batch ID",
+      "string.min": "Batch ID name must be at least 2 characters long",
+      "string.max": "Batch ID must be less than or equal to 50 characters long",
+    }),
   grapeVariety: Joi.string().required().messages({
     "any.required": "Please enter a grape variety",
     "string.base": "Grape variety must be a string",

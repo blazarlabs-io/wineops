@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IconButton, Link, Stack, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useCallback, useState, type FunctionComponent } from "react";
@@ -171,7 +172,14 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   {formatDate(node?.data?.date, { locale: DEFAULT_LOCALE })}
                 </Typography>
               )}
-              {<EntityLocation location={node?.data?.location} />}
+              {
+                <EntityLocation
+                  location={
+                    node?.data?.transportationInfo?.processingLocation ??
+                    node?.data?.location
+                  }
+                />
+              }
               {node?.data?.status && (
                 <GrapeStatusDataDisplaySelect
                   status={node?.data?.status}

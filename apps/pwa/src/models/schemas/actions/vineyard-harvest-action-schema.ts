@@ -81,12 +81,24 @@ export const vineyardHarvestActionSchema = Joi.object<VineyardHarvestAction>({
     "any.required": "Please select a date",
     "alternatives.types": "Date must be a valid date.",
   }),
-  batchId: Joi.string().required().messages({
-    "any.required": "Please enter a Batch ID",
-    "string.empty": "Please enter a Batch ID",
-    "string.min": "Batch ID must be at least 2 characters long",
-    "string.max": "Batch ID must be less than or equal to 50 characters long",
-  }),
+  batchId: Joi.string()
+    .min(2)
+    .max(50)
+    .custom((value, helpers) => {
+      const trimmed = value.trim();
+      if (trimmed.length === 0) return helpers.error("string.empty");
+      if (trimmed.length < 2) return helpers.error("string.min");
+      if (trimmed.length > 50) return helpers.error("string.max");
+
+      return trimmed;
+    })
+    .required()
+    .messages({
+      "any.required": "Please enter a Batch ID",
+      "string.empty": "Please enter a Batch ID",
+      "string.min": "Batch ID must be at least 2 characters long",
+      "string.max": "Batch ID must be less than or equal to 50 characters long",
+    }),
   weight: Joi.number().min(0).max(1_000_000).required().messages({
     "any.required": "Please enter a valid number for the net weight",
     "number.empty": "Please enter a valid number for the net weight",

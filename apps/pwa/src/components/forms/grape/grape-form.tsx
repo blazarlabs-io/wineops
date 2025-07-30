@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useGrape } from "@/context/grape";
@@ -99,8 +100,11 @@ export default function GrapeForm() {
     setValue,
     reset,
     formState: { errors },
+    setError,
   } = useForm<Grape>({
     resolver: joiResolver(grapeSchema, { stripUnknown: true }),
+    mode: "onTouched",
+    reValidateMode: "onChange",
   });
 
   const [formData, setFormData] = useState<Grape | undefined>();
@@ -198,6 +202,32 @@ export default function GrapeForm() {
   );
 
   const onSubmit = async (data: Grape) => {
+    if (!data.name) {
+      setError("name", {
+        type: "manual",
+        message: "Please enter a Batch ID",
+      });
+
+      return;
+    }
+
+    const existingBatchId = grapes?.some(
+      ({ name, group, rowType }) =>
+        (rowType === "item" &&
+          name.trim().toLowerCase() === data.name.trim().toLowerCase()) ||
+        (rowType !== "item" &&
+          group?.[0]?.trim().toLowerCase() === data.name.trim().toLowerCase()),
+    );
+
+    if (existingBatchId) {
+      setError("name", {
+        type: "manual",
+        message: "This Batch ID is already taken. Please enter a different one",
+      });
+
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -208,12 +238,9 @@ export default function GrapeForm() {
   };
 
   useEffect(() => {
-    const name = `BatchID_${grapes?.filter(({ rowType }) => rowType !== "group")?.length + 1}`;
-
     const formatted = {
       ...{
         id: crypto.randomUUID(),
-        name,
         status: GrapeStatus.NEW,
       },
       ...existingGrape,

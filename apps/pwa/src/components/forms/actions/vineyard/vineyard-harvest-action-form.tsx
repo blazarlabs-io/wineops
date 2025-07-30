@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { vineyardHarvestActionSample } from "@/data/actions-samples";
@@ -282,7 +283,6 @@ export default function VineyardHarvestActionForm({
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid],
@@ -297,6 +297,34 @@ export default function VineyardHarvestActionForm({
           type: "manual",
           message: "Please select a vineyard",
         });
+        return;
+      }
+
+      if (!data.batchId) {
+        setError("batchId", {
+          type: "manual",
+          message: "Please enter a Batch ID",
+        });
+
+        return;
+      }
+
+      const existingBatchId = grapes?.some(
+        ({ name, group, rowType }) =>
+          (rowType === "item" &&
+            name.trim().toLowerCase() === data.batchId.trim().toLowerCase()) ||
+          (rowType !== "item" &&
+            group?.[0]?.trim().toLowerCase() ===
+              data.batchId.trim().toLowerCase()),
+      );
+
+      if (existingBatchId) {
+        setError("batchId", {
+          type: "manual",
+          message:
+            "This Batch ID is already taken. Please enter a different one",
+        });
+
         return;
       }
 
@@ -338,7 +366,7 @@ export default function VineyardHarvestActionForm({
     },
     [
       actions?.harvest,
-      errors,
+      grapes,
       localVineyard?.id,
       onBackClick,
       setError,
@@ -402,7 +430,6 @@ export default function VineyardHarvestActionForm({
 
   useEffect(() => {
     vineyardHarvestActionSample.id = crypto.randomUUID();
-    vineyardHarvestActionSample.batchId = `BatchID_${grapes?.length + 1}`;
     vineyardHarvestActionSample.type = "harvest";
     vineyardHarvestActionSample.weight = "";
     vineyardHarvestActionSample.executionDate = Timestamp.now();
@@ -457,9 +484,6 @@ export default function VineyardHarvestActionForm({
   }, [selectedVineyards]);
 
   useEffect(() => {
-    if (errors) {
-    }
-
     const hasGeneralErrors = hasKeyFromArray(
       [
         "subject",
@@ -1237,6 +1261,7 @@ export default function VineyardHarvestActionForm({
             <Checkbox
               checked={!!harvestEnded || false}
               color="error"
+              // {...register("harvestEnded")}
               onChange={(e) => {
                 setHarvestEnded(e.target.checked);
                 setValue("harvestEnded", e.target.checked);
