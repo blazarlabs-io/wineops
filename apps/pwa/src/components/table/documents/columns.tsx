@@ -87,7 +87,6 @@ const ActionsComponent = (params: GridRenderCellParams) => {
       <IconButton size="small" color="default" onClick={handleDownload}>
         <Download className="w-6! h-6!" />
       </IconButton>
-      {}
       <IconButton size="small" color="error" onClick={handleDeleteClick}>
         <DeleteOutline className="w-6! h-6!" />
       </IconButton>

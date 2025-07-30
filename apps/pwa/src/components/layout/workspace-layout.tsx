@@ -162,14 +162,12 @@ export default function WorkspaceLayout(props: MainProps) {
             {props.children}
           </Box>
         </DashboardLayout>
-        {}
         {open && type === "tasks" && (
           <QuickTasksDrawer
             open={open && type === "tasks"}
             onOpenChange={() => handleOpenChange("tasks", false)}
           />
         )}
-        {}
         {isActionsDrawerOpen && (
           <>
             {currentDashboard === "vineyards" && (

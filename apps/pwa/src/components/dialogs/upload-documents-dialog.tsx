@@ -85,7 +85,6 @@ export default function UploadDocumentsDialog({
           data={[]}
           onDocumentUpload={handleUploadDocuments}
         />
-        {}
       </DialogContent>
       <DialogActions>
         <Button onClick={onDoneClick}>Done</Button>

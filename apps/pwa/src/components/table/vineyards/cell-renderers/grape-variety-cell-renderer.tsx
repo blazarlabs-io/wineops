@@ -1,31 +1,8 @@
 import GrapeVarietyDialog from "@/components/dialogs/grape-variety-dialog";
 import { ROW_HEIGHT_DEFAULT } from "@/data/constants";
-import { Box, Button, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
-import { useEffect, useMemo, useState, type FunctionComponent } from "react";
-
-function getParts({
-  api,
-  value,
-  valueFormatted,
-  column,
-  node,
-}: CustomCellRendererProps) {
-  const cellValue = valueFormatted ?? value?.toString();
-  if (cellValue == null || cellValue === "") {
-    return [];
-  }
-  const cellDisplayValue = cellValue; //.replace(",", "\n");
-  const parts =
-    column != null
-      ? api.findGetParts({
-          value: cellDisplayValue,
-          node,
-          column,
-        })
-      : [];
-  return parts.length ? parts : [{ value: cellDisplayValue }];
-}
+import { useMemo, useState } from "react";
 
 export const GrapeVarietyCellRenderer = (params: CustomCellRendererProps) => {
   const uniqueValues = useMemo(() => {
@@ -34,25 +11,15 @@ export const GrapeVarietyCellRenderer = (params: CustomCellRendererProps) => {
       : [];
   }, [params]);
 
-  const [tooltipText, setTooltipText] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
 
   const handleClose = () => {
-    setTooltipText("");
     setOpen(false);
   };
 
   const handleOpen = () => {
     setOpen(true);
   };
-
-  useEffect(() => {
-    if (uniqueValues.length > 0) {
-      setTooltipText(uniqueValues.join(", "));
-    } else {
-      setTooltipText("");
-    }
-  }, [uniqueValues]);
 
   return (
     <Box
@@ -68,7 +35,6 @@ export const GrapeVarietyCellRenderer = (params: CustomCellRendererProps) => {
         data={uniqueValues}
         onClose={handleClose}
       />
-      {}
       {uniqueValues.length > 0 ? (
         <div
           style={{

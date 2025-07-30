@@ -78,7 +78,6 @@ export default function EditNoteForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-              {}
               <div className="hidden">
                 <FormControl>
                   <Input
@@ -89,7 +88,6 @@ export default function EditNoteForm({
                   />
                 </FormControl>
               </div>
-              {}
               <div className="flex flex-col gap-2">
                 <InputLabel className="text-sm text-muted-foreground">
                   Enter date
@@ -110,7 +108,6 @@ export default function EditNoteForm({
               </div>
               <div className="flex flex-col w-full">
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -121,7 +118,6 @@ export default function EditNoteForm({
                       />
                     </FormControl>
                   </div>
-                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextareaAutosize

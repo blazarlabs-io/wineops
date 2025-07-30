@@ -117,7 +117,6 @@ export default function TaskCard() {
           </Box>
         </Box>
       </CardContent>
-      {}
     </Card>
   );
 }

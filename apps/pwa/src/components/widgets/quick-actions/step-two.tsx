@@ -61,7 +61,6 @@ export default function QuickActionsWidgetStepTwo<
         }}
       >
         <Stack height="100%">
-          {}
           <React.Fragment>
             {FormComponent && (
               <FormComponent
@@ -72,7 +71,6 @@ export default function QuickActionsWidgetStepTwo<
           </React.Fragment>
         </Stack>
       </Box>
-      {}
     </Box>
   );
 }

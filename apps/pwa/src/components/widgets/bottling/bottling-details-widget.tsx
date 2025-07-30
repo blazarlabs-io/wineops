@@ -216,7 +216,6 @@ export default function BottlingDetailsWidget({
           </div>
         </div>
       </TabPanel>
-      {}
       <TabPanel value={value} index={2}>
         <div className="grid grid-cols-4 gap-4 w-full p-2 justify-between h-full">
           <SimpleDataDisplay
@@ -289,12 +288,9 @@ export default function BottlingDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={5}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
-          {}
-          {}
         </div>
       </TabPanel>
 
-      {}
     </Box>
   );
 }

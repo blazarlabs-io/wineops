@@ -1,7 +1,6 @@
 import TaskStatusDataDisplay from "@/components/data-display/task-status-data-display";
-import { EntityStatus } from "@/models/types/dashboard";
-import { Priority, TaskStatus } from "@/models/types/db";
-import { Box, Chip } from "@mui/material";
+import { TaskStatus } from "@/models/types/db";
+import { Box } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { type FunctionComponent } from "react";
 
@@ -18,7 +17,6 @@ export const StatusCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         height: "100%",
       }}
     >
-      {}
       {value && value !== undefined && (
         <TaskStatusDataDisplay
           status={value as TaskStatus}

@@ -323,7 +323,6 @@ export default function ToolsBar(props: ToolsBarProps) {
             alignItems="center"
             justifyContent="flex-end"
           >
-            {}
             <div className="flex gap-2 items-center w-full">
               <IconButton
                 color="inherit"

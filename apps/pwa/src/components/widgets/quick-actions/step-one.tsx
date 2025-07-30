@@ -83,7 +83,6 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
         <Typography variant="h5">Actions</Typography>
       </Box>
       <Box sx={{ overflowX: "hidden" }}>
-        {}
         <TextField
           fullWidth
           size="small"
@@ -96,7 +95,6 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
             ),
           }}
         />
-        {}
         <List
           sx={{
             width: "100%",

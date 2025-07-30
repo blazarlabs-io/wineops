@@ -56,7 +56,6 @@ export default function QuickActionsDrawer<T extends ActionsEntity>({
           <Close className="w-4 h-4" />
         </IconButton>
       </DrawerHeader>
-      {}
       <QuickActionsWidget
         onClick={handleActionClick}
         actions={actions}

@@ -322,13 +322,9 @@ export default function GrapeProcessingActionForm({
         >
           <div className="flex flex-col gap-4 w-full">
             <div className="flex flex-col w-full">
-              {}
               <Stack gap={2} sx={{ p: 2 }}>
-                {}
-                {}
                 <div className="hidden">
                   <FormControl fullWidth>
-                    {}
                     <TextField
                       type="number"
                       id="id-field"
@@ -348,7 +344,6 @@ export default function GrapeProcessingActionForm({
                   )}
                 </div>
 
-                {}
                 <FormControl fullWidth>
                   <InputLabel id="batchId-select">
                     {formData?.batchId ? "Selected batch ID" : "Batch ID"}
@@ -378,7 +373,6 @@ export default function GrapeProcessingActionForm({
                     {errors?.batchId?.message as string}
                   </Typography>
                 )}
-                {}
                 <Stack gap={1} className="w-full">
                   <DatePicker
                     name="executionDate"
@@ -427,7 +421,6 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {}
                 <div className="">
                   <FormControl fullWidth>
                     <TextField
@@ -449,8 +442,6 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {}
-                {}
                 <FormControl>
                   <Autocomplete
                     options={[]}
@@ -481,7 +472,6 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {}
                 <FormControl>
                   <Autocomplete
                     options={[]}
@@ -512,7 +502,6 @@ export default function GrapeProcessingActionForm({
                   </Typography>
                 )}
 
-                {}
                 <FormControl>
                   <Autocomplete
                     options={[]}
@@ -541,7 +530,6 @@ export default function GrapeProcessingActionForm({
 
                 <div className="">
                   <FormControl fullWidth>
-                    {}
                     <TextField
                       type="number"
                       id="wasteQuantity"
@@ -555,7 +543,6 @@ export default function GrapeProcessingActionForm({
                   </FormControl>
                 </div>
 
-                {}
                 <Stack
                   direction="row"
                   sx={{ alignItems: "center", justifyContent: "space-between" }}

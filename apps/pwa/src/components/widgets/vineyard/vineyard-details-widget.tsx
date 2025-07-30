@@ -237,7 +237,7 @@ export default function VineyardDetailsWidget({
         <Tab label="Documents" {...a11yProps(6)} sx={sx} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        {}
+
         <div className="flex items-center gap-8 w-full">
           <>
             <div className="min-w-[448px]">
@@ -476,7 +476,6 @@ export default function VineyardDetailsWidget({
                       border: "1px solid var(--mui-palette-divider)",
                     }}
                   >
-                    {}
                     <div className="flex items-center min-w-fit w-full gap-1 px-2 py-1 h-full ">
                       <LabReportResponsibleDataDisplay
                         data={item}
@@ -495,7 +494,6 @@ export default function VineyardDetailsWidget({
                         <DeleteOutline className="max-w-4 max-h-4" />
                       </IconButton>
                     </div>
-                    {}
                   </div>
                 );
               })}
@@ -523,7 +521,6 @@ export default function VineyardDetailsWidget({
       </TabPanel>
       <TabPanel value={value} index={6}>
         <div className="flex flex-col max-h-[300px] overflow-hidden">
-          {}
           <DocumentsTable docs={docs} onDocumentUpload={handleDocumentUpload} />
         </div>
       </TabPanel>

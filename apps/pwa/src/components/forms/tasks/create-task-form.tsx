@@ -97,7 +97,7 @@ export default function CreateTaskForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-              {}
+
               <div className="hidden">
                 <FormControl>
                   <Input
@@ -111,7 +111,7 @@ export default function CreateTaskForm({
 
               <div className="flex flex-col w-full">
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-                  {}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -122,7 +122,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextareaAutosize
@@ -138,7 +138,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {}
+
                   <div className="">
                     <FormControl fullWidth>
                       <InputLabel id="assignedTo.name">Assigned To</InputLabel>
@@ -178,7 +178,7 @@ export default function CreateTaskForm({
                       </Select>
                     </FormControl>
                   </div>
-                  {}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -190,9 +190,9 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {}
+
                   <Typography variant="body1">Subject of Action</Typography>
-                  {}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -203,7 +203,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {}
+
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -214,7 +214,7 @@ export default function CreateTaskForm({
                       />
                     </FormControl>
                   </div>
-                  {}
+
                   <div className="">
                     <FormControl fullWidth>
                       <InputLabel id="assignedTo">Priority</InputLabel>
@@ -233,7 +233,7 @@ export default function CreateTaskForm({
                       </Select>
                     </FormControl>
                   </div>
-                  {}
+
                   <div className="flex flex-col gap-2">
                     <DatePicker
                       label="Start Date"
@@ -252,7 +252,7 @@ export default function CreateTaskForm({
                       }
                     />
                   </div>
-                  {}
+
                   <div className="flex flex-col gap-2">
                     <DatePicker
                       label="Due Date"

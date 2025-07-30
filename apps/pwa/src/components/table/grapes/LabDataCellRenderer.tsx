@@ -41,7 +41,6 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
                 } as unknown as LabReport
               }
             />
-            {}
           </Stack>
         )
       )}

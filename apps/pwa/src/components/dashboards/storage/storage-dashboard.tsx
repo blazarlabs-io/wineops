@@ -63,7 +63,7 @@ export default function StorageDashboard() {
 
   const StyledTab = styled((props: TabProps) => (
     <Tab disableRipple {...props} />
-  ))(({ theme }) => ({
+  ))(() => ({
     minHeight: "34px",
     "&.Mui-selected": {},
     "&.Mui-focusVisible": {},

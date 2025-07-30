@@ -30,7 +30,6 @@ export const QuantityCellRenderer = (params: CustomCellRendererProps) => {
                 value?.entry?.netUnit || "kg",
               )
             : "N/A"}
-          {}
         </>
       )}
     </Stack>

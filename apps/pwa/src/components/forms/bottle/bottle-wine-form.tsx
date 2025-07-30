@@ -401,9 +401,7 @@ export default function BottleWineForm() {
           }}
         >
           <div className="flex flex-col gap-4 w-full">
-            {}
             <div className="hidden">
-              {}
               <FormControl>
                 <Input
                   id={formData.id as VineyardGlobalAction["id"]}
@@ -531,7 +529,6 @@ export default function BottleWineForm() {
                     )}
                   </div>
 
-                  {}
                   <AutocompleteWithTextField
                     key="subjectRecipe"
                     label="Wine Recipe"
@@ -543,8 +540,6 @@ export default function BottleWineForm() {
                       handleChange("subjectRecipe", value);
                     }}
                   />
-
-                  {}
 
                   <div className="flex flex-col gap-2">
                     <Autocomplete

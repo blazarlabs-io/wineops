@@ -3,15 +3,12 @@
 import {
   BottleWineAction,
   PackagingType,
-  Recipe,
-  VineyardGlobalAction,
 } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
-import { useWinery } from "@/context/winery";
 import { useAuth } from "@/lib/firebase/auth";
 import { bottleWineActionSchema } from "@/models/schemas/actions/bottle-wine-action-schema";
-import { Attachment, DeleteOutline, ExpandMore } from "@mui/icons-material";
+import { ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -34,16 +31,12 @@ import {
   Fragment,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useWine } from "@/context/wine";
-import { useSelectedEntitiesStore } from "@/store/selected-entities";
-import { Wine, Consumable, ConsumableCategory } from "@/models/types/db";
-import { parseToDate } from "@/utils/date-format";
-import { File } from "lucide-react";
+import { Consumable, ConsumableCategory } from "@/models/types/db";
 import { db } from "@/lib/firebase/services";
 import ClearIcon from "@mui/icons-material/Clear";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
@@ -98,19 +91,6 @@ export default function BottleWineActionForm({
     ({ category }) => category === ConsumableCategory.LABEL,
   );
 
-  const selectedWines = useSelectedEntitiesStore(
-    ({ selected }) => selected,
-  ) as Wine[];
-
-  const updatedSelectedWines = useMemo(
-    () =>
-      selectedWines.map(
-        (selected) => wines.find((g) => g.id === selected.id) ?? selected,
-      ),
-    [wines, selectedWines],
-  );
-
-  const { teamMembers } = useWinery();
   const { user } = useAuth();
   const {
     register,
@@ -125,20 +105,10 @@ export default function BottleWineActionForm({
     resolver: joiResolver(bottleWineActionSchema),
   });
 
-  const filteredRecipes = useMemo(() => [] as Recipe[], []);
-
-  const filteredWines = useMemo(
-    () =>
-      (updatedSelectedWines.length > 0 ? updatedSelectedWines : wines).filter(
-        ({ rowType }) => rowType === "item",
-      ),
-    [wines, updatedSelectedWines],
-  );
-
   const [formData, setFormData] = useState<BottleWineAction>(
     {} as BottleWineAction,
   );
-  const [disableSubject, setDisableSubject] = useState<boolean>(false);
+  const [, setDisableSubject] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -398,9 +368,7 @@ export default function BottleWineActionForm({
           }}
         >
           <div className="flex flex-col gap-4 w-full ">
-            {}
             <div className="hidden">
-              {}
               <FormControl>
                 <Input
                   id={formData.id as VineyardGlobalAction["id"]}

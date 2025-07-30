@@ -1123,7 +1123,6 @@ export default function GrapeForm() {
                 </div>
               </AccordionDetails>
             </Accordion>
-            {}
             <Accordion
               sx={{
                 background: isDarkMode

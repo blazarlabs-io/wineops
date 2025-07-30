@@ -88,9 +88,6 @@ export default function DocumentsTableToolbar({
             />
           }
         />
-        {}
-        {}
-
         <QuickFilter
           render={(props, state) => (
             <div {...props} className="flex overflow-clip">

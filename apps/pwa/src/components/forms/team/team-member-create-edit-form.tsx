@@ -130,9 +130,7 @@ export default function TeamMemberCreateEditForm() {
         >
           <div className="w-full py-4">
             <div className="flex flex-col gap-4 w-full">
-              {}
               <div className="hidden">
-                {}
                 <FormControl>
                   <Input
                     id={formData.id as VineyardGlobalAction["id"]}
@@ -144,9 +142,7 @@ export default function TeamMemberCreateEditForm() {
               </div>
 
               <div className="flex flex-col w-full">
-                {}
                 <Box display={"flex"} flexDirection={"column"} gap={2}>
-                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -157,7 +153,6 @@ export default function TeamMemberCreateEditForm() {
                       />
                     </FormControl>
                   </div>
-                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -168,7 +163,6 @@ export default function TeamMemberCreateEditForm() {
                       />
                     </FormControl>
                   </div>
-                  {}
                   <div className="">
                     <FormControl fullWidth>
                       <TextField
@@ -179,7 +173,6 @@ export default function TeamMemberCreateEditForm() {
                       />
                     </FormControl>
                   </div>
-                  {}
                   <FormControl fullWidth>
                     <InputLabel id="role-select">Role</InputLabel>
                     <Select
@@ -196,7 +189,6 @@ export default function TeamMemberCreateEditForm() {
                       ))}
                     </Select>
                   </FormControl>
-                  {}
                   <FormControl fullWidth>
                     <InputLabel id="department-select">Department</InputLabel>
                     <Select
@@ -217,7 +209,6 @@ export default function TeamMemberCreateEditForm() {
                         ))}
                     </Select>
                   </FormControl>
-                  {}
                   <Fragment>
                     <ReactPhoneInput
                       value={formData.contactPhone}

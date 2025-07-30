@@ -1,4 +1,3 @@
-import TaskCard from "@/components/cards/task-card";
 import CreateTaskForm from "@/components/forms/tasks/create-task-form";
 import { useQuickDrawer } from "@/context/quick-drawer";
 import { useWinery } from "@/context/winery";
@@ -62,7 +61,6 @@ export default function QuickTasksWidget() {
           </Box>
         )}
       </Box>
-      {}
     </>
   );
 }

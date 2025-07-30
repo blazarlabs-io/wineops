@@ -178,7 +178,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
                   onSelect={handleStatusChange}
                 />
               )}
-              {}
             </Stack>
           </Stack>
         )}
