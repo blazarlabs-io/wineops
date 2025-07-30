@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColDef } from "ag-grid-enterprise";
 import { Grape } from "@/models/types/db";
 import { BatchIDCellRenderer } from "./BatchIDCellRenderer";
@@ -55,7 +56,7 @@ export const grapesColumns: ColDef<
   {
     headerName: "Batch ID",
     field: "batchId",
-    minWidth: 160,
+    minWidth: 210,
     flex: 1,
     editable: false,
     cellRenderer: BatchIDCellRenderer,

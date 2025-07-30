@@ -30,6 +30,7 @@ import { getActionsByIds } from "./utils";
 import { ActionsEntity } from "@/models/types/actions";
 import { useSelectedItemsStore } from "@/store/selected-items";
 import TasksView from "../components/tasks-view";
+import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 
 type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
@@ -256,8 +257,11 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Surface"
                 value={
-                  localVineyard.info?.location?.surface !== undefined
-                    ? localVineyard.info?.location?.surface?.toString() + " Ha"
+                  localVineyard.info?.location?.surface
+                    ? formatNumberWithLowerCaseUnitAndSpace(
+                        +localVineyard.info?.location?.surface,
+                        "ha"
+                      )
                     : "N/A"
                 }
               />
@@ -265,20 +269,23 @@ export default function VineyardDetailsWidget({
                 label="Age of Vines"
                 value={
                   localVineyard.info.vines.yearOfPlantation
-                    ? (
+                    ? formatNumberWithLowerCaseUnitAndSpace(
                         new Date().getFullYear() -
-                        localVineyard.info?.vines?.yearOfPlantation
-                      ).toString() + " years"
+                          localVineyard.info?.vines?.yearOfPlantation,
+                        "years"
+                      )
                     : "N/A"
                 }
               />
               <SimpleDataDisplay
                 label="Elevation"
                 value={
-                  (localVineyard.info?.location?.elevation !== undefined &&
-                    localVineyard.info?.location?.elevation?.toString() +
-                      " m") ||
-                  "N/A"
+                  localVineyard.info?.location?.elevation
+                    ? formatNumberWithLowerCaseUnitAndSpace(
+                        +localVineyard.info?.location?.elevation,
+                        "m"
+                      )
+                    : "N/A"
                 }
               />
               <OrientationDataDisplay
@@ -294,14 +301,17 @@ export default function VineyardDetailsWidget({
               <SimpleDataDisplay
                 label="Sunlight Hours"
                 value={
-                  (localVineyard.info?.vines?.sunlightHours !== undefined &&
-                    localVineyard.info?.vines?.sunlightHours + " h/year") ||
-                  "N/A"
+                  localVineyard.info?.vines?.sunlightHours
+                    ? formatNumberWithLowerCaseUnitAndSpace(
+                        +localVineyard.info?.vines?.sunlightHours,
+                        "h/year"
+                      )
+                    : "N/A"
                 }
               />
               <SimpleDataDisplay
                 label="Soil Type"
-                value={localVineyard.info?.vines?.soilType?.toString() || "N/A"}
+                value={localVineyard.info?.vines?.soilType || "N/A"}
               />
               <CadastralDataDisplay
                 label="Cadastral Number"
@@ -395,8 +405,12 @@ export default function VineyardDetailsWidget({
                 <SimpleDataDisplay
                   label="Density"
                   value={
-                    localVineyard.info?.vines?.plantingScheme?.density?.toString() +
-                      " m" || "N/A"
+                    localVineyard.info?.vines?.plantingScheme?.density
+                      ? formatNumberWithLowerCaseUnitAndSpace(
+                          +localVineyard.info?.vines?.plantingScheme?.density,
+                          "m"
+                        )
+                      : "N/A"
                   }
                 />
                 <SimpleDataDisplay
