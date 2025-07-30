@@ -28,6 +28,7 @@ export default function GrapesTable() {
             ...grape.metrics,
             status: grape.status,
             entry: grape?.entry,
+            ...grape?.labData,
           },
         }),
       })),
