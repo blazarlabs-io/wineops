@@ -35,13 +35,12 @@ export const BatchIDCellRenderer: FunctionComponent<CustomCellRendererProps> = (
             <Typography>{data?.name}</Typography>
             <Typography>{data?.grapeVariety}</Typography>
           </Stack>
-          {data?.certifications && (
-            <Box sx={{ mb: 0.5 }}>
-              <CertificationsDataDisplay
-                certifications={data?.certifications}
-              />
-            </Box>
-          )}
+          <Box sx={{ mb: 0.5 }}>
+            <CertificationsDataDisplay
+              showOnlyActive
+              certifications={data?.certifications || {}}
+            />
+          </Box>
         </Stack>
       )}
     </Stack>
