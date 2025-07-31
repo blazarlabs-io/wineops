@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -7,7 +8,6 @@ import {
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useWinery } from "@/context/winery";
-import { setNestedValue } from "@/helpers/form-helpers";
 import { useAuth } from "@/lib/firebase/auth";
 import { grapeIntakeActionSchema } from "@/models/schemas/actions/grape-intake-action-schema";
 import { Attachment, DeleteOutline, ExpandMore } from "@mui/icons-material";
@@ -86,7 +86,8 @@ export default function GrapeIntakeActionForm({
         : grapes
       ).filter(
         ({ rowType, status }) =>
-          rowType === "item" && status === GrapeStatus.IN_TRANSIT,
+          rowType === "item" &&
+          [GrapeStatus.NEW, GrapeStatus.IN_TRANSIT].some((s) => s === status),
       ),
     [grapes, selectedGrapes],
   );

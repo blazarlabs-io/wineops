@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EntityStatus } from "@/models/types/dashboard";
 import { MetricsOutput, MetricsOutput2, MetricsTotal } from "./types";
 import { GrapeStatus, VineyardStatus } from "@/models/types/db";
@@ -9,6 +10,7 @@ import {
 } from "@/utils/number-format";
 
 const IS_PRE = (status?: EntityStatus) =>
+  status === GrapeStatus.NEW ||
   status === GrapeStatus.IN_TRANSIT ||
   status === VineyardStatus.MAINTENANCE ||
   status === VineyardStatus.READY_FOR_HARVEST ||
@@ -22,7 +24,6 @@ const IS_ENDED = (status?: EntityStatus) =>
   status === VineyardStatus.HARVEST_ENDED ||
   status === GrapeStatus.PROCESSED ||
   status === GrapeStatus.DEHYDRATED ||
-  status === GrapeStatus.FRIDGE_STORED ||
   status === GrapeStatus.STORED;
 
 export const useChartOptions = (metrics: MetricsTotal[]) => {

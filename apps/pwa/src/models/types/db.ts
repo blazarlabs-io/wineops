@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
 import {
   ActionRelation,
@@ -363,10 +364,9 @@ export const GrapeStatus = {
   NEW: "New Batch",
   IN_TRANSIT: "In Transit",
   RECEIVED: "Received",
-  PROCESSED: "Processed",
   DEHYDRATED: "Dehydrated",
   STORED: "Stored",
-  FRIDGE_STORED: "Fridge Stored",
+  PROCESSED: "Processed",
 } as const;
 
 export type GrapeStatus = (typeof GrapeStatus)[keyof typeof GrapeStatus];

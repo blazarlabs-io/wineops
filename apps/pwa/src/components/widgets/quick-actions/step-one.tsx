@@ -1,4 +1,4 @@
-import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GridView, Search } from "@mui/icons-material";
 import {
   Box,
@@ -44,8 +44,8 @@ export default function QuickActionsWidgetStepOne<T extends ActionsEntity>({
 
   const enableIntake =
     updatedSelected.length === 0 ||
-    (updatedSelected as Grape[]).some(
-      ({ status }) => status === GrapeStatus.IN_TRANSIT,
+    (updatedSelected as Grape[]).some(({ status }) =>
+      [GrapeStatus.NEW, GrapeStatus.IN_TRANSIT].some((s) => s === status),
     );
 
   const handleActionClick = (action: string) => {

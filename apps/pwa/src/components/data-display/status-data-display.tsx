@@ -72,11 +72,6 @@ const getStatusStyles = (
       backgroundColor: isLight ? "#E8E8E8" : "#00000000",
       borderColor: isLight ? "#A3A3A1" : "#9DB2BF",
     },
-    [GrapeStatus.FRIDGE_STORED]: {
-      color: isLight ? "#A3A3A1" : "#9DB2BF",
-      backgroundColor: isLight ? "#E8E8E8" : "#00000000",
-      borderColor: isLight ? "#A3A3A1" : "#9DB2BF",
-    },
   };
 
   return stylesMap[status] ?? {};

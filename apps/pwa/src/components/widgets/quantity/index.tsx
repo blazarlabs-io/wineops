@@ -29,6 +29,7 @@ export default function QuantityWidget({
   const maxValue = Math.max(actualValue, supplyValue, demandValue);
 
   const isPreHarvest =
+    status === GrapeStatus.NEW ||
     status === GrapeStatus.IN_TRANSIT ||
     status === VineyardStatus.MAINTENANCE ||
     status === VineyardStatus.READY_FOR_HARVEST ||
@@ -43,7 +44,6 @@ export default function QuantityWidget({
     : status === VineyardStatus.HARVEST_ENDED ||
       status === GrapeStatus.PROCESSED ||
       status === GrapeStatus.DEHYDRATED ||
-      status === GrapeStatus.FRIDGE_STORED ||
       status === GrapeStatus.STORED;
 
   const sortedValuesWithColors: SortedValueWithColor[] = Object.entries(
