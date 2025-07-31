@@ -15,7 +15,7 @@ import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
-import { getActionsByIds } from "./utils";
+import { getActionsByIds } from "../utils/get-actions-by-ids";
 import TasksView from "../components/tasks-view";
 import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
 import LabResultsContent from "../components/lab-results-content";

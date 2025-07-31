@@ -67,7 +67,7 @@ export default function LabResultsChart({ data }: LabResultsChartProps) {
             fill: "--mui-palette-divider",
           },
         },
-        padding: 2,
+        padding: 1,
         borderRadius: 2,
         border: "1px solid rgba(0, 0, 0, 0.05)",
         backgroundImage:

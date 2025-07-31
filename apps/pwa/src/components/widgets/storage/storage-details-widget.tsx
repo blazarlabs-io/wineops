@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Must, MustLabData, StorageCondition } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -14,7 +15,7 @@ import TabPanel from "../components/tab-panel";
 import DocumentsTable from "@/components/table/documents";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
-import { getActionsByIds } from "../vineyard/utils";
+import { getActionsByIds } from "../utils/get-actions-by-ids";
 import { enqueueSnackbar } from "notistack";
 import { Timestamp } from "firebase/firestore";
 import StorageConditionsContent from "./storage-conditions-content";
