@@ -17,4 +17,4 @@ export const ROW_HEIGHT_EXPANDED_VESSEL = 304;
 export const VOLUME_UNITS = ["litre(s)", "tonn(s)"];
 
 export const DEFAULT_LOCALE = "ro-RO";
-export const ROW_HEIGHT_EXPANDED_MUST = 334;
+export const ROW_HEIGHT_EXPANDED_MUST = 374;

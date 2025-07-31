@@ -163,8 +163,8 @@ export default function LabResultsContent({
           })}
         </div>
         <div
-          className="min-w-[600px] w-full flex items-center justify-start"
-          style={{ height: "220px" }}
+          className="min-w-[600px] w-full flex items-center1 justify-start"
+          style={{ height: "180px" }}
         >
           <LabResultsChart
             data={{

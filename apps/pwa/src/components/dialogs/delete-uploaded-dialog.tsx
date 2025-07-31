@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { ActionRelation } from "@/models/types/actions";
@@ -42,9 +43,13 @@ export default function DeleteUploadedDialog() {
     name,
     type,
     vineyardId = "",
+    mustId = "",
     actionId = "",
     actions = [],
   } = fileToDelete?.row || {};
+
+  const entityId = vineyardId || mustId;
+  const entityName = vineyardId ? "vineyard" : mustId ? "must" : "";
 
   const handleDeleteFile = useCallback(async () => {
     if (!itemType || !fileToDelete || !name) return;
@@ -64,7 +69,7 @@ export default function DeleteUploadedDialog() {
     try {
       const deleteFileRes = await db.storage.deleteFile(user?.uid, path, name);
 
-      if (user?.uid && actionId && vineyardId) {
+      if (user?.uid && actionId && entityId && entityName) {
         const actionDocuments = allRows
           ?.filter(
             (row: any) =>
@@ -81,7 +86,7 @@ export default function DeleteUploadedDialog() {
           supportingDocuments: actionDocuments,
         });
 
-        const vineyardRes = await db.vineyard.update(user?.uid, vineyardId, {
+        const entityRes = await db["entityName"].update(user?.uid, entityId, {
           actions: actions.map((action: ActionRelation) =>
             action.id === actionId
               ? { ...action, updatedAt: Timestamp.now() }
@@ -90,7 +95,7 @@ export default function DeleteUploadedDialog() {
         });
 
         if (
-          vineyardRes.status === 200 &&
+          entityRes.status === 200 &&
           actionRes.status === 200 &&
           deleteFileRes.status === 200
         ) {
@@ -100,11 +105,14 @@ export default function DeleteUploadedDialog() {
         }
       }
 
-      if (user?.uid && vineyardId && !actionId) {
+      if (user?.uid && entityId && entityName && !actionId) {
         const entityDocuments = allRows
           ?.filter(
             (row: any) =>
-              row.name !== name && !type && row.vineyardId === vineyardId,
+              row.name !== name &&
+              !type &&
+              ((vineyardId && row.vineyardId === entityId) ||
+                (mustId && row.mustId === entityId)),
           )
           .map(({ id, name, fileUrl, owner, uploadDate }: any) => ({
             id,
@@ -114,11 +122,11 @@ export default function DeleteUploadedDialog() {
             uploadDate,
           }));
 
-        const vineyardRes = await db.vineyard.update(user?.uid, vineyardId, {
+        const entityRes = await db[entityName].update(user?.uid, entityId, {
           documents: entityDocuments,
         });
 
-        if (vineyardRes.status === 200 && deleteFileRes.status === 200) {
+        if (entityRes.status === 200 && deleteFileRes.status === 200) {
           enqueueSnackbar("File deleted", { variant: "success" });
         } else {
           enqueueSnackbar("File deletion failed", { variant: "error" });
@@ -134,8 +142,11 @@ export default function DeleteUploadedDialog() {
     actionId,
     actions,
     enqueueSnackbar,
-    itemType,
+    entityId,
+    entityName,
     fileToDelete,
+    itemType,
+    mustId,
     name,
     onClose,
     setSelectedItems,
