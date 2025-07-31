@@ -5,9 +5,6 @@ import { ExpandMore } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { useCallback, useState, type FunctionComponent } from "react";
-import { useVineyard } from "@/context/vineyard";
-import { useGetLabData } from "@/hooks/use-get-lab-data";
-import { LabReport } from "@/models/types/db";
 import GroupBadge from "../../group-badge";
 import CadastralDialog from "@/components/dialogs/cadastral-dialog";
 
@@ -15,13 +12,6 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
   node,
   value,
 }) => {
-  const { labReports, vineyards = [] } = useVineyard();
-  const { labData } = useGetLabData(
-    value,
-    node.data?.labData,
-    labReports,
-    vineyards,
-  );
   const [expanded, setExpanded] = useState<boolean>(node.expanded);
   const [openCadastrals, setOpenCadastrals] = useState<boolean>(false);
 
@@ -79,10 +69,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
                   style={{ borderColor: "var(--mui-palette-divider)" }}
                   className="fixed bottom-0 border-t flex items-center justify-center left-0 w-full h-[300px] bg-transparent z-[9999]"
                 >
-                  <VineyardDetailsWidget
-                    vineyard={node.data}
-                    labReports={(labData || []) as LabReport[]}
-                  />
+                  <VineyardDetailsWidget vineyard={node.data} />
                 </div>
               )}
             </>

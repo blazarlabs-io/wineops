@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 type SortedLabData = {
   sugar: number[];
   acidity: number[];
+  alcohol?: number[];
   labels: string[];
 };
 
@@ -15,6 +16,7 @@ export const useSortChartData = ({ items }: LabDataChart) => {
     if (items?.length) {
       const sugar: number[] = [];
       const acidity: number[] = [];
+      const alcohol: number[] = [];
       const labels: string[] = [];
       [
         ...items.sort(
@@ -27,6 +29,8 @@ export const useSortChartData = ({ items }: LabDataChart) => {
 
         if (results?.acidity?.value) acidity.push(results.acidity.value);
 
+        if (results?.alcohol?.value) alcohol.push(results.alcohol.value);
+
         labels.push(
           `${new Date((date as Timestamp).seconds * 1000).toDateString()}`,
         );
@@ -35,6 +39,7 @@ export const useSortChartData = ({ items }: LabDataChart) => {
       setLabData({
         sugar,
         acidity,
+        alcohol,
         labels,
       });
     }
