@@ -265,9 +265,9 @@ export default function BottleWineActionForm({
         }
       }
 
-      const subjectRecipe = filteredRecipes.filter(
+      const subjectRecipe = filteredRecipes.find(
         ({ name }) => name === data.subjectRecipe?.name,
-      )[0];
+      );
 
       setIsSubmitting(true);
 
@@ -318,35 +318,33 @@ export default function BottleWineActionForm({
   }, [filteredRecipes, reset, teamMembers]);
 
   useEffect(() => {
-    if (errors) {
-      const hasGeneralErrors = hasKeyFromArray(
-        ["executionDate", "wines"],
-        errors,
-      );
+    const hasGeneralErrors = hasKeyFromArray(
+      ["executionDate", "wines"],
+      errors,
+    );
 
-      if (hasGeneralErrors) setGeneralExpanded(true);
+    if (hasGeneralErrors) setGeneralExpanded(true);
 
-      const hasBottleSpecsErrors = hasKeyFromArray(
-        ["bottleType", "bottleSize", "closureType"],
-        errors,
-      );
+    const hasBottleSpecsErrors = hasKeyFromArray(
+      ["bottleType", "bottleSize", "closureType"],
+      errors,
+    );
 
-      if (hasBottleSpecsErrors) setBottleSpecsExpanded(true);
+    if (hasBottleSpecsErrors) setBottleSpecsExpanded(true);
 
-      const hasFinalLabErrors = hasKeyFromArray(
-        ["alcohol", "sugar", "ph", "totalSO2", "freeSO2"],
-        errors,
-      );
+    const hasFinalLabErrors = hasKeyFromArray(
+      ["alcohol", "sugar", "ph", "totalSO2", "freeSO2"],
+      errors,
+    );
 
-      if (hasFinalLabErrors) setFinalLabExpanded(true);
+    if (hasFinalLabErrors) setFinalLabExpanded(true);
 
-      const hasQuantityLossesErrors = hasKeyFromArray(
-        ["numberOfBottles", "losses"],
-        errors,
-      );
+    const hasQuantityLossesErrors = hasKeyFromArray(
+      ["numberOfBottles", "losses"],
+      errors,
+    );
 
-      if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
-    }
+    if (hasQuantityLossesErrors) setQuantityLossesExpanded(true);
   }, [errors]);
 
   if (!formData) return null;

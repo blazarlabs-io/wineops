@@ -120,77 +120,82 @@ export default function MustDecantActionForm() {
     [setValue],
   );
 
-  const onSubmit = (data: MustDecantAction) => {
-    const selectedQty =
-      vesselsWithQty?.find(({ name }) => name === data?.vesselId)?.qty || 0;
+  const onSubmit = useCallback(
+    (data: MustDecantAction) => {
+      const selectedQty =
+        vesselsWithQty?.find(({ name }) => name === data?.vesselId)?.qty || 0;
 
-    if (selectedQty < 0) {
-      setError("vesselId", {
-        type: "manual",
-        message: `Vessel quantity must be greater than zero`,
-      });
+      if (selectedQty < 0) {
+        setError("vesselId", {
+          type: "manual",
+          message: `Vessel quantity must be greater than zero`,
+        });
 
-      return;
-    }
+        return;
+      }
 
-    if ((data?.initialQty || 0) > selectedQty) {
-      setError("initialQty", {
-        type: "manual",
-        message: `Initial quantity must be less or equal with ${selectedQty}`,
-      });
+      if ((data?.initialQty || 0) > selectedQty) {
+        setError("initialQty", {
+          type: "manual",
+          message: `Initial quantity must be less or equal with ${selectedQty}`,
+        });
 
-      return;
-    }
+        return;
+      }
 
-    if (
-      data?.initialQty &&
-      data?.obtainedWineQty &&
-      data?.obtainedWineQty > data?.initialQty
-    ) {
-      setError("obtainedWineQty", {
-        type: "manual",
-        message: `Obtained quantity must be less or equal with ${data?.initialQty}`,
-      });
+      if (
+        data?.initialQty &&
+        data?.obtainedWineQty &&
+        data?.obtainedWineQty > data?.initialQty
+      ) {
+        setError("obtainedWineQty", {
+          type: "manual",
+          message: `Obtained quantity must be less or equal with ${data?.initialQty}`,
+        });
 
-      return;
-    }
+        return;
+      }
 
-    const totalVesselQty = (data?.vessels ?? []).reduce(
-      (sum, { qty = 0 }) => sum + qty,
-      0,
-    );
-
-    if (totalVesselQty > (data?.obtainedWineQty || 0)) {
-      setError(`vessels.${0}.qty`, {
-        type: "manual",
-        message: `Total of vessel quantities (${totalVesselQty}) must be less than obtained quantity (${data.obtainedWineQty})`,
-      });
-
-      return;
-    }
-
-    const subjectMust = filteredMusts.find(({ name }) => name === data?.mustId);
-
-    const subjectVessel = vesselsWithQty?.find(
-      ({ name }) => name === data?.vesselId,
-    );
-
-    if (!subjectMust) return;
-
-    setIsSubmitting(true);
-    try {
-      actions?.["must-decant"].exec(
-        user?.uid as string,
-        data,
-        subjectMust,
-        subjectVessel,
+      const totalVesselQty = (data?.vessels ?? []).reduce(
+        (sum, { qty = 0 }) => sum + qty,
+        0,
       );
-    } finally {
-      setIsSubmitting(false);
-    }
 
-    setFormData(data);
-  };
+      if (totalVesselQty > (data?.obtainedWineQty || 0)) {
+        setError(`vessels.${0}.qty`, {
+          type: "manual",
+          message: `Total of vessel quantities (${totalVesselQty}) must be less than obtained quantity (${data.obtainedWineQty})`,
+        });
+
+        return;
+      }
+
+      const subjectMust = filteredMusts.find(
+        ({ name }) => name === data?.mustId,
+      );
+
+      const subjectVessel = vesselsWithQty?.find(
+        ({ name }) => name === data?.vesselId,
+      );
+
+      if (!subjectMust) return;
+
+      setIsSubmitting(true);
+      try {
+        actions?.["must-decant"].exec(
+          user?.uid as string,
+          data,
+          subjectMust,
+          subjectVessel,
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+
+      setFormData(data);
+    },
+    [actions, filteredMusts, vesselsWithQty, user?.uid],
+  );
 
   useEffect(() => {
     const now = new Date();
@@ -208,11 +213,6 @@ export default function MustDecantActionForm() {
     reset(mustDecantActionSample);
     setFormData(mustDecantActionSample);
   }, [reset, selectedMusts]);
-
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   return (
     <>

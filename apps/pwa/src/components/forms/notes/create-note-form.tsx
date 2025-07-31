@@ -56,15 +56,18 @@ export default function CreateNoteForm({
     }));
   }, []);
 
-  const onSubmit = (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onDataSubmit(data);
-    setFormData(data);
-  };
+  const onSubmit = useCallback(
+    (data: any, e: any) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onDataSubmit(data);
+      setFormData(data);
+    },
+    [onDataSubmit],
+  );
 
   useEffect(() => {
-    const member = teamMembers.filter((v) => v.id === uid)[0];
+    const member = teamMembers.find((v) => v.id === uid);
     const newNote: Note = {
       id: Date.now().toString(),
       title: "",
@@ -75,11 +78,6 @@ export default function CreateNoteForm({
     reset(newNote);
     setFormData(newNote);
   }, []);
-
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   return (
     <>

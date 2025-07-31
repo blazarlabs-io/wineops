@@ -63,36 +63,39 @@ export default function TeamMemberCreateEditForm() {
     [setValue],
   );
 
-  const onSubmit = async (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const onSubmit = useCallback(
+    async (data: any, e: any) => {
+      e.stopPropagation();
+      e.preventDefault();
 
-    if (formType === "create") {
-      const teamRes = await db.team.create(user?.uid, data);
+      if (formType === "create") {
+        const teamRes = await db.team.create(user?.uid, data);
 
-      if (teamRes.status === 200) {
-        enqueueSnackbar("Team member created successfully", {
-          variant: "success",
-        });
-      } else {
-        enqueueSnackbar("Error creating team member", { variant: "error" });
+        if (teamRes.status === 200) {
+          enqueueSnackbar("Team member created successfully", {
+            variant: "success",
+          });
+        } else {
+          enqueueSnackbar("Error creating team member", { variant: "error" });
+        }
+      } else if (formType === "edit") {
+        const teamRes = await db.team.update(user?.uid, data);
+
+        if (teamRes.status === 200) {
+          enqueueSnackbar("Team member updated successfully", {
+            variant: "success",
+          });
+        } else {
+          enqueueSnackbar("Error updating team member", { variant: "error" });
+        }
       }
-    } else if (formType === "edit") {
-      const teamRes = await db.team.update(user?.uid, data);
 
-      if (teamRes.status === 200) {
-        enqueueSnackbar("Team member updated successfully", {
-          variant: "success",
-        });
-      } else {
-        enqueueSnackbar("Error updating team member", { variant: "error" });
-      }
-    }
+      closeDrawer();
 
-    closeDrawer();
-
-    setFormData(data);
-  };
+      setFormData(data);
+    },
+    [formType, user?.uid, enqueueSnackbar, closeDrawer],
+  );
 
   useEffect(() => {
     const formatted = {
@@ -112,11 +115,6 @@ export default function TeamMemberCreateEditForm() {
     reset(formatted);
     setFormData(formatted);
   }, [existingMember, reset, selected]);
-
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
 
   return (
     <>
