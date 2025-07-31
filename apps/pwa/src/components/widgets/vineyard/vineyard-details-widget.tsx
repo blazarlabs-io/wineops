@@ -1,56 +1,57 @@
-import { default as LabResultsChart } from "@/components/charts/lab-results";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import { LabReport, Vineyard } from "@/models/types/db";
+import { Vineyard } from "@/models/types/db";
 import CadastralDataDisplay from "@/components/data-display/cadastral-data-display";
-import LabReportResponsibleDataDisplay from "@/components/data-display/lab-report-responsible-data-display";
 import OrientationDataDisplay from "@/components/data-display/orientation-data-display";
 import DocumentsTable from "@/components/table/documents";
 import PolygonViewerMap from "@/components/widgets/maps/polygon-viewer-map";
-import { Add, DeleteOutline } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
-import DeleteLabReportDialog from "@/components/dialogs/delete-lab-report-dialog";
-import { useDialogDrawerStore } from "@/store/dialogs";
 import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { enqueueSnackbar } from "notistack";
 import { getActionsByIds } from "./utils";
-import { ActionsEntity } from "@/models/types/actions";
-import { useSelectedItemsStore } from "@/store/selected-items";
 import TasksView from "../components/tasks-view";
 import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
+import LabResultsContent from "../components/lab-results-content";
+import { useVineyard } from "@/context/vineyard";
+import { useGetLabData } from "@/hooks/use-get-lab-data";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { ActionsEntity } from "@/models/types/actions";
 
 type VineyardDetailsWidgetProps = {
   vineyard: Vineyard;
-  labReports: LabReport[];
 };
 
 export default function VineyardDetailsWidget({
   vineyard,
-  labReports,
 }: VineyardDetailsWidgetProps) {
   const [value, setValue] = useState<number>(0);
   const [localVineyard, setLocalVineyard] = useState<Vineyard>(vineyard);
   const [docs, setDocs] = useState<any[] | undefined>();
   const mountRef = useRef<boolean>(false);
 
+  const { labReports, actions } = useVineyard();
+  const { labData } = useGetLabData(vineyard?.labData || [], labReports);
+
   const { user } = useAuth();
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const open = useDialogDrawerStore(({ open }) => open);
+
+  const handleNewReport = useCallback(() => {
+    if (!actions["lab-report"]) return;
+
+    open("action-drawer", "lab-report" as unknown as ActionsEntity, vineyard);
+  }, [open, vineyard, actions]);
 
   useEffect(() => {
     if (!mountRef.current) {
@@ -123,31 +124,6 @@ export default function VineyardDetailsWidget({
     minHeight: "fit-content !important",
   };
 
-  const setSelectedItem = useSelectedItemsStore(
-    (state) => state.setSelectedItems,
-  );
-  const open = useDialogDrawerStore(({ open }) => open);
-  const openDeleteEntityDataDialog = () => open("delete-entity-data");
-
-  const handleDeleteClick = (labReport: LabReport) => {
-    openDeleteEntityDataDialog();
-    setSelectedItem([labReport], "labReport");
-  };
-
-  const onDeleteLabReport = async (data: any[]) => {
-    const labReportId = data[0].id;
-
-    if (!user?.uid || !vineyard.id || !labReportId) return;
-
-    const filteredLabData = vineyard.labData?.filter(
-      ({ id }) => id !== labReportId,
-    );
-
-    await db.vineyard.update(user?.uid, vineyard.id, {
-      labData: filteredLabData,
-    });
-  };
-
   const handleDocumentUpload = useCallback(
     async (files: Array<{ name: string; url: string }>) => {
       if (!user?.uid || !vineyard.id || !files) return;
@@ -193,20 +169,6 @@ export default function VineyardDetailsWidget({
     },
     [user?.email, user?.uid, localVineyard?.documents, vineyard.id],
   );
-
-  const openLabReportAction = useCallback(
-    () =>
-      open(
-        "action-drawer",
-        "lab-report" as unknown as ActionsEntity,
-        localVineyard,
-      ),
-    [localVineyard, open],
-  );
-
-  const handleNewReport = useCallback(() => {
-    openLabReportAction();
-  }, [openLabReportAction]);
 
   return (
     <Box
@@ -428,89 +390,11 @@ export default function VineyardDetailsWidget({
         <div className="flex gap-8 px-4">Timeline View</div>
       </TabPanel>
       <TabPanel value={value} index={3}>
-        <Stack
-          gap={1}
-          sx={{
-            height: "100%",
-          }}
-        >
-          <div className="flex items-center justify-start gap-4 w-full">
-            <Button
-              size="small"
-              variant="text"
-              className="capitalize!"
-              startIcon={<Add />}
-              onClick={handleNewReport}
-            >
-              New Report
-            </Button>
-            <div
-              className="w-[1px] h-[24px]"
-              style={{ background: "var(--mui-palette-divider)" }}
-            />
-            <Button
-              size="small"
-              variant="text"
-              className="capitalize!"
-              disabled={labReports?.length === 0}
-            >
-              View All
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-4 w-full overflow-x-auto">
-            <div className="min-w-fit h-full flex flex-col max-w-[200px] max-h-[180px] gap-2 overflow-y-scroll pr-4">
-              {[
-                ...labReports.sort(
-                  (a, b) =>
-                    (b.date as Timestamp).toDate().getTime() -
-                    (a.date as Timestamp).toDate().getTime(),
-                ),
-              ]?.map((item, index) => {
-                return (
-                  <div
-                    key={item.id + index}
-                    className="min-w-fit rounded-md w-full"
-                    style={{
-                      border: "1px solid var(--mui-palette-divider)",
-                    }}
-                  >
-                    <div className="flex items-center min-w-fit w-full gap-1 px-2 py-1 h-full ">
-                      <LabReportResponsibleDataDisplay
-                        data={item}
-                        prevData={
-                          index < labReports?.length - 1
-                            ? labReports[index + 1]
-                            : undefined
-                        }
-                      />
-                      <IconButton
-                        size="small"
-                        className="max-w-[24px] max-h-[24px]"
-                        color="error"
-                        onClick={() => handleDeleteClick(item)}
-                      >
-                        <DeleteOutline className="max-w-4 max-h-4" />
-                      </IconButton>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div
-              className="min-w-[600px] w-full flex items-center justify-start"
-              style={{ height: "220px" }}
-            >
-              <LabResultsChart
-                data={{
-                  id: "1",
-                  items: labReports,
-                  date: new Date().toISOString(),
-                }}
-              />
-            </div>
-          </div>
-        </Stack>
+        <LabResultsContent
+          entity={localVineyard}
+          labReports={labData || []}
+          onNewReport={actions["lab-report"] ? handleNewReport : undefined}
+        />
       </TabPanel>
       <TabPanel value={value} index={4}>
         <TasksView tasks={vineyard?.tasks || []} />
@@ -523,8 +407,6 @@ export default function VineyardDetailsWidget({
           <DocumentsTable docs={docs} onDocumentUpload={handleDocumentUpload} />
         </div>
       </TabPanel>
-
-      <DeleteLabReportDialog onDelete={onDeleteLabReport} />
     </Box>
   );
 }

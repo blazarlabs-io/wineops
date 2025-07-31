@@ -2,13 +2,18 @@ import { Must } from "@/models/types/db";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useCallback, useState } from "react";
 import a11yProps from "../utils/a11y-props";
 import TabPanel from "../components/tab-panel";
-import LabDataContent from "./lab-data-content";
 import MustInfoContent from "./must-info-content";
 import QtyContent from "./qty-content";
 import TasksView from "../components/tasks-view";
+import { useVineyard } from "@/context/vineyard";
+import { useGetLabData } from "@/hooks/use-get-lab-data";
+import LabResultsContent from "../components/lab-results-content";
+import { useDialogDrawerStore } from "@/store/dialogs";
+import { ActionsEntity, MustActionType } from "@/models/types/actions";
+import { useMust } from "@/context/must";
 
 type MustDetailsWidgetProps = {
   must: Must;
@@ -27,6 +32,18 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
     padding: "8px 16px !important",
     minHeight: "fit-content !important",
   };
+  const { actions } = useMust();
+  const { labReports } = useVineyard();
+
+  const open = useDialogDrawerStore(({ open }) => open);
+
+  const handleNewReport = useCallback(() => {
+    if (!actions["lab-report" as MustActionType]) return;
+
+    open("action-drawer", "lab-report" as unknown as ActionsEntity, must);
+  }, [open, must, actions]);
+
+  const { labData } = useGetLabData(must?.labDataReports || [], labReports);
 
   return (
     <Box
@@ -47,7 +64,7 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
         aria-label="Must details"
         sx={{ borderRight: 1, borderColor: "divider", paddingX: 2 }}
       >
-        <Tab label="Lab Data" {...a11yProps(0)} sx={sx} />
+        <Tab label="Lab&nbsp;Results" {...a11yProps(0)} sx={sx} />
         <Tab label="Must&nbsp;Info" {...a11yProps(1)} sx={sx} />
         <Tab label="Timeline" {...a11yProps(2)} sx={sx} />
         <Tab label="Quantity" {...a11yProps(3)} sx={sx} />
@@ -55,7 +72,16 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
       </Tabs>
 
       <TabPanel value={value} index={0}>
-        <LabDataContent labData={must.labData} />
+        <LabResultsContent
+          showDetails
+          entity={must}
+          labReports={labData || []}
+          onNewReport={
+            actions["lab-report" as MustActionType]
+              ? handleNewReport
+              : undefined
+          }
+        />
       </TabPanel>
 
       <TabPanel value={value} index={1}>

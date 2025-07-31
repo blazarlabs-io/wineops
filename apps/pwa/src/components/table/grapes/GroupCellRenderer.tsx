@@ -62,12 +62,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     });
 
   const { labReports, grapes } = useGrape();
-  const { labData } = useGetLabData(
-    value,
-    node.data?.labData,
-    labReports,
-    grapes,
-  );
+  const { labData } = useGetLabData(node.data?.labData, labReports);
 
   const handleStatusChange = async (status: EntityStatus) => {
     const selectedGrape = grapes.find(

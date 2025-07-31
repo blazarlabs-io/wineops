@@ -154,6 +154,7 @@ export type LabReport = {
     [key: string]: {
       value: number;
       variation: number;
+      unit?: string;
     };
   };
   units: string;
@@ -476,6 +477,7 @@ export const MustStatus = {
 export type MustStatus = (typeof MustStatus)[keyof typeof MustStatus];
 
 export type MustLabData = {
+  id: string;
   date: string | Timestamp;
   temperature: Partial<LabElement>;
   alcohol: Partial<LabElement>;
@@ -508,6 +510,7 @@ export type Must = Entity & {
   vessels?: MustWineVessel[];
   safetyCertificateNo?: string;
   invoicePurchaseNo?: string;
+  labDataReports?: ActionRelation[];
   labData?: MustLabData;
   status?: MustStatus;
   metrics?: Metrics;

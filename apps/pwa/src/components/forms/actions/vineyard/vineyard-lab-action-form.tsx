@@ -40,7 +40,7 @@ import { NumberSchema } from "joi";
 export default function VineyardLabActionForm({
   onBackClick,
 }: ActionFormProps) {
-  const { dialogs, vineyard } = useDialogDrawerStore((state) => state);
+  const { dialogs, entity: vineyard } = useDialogDrawerStore((state) => state);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,7 +53,7 @@ export default function VineyardLabActionForm({
   const selectedVineyards = useMemo(
     () =>
       `${dialogs["action-drawer"]}` === "lab-report" && vineyard
-        ? [vineyard]
+        ? [vineyard as Vineyard]
         : (selected.length > 0
             ? selected.map(
                 (selected) =>

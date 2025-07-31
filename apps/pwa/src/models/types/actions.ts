@@ -187,7 +187,7 @@ export interface VineyardGlobalAction {
 }
 
 const MUST_ACTION_TYPES = ["must-decant"] as const;
-type MustActionType = (typeof MUST_ACTION_TYPES)[number];
+export type MustActionType = (typeof MUST_ACTION_TYPES)[number];
 
 export type MustActions = {
   [K in MustActionType]: {
