@@ -16,8 +16,12 @@ import {
 } from "react";
 import { useVessel } from "./vessel";
 import { MustActions } from "@/models/types/actions";
-import { mustDecantAction } from "@/lib/actions/must-actions";
+import {
+  mustDecantAction,
+  mustLabResultsAction,
+} from "@/lib/actions/must-actions";
 import MustDecantActionForm from "@/components/forms/actions/must/must-decant-action-form";
+import MustLabResultsActionForm from "@/components/forms/actions/must/must-lab-results-action-form";
 
 interface MustContextType {
   musts: Must[];
@@ -50,6 +54,12 @@ export const MustProvider = ({ children }: IMustProvider) => {
       exec: mustDecantAction,
       form: MustDecantActionForm,
       icon: "material-symbols:science-outline",
+    },
+    "lab-results": {
+      exec: mustLabResultsAction,
+      form: MustLabResultsActionForm,
+      icon: "material-symbols:lab-profile-outline",
+      title: "Record Lab Results",
     },
   });
 

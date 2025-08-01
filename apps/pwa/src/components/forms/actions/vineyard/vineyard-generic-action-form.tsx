@@ -79,7 +79,8 @@ export default function VineyardGenericActionForm({
 
   const userId =
     teamMembers?.find(
-      ({ id, email }) => email === user?.email || id === user?.uid,
+      ({ id, email }) =>
+        email.toLowerCase() === user?.email?.toLowerCase() || id === user?.uid,
     )?.id ||
     user?.email ||
     user?.uid ||

@@ -95,7 +95,7 @@ export default function DeleteLabReportDialog<T extends DashboardEntity>({
           alignItems="center"
           justifyContent="center"
         >
-          <Box sx={{ width: "300px" }}>
+          <Box sx={{ width: "400px" }}>
             <LabReportResponsibleDataDisplay
               data={selectedItems[0] as unknown as LabReport}
             />

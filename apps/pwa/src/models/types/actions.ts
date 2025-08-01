@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
 import {
   EntityConsumable,
@@ -49,7 +50,7 @@ type GrapeSingleAction = {
   form: any;
   icon: string;
   title?: string;
-  key?: keyof VineyardActions;
+  key?: keyof GrapeActions;
 };
 
 export type GrapeActions = {
@@ -186,20 +187,24 @@ export interface VineyardGlobalAction {
   createdBy?: TeamMember["id"] | TeamMember["email"];
 }
 
-const MUST_ACTION_TYPES = ["must-decant"] as const;
+export const MUST_ACTION_TYPES = ["must-decant", "lab-results"] as const;
 export type MustActionType = (typeof MUST_ACTION_TYPES)[number];
 
+type MustSingleAction = {
+  exec: (
+    uid: string,
+    actionData: any,
+    must: Must,
+    mustVessel?: MustWineVessel,
+  ) => void;
+  form: any;
+  icon: string;
+  title?: string;
+  key?: keyof MustActions;
+};
+
 export type MustActions = {
-  [K in MustActionType]: {
-    exec: (
-      uid: string,
-      actionData: MustDecantAction,
-      must: Must,
-      mustVessel?: MustWineVessel,
-    ) => void;
-    form: any;
-    icon: string;
-  };
+  [K in MustActionType]: MustSingleAction;
 };
 
 export type MustDecantAction = {
@@ -222,6 +227,29 @@ export type MustDecantAction = {
   wineName?: string;
   labReport?: LabReport;
 };
+
+export interface MustLabResultsAction {
+  id: string;
+  type: MustActionType;
+  subjectMust: Subject;
+  executionDate: string | Timestamp;
+  responsible?: Partial<TeamMember>;
+  temperature?: number;
+  alcohol?: number;
+  sugar: number;
+  acidity?: number;
+  pH?: number;
+  density?: number;
+  volatileAcidity?: number;
+  malicAcid?: number;
+  lacticAcid?: number;
+  labCertificateId?: string;
+  supportingDocuments?: { name: string; url: string }[];
+  labDataToDeleteIds?: string[];
+  additionalInformation?: string;
+  createdAt?: string | Timestamp;
+  createdBy?: TeamMember["id"] | TeamMember["email"];
+}
 
 export type ActionRelation = {
   id: string;

@@ -9,7 +9,11 @@ import {
 } from "@/models/types/db";
 import { db } from "../firebase/services";
 import { enqueueSnackbar } from "notistack";
-import { ActionRelation, MustDecantAction } from "@/models/types/actions";
+import {
+  ActionRelation,
+  MustDecantAction,
+  MustLabResultsAction,
+} from "@/models/types/actions";
 
 export const mustDecantAction = async (
   uid: string,
@@ -146,5 +150,127 @@ export const mustDecantAction = async (
       enqueueSnackbar("Error creating must", { variant: "error" });
       return;
     }
+  }
+};
+
+export const mustLabResultsAction = async (
+  uid: string,
+  actionData: MustLabResultsAction,
+  must: MustWithVessel,
+) => {
+  const labReportId = crypto.randomUUID();
+
+  const {
+    id,
+    subjectMust,
+    temperature,
+    alcohol,
+    sugar,
+    acidity,
+    pH,
+    density,
+    volatileAcidity,
+    malicAcid,
+    lacticAcid,
+    labDataToDeleteIds = [],
+    responsible,
+    executionDate,
+    supportingDocuments,
+  } = actionData;
+
+  if (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0) {
+    const deleteRes = await db.labReport.deleteMany(uid, labDataToDeleteIds);
+  }
+
+  const UNITS = {
+    temperature: "°C",
+    alcohol: "%",
+    sugar: "g/dm³",
+    acidity: "g/dm³",
+    density: "g/cm³",
+    volatileAcidity: "g/L",
+    malicAcid: "g/L",
+    lacticAcid: "g/L",
+  };
+
+  const results = Object.entries({
+    temperature,
+    alcohol,
+    sugar,
+    acidity,
+    pH,
+    density,
+    volatileAcidity,
+    malicAcid,
+    lacticAcid,
+  }).reduce(
+    (acc, [key, value]) => {
+      if (typeof value === "number" && value > 0) {
+        const unit = UNITS[key as keyof typeof UNITS];
+        acc[key] = { value, ...(unit && { unit }) };
+      }
+      return acc;
+    },
+    {} as Record<string, { value: number }>,
+  );
+
+  const labRes = await db.labReport.create(uid, {
+    id: labReportId,
+    subject: subjectMust,
+    ...(responsible && {
+      responsible: {
+        name: responsible?.name,
+        email: responsible?.email,
+      },
+    }),
+    date: executionDate,
+    supportingDocuments,
+    results,
+  });
+
+  if (labRes.status === 200) {
+    enqueueSnackbar("Lab results created", { variant: "success" });
+  } else {
+    enqueueSnackbar("Error creating lab results", { variant: "error" });
+  }
+
+  const actionRes = await db.action.create(uid, actionData);
+
+  if (actionRes.status === 200) {
+    enqueueSnackbar("Action created", { variant: "success" });
+  } else {
+    enqueueSnackbar("Error creating action", { variant: "error" });
+  }
+
+  const filteredLabData =
+    (Array.isArray(labDataToDeleteIds) && labDataToDeleteIds.length > 0
+      ? must.labData?.filter(
+          (labData) => !labDataToDeleteIds?.includes(labData.id),
+        )
+      : must.labData) || ([] as ActionRelation[]);
+
+  const mustRes = await db.must.update(uid, subjectMust.id, {
+    actions: [
+      ...(must.actions || ([] as ActionRelation[])),
+      {
+        id,
+        name: "lab-results",
+        date: executionDate,
+      },
+    ],
+    labData: [
+      ...filteredLabData,
+      {
+        id: labReportId,
+        name: "lab-results",
+        date: executionDate,
+      },
+    ],
+  });
+
+  if (mustRes.status === 200) {
+    enqueueSnackbar("Must updated", { variant: "success" });
+  } else {
+    enqueueSnackbar("Must update failed", { variant: "error" });
   }
 };
