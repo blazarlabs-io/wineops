@@ -22,9 +22,11 @@ const labDataSchema = Joi.object({
   alcohol: labElementSchema.optional(),
   sugar: labElementSchema.optional(),
   acidity: labElementSchema.optional(),
+  pH: labElementSchema.optional(),
+  density: labElementSchema.optional(),
   volatileAcidity: labElementSchema.optional(),
-  yeastActivityPopulation: labElementSchema.optional(),
-  yeastAssimilableNitrogen: labElementSchema.optional(),
+  malicAcid: labElementSchema.optional(),
+  lacticAcid: labElementSchema.optional(),
   labTechnicianName: Joi.string().optional().allow(""),
   labCertificateID: Joi.string().optional().allow(""),
 });
@@ -79,6 +81,6 @@ export const mustSchema = Joi.object({
   }),
   safetyCertificateNo: Joi.string().optional().allow(""),
   invoicePurchaseNo: Joi.string().optional().allow(""),
-  labData: labDataSchema.optional(),
+  labDataOld: labDataSchema.optional(),
   status: Joi.string().optional().allow(""),
 });

@@ -485,9 +485,11 @@ export type MustLabData = {
   alcohol: Partial<LabElement>;
   sugar: Partial<LabElement>;
   acidity: Partial<LabElement>;
+  pH?: Partial<LabElement>;
+  density?: Partial<LabElement>;
   volatileAcidity: Partial<LabElement>;
-  yeastActivityPopulation: Partial<LabElement>;
-  yeastAssimilableNitrogen: Partial<LabElement>;
+  malicAcid?: Partial<LabElement>;
+  lacticAcid?: Partial<LabElement>;
   labTechnicianName: string;
   labCertificateID: string;
 };

@@ -3,7 +3,6 @@
 
 import { useMust } from "@/context/must";
 import { useVessel } from "@/context/vessel";
-import { CONCENTRATION_UNITS } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
 import { mustSchema } from "@/models/schemas/must-schema";
@@ -35,6 +34,7 @@ import { Controller, useForm } from "react-hook-form";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
+import { getResultsWithUnits } from "../utils";
 
 export default function MustForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,6 +61,8 @@ export default function MustForm() {
     control,
   } = useForm<Must>({
     resolver: joiResolver(mustSchema, { stripUnknown: true }),
+    mode: "onTouched",
+    reValidateMode: "onChange",
   });
 
   const [formData, setFormData] = useState<Must | undefined>();
@@ -109,6 +111,37 @@ export default function MustForm() {
             });
           }
         } else {
+          const labReportId = crypto.randomUUID();
+
+          if (data.labDataOld) {
+            const results = getResultsWithUnits(data.labDataOld);
+
+            const labRes = await db.labReport.create(uid, {
+              id: labReportId,
+              subject: {
+                id: data.id,
+                name: data.name,
+              },
+              date: data.labDataOld.date,
+              results,
+            });
+
+            if (labRes.status === 200) {
+              data.labData = [
+                {
+                  id: labReportId,
+                  name: "lab-results",
+                  date: data.labDataOld.date,
+                },
+              ];
+              enqueueSnackbar("Lab results created", { variant: "success" });
+            } else {
+              enqueueSnackbar("Error creating lab results", {
+                variant: "error",
+              });
+            }
+          }
+
           data.group = [data.name];
 
           const createRes: DbResponse = await db.must.create(uid, data);
@@ -157,7 +190,7 @@ export default function MustForm() {
     const formatted = {
       ...existingMust,
       ...(!existingMust && {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         name,
       }),
       status: existingMust?.status || MustStatus.NEW_MUST,
@@ -201,7 +234,7 @@ export default function MustForm() {
           >
             <Accordion defaultExpanded disableGutters={true}>
               <AccordionDetails>
-                <div className="flex flex-col gap-4">
+                <Stack gap={2}>
                   <div className="hidden">
                     <FormControl>
                       <Input
@@ -213,7 +246,7 @@ export default function MustForm() {
                     </FormControl>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter date:
                     </InputLabel>
@@ -244,9 +277,9 @@ export default function MustForm() {
                         {errors?.date?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter batch name:
                     </InputLabel>
@@ -270,9 +303,9 @@ export default function MustForm() {
                         {errors?.name?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter supplier name:
                     </InputLabel>
@@ -294,9 +327,9 @@ export default function MustForm() {
                         {errors?.supplier?.companyName?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter grape variety:
                     </InputLabel>
@@ -318,9 +351,9 @@ export default function MustForm() {
                         {errors?.grapeVariety?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter quantity
                     </InputLabel>
@@ -344,9 +377,9 @@ export default function MustForm() {
                         {errors?.qty?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Select vessels used:
                     </InputLabel>
@@ -472,9 +505,9 @@ export default function MustForm() {
                         {errors?.vessels?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter safety certificate number:
                     </InputLabel>
@@ -498,9 +531,9 @@ export default function MustForm() {
                         {errors?.safetyCertificateNo?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter invoice/purchase document number:
                     </InputLabel>
@@ -524,8 +557,8 @@ export default function MustForm() {
                         {errors?.invoicePurchaseNo?.message as string}
                       </Typography>
                     )}
-                  </div>
-                </div>
+                  </Stack>
+                </Stack>
               </AccordionDetails>
             </Accordion>
 
@@ -541,8 +574,8 @@ export default function MustForm() {
               </AccordionSummary>
 
               <AccordionDetails>
-                <div className="p-4 flex flex-col gap-4 border-l">
-                  <div className="flex flex-col gap-2">
+                <Stack gap={2}>
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
                       Enter date:
                     </InputLabel>
@@ -559,6 +592,8 @@ export default function MustForm() {
                                 ? dayjs(parseToDate(field.value))
                                 : null
                             }
+                            disableFuture
+                            views={["year", "month", "day"]}
                             onChange={(newValue) =>
                               field.onChange(
                                 newValue
@@ -589,44 +624,31 @@ export default function MustForm() {
                         {errors?.labDataOld?.date?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter temperature:
+                      Enter the temperature (°C):
                     </InputLabel>
 
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labDataOld.temperature.value"
-                          label="Temperature"
-                          variant="outlined"
-                          type="number"
-                          slotProps={{
-                            htmlInput: { min: 0, step: "any", max: 100 },
-                          }}
-                          {...register("labDataOld.temperature.value")}
-                        />
-                      </FormControl>
-
-                      <FormControl sx={{ display: "none" }}>
-                        <Input
-                          id="labDataOld.temperature.unit"
-                          label="Unit"
-                          type="hidden"
-                          variant="outlined"
-                          value={
-                            formData?.labDataOld?.temperature?.unit || "°C"
-                          }
-                          {...register("labDataOld.temperature.unit")}
-                        />
-                      </FormControl>
-
-                      <Box sx={{ width: "60px" }}>
-                        {formData?.labDataOld?.temperature?.unit || "°C"}
-                      </Box>
-                    </Stack>
+                    <FormControl sx={{ flex: 1 }}>
+                      <Input
+                        id="labDataOld.temperature.value"
+                        label="Temperature (°C)"
+                        variant="outlined"
+                        type="number"
+                        slotProps={{
+                          htmlInput: { min: -20, step: 0.01, max: 100 },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.temperature?.value ||
+                              0) > 0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.temperature.value")}
+                      />
+                    </FormControl>
 
                     {errors?.labDataOld?.temperature?.value && (
                       <Typography
@@ -640,136 +662,68 @@ export default function MustForm() {
                         }
                       </Typography>
                     )}
+                  </Stack>
 
-                    {errors?.labDataOld?.temperature?.unit && (
+                  <Stack gap={1}>
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the alcohol (%):
+                    </InputLabel>
+                    <FormControl sx={{ flex: 1 }}>
+                      <Input
+                        id="labDataOld.alcohol"
+                        label="Alcohol (%)"
+                        variant="outlined"
+                        type="number"
+                        slotProps={{
+                          htmlInput: { min: 0, step: 0.01, max: 100 },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.alcohol?.value || 0) >
+                              0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.alcohol.value")}
+                      />
+                    </FormControl>
+
+                    {errors?.labDataOld?.alcohol?.value?.message && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {
-                          errors?.labDataOld?.temperature?.unit
-                            ?.message as string
-                        }
+                        {errors.labDataOld.alcohol.value.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
-                    <InputLabel className="text-sm text-muted-foreground">
-                      Enter alcohol:
+                  <Stack gap={1}>
+                    <InputLabel
+                      className="text-sm text-muted-foreground"
+                      sx={{ whiteSpace: "normal" }}
+                    >
+                      Enter the mass concentration of sugars (g/dm³):
                     </InputLabel>
 
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labDataOld.alcohol"
-                          label="Alcohol"
-                          variant="outlined"
-                          type="number"
-                          slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labDataOld.alcohol.value")}
-                        />
-                      </FormControl>
-
-                      <FormControl sx={{ display: "none" }}>
-                        <Input
-                          id="labDataOld.alcohol.unit"
-                          label="Unit"
-                          type="hidden"
-                          variant="outlined"
-                          value={formData?.labDataOld?.alcohol?.unit || "%"}
-                          {...register("labDataOld.alcohol.unit")}
-                        />
-                      </FormControl>
-
-                      <Box sx={{ width: "60px" }}>
-                        {formData?.labDataOld?.alcohol?.unit || "%"}
-                      </Box>
-                    </Stack>
-
-                    {errors?.labDataOld?.alcohol && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        className="mt-1"
-                      >
-                        {errors?.labDataOld?.alcohol?.message as string}
-                      </Typography>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <InputLabel className="text-sm text-muted-foreground">
-                      Enter sugar:
-                    </InputLabel>
-
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labDataOld.sugar.value"
-                          label="Sugar"
-                          variant="outlined"
-                          type="number"
-                          slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labDataOld.sugar.value")}
-                        />
-                      </FormControl>
-
-                      {CONCENTRATION_UNITS.length === 1 ? (
-                        <>
-                          <FormControl sx={{ display: "none" }}>
-                            <Input
-                              id="labDataOld.sugar.unit"
-                              label="Unit"
-                              type="hidden"
-                              variant="outlined"
-                              value={
-                                formData?.labDataOld?.sugar?.unit ||
-                                CONCENTRATION_UNITS[0] ||
-                                "g/dm³"
-                              }
-                              {...register("labDataOld.sugar.unit")}
-                            />
-                          </FormControl>
-
-                          <Box sx={{ width: "60px" }}>
-                            {formData?.labDataOld?.sugar?.unit ||
-                              CONCENTRATION_UNITS[0] ||
-                              "g/dm³"}
-                          </Box>
-                        </>
-                      ) : (
-                        <Autocomplete
-                          freeSolo
-                          options={CONCENTRATION_UNITS}
-                          value={
-                            formData?.labDataOld?.sugar?.unit ??
-                            CONCENTRATION_UNITS[0]
-                          }
-                          onChange={(_event, newValue) => {
-                            handleSelectChange(
-                              "labDataOld.sugar.unit",
-                              newValue,
-                            );
-                          }}
-                          onInputChange={(_event, newInputValue) => {
-                            handleSelectChange(
-                              "labDataOld.sugar.unit",
-                              newInputValue,
-                            );
-                          }}
-                          sx={{ width: "100px" }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Unit"
-                              variant="outlined"
-                            />
-                          )}
-                        />
-                      )}
-                    </Stack>
+                    <FormControl sx={{ flex: 1 }}>
+                      <Input
+                        id="labDataOld.sugar.value"
+                        label="Sugar (g/dm³)"
+                        variant="outlined"
+                        type="number"
+                        slotProps={{
+                          htmlInput: { min: 0, step: 0.01, max: 10_000 },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.sugar?.value || 0) >
+                              0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.sugar.value")}
+                      />
+                    </FormControl>
 
                     {errors?.labDataOld?.sugar?.value && (
                       <Typography
@@ -780,89 +734,31 @@ export default function MustForm() {
                         {errors?.labDataOld?.sugar?.value?.message as string}
                       </Typography>
                     )}
+                  </Stack>
 
-                    {errors?.labDataOld?.sugar?.unit && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        className="mt-1"
-                      >
-                        {errors?.labDataOld?.sugar?.unit?.message as string}
-                      </Typography>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter acidity:
+                      Enter the acidity (g/dm³):
                     </InputLabel>
 
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labDataOld.acidity.value"
-                          label="Acidity"
-                          variant="outlined"
-                          type="number"
-                          slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labDataOld.acidity.value")}
-                        />
-                      </FormControl>
-
-                      {CONCENTRATION_UNITS.length === 1 ? (
-                        <>
-                          <FormControl sx={{ display: "none" }}>
-                            <Input
-                              id="labDataOld.acidity.unit"
-                              label="Unit"
-                              type="hidden"
-                              variant="outlined"
-                              value={
-                                formData?.labDataOld?.acidity?.unit ||
-                                CONCENTRATION_UNITS[0] ||
-                                "g/dm³"
-                              }
-                              {...register("labDataOld.acidity.unit")}
-                            />
-                          </FormControl>
-
-                          <Box sx={{ width: "60px" }}>
-                            {formData?.labDataOld?.acidity?.unit ||
-                              CONCENTRATION_UNITS[0] ||
-                              "g/dm³"}
-                          </Box>
-                        </>
-                      ) : (
-                        <Autocomplete
-                          freeSolo
-                          options={CONCENTRATION_UNITS}
-                          value={
-                            formData?.labDataOld?.acidity?.unit ??
-                            CONCENTRATION_UNITS[0]
-                          }
-                          onChange={(_event, newValue) => {
-                            handleSelectChange(
-                              "labDataOld.acidity.unit",
-                              newValue,
-                            );
-                          }}
-                          onInputChange={(_event, newInputValue) => {
-                            handleSelectChange(
-                              "labDataOld.acidity.unit",
-                              newInputValue,
-                            );
-                          }}
-                          sx={{ width: "100px" }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Unit"
-                              variant="outlined"
-                            />
-                          )}
-                        />
-                      )}
-                    </Stack>
+                    <FormControl sx={{ flex: 1 }}>
+                      <Input
+                        id="labDataOld.acidity.value"
+                        label="Acidity (g/dm³)"
+                        variant="outlined"
+                        type="number"
+                        slotProps={{
+                          htmlInput: { min: 0, step: 0.01, max: 10_000 },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.acidity?.value || 0) >
+                              0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.acidity.value")}
+                      />
+                    </FormControl>
 
                     {errors?.labDataOld?.acidity?.value && (
                       <Typography
@@ -873,177 +769,204 @@ export default function MustForm() {
                         {errors?.labDataOld?.acidity?.value?.message as string}
                       </Typography>
                     )}
+                  </Stack>
 
-                    {errors?.labDataOld?.acidity?.unit && (
+                  <Stack gap={1}>
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the pH:
+                    </InputLabel>
+
+                    <FormControl fullWidth>
+                      <TextField
+                        type="number"
+                        id="pH"
+                        label="pH"
+                        variant="outlined"
+                        slotProps={{
+                          htmlInput: {
+                            min: 0,
+                            step: 0.01,
+                            max: 14,
+                          },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.pH?.value || 0) > 0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.pH.value")}
+                      />
+                    </FormControl>
+
+                    {errors?.labDataOld?.pH?.value?.message && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labDataOld?.acidity?.unit?.message as string}
+                        {errors.labDataOld.pH.value.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter volatile acidity:
+                      Enter the density (g/cm³):
                     </InputLabel>
 
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labDataOld.volatileAcidity"
-                          label="Volatile acidity"
-                          variant="outlined"
-                          type="number"
-                          slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labDataOld.volatileAcidity.value")}
-                        />
-                      </FormControl>
+                    <FormControl fullWidth>
+                      <TextField
+                        type="number"
+                        id="density"
+                        label="Density (g/cm³)"
+                        variant="outlined"
+                        slotProps={{
+                          htmlInput: {
+                            min: 0,
+                            step: 0.01,
+                            max: 10_000,
+                          },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.density?.value || 0) >
+                              0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.density.value")}
+                      />
+                    </FormControl>
 
-                      <FormControl sx={{ display: "none" }}>
-                        <Input
-                          id="labDataOld.volatileAcidity.unit"
-                          label="Unit"
-                          type="hidden"
-                          variant="outlined"
-                          value={
-                            formData?.labDataOld?.volatileAcidity?.unit || "g/L"
-                          }
-                          {...register("labDataOld.volatileAcidity.unit")}
-                        />
-                      </FormControl>
-
-                      <Box sx={{ width: "60px" }}>
-                        {formData?.labDataOld?.volatileAcidity?.unit || "g/L"}
-                      </Box>
-                    </Stack>
-
-                    {errors?.labDataOld?.volatileAcidity && (
+                    {errors?.labDataOld?.density?.value?.message && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labDataOld?.volatileAcidity?.message as string}
+                        {errors.labDataOld.density.value.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter yeast activity / population:
+                      Enter the volatile acidity (g/L):
                     </InputLabel>
 
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labDataOld.yeastActivityPopulation"
-                          label="Yeast activity / population"
-                          variant="outlined"
-                          type="number"
-                          slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register(
-                            "labDataOld.yeastActivityPopulation.value",
-                          )}
-                        />
-                      </FormControl>
+                    <FormControl sx={{ flex: 1 }}>
+                      <Input
+                        id="labDataOld.volatileAcidity"
+                        label="Volatile acidity (g/L)"
+                        variant="outlined"
+                        type="number"
+                        slotProps={{
+                          htmlInput: { min: 0, step: 0.01, max: 10_000 },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.volatileAcidity?.value ||
+                              0) > 0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.volatileAcidity.value")}
+                      />
+                    </FormControl>
 
-                      <FormControl sx={{ display: "none" }}>
-                        <Input
-                          id="labDataOld.yeastActivityPopulation.unit"
-                          label="Unit"
-                          type="hidden"
-                          variant="outlined"
-                          value={
-                            formData?.labDataOld?.yeastActivityPopulation
-                              ?.unit || "million cells/mL"
-                          }
-                          {...register(
-                            "labDataOld.yeastActivityPopulation.unit",
-                          )}
-                        />
-                      </FormControl>
-
-                      <Box sx={{ width: "60px" }}>
-                        {formData?.labDataOld?.yeastActivityPopulation?.unit ||
-                          "million cells/mL"}
-                      </Box>
-                    </Stack>
-
-                    {errors?.labDataOld?.yeastActivityPopulation && (
+                    {errors?.labDataOld?.volatileAcidity?.value?.message && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
                         {
-                          errors.labDataOld.yeastActivityPopulation
-                            ?.message as string
+                          errors.labDataOld.volatileAcidity.value
+                            .message as string
                         }
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter yeast assimilable nitrogen:
+                      Enter the malic acid (g/L):
                     </InputLabel>
 
-                    <Stack direction="row" gap={2} alignItems="center">
-                      <FormControl sx={{ flex: 1 }}>
-                        <Input
-                          id="labDataOld.yeastAssimilableNitrogen"
-                          label="Yeast assimilable nitrogen  "
-                          variant="outlined"
-                          type="number"
-                          slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register(
-                            "labDataOld.yeastAssimilableNitrogen.value",
-                          )}
-                        />
-                      </FormControl>
+                    <FormControl fullWidth>
+                      <TextField
+                        type="number"
+                        id="malicAcid"
+                        label="Malic acid (g/L)"
+                        variant="outlined"
+                        slotProps={{
+                          htmlInput: {
+                            min: 0,
+                            step: 0.01,
+                            max: 10_000,
+                          },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.malicAcid?.value || 0) >
+                              0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.malicAcid.value")}
+                      />
+                    </FormControl>
 
-                      <FormControl sx={{ display: "none" }}>
-                        <Input
-                          id="labDataOld.yeastAssimilableNitrogen.unit"
-                          label="Unit"
-                          type="hidden"
-                          variant="outlined"
-                          value={
-                            formData?.labDataOld?.yeastAssimilableNitrogen
-                              ?.unit || "mg N/L"
-                          }
-                          {...register(
-                            "labDataOld.yeastAssimilableNitrogen.unit",
-                          )}
-                        />
-                      </FormControl>
-
-                      <Box sx={{ width: "60px" }}>
-                        {formData?.labDataOld?.yeastAssimilableNitrogen?.unit ||
-                          "mg N/L"}
-                      </Box>
-                    </Stack>
-
-                    {errors?.labDataOld?.yeastAssimilableNitrogen && (
+                    {errors?.labDataOld?.malicAcid?.value?.message && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {
-                          errors.labDataOld.yeastAssimilableNitrogen
-                            ?.message as string
-                        }
+                        {errors?.labDataOld?.malicAcid?.value.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter lab technician name:
+                      Enter the lactic acid (g/L):
+                    </InputLabel>
+
+                    <FormControl fullWidth>
+                      <TextField
+                        type="number"
+                        id="lacticAcid"
+                        label="Lactic acid (g/L)"
+                        variant="outlined"
+                        slotProps={{
+                          htmlInput: {
+                            min: 0,
+                            step: 0.01,
+                            max: 10_000,
+                          },
+                          inputLabel: {
+                            ...((formData?.labDataOld?.lacticAcid?.value || 0) >
+                              0 && {
+                              shrink: true,
+                            }),
+                          },
+                        }}
+                        {...register("labDataOld.lacticAcid.value")}
+                      />
+                    </FormControl>
+
+                    {errors?.labDataOld?.lacticAcid?.value?.message && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {errors.labDataOld.lacticAcid.value.message as string}
+                      </Typography>
+                    )}
+                  </Stack>
+
+                  <Stack gap={1}>
+                    <InputLabel className="text-sm text-muted-foreground">
+                      Enter the lab technician name:
                     </InputLabel>
 
                     <FormControl>
@@ -1065,11 +988,11 @@ export default function MustForm() {
                         {errors.labDataOld.labTechnicianName?.message as string}
                       </Typography>
                     )}
-                  </div>
+                  </Stack>
 
-                  <div className="flex flex-col gap-2">
+                  <Stack gap={1}>
                     <InputLabel className="text-sm text-muted-foreground">
-                      Enter lab certificate ID:
+                      Enter the lab certificate ID:
                     </InputLabel>
 
                     <FormControl>
@@ -1091,11 +1014,12 @@ export default function MustForm() {
                         {errors.labDataOld.labCertificateID?.message as string}
                       </Typography>
                     )}
-                  </div>
-                </div>
+                  </Stack>
+                </Stack>
               </AccordionDetails>
             </Accordion>
           </Box>
+
           <Box
             p={2}
             gap={2}
