@@ -190,7 +190,7 @@ export default function WorkspaceLayout(props: MainProps) {
               <QuickActionsDrawer<MustActions>
                 open={isActionsDrawerOpen}
                 actions={mustActions}
-                onOpenChange={() => handleOpenChange("actions", false)}
+                onOpenChange={handleDrawerClose}
                 dashboard={currentDashboard}
               />
             )}

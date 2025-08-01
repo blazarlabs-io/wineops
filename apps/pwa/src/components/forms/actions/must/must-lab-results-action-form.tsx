@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { vineyardGlobalActionSample } from "@/data/actions-samples";
-import { ActionFormProps, VineyardGlobalAction } from "@/models/types/actions";
+import { ActionFormProps, MustLabResultsAction } from "@/models/types/actions";
 import { joiResolver } from "@hookform/resolvers/joi";
 
 import { useVineyard } from "@/context/vineyard";
 import { useWinery } from "@/context/winery";
 import { useAuth } from "@/lib/firebase/auth";
 import { db } from "@/lib/firebase/services";
-import { vineyardGlobalActionSchema } from "@/models/schemas/actions/vineyard-global-action-schema";
 import { useSelectedEntitiesStore } from "@/store/selected-entities";
 import { Attachment, DeleteOutline } from "@mui/icons-material";
 import {
@@ -22,7 +20,6 @@ import {
   InputLabel,
   LinearProgress,
   Stack,
-  TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
@@ -35,34 +32,45 @@ import { useForm } from "react-hook-form";
 import ResponsibleTeamMemberField from "../../custom-fields/responsible-team-member-field";
 import { useDialogDrawerStore } from "@/store/dialogs";
 import { parseToDate } from "@/utils/date-format";
-import { Vineyard } from "@/models/types/db";
-import { NumberSchema } from "joi";
+import { MustWithVessel } from "@/models/types/db";
+import { useMust } from "@/context/must";
+import { mustLabResultsActionSchema } from "@/models/schemas/actions/must-lab-results-action-schema";
 
-export default function VineyardLabActionForm({
+const initialFormData: MustLabResultsAction = {
+  id: "",
+  type: "lab-results",
+  subjectMust: { id: "", name: "" },
+  executionDate: "",
+  sugar: null as unknown as number,
+};
+
+export default function MustLabResultsActionForm({
   onBackClick,
 }: ActionFormProps) {
-  const { dialogs, entity: vineyard } = useDialogDrawerStore((state) => state);
+  const { dialogs, entity: must } = useDialogDrawerStore((state) => state);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { vineyards = [], actions, labReports } = useVineyard();
+  const { labReports } = useVineyard();
+
+  const { musts: allMusts, actions } = useMust();
 
   const selected = useSelectedEntitiesStore(
     ({ selected }) => selected,
-  ) as Vineyard[];
+  ) as MustWithVessel[];
 
-  const selectedVineyards = useMemo(
+  const selectedMusts = useMemo(
     () =>
-      `${dialogs["action-drawer"]}` === "lab-report" && vineyard
-        ? [vineyard as Vineyard]
+      `${dialogs["action-drawer"]}` === "lab-results" && must
+        ? [must as MustWithVessel]
         : (selected.length > 0
             ? selected.map(
                 (selected) =>
-                  vineyards.find(({ id }) => id === selected.id) ?? selected,
+                  allMusts.find(({ id }) => id === selected.id) ?? selected,
               )
-            : vineyards
+            : allMusts
           ).filter(({ rowType }) => rowType === "item"),
-    [dialogs, selected, vineyard, vineyards],
+    [dialogs, must, selected, allMusts],
   );
 
   const { teamMembers } = useWinery();
@@ -77,24 +85,6 @@ export default function VineyardLabActionForm({
     user?.uid ||
     "";
 
-  const labActionSchema = vineyardGlobalActionSchema.fork(
-    ["inputData.sugar"],
-    (schema) =>
-      (schema as NumberSchema)
-        .precision(2)
-        .min(0.01)
-        .max(10_000)
-        .required()
-        .messages({
-          "any.required": "Please enter a valid number for the sugar",
-          "number.empty": "Please enter a valid number for the sugar",
-          "number.base": "Please enter a valid number for the sugar",
-          "number.precision": "Sugar must have at most 2 decimal places",
-          "number.min": "Sugar must be greater than 0 g/dm³",
-          "number.max": "Sugar cannot exceed 10,000 g/dm³",
-        }),
-  );
-
   const {
     register,
     handleSubmit,
@@ -103,26 +93,25 @@ export default function VineyardLabActionForm({
     formState: { errors },
     setError,
     clearErrors,
-  } = useForm({
-    resolver: joiResolver(labActionSchema),
+  } = useForm<MustLabResultsAction>({
+    resolver: joiResolver(mustLabResultsActionSchema),
     mode: "onTouched",
     reValidateMode: "onChange",
   });
 
-  const [formData, setFormData] = useState<VineyardGlobalAction>(
-    vineyardGlobalActionSample,
-  );
+  const [formData, setFormData] =
+    useState<MustLabResultsAction>(initialFormData);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const supportingDocumentsRef = useRef<HTMLInputElement | null>(null);
 
   const handleChange = useCallback(
-    (name: string, value: any) => {
+    (name: keyof MustLabResultsAction, value: any) => {
       setValue(name, value, { shouldTouch: true, shouldValidate: true });
 
       setFormData((prev) => ({
-        ...(prev as VineyardGlobalAction),
+        ...(prev as MustLabResultsAction),
         [name]: value,
       }));
     },
@@ -130,7 +119,7 @@ export default function VineyardLabActionForm({
   );
 
   const handleNewUpload = useCallback(
-    (name: string, url: string, file: File) => {
+    (name: keyof MustLabResultsAction, url: string, file: File) => {
       const filesUrls = formData.supportingDocuments || [];
 
       filesUrls.push({
@@ -138,7 +127,7 @@ export default function VineyardLabActionForm({
         url,
       });
       setFormData((prev) => ({
-        ...(prev as VineyardGlobalAction),
+        ...(prev as MustLabResultsAction),
         supportingDocuments: filesUrls,
       }));
       setValue(name, filesUrls);
@@ -182,7 +171,7 @@ export default function VineyardLabActionForm({
       db.storage.uploadFile(
         file,
         user?.uid,
-        "labReport",
+        "lab-results",
         (progress: number) => {
           setIsUploading(true);
           setUploadProgress(progress);
@@ -217,7 +206,7 @@ export default function VineyardLabActionForm({
       filesUrls.splice(index, 1);
 
       setFormData((prev) => ({
-        ...(prev as VineyardGlobalAction),
+        ...(prev as MustLabResultsAction),
         supportingDocuments: filesUrls,
       }));
       setValue("supportingDocuments", filesUrls);
@@ -225,7 +214,7 @@ export default function VineyardLabActionForm({
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
-        "labReport",
+        "lab-results",
         name,
       );
 
@@ -237,36 +226,37 @@ export default function VineyardLabActionForm({
     [clearErrors, formData.supportingDocuments, setValue, user?.uid],
   );
 
-  const onSubmit = async (data: any, e: any) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const onSubmit = async (data: MustLabResultsAction) => {
+    if (!user?.uid || !data?.subjectMust?.id) return;
 
-    const subjectVineyard = selectedVineyards.filter(
-      (v) => v.id === data.inUseVineyard.id,
-    )[0];
+    const subjectMust = selectedMusts.find(
+      ({ id }) => id === data?.subjectMust?.id,
+    );
+
+    if (!subjectMust) return;
 
     setIsSubmitting(true);
 
-    const labDataToDelete = (
-      subjectVineyard || { labData: [] }
-    ).labData?.filter((lab) => {
-      const rawLabDate =
-        lab.date || labReports.find(({ id }) => id === lab.id)?.date;
-      const labDate = rawLabDate ? toDateSafe(rawLabDate) : "";
-      const execDate = formData.executionDate
-        ? toDateSafe(formData.executionDate)
-        : "";
+    const labDataToDelete = (subjectMust || { labData: [] }).labData?.filter(
+      (lab) => {
+        const rawLabDate =
+          lab.date || labReports.find(({ id }) => id === lab.id)?.date;
+        const labDate = rawLabDate ? toDateSafe(rawLabDate) : "";
+        const execDate = formData.executionDate
+          ? toDateSafe(formData.executionDate)
+          : "";
 
-      return labDate && execDate && isSameDay(labDate, execDate);
-    });
+        return labDate && execDate && isSameDay(labDate, execDate);
+      },
+    );
 
     const labDataToDeleteIds = labDataToDelete?.map(({ id }) => id);
 
     try {
-      await actions?.["lab-report"].exec(
-        user?.uid as string,
+      await actions?.["lab-results"].exec(
+        user.uid,
         { ...data, labDataToDeleteIds },
-        subjectVineyard,
+        subjectMust,
       );
     } finally {
       setIsSubmitting(false);
@@ -278,34 +268,26 @@ export default function VineyardLabActionForm({
   };
 
   useEffect(() => {
-    vineyardGlobalActionSample.id = crypto.randomUUID();
-    vineyardGlobalActionSample.type = "lab-report";
-    vineyardGlobalActionSample.executionDate = Timestamp.fromDate(new Date());
-    vineyardGlobalActionSample.createdAt = Timestamp.fromDate(new Date());
-    vineyardGlobalActionSample.createdBy = userId;
+    const mustDecantActionSample: MustLabResultsAction = {
+      ...initialFormData,
+      id: crypto.randomUUID(),
+      type: "lab-results",
+      executionDate: Timestamp.fromDate(new Date()),
+      supportingDocuments: [],
+      subjectMust:
+        selectedMusts.length === 1
+          ? {
+              id: selectedMusts[0]?.id,
+              name: selectedMusts[0]?.name,
+            }
+          : { id: "", name: "" },
+      createdAt: Timestamp.fromDate(new Date()),
+      createdBy: userId,
+    };
 
-    if (selectedVineyards && selectedVineyards.length === 1) {
-      vineyardGlobalActionSample.inUseVineyard = {
-        id: selectedVineyards[0]?.id,
-        name: selectedVineyards[0]?.name,
-      };
-    } else {
-      vineyardGlobalActionSample.inUseVineyard = {
-        id: "",
-        name: "",
-      };
-    }
-
-    vineyardGlobalActionSample.supportingDocuments = [];
-
-    reset(vineyardGlobalActionSample);
-    setFormData(vineyardGlobalActionSample);
-  }, [reset, selectedVineyards, userId]);
-
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
+    reset(mustDecantActionSample);
+    setFormData(mustDecantActionSample);
+  }, [reset, selectedMusts, userId]);
 
   if (!formData) return null;
 
@@ -335,7 +317,7 @@ export default function VineyardLabActionForm({
             <div className="hidden">
               <FormControl>
                 <Input
-                  id={formData.id as VineyardGlobalAction["id"]}
+                  id={formData.id as MustLabResultsAction["id"]}
                   value={formData.id}
                   type="hidden"
                   {...register("id")}
@@ -349,19 +331,19 @@ export default function VineyardLabActionForm({
 
                 <Stack gap={1}>
                   <InputLabel className="text-sm text-muted-foreground">
-                    Selected vineyard
+                    Selected must
                   </InputLabel>
 
-                  <Autocomplete<Vineyard, false, false, false>
-                    noOptionsText="No vineyards available"
-                    options={selectedVineyards}
-                    value={(formData?.inUseVineyard as Vineyard) || null}
+                  <Autocomplete<MustWithVessel, false, false, false>
+                    noOptionsText="No musts available"
+                    options={selectedMusts}
+                    value={(formData?.subjectMust as MustWithVessel) || null}
                     getOptionLabel={(option) => option.name}
                     filterSelectedOptions
                     onChange={(_event, newValue) => {
                       if (!newValue) return;
 
-                      handleChange("inUseVineyard", {
+                      handleChange("subjectMust", {
                         id: newValue.id,
                         name: newValue.name,
                       });
@@ -370,17 +352,19 @@ export default function VineyardLabActionForm({
                       <TextField
                         {...params}
                         variant="outlined"
-                        label="Vineyard name"
+                        label="Must ID"
                       />
                     )}
                   />
-                  {((errors?.inUseVineyard as any)?.id ||
-                    (errors?.inUseVineyard as any)?.name) && (
+
+                  {(errors?.subjectMust?.message ||
+                    (errors?.subjectMust as any)?.id ||
+                    (errors?.subjectMust as any)?.name) && (
                     <Typography variant="body2" color="error" className="mt-1">
                       {
-                        ((errors?.inUseVineyard as any)?.id?.message ||
-                          (errors?.inUseVineyard as any)?.name
-                            ?.message) as string
+                        (errors?.subjectMust?.message ||
+                          (errors?.subjectMust as any)?.id?.message ||
+                          (errors?.subjectMust as any)?.name?.message) as string
                       }
                     </Typography>
                   )}
@@ -472,13 +456,87 @@ export default function VineyardLabActionForm({
                     className="text-sm text-muted-foreground"
                     sx={{ whiteSpace: "normal" }}
                   >
+                    Enter the temperature (°C)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="temperature"
+                      label="Temperature (°C)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: -20,
+                          step: 0.01,
+                          max: 100,
+                        },
+                        inputLabel: {
+                          ...((formData?.temperature || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
+                      }}
+                      {...register("temperature")}
+                    />
+                  </FormControl>
+
+                  {errors.temperature?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors.temperature.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel
+                    className="text-sm text-muted-foreground"
+                    sx={{ whiteSpace: "normal" }}
+                  >
+                    Enter the alcohol (%)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="alcohol"
+                      label="Alcohol (%)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 100,
+                        },
+                        inputLabel: {
+                          ...((formData?.alcohol || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
+                      }}
+                      {...register("alcohol")}
+                    />
+                  </FormControl>
+
+                  {errors?.alcohol?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.alcohol.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel
+                    className="text-sm text-muted-foreground"
+                    sx={{ whiteSpace: "normal" }}
+                  >
                     Enter the mass concentration of sugars (g/dm³)
                   </InputLabel>
 
                   <FormControl fullWidth>
                     <TextField
                       type="number"
-                      id="outlined-basic"
+                      id="sugar"
                       label="Sugar (g/dm³)"
                       variant="outlined"
                       slotProps={{
@@ -487,14 +545,19 @@ export default function VineyardLabActionForm({
                           step: 0.01,
                           max: 10_000,
                         },
+                        inputLabel: {
+                          ...((formData?.sugar || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
                       }}
-                      {...register("inputData.sugar")}
+                      {...register("sugar")}
                     />
                   </FormControl>
 
-                  {(errors.inputData as any)?.sugar?.message && (
+                  {errors?.sugar?.message && (
                     <Typography variant="body2" color="error" className="mt-1">
-                      {(errors.inputData as any)?.sugar.message}
+                      {errors?.sugar.message as string}
                     </Typography>
                   )}
                 </Stack>
@@ -507,7 +570,7 @@ export default function VineyardLabActionForm({
                   <FormControl fullWidth>
                     <TextField
                       type="number"
-                      id="outlined-basic"
+                      id="acidity"
                       label="Acidity (g/dm³)"
                       variant="outlined"
                       slotProps={{
@@ -516,31 +579,220 @@ export default function VineyardLabActionForm({
                           step: 0.01,
                           max: 10_000,
                         },
+                        inputLabel: {
+                          ...((formData?.acidity || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
                       }}
-                      {...register("inputData.acidity")}
+                      {...register("acidity")}
                     />
                   </FormControl>
+
+                  {errors?.acidity?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.acidity.message as string}
+                    </Typography>
+                  )}
                 </Stack>
 
                 <Stack gap={1}>
                   <InputLabel className="text-sm text-muted-foreground">
-                    Description
+                    Enter the pH
                   </InputLabel>
 
                   <FormControl fullWidth>
-                    <TextareaAutosize
-                      id="additionalInformation"
-                      minRows={8}
-                      placeholder="Provide additional information"
-                      style={{
-                        width: "100%",
-                        border: "1px solid",
-                        borderColor: "var(--mui-palette-divider)",
-                        borderRadius: "4px",
-                        padding: "16px 8px",
+                    <TextField
+                      type="number"
+                      id="pH"
+                      label="pH"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 14,
+                        },
+                        inputLabel: {
+                          ...((formData?.pH || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
                       }}
-                      {...register("additionalInformation")}
+                      {...register("pH")}
                     />
+                  </FormControl>
+
+                  {errors?.pH?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.pH.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the density (g/cm³)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="density"
+                      label="Density (g/cm³)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 10_000,
+                        },
+                        inputLabel: {
+                          ...((formData?.density || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
+                      }}
+                      {...register("density")}
+                    />
+                  </FormControl>
+
+                  {errors?.density?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.density.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the volatile acidity (g/L)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="volatileAcidity"
+                      label="Volatile acidity (g/L)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 10_000,
+                        },
+                        inputLabel: {
+                          ...((formData?.volatileAcidity || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
+                      }}
+                      {...register("volatileAcidity")}
+                    />
+                  </FormControl>
+
+                  {errors?.volatileAcidity?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.volatileAcidity.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the malic acid (g/L)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="malicAcid"
+                      label="Malic acid (g/L)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 10_000,
+                        },
+                        inputLabel: {
+                          ...((formData?.malicAcid || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
+                      }}
+                      {...register("malicAcid")}
+                    />
+                  </FormControl>
+
+                  {errors?.malicAcid?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.malicAcid.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the lactic acid (g/L)
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      type="number"
+                      id="lacticAcid"
+                      label="Lactic acid (g/L)"
+                      variant="outlined"
+                      slotProps={{
+                        htmlInput: {
+                          min: 0,
+                          step: 0.01,
+                          max: 10_000,
+                        },
+                        inputLabel: {
+                          ...((formData?.lacticAcid || 0) > 0 && {
+                            shrink: true,
+                          }),
+                        },
+                      }}
+                      {...register("lacticAcid")}
+                    />
+                  </FormControl>
+
+                  {errors?.lacticAcid?.message && (
+                    <Typography variant="body2" color="error" className="mt-1">
+                      {errors?.lacticAcid.message as string}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack gap={1}>
+                  <InputLabel className="text-sm text-muted-foreground">
+                    Enter the lab certificate ID
+                  </InputLabel>
+
+                  <FormControl fullWidth>
+                    <TextField
+                      id="labCertificateId"
+                      label="Lab certificate ID"
+                      variant="outlined"
+                      {...register("labCertificateId")}
+                      slotProps={{
+                        inputLabel: {
+                          ...(formData?.labCertificateId && { shrink: true }),
+                        },
+                      }}
+                    />
+
+                    {errors?.labCertificateId && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        className="mt-1"
+                      >
+                        {(errors?.labCertificateId as any)?.message as string}
+                      </Typography>
+                    )}
                   </FormControl>
                 </Stack>
 
@@ -578,6 +830,7 @@ export default function VineyardLabActionForm({
                         size="small"
                         className="max-w-[24px] max-h-[24px]"
                         color="error"
+                        disabled={isSubmitting}
                         onClick={() => handleDeleteFile(name, index)}
                       >
                         <DeleteOutline className="max-w-4 max-h-4" />
@@ -616,7 +869,7 @@ export default function VineyardLabActionForm({
 
           <FormControl>
             <Button
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploading}
               type="submit"
               variant="contained"
               className="mt-8"

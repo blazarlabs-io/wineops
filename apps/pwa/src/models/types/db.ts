@@ -9,6 +9,7 @@ import {
   Subject,
   WineActionType,
 } from "./actions";
+import { DashboardEntity } from "./dashboard";
 
 export type EntityName =
   | "UNKNOWN"
@@ -154,13 +155,14 @@ export type LabReport = {
   results: {
     [key: string]: {
       value: number;
-      variation: number;
+      variation?: number;
       unit?: string;
     };
   };
   units: string;
   responsible: ResponsibleTeamMember;
   date: Timestamp | string;
+  subject?: DashboardEntity;
 };
 
 export type ResponsibleTeamMember = {
@@ -510,8 +512,8 @@ export type Must = Entity & {
   vessels?: MustWineVessel[];
   safetyCertificateNo?: string;
   invoicePurchaseNo?: string;
-  labDataReports?: ActionRelation[];
-  labData?: MustLabData;
+  labData?: ActionRelation[];
+  labDataOld?: MustLabData;
   status?: MustStatus;
   metrics?: Metrics;
   notes?: Note[];

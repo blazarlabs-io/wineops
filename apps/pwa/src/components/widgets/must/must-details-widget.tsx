@@ -53,12 +53,12 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
   const open = useDialogDrawerStore(({ open }) => open);
 
   const handleNewReport = useCallback(() => {
-    if (!actions["lab-report" as MustActionType]) return;
+    if (!actions["lab-results" as MustActionType]) return;
 
-    open("action-drawer", "lab-report" as unknown as ActionsEntity, must);
+    open("action-drawer", "lab-results" as unknown as ActionsEntity, must);
   }, [open, must, actions]);
 
-  const { labData } = useGetLabData(must?.labDataReports || [], labReports);
+  const { labData } = useGetLabData(must?.labData || [], labReports);
 
   const { user } = useAuth();
 
@@ -197,7 +197,7 @@ export default function MustDetailsWidget({ must }: MustDetailsWidgetProps) {
           entity={must}
           labReports={labData || []}
           onNewReport={
-            actions["lab-report" as MustActionType]
+            actions["lab-results" as MustActionType]
               ? handleNewReport
               : undefined
           }

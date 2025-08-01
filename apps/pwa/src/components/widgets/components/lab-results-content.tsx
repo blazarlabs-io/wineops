@@ -33,8 +33,6 @@ export default function LabResultsContent({
 }: LabResultsContentProps) {
   const { user } = useAuth();
 
-  const isMust = "labDataReports" in entity;
-
   const setSelectedItem = useSelectedItemsStore(
     (state) => state.setSelectedItems,
   );
@@ -51,9 +49,9 @@ export default function LabResultsContent({
 
     if (!user?.uid || !entity.id || !labReportId) return;
 
-    const filteredLabData = (
-      isMust ? entity?.labDataReports : (entity as Vineyard).labData
-    )?.filter(({ id }) => id !== labReportId);
+    const filteredLabData = entity.labData?.filter(
+      ({ id }) => id !== labReportId,
+    );
 
     await db.vineyard.update(user?.uid, entity.id, {
       labData: filteredLabData,
@@ -89,7 +87,10 @@ export default function LabResultsContent({
         size="small"
         className="max-w-[24px] max-h-[24px]"
         color="error"
-        onClick={() => handleDeleteClick(item)}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDeleteClick(item);
+        }}
       >
         <DeleteOutline className="max-w-4 max-h-4" />
       </IconButton>

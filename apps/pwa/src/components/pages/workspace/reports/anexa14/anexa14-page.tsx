@@ -86,7 +86,9 @@ export default function Anexa14Page({ anexa14Id }: { anexa14Id: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userId =
-    teamMembers?.find(({ email }) => email === user?.email)?.id ||
+    teamMembers?.find(
+      ({ email }) => email.toLowerCase() === user?.email?.toLowerCase(),
+    )?.id ||
     user?.email ||
     "";
 

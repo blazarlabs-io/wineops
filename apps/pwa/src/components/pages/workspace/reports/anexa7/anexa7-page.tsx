@@ -82,7 +82,8 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
 
   const userId =
     teamMembers?.find(
-      ({ id, email }) => email === user?.email || id === user?.uid,
+      ({ id, email }) =>
+        email.toLowerCase() === user?.email?.toLowerCase() || id === user?.uid,
     )?.id ||
     user?.email ||
     user?.uid ||

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useMust } from "@/context/must";
@@ -547,7 +548,7 @@ export default function MustForm() {
                     </InputLabel>
 
                     <Controller
-                      name="labData.date"
+                      name="labDataOld.date"
                       control={control}
                       render={({ field, fieldState }) => (
                         <>
@@ -579,13 +580,13 @@ export default function MustForm() {
                       )}
                     />
 
-                    {errors?.labData?.date && (
+                    {errors?.labDataOld?.date && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.date?.message as string}
+                        {errors?.labDataOld?.date?.message as string}
                       </Typography>
                     )}
                   </div>
@@ -598,50 +599,58 @@ export default function MustForm() {
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="labData.temperature.value"
+                          id="labDataOld.temperature.value"
                           label="Temperature"
                           variant="outlined"
                           type="number"
                           slotProps={{
                             htmlInput: { min: 0, step: "any", max: 100 },
                           }}
-                          {...register("labData.temperature.value")}
+                          {...register("labDataOld.temperature.value")}
                         />
                       </FormControl>
 
                       <FormControl sx={{ display: "none" }}>
                         <Input
-                          id="labData.temperature.unit"
+                          id="labDataOld.temperature.unit"
                           label="Unit"
                           type="hidden"
                           variant="outlined"
-                          value={formData?.labData?.temperature?.unit || "°C"}
-                          {...register("labData.temperature.unit")}
+                          value={
+                            formData?.labDataOld?.temperature?.unit || "°C"
+                          }
+                          {...register("labDataOld.temperature.unit")}
                         />
                       </FormControl>
 
                       <Box sx={{ width: "60px" }}>
-                        {formData?.labData?.temperature?.unit || "°C"}
+                        {formData?.labDataOld?.temperature?.unit || "°C"}
                       </Box>
                     </Stack>
 
-                    {errors?.labData?.temperature?.value && (
+                    {errors?.labDataOld?.temperature?.value && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.temperature?.value?.message as string}
+                        {
+                          errors?.labDataOld?.temperature?.value
+                            ?.message as string
+                        }
                       </Typography>
                     )}
 
-                    {errors?.labData?.temperature?.unit && (
+                    {errors?.labDataOld?.temperature?.unit && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.temperature?.unit?.message as string}
+                        {
+                          errors?.labDataOld?.temperature?.unit
+                            ?.message as string
+                        }
                       </Typography>
                     )}
                   </div>
@@ -654,38 +663,38 @@ export default function MustForm() {
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="labData.alcohol"
+                          id="labDataOld.alcohol"
                           label="Alcohol"
                           variant="outlined"
                           type="number"
                           slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labData.alcohol.value")}
+                          {...register("labDataOld.alcohol.value")}
                         />
                       </FormControl>
 
                       <FormControl sx={{ display: "none" }}>
                         <Input
-                          id="labData.alcohol.unit"
+                          id="labDataOld.alcohol.unit"
                           label="Unit"
                           type="hidden"
                           variant="outlined"
-                          value={formData?.labData?.alcohol?.unit || "%"}
-                          {...register("labData.alcohol.unit")}
+                          value={formData?.labDataOld?.alcohol?.unit || "%"}
+                          {...register("labDataOld.alcohol.unit")}
                         />
                       </FormControl>
 
                       <Box sx={{ width: "60px" }}>
-                        {formData?.labData?.alcohol?.unit || "%"}
+                        {formData?.labDataOld?.alcohol?.unit || "%"}
                       </Box>
                     </Stack>
 
-                    {errors?.labData?.alcohol && (
+                    {errors?.labDataOld?.alcohol && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.alcohol?.message as string}
+                        {errors?.labDataOld?.alcohol?.message as string}
                       </Typography>
                     )}
                   </div>
@@ -698,12 +707,12 @@ export default function MustForm() {
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="labData.sugar.value"
+                          id="labDataOld.sugar.value"
                           label="Sugar"
                           variant="outlined"
                           type="number"
                           slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labData.sugar.value")}
+                          {...register("labDataOld.sugar.value")}
                         />
                       </FormControl>
 
@@ -711,21 +720,21 @@ export default function MustForm() {
                         <>
                           <FormControl sx={{ display: "none" }}>
                             <Input
-                              id="labData.sugar.unit"
+                              id="labDataOld.sugar.unit"
                               label="Unit"
                               type="hidden"
                               variant="outlined"
                               value={
-                                formData?.labData?.sugar?.unit ||
+                                formData?.labDataOld?.sugar?.unit ||
                                 CONCENTRATION_UNITS[0] ||
                                 "g/dm³"
                               }
-                              {...register("labData.sugar.unit")}
+                              {...register("labDataOld.sugar.unit")}
                             />
                           </FormControl>
 
                           <Box sx={{ width: "60px" }}>
-                            {formData?.labData?.sugar?.unit ||
+                            {formData?.labDataOld?.sugar?.unit ||
                               CONCENTRATION_UNITS[0] ||
                               "g/dm³"}
                           </Box>
@@ -735,15 +744,18 @@ export default function MustForm() {
                           freeSolo
                           options={CONCENTRATION_UNITS}
                           value={
-                            formData?.labData?.sugar?.unit ??
+                            formData?.labDataOld?.sugar?.unit ??
                             CONCENTRATION_UNITS[0]
                           }
                           onChange={(_event, newValue) => {
-                            handleSelectChange("labData.sugar.unit", newValue);
+                            handleSelectChange(
+                              "labDataOld.sugar.unit",
+                              newValue,
+                            );
                           }}
                           onInputChange={(_event, newInputValue) => {
                             handleSelectChange(
-                              "labData.sugar.unit",
+                              "labDataOld.sugar.unit",
                               newInputValue,
                             );
                           }}
@@ -759,23 +771,23 @@ export default function MustForm() {
                       )}
                     </Stack>
 
-                    {errors?.labData?.sugar?.value && (
+                    {errors?.labDataOld?.sugar?.value && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.sugar?.value?.message as string}
+                        {errors?.labDataOld?.sugar?.value?.message as string}
                       </Typography>
                     )}
 
-                    {errors?.labData?.sugar?.unit && (
+                    {errors?.labDataOld?.sugar?.unit && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.sugar?.unit?.message as string}
+                        {errors?.labDataOld?.sugar?.unit?.message as string}
                       </Typography>
                     )}
                   </div>
@@ -788,12 +800,12 @@ export default function MustForm() {
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="labData.acidity.value"
+                          id="labDataOld.acidity.value"
                           label="Acidity"
                           variant="outlined"
                           type="number"
                           slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labData.acidity.value")}
+                          {...register("labDataOld.acidity.value")}
                         />
                       </FormControl>
 
@@ -801,21 +813,21 @@ export default function MustForm() {
                         <>
                           <FormControl sx={{ display: "none" }}>
                             <Input
-                              id="labData.acidity.unit"
+                              id="labDataOld.acidity.unit"
                               label="Unit"
                               type="hidden"
                               variant="outlined"
                               value={
-                                formData?.labData?.acidity?.unit ||
+                                formData?.labDataOld?.acidity?.unit ||
                                 CONCENTRATION_UNITS[0] ||
                                 "g/dm³"
                               }
-                              {...register("labData.acidity.unit")}
+                              {...register("labDataOld.acidity.unit")}
                             />
                           </FormControl>
 
                           <Box sx={{ width: "60px" }}>
-                            {formData?.labData?.acidity?.unit ||
+                            {formData?.labDataOld?.acidity?.unit ||
                               CONCENTRATION_UNITS[0] ||
                               "g/dm³"}
                           </Box>
@@ -825,18 +837,18 @@ export default function MustForm() {
                           freeSolo
                           options={CONCENTRATION_UNITS}
                           value={
-                            formData?.labData?.acidity?.unit ??
+                            formData?.labDataOld?.acidity?.unit ??
                             CONCENTRATION_UNITS[0]
                           }
                           onChange={(_event, newValue) => {
                             handleSelectChange(
-                              "labData.acidity.unit",
+                              "labDataOld.acidity.unit",
                               newValue,
                             );
                           }}
                           onInputChange={(_event, newInputValue) => {
                             handleSelectChange(
-                              "labData.acidity.unit",
+                              "labDataOld.acidity.unit",
                               newInputValue,
                             );
                           }}
@@ -852,23 +864,23 @@ export default function MustForm() {
                       )}
                     </Stack>
 
-                    {errors?.labData?.acidity?.value && (
+                    {errors?.labDataOld?.acidity?.value && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.acidity?.value?.message as string}
+                        {errors?.labDataOld?.acidity?.value?.message as string}
                       </Typography>
                     )}
 
-                    {errors?.labData?.acidity?.unit && (
+                    {errors?.labDataOld?.acidity?.unit && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.acidity?.unit?.message as string}
+                        {errors?.labDataOld?.acidity?.unit?.message as string}
                       </Typography>
                     )}
                   </div>
@@ -881,40 +893,40 @@ export default function MustForm() {
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="labData.volatileAcidity"
+                          id="labDataOld.volatileAcidity"
                           label="Volatile acidity"
                           variant="outlined"
                           type="number"
                           slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labData.volatileAcidity.value")}
+                          {...register("labDataOld.volatileAcidity.value")}
                         />
                       </FormControl>
 
                       <FormControl sx={{ display: "none" }}>
                         <Input
-                          id="labData.volatileAcidity.unit"
+                          id="labDataOld.volatileAcidity.unit"
                           label="Unit"
                           type="hidden"
                           variant="outlined"
                           value={
-                            formData?.labData?.volatileAcidity?.unit || "g/L"
+                            formData?.labDataOld?.volatileAcidity?.unit || "g/L"
                           }
-                          {...register("labData.volatileAcidity.unit")}
+                          {...register("labDataOld.volatileAcidity.unit")}
                         />
                       </FormControl>
 
                       <Box sx={{ width: "60px" }}>
-                        {formData?.labData?.volatileAcidity?.unit || "g/L"}
+                        {formData?.labDataOld?.volatileAcidity?.unit || "g/L"}
                       </Box>
                     </Stack>
 
-                    {errors?.labData?.volatileAcidity && (
+                    {errors?.labDataOld?.volatileAcidity && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors?.labData?.volatileAcidity?.message as string}
+                        {errors?.labDataOld?.volatileAcidity?.message as string}
                       </Typography>
                     )}
                   </div>
@@ -927,43 +939,47 @@ export default function MustForm() {
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="labData.yeastActivityPopulation"
+                          id="labDataOld.yeastActivityPopulation"
                           label="Yeast activity / population"
                           variant="outlined"
                           type="number"
                           slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                          {...register("labData.yeastActivityPopulation.value")}
+                          {...register(
+                            "labDataOld.yeastActivityPopulation.value",
+                          )}
                         />
                       </FormControl>
 
                       <FormControl sx={{ display: "none" }}>
                         <Input
-                          id="labData.yeastActivityPopulation.unit"
+                          id="labDataOld.yeastActivityPopulation.unit"
                           label="Unit"
                           type="hidden"
                           variant="outlined"
                           value={
-                            formData?.labData?.yeastActivityPopulation?.unit ||
-                            "million cells/mL"
+                            formData?.labDataOld?.yeastActivityPopulation
+                              ?.unit || "million cells/mL"
                           }
-                          {...register("labData.yeastActivityPopulation.unit")}
+                          {...register(
+                            "labDataOld.yeastActivityPopulation.unit",
+                          )}
                         />
                       </FormControl>
 
                       <Box sx={{ width: "60px" }}>
-                        {formData?.labData?.yeastActivityPopulation?.unit ||
+                        {formData?.labDataOld?.yeastActivityPopulation?.unit ||
                           "million cells/mL"}
                       </Box>
                     </Stack>
 
-                    {errors?.labData?.yeastActivityPopulation && (
+                    {errors?.labDataOld?.yeastActivityPopulation && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
                         {
-                          errors.labData.yeastActivityPopulation
+                          errors.labDataOld.yeastActivityPopulation
                             ?.message as string
                         }
                       </Typography>
@@ -978,45 +994,47 @@ export default function MustForm() {
                     <Stack direction="row" gap={2} alignItems="center">
                       <FormControl sx={{ flex: 1 }}>
                         <Input
-                          id="labData.yeastAssimilableNitrogen"
+                          id="labDataOld.yeastAssimilableNitrogen"
                           label="Yeast assimilable nitrogen  "
                           variant="outlined"
                           type="number"
                           slotProps={{ htmlInput: { min: 0, step: "any" } }}
                           {...register(
-                            "labData.yeastAssimilableNitrogen.value",
+                            "labDataOld.yeastAssimilableNitrogen.value",
                           )}
                         />
                       </FormControl>
 
                       <FormControl sx={{ display: "none" }}>
                         <Input
-                          id="labData.yeastAssimilableNitrogen.unit"
+                          id="labDataOld.yeastAssimilableNitrogen.unit"
                           label="Unit"
                           type="hidden"
                           variant="outlined"
                           value={
-                            formData?.labData?.yeastAssimilableNitrogen?.unit ||
-                            "mg N/L"
+                            formData?.labDataOld?.yeastAssimilableNitrogen
+                              ?.unit || "mg N/L"
                           }
-                          {...register("labData.yeastAssimilableNitrogen.unit")}
+                          {...register(
+                            "labDataOld.yeastAssimilableNitrogen.unit",
+                          )}
                         />
                       </FormControl>
 
                       <Box sx={{ width: "60px" }}>
-                        {formData?.labData?.yeastAssimilableNitrogen?.unit ||
+                        {formData?.labDataOld?.yeastAssimilableNitrogen?.unit ||
                           "mg N/L"}
                       </Box>
                     </Stack>
 
-                    {errors?.labData?.yeastAssimilableNitrogen && (
+                    {errors?.labDataOld?.yeastAssimilableNitrogen && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
                         {
-                          errors.labData.yeastAssimilableNitrogen
+                          errors.labDataOld.yeastAssimilableNitrogen
                             ?.message as string
                         }
                       </Typography>
@@ -1030,21 +1048,21 @@ export default function MustForm() {
 
                     <FormControl>
                       <Input
-                        id="labData.labTechnicianName"
+                        id="labDataOld.labTechnicianName"
                         label="Lab technician name"
                         type="text"
                         variant="outlined"
-                        {...register("labData.labTechnicianName")}
+                        {...register("labDataOld.labTechnicianName")}
                       />
                     </FormControl>
 
-                    {errors?.labData?.labTechnicianName && (
+                    {errors?.labDataOld?.labTechnicianName && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors.labData.labTechnicianName?.message as string}
+                        {errors.labDataOld.labTechnicianName?.message as string}
                       </Typography>
                     )}
                   </div>
@@ -1056,21 +1074,21 @@ export default function MustForm() {
 
                     <FormControl>
                       <Input
-                        id="labData.labCertificateID"
+                        id="labDataOld.labCertificateID"
                         label="Lab certificate ID"
                         type="text"
                         variant="outlined"
-                        {...register("labData.labCertificateID")}
+                        {...register("labDataOld.labCertificateID")}
                       />
                     </FormControl>
 
-                    {errors?.labData?.labCertificateID && (
+                    {errors?.labDataOld?.labCertificateID && (
                       <Typography
                         variant="body2"
                         color="error"
                         className="mt-1"
                       >
-                        {errors.labData.labCertificateID?.message as string}
+                        {errors.labDataOld.labCertificateID?.message as string}
                       </Typography>
                     )}
                   </div>

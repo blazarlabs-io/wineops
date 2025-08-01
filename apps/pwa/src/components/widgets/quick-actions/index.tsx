@@ -10,6 +10,7 @@ import QuickActionsWidgetStepOne from "./step-one";
 import QuickActionsWidgetStepTwo from "./step-two";
 import { RIGHT_DRAWER_WIDTH } from "@/data/constants";
 import { useDialogDrawerStore } from "@/store/dialogs";
+import { continuousColorLegendClasses } from "@mui/x-charts";
 
 interface QuickActionsWidgetProps {
   actions?: any;
