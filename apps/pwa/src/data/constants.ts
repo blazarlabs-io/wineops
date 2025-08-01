@@ -18,3 +18,14 @@ export const VOLUME_UNITS = ["litre(s)", "tonn(s)"];
 
 export const DEFAULT_LOCALE = "ro-RO";
 export const ROW_HEIGHT_EXPANDED_MUST = 374;
+
+export const UNITS = {
+  temperature: "°C",
+  alcohol: "%",
+  sugar: "g/dm³",
+  acidity: "g/dm³",
+  density: "g/cm³",
+  volatileAcidity: "g/L",
+  malicAcid: "g/L",
+  lacticAcid: "g/L",
+};

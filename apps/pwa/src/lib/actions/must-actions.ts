@@ -14,6 +14,8 @@ import {
   MustDecantAction,
   MustLabResultsAction,
 } from "@/models/types/actions";
+import { UNITS } from "@/data/constants";
+import { getResultsWithUnits } from "@/components/forms/utils";
 
 export const mustDecantAction = async (
   uid: string,
@@ -182,18 +184,7 @@ export const mustLabResultsAction = async (
     const deleteRes = await db.labReport.deleteMany(uid, labDataToDeleteIds);
   }
 
-  const UNITS = {
-    temperature: "°C",
-    alcohol: "%",
-    sugar: "g/dm³",
-    acidity: "g/dm³",
-    density: "g/cm³",
-    volatileAcidity: "g/L",
-    malicAcid: "g/L",
-    lacticAcid: "g/L",
-  };
-
-  const results = Object.entries({
+  const results = getResultsWithUnits({
     temperature,
     alcohol,
     sugar,
@@ -203,16 +194,7 @@ export const mustLabResultsAction = async (
     volatileAcidity,
     malicAcid,
     lacticAcid,
-  }).reduce(
-    (acc, [key, value]) => {
-      if (typeof value === "number" && value > 0) {
-        const unit = UNITS[key as keyof typeof UNITS];
-        acc[key] = { value, ...(unit && { unit }) };
-      }
-      return acc;
-    },
-    {} as Record<string, { value: number }>,
-  );
+  });
 
   const labRes = await db.labReport.create(uid, {
     id: labReportId,
