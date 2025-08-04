@@ -1,5 +1,4 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { GrapeEntry, ProcessingInfo } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import { formatNumberWithLowerCaseUnitAndSpace } from "@/utils/number-format";
@@ -28,11 +27,7 @@ export default function GrapeEntryContent({
     <div className="grid grid-cols-4 w-full p-0 py-2">
       <SimpleDataDisplay
         label="Grape Intake Date"
-        value={
-          intakeDate
-            ? formatDate(intakeDate, { locale: DEFAULT_LOCALE })
-            : "N/A"
-        }
+        value={intakeDate ? formatDate(intakeDate) : "N/A"}
       />
 
       <SimpleDataDisplay

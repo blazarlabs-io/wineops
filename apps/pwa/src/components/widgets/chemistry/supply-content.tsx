@@ -1,5 +1,4 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { Chemistry } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 
@@ -14,11 +13,7 @@ export default function SupplyContent({ data }: SupplyInfoProps) {
     <div className="grid grid-cols-4 w-full">
       <SimpleDataDisplay
         label="Order Date"
-        value={
-          data?.orderDate
-            ? formatDate(data.orderDate, { locale: DEFAULT_LOCALE })
-            : "N/A"
-        }
+        value={data?.orderDate ? formatDate(data.orderDate) : "N/A"}
       />
       <SimpleDataDisplay label="Qty" value={data?.qty || "N/A"} />
       <SimpleDataDisplay label="Invoice No" value={data?.invoiceNo || "N/A"} />
@@ -32,11 +27,7 @@ export default function SupplyContent({ data }: SupplyInfoProps) {
       />
       <SimpleDataDisplay
         label="Expiry date"
-        value={
-          data?.expiryDate
-            ? formatDate(data.expiryDate, { locale: DEFAULT_LOCALE })
-            : "N/A"
-        }
+        value={data?.expiryDate ? formatDate(data.expiryDate) : "N/A"}
       />
       <SimpleDataDisplay
         label="Minimum Stock Alert"

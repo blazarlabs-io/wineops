@@ -47,7 +47,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
     isGroup && Array.isArray(batchId)
       ? batchId.map(
           (batch) =>
-            `${batch?.date ? formatDate(batch?.date, { locale: DEFAULT_LOCALE }) : ""}***${batch?.location ?? ""}`,
+            `${batch?.date ? formatDate(batch?.date) : ""}***${batch?.location ?? ""}`,
         )
       : [];
 
@@ -96,13 +96,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
       >
         {isGroup ? (
           node?.field === "groupByDate" ? (
-            <>
-              {value ? (
-                formatDate(value, { locale: DEFAULT_LOCALE })
-              ) : (
-                <i>Unknown date</i>
-              )}
-            </>
+            <>{value ? formatDate(value) : <i>Unknown date</i>}</>
           ) : node?.field === "groupByVariety" ? (
             <>{value ? value : <i>Unknown variety</i>}</>
           ) : node?.field === "groupByLocation" ? (
@@ -164,7 +158,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
             <Stack justifyContent="center">
               {node?.data?.date && (
                 <Typography variant="body2">
-                  {formatDate(node?.data?.date, { locale: DEFAULT_LOCALE })}
+                  {formatDate(node?.data?.date)}
                 </Typography>
               )}
               {

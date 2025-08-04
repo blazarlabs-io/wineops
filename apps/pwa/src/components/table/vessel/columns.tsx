@@ -6,7 +6,6 @@ import { CurrentBatchCellRenderer } from "./CurrentBatchCellRenderer";
 import { VesselIDCellRenderer } from "./VesselIDCellRenderer";
 import { VesselUsageCellRenderer } from "./VesselUsageCellRenderer";
 import { VolumeCellRenderer } from "./VolumeCellRenderer";
-import { DEFAULT_LOCALE } from "@/data/constants";
 
 type MultiCol = Record<keyof Vessel, any>;
 
@@ -38,9 +37,7 @@ export const vesselColumns: ColDef<
     valueFormatter: ({ value, data, node }: ValueFormatterParams) => {
       const isGroup = node?.group || data?.rowType === "group";
 
-      return value && !isGroup
-        ? formatDate(value, { locale: DEFAULT_LOCALE })
-        : "";
+      return value && !isGroup ? formatDate(value) : "";
     },
   },
   {

@@ -21,7 +21,7 @@ export const CurrentBatchCellRenderer = (params: CustomCellRendererProps) => {
           <Typography variant="body1">{data?.currentUsage}</Typography>
           {data?.startDate && (
             <Typography variant="body2">
-              {formatDate(data?.startDate, { locale: DEFAULT_LOCALE })}
+              {formatDate(data?.startDate)}
             </Typography>
           )}
         </Stack>

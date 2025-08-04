@@ -1,12 +1,9 @@
 import LabItem from "@/components/data-display/lab-item";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import UnitDisplay from "@/components/data-display/unit-display";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { WineLabData } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Link from "next/link";
 
 type LabDataProps = {
   labData?: WineLabData;
@@ -27,101 +24,88 @@ export default function LabDataContent({ labData }: LabDataProps) {
   } = labData ?? {};
 
   return (
-    <Stack>
-      <Stack direction="row" sx={{ justifyContent: "flex-end", lineHeight: 1 }}>
-        <Link href="" className="underline">
-          Attach a document
-        </Link>
-      </Stack>
+    <div className="grid grid-cols-5 w-full py-2 items-center justify-center">
+      <SimpleDataDisplay label="Date" value={date ? formatDate(date) : "N/A"} />
 
-      <div className="grid grid-cols-5 w-full py-2 items-center justify-center">
-        <SimpleDataDisplay
-          label="Date"
-          value={date ? formatDate(date, { locale: DEFAULT_LOCALE }) : "N/A"}
-        />
+      <SimpleDataDisplay
+        label="Temperature"
+        value={
+          temperature?.value ? (
+            <div className="flex items-start gap-1">
+              <span className="text-muted-foreground">{temperature.value}</span>
+              <UnitDisplay unit={temperature.unit ?? ""} />
+            </div>
+          ) : (
+            "N/A"
+          )
+        }
+      />
 
-        <SimpleDataDisplay
-          label="Temperature"
-          value={
-            temperature?.value ? (
-              <div className="flex items-start gap-1">
-                <span className="text-muted-foreground">
-                  {temperature.value}
-                </span>
-                <UnitDisplay unit={temperature.unit ?? ""} />
-              </div>
-            ) : (
-              "N/A"
-            )
-          }
-        />
+      <Box p={1.5}>
+        <LabItem label="Alcohol" data={alcohol} />
+      </Box>
 
-        <Box p={1.5}>
-          <LabItem label="Alcohol" data={alcohol} />
-        </Box>
+      <Box p={1.5}>
+        <LabItem label="Sugar" data={sugar} />
+      </Box>
 
-        <Box p={1.5}>
-          <LabItem label="Sugar" data={sugar} />
-        </Box>
+      <Box p={1.5}>
+        <LabItem label="Acidity" data={acidity} />
+      </Box>
 
-        <Box p={1.5}>
-          <LabItem label="Acidity" data={acidity} />
-        </Box>
+      <SimpleDataDisplay
+        label="Total SO₂"
+        value={
+          totalSO2?.value ? (
+            <div className="flex items-start gap-1">
+              <span className="text-muted-foreground">{totalSO2.value}</span>
+              <UnitDisplay unit={totalSO2.unit ?? ""} />
+            </div>
+          ) : (
+            "N/A"
+          )
+        }
+      />
 
-        <SimpleDataDisplay
-          label="Total SO₂"
-          value={
-            totalSO2?.value ? (
-              <div className="flex items-start gap-1">
-                <span className="text-muted-foreground">{totalSO2.value}</span>
-                <UnitDisplay unit={totalSO2.unit ?? ""} />
-              </div>
-            ) : (
-              "N/A"
-            )
-          }
-        />
+      <SimpleDataDisplay
+        label="Free SO₂"
+        value={
+          freeSO2?.value ? (
+            <div className="flex items-start gap-1">
+              <span className="text-muted-foreground">{freeSO2.value}</span>
+              <UnitDisplay unit={freeSO2.unit ?? ""} />
+            </div>
+          ) : (
+            "N/A"
+          )
+        }
+      />
 
-        <SimpleDataDisplay
-          label="Free SO₂"
-          value={
-            freeSO2?.value ? (
-              <div className="flex items-start gap-1">
-                <span className="text-muted-foreground">{freeSO2.value}</span>
-                <UnitDisplay unit={freeSO2.unit ?? ""} />
-              </div>
-            ) : (
-              "N/A"
-            )
-          }
-        />
+      <SimpleDataDisplay
+        label="Volatile Acidity"
+        value={
+          volatileAcidity?.value ? (
+            <div className="flex items-start gap-1">
+              <span className="text-muted-foreground">
+                {volatileAcidity.value}
+              </span>
+              <UnitDisplay unit={volatileAcidity.unit ?? ""} />
+            </div>
+          ) : (
+            "N/A"
+          )
+        }
+      />
 
-        <SimpleDataDisplay
-          label="Volatile Acidity"
-          value={
-            volatileAcidity?.value ? (
-              <div className="flex items-start gap-1">
-                <span className="text-muted-foreground">
-                  {volatileAcidity.value}
-                </span>
-                <UnitDisplay unit={volatileAcidity.unit ?? ""} />
-              </div>
-            ) : (
-              "N/A"
-            )
-          }
-        />
+      <SimpleDataDisplay
+        label="Lab technician name"
+        value={labTechnicianName ?? "N/A"}
+      />
 
-        <SimpleDataDisplay
-          label="Lab technician name"
-          value={labTechnicianName ?? "N/A"}
-        />
-
-        <SimpleDataDisplay
-          label="Lab Certificate ID"
-          value={labCertificateID ?? "N/A"}
-        />
-      </div>
-    </Stack>
+      <SimpleDataDisplay
+        label="Lab Certificate ID"
+        value={labCertificateID ?? "N/A"}
+      />
+    </div>
   );
 }

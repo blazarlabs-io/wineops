@@ -22,7 +22,7 @@ export const LabDataCellRenderer = (params: CustomCellRendererProps) => {
           <Stack>
             {value?.date && (
               <Typography variant="caption" color="textDisabled">
-                {formatDate(value?.date, { locale: DEFAULT_LOCALE })}
+                {formatDate(value?.date)}
               </Typography>
             )}
 

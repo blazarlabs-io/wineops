@@ -3,7 +3,6 @@ import { Anexa14Data } from "@/models/types/reports";
 import { DefaultCellRenderer } from "./cell-renderers/default-cell-renderer";
 import { DateCellRenderer } from "./cell-renderers/date-cell-renderer";
 import formatDate from "@/utils/date-format";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { UserCellRenderer } from "./cell-renderers/user-cell-renderer";
 
 type MultiCol = Record<keyof Anexa14Data, any>;
@@ -29,8 +28,7 @@ export const columns: (
     field: "date",
     minWidth: 100,
     flex: 1,
-    valueFormatter: ({ value }: ValueFormatterParams) =>
-      formatDate(value, { locale: DEFAULT_LOCALE }),
+    valueFormatter: ({ value }: ValueFormatterParams) => formatDate(value),
   },
   {
     headerName: "Created By",

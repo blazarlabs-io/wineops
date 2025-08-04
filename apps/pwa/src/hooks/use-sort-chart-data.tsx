@@ -1,4 +1,5 @@
 import { LabDataChart } from "@/models/types/db";
+import formatDate from "@/utils/date-format";
 import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -31,9 +32,7 @@ export const useSortChartData = ({ items }: LabDataChart) => {
 
         if (results?.alcohol?.value) alcohol.push(results.alcohol.value);
 
-        labels.push(
-          `${new Date((date as Timestamp).seconds * 1000).toDateString()}`,
-        );
+        labels.push(`${formatDate(date)}`);
       });
 
       setLabData({

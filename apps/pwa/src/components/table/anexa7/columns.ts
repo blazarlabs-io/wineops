@@ -2,7 +2,6 @@ import { ColDef, ColGroupDef, ValueFormatterParams } from "ag-grid-community";
 import { Anexa7Data } from "@/models/types/reports";
 import { DateCellRenderer } from "./cell-renderers/date-cell-renderer";
 import formatDate from "@/utils/date-format";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { UserCellRenderer } from "./cell-renderers/user-cell-renderer";
 import { DeclarantCellRenderer } from "./cell-renderers/declarant-cell-renderer";
 
@@ -29,8 +28,7 @@ export const columns: (
     field: "date",
     minWidth: 100,
     flex: 1,
-    valueFormatter: ({ value }: ValueFormatterParams) =>
-      formatDate(value, { locale: DEFAULT_LOCALE }),
+    valueFormatter: ({ value }: ValueFormatterParams) => formatDate(value),
   },
   {
     headerName: "Created By",

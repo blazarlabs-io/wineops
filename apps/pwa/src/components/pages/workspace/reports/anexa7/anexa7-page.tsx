@@ -22,7 +22,6 @@ import {
   StockProductCategory,
 } from "@/models/types/reports";
 import formatDate from "@/utils/date-format";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { anexa7Schema } from "@/models/schemas/anexa7-schema";
@@ -1545,9 +1544,7 @@ export default function Anexa7Page({ anexa7Id }: { anexa7Id: string }) {
                         }
                       />
                     ) : (
-                      <Completed>
-                        {date && formatDate(date, { locale: DEFAULT_LOCALE })}
-                      </Completed>
+                      <Completed>{date && formatDate(date)}</Completed>
                     )}
                   </Box>
                 </Stack>

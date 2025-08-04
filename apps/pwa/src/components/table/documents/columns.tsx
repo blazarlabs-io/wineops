@@ -1,4 +1,3 @@
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { useAuth } from "@/lib/firebase/auth";
 import { UploadedDocument } from "@/models/types/db";
 import { useDialogDrawerStore } from "@/store/dialogs";
@@ -127,8 +126,7 @@ export const documentsColumns: GridColDef[] = [
     minWidth: 100,
     flex: 1,
     getApplyQuickFilterFn: getApplyQuickFilterFnSameYear,
-    valueFormatter: (value: Timestamp) =>
-      value ? formatDate(value, { locale: DEFAULT_LOCALE }) : "",
+    valueFormatter: (value: Timestamp) => (value ? formatDate(value) : ""),
   },
   {
     headerName: "Owner Name & Email",
