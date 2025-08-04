@@ -16,6 +16,7 @@ export const grapesColumns: ColDef<
     groupByDate: any;
     groupByVariety: any;
     groupByLocation: any;
+    groupByStatus: any;
   },
   any
 >[] = [
@@ -50,6 +51,15 @@ export const grapesColumns: ColDef<
     enableRowGroup: true,
     rowGroup: false,
     valueGetter: (params) => params?.data?.location,
+    keyCreator: (params) => params?.value,
+  },
+  {
+    headerName: "Group: Status",
+    field: "groupByStatus",
+    hide: true,
+    enableRowGroup: true,
+    rowGroup: false,
+    valueGetter: (params) => params.data?.status,
     keyCreator: (params) => params?.value,
   },
   {
