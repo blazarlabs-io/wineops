@@ -19,6 +19,8 @@ export const vineyardHarvestAction = async (
   actionData: VineyardHarvestAction,
   vineyard: Vineyard,
 ) => {
+  const newGrapeId = crypto.randomUUID();
+
   const updatedVineyard: Vineyard = {
     ...vineyard,
     status: actionData.harvestEnded
@@ -34,7 +36,7 @@ export const vineyardHarvestAction = async (
     batches: [
       ...(vineyard.batches || ([] as ActionRelation[])),
       {
-        id: actionData.batchId,
+        id: newGrapeId,
         name: actionData.batchId,
       },
     ],
@@ -71,7 +73,7 @@ export const vineyardHarvestAction = async (
       : actionData.executionDate;
 
   const newBatch: Grape = {
-    id: actionData.id || crypto.randomUUID(),
+    id: newGrapeId,
     name: actionData.batchId,
     date: actionData.executionDate,
     group: [actionData.batchId],
