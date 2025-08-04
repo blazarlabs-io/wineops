@@ -342,11 +342,6 @@ export default function VineyardForm({
   }, [existingVineyard, reset, vineyards?.length]);
 
   useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
-
-  useEffect(() => {
     if (clicked && btnRef.current) {
       btnRef.current.click();
       onSave?.(formData || ({} as Vineyard));
@@ -514,6 +509,40 @@ export default function VineyardForm({
                           </Typography>
                         )}
                       </div>
+
+                      <Stack gap={1}>
+                        <InputLabel className="text-sm text-muted-foreground">
+                          Enter supply (kg)
+                        </InputLabel>
+
+                        <FormControl className="w-full">
+                          <Input
+                            id="supply"
+                            type="number"
+                            variant="outlined"
+                            label="Supply (kg)"
+                            slotProps={{
+                              htmlInput: {
+                                min: 0,
+                                step: 0.01,
+                                max: 1_000_000_000,
+                              },
+                              inputLabel: {
+                                ...(formData?.supply && {
+                                  shrink: true,
+                                }),
+                              },
+                            }}
+                            {...register("supply")}
+                          />
+                        </FormControl>
+
+                        {errors?.supply?.message && (
+                          <p className="text-sm text-destructive  mt-1">
+                            {errors.supply.message as string}
+                          </p>
+                        )}
+                      </Stack>
 
                       <div className="flex flex-col gap-2">
                         <InputLabel className="text-sm text-muted-foreground">

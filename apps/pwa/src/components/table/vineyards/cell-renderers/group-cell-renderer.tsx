@@ -38,6 +38,7 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
         ml: !isGroup ? 2 : 2,
       }}
       className="w-full flex flex-col items-start gap-2"
+      data-id={node.data?.id}
     >
       <Box
         display={"flex"}
