@@ -19,7 +19,8 @@ export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
 
   const uniqueSuppliers = [...new Set(batchesSuppliers)];
 
-  const isHarvested = !!(value?.vineyardName || data?.vineyardName);
+  const vineyardName =
+    value?.supplier?.vineyardName || data?.supplier?.vineyardName;
   const hasTransportationInfo =
     data?.transportationInfo?.vehicleIdNo ||
     data?.transportationInfo?.companyName;
@@ -48,7 +49,7 @@ export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
         </>
       ) : (
         <Stack>
-          {value?.companyName && (
+          {(vineyardName || value?.companyName) && (
             <Stack
               sx={{
                 flexDirection: "row",
@@ -58,13 +59,15 @@ export const SupplierCellRenderer = (params: CustomCellRendererProps) => {
             >
               <Icon
                 icon={
-                  isHarvested
+                  vineyardName
                     ? "lucide:shopping-basket"
                     : "lucide:shopping-cart"
                 }
                 width={16}
               />
-              <Typography>{value?.companyName}</Typography>
+              <Typography>
+                {vineyardName ? vineyardName : value?.companyName}
+              </Typography>
             </Stack>
           )}
 
