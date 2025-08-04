@@ -1,5 +1,4 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { Consumable } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 
@@ -22,11 +21,7 @@ export default function GeneralInfoContent({ data }: GeneralInfoProps) {
       />
       <SimpleDataDisplay
         label="Order Date"
-        value={
-          data?.orderDate
-            ? formatDate(data.orderDate, { locale: DEFAULT_LOCALE })
-            : "N/A"
-        }
+        value={data?.orderDate ? formatDate(data.orderDate) : "N/A"}
       />
       <SimpleDataDisplay label="Invoice No" value={data.invoiceNo || "N/A"} />
       <SimpleDataDisplay label="Quantity" value={data.qty || "N/A"} />

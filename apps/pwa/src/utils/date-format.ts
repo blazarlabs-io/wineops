@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE } from "@/data/constants";
 import { Timestamp } from "firebase/firestore";
 
 export default function formatDate(
@@ -6,12 +7,12 @@ export default function formatDate(
 ) {
   if (!date) return "";
 
-  const { locale = "en-US", ...restOptions } = options || {};
+  const { locale, ...restOptions } = options || {};
   const dateToFormat = parseToDate(date);
 
   if (!dateToFormat || isNaN(dateToFormat.getTime())) return "";
 
-  return new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat(locale || DEFAULT_LOCALE || "en-US", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

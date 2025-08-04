@@ -1,7 +1,6 @@
 import LabItem from "@/components/data-display/lab-item";
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
 import UnitDisplay from "@/components/data-display/unit-display";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { LabReport } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Box from "@mui/material/Box";
@@ -27,7 +26,7 @@ export default function LabDataContent({ labData }: LabDataProps) {
       <SimpleDataDisplay
         classNames="min-w-[100px] w-[100px] gap-1.5"
         label="Date"
-        value={date ? formatDate(date, { locale: DEFAULT_LOCALE }) : "N/A"}
+        value={date ? formatDate(date) : "N/A"}
       />
 
       <SimpleDataDisplay

@@ -1,6 +1,6 @@
 import { LabReport } from "@/models/types/db";
+import formatDate from "@/utils/date-format";
 import { Avatar, Typography } from "@mui/material";
-import { Timestamp } from "firebase/firestore";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 export const RESULTS_KEYS = ["alcohol", "sugar", "acidity"];
@@ -26,7 +26,7 @@ export default function LabReportResponsibleDataDisplay({
           color="textDisabled"
           className="text-xs text-muted-foreground leading-[0]"
         >
-          {new Date((data.date as Timestamp)?.seconds * 1000).toDateString()}
+          {data.date ? formatDate(data.date) : ""}
         </Typography>
         <div className="flex items-center gap-2">
           <Avatar sx={{ width: 20, height: 20 }}>

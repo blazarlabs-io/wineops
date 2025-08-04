@@ -1,4 +1,3 @@
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { Task } from "@/models/types/db";
 import formatDate from "@/utils/date-format";
 import Paper from "@mui/material/Paper";
@@ -87,15 +86,11 @@ export default function TasksTable({ data }: TasksTableProps) {
                   </TableCell>
                   <TableCell>
                     <Typography>
-                      {startDate &&
-                        formatDate(startDate, { locale: DEFAULT_LOCALE })}
+                      {startDate && formatDate(startDate)}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>
-                      {dueDate &&
-                        formatDate(dueDate, { locale: DEFAULT_LOCALE })}
-                    </Typography>
+                    <Typography>{dueDate && formatDate(dueDate)}</Typography>
                   </TableCell>
                 </TableRow>
               ),

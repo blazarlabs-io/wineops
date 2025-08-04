@@ -1,3 +1,4 @@
+import formatDate from "@/utils/date-format";
 import { Box, Typography } from "@mui/material";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { Timestamp } from "firebase/firestore";
@@ -17,9 +18,7 @@ export const DateCellRenderer: FunctionComponent<CustomCellRendererProps> = ({
       }}
     >
       {value && value !== undefined && value instanceof Timestamp && (
-        <Typography className="capitalize">
-          {(value as Timestamp).toDate().toDateString()}
-        </Typography>
+        <Typography className="capitalize">{formatDate(value)}</Typography>
       )}
     </Box>
   );

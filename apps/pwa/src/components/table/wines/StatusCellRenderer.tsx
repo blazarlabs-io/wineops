@@ -23,9 +23,7 @@ export const StatusCellRenderer = (
         <>
           {<StatusDataDisplay status={value?.status} />}
           {value?.date && (
-            <Typography variant="body2">
-              {formatDate(value?.date, { locale: DEFAULT_LOCALE })}
-            </Typography>
+            <Typography variant="body2">{formatDate(value?.date)}</Typography>
           )}
         </>
       )}

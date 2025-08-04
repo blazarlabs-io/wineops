@@ -1,5 +1,4 @@
 import SimpleDataDisplay from "@/components/data-display/simple-data-display";
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { Consumable } from "@/models/types/db";
 import formatDate, { parseToDate } from "@/utils/date-format";
 
@@ -33,9 +32,7 @@ export default function TechnicalInfoContent({ data }: TechnicalInfoProps) {
             {shelfLife && shelfLife > 0
               ? `${shelfLife} ${shelfLife === 1 ? "year" : "years"} / `
               : ""}
-            {data?.expiryDate
-              ? formatDate(data.expiryDate, { locale: DEFAULT_LOCALE })
-              : "N/A"}
+            {data?.expiryDate ? formatDate(data.expiryDate) : "N/A"}
           </>
         }
       />

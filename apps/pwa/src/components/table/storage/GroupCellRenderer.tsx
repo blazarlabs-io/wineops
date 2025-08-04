@@ -149,7 +149,7 @@ export const GroupCellRenderer: FunctionComponent<
                 <>
                   {data?.date && (
                     <Typography variant="body2">
-                      {formatDate(data?.date, { locale: DEFAULT_LOCALE })}
+                      {formatDate(data?.date)}
                     </Typography>
                   )}
                   {<StatusDataDisplay status={data?.status} />}

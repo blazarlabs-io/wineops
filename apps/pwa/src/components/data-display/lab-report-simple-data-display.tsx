@@ -1,6 +1,6 @@
 import { LabReport } from "@/models/types/db";
+import formatDate from "@/utils/date-format";
 import { Typography } from "@mui/material";
-import { Timestamp } from "firebase/firestore";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 type LabSimpleDataDisplayProps = {
@@ -34,9 +34,7 @@ export default function LabReportSimpleDataDisplay({
               color="textDisabled"
               className="text-xs text-muted-foreground leading-[0]"
             >
-              {new Date(
-                (data.date as Timestamp)?.seconds * 1000,
-              ).toDateString()}
+              {formatDate(data.date)}
             </Typography>
           )}
 

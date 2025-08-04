@@ -1,4 +1,3 @@
-import { DEFAULT_LOCALE } from "@/data/constants";
 import { VesselHistory, VesselType } from "@/models/types/db";
 import formatDate, { parseToDate } from "@/utils/date-format";
 import Paper from "@mui/material/Paper";
@@ -87,14 +86,10 @@ export default function HistoryTable({ type, data }: HistoryTableProps) {
                   <Typography>{batchID}</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography>
-                    {dateIn && formatDate(dateIn, { locale: DEFAULT_LOCALE })}
-                  </Typography>
+                  <Typography>{dateIn && formatDate(dateIn)}</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography>
-                    {dateOut && formatDate(dateOut, { locale: DEFAULT_LOCALE })}
-                  </Typography>
+                  <Typography>{dateOut && formatDate(dateOut)}</Typography>
                 </TableCell>
               </TableRow>
             ))
