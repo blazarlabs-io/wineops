@@ -4,7 +4,6 @@ import type { CustomCellRendererProps } from "ag-grid-react";
 import { useCallback, useState, type FunctionComponent } from "react";
 import formatDate from "@/utils/date-format";
 import {
-  DEFAULT_LOCALE,
   GROUP_ITEMS_TO_SHOW,
   ROW_HEIGHT_DEFAULT,
   ROW_HEIGHT_EXPANDED_GRAPE,
@@ -20,6 +19,13 @@ import { db } from "@/lib/firebase/services";
 import { useAuth } from "@/lib/firebase/auth";
 import { enqueueSnackbar } from "notistack";
 import GrapeStatusDataDisplaySelect from "@/components/data-display/grape-status-data-display-select";
+
+const GROUPBY_FIELDS = {
+  groupByDate: "date",
+  groupByVariety: "variety",
+  groupByLocation: "location",
+  groupByStatus: "status",
+} as const;
 
 export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
   params,
@@ -95,12 +101,21 @@ export const GroupCellRenderer: FunctionComponent<CustomCellRendererProps> = (
         }}
       >
         {isGroup ? (
-          node?.field === "groupByDate" ? (
-            <>{value ? formatDate(value) : <i>Unknown date</i>}</>
-          ) : node?.field === "groupByVariety" ? (
-            <>{value ? value : <i>Unknown variety</i>}</>
-          ) : node?.field === "groupByLocation" ? (
-            <>{value ? value : <i>Unknown location</i>}</>
+          !!node?.field ? (
+            <>
+              {value ? (
+                node.field === "groupByDate" ? (
+                  formatDate(value)
+                ) : (
+                  value
+                )
+              ) : (
+                <i>
+                  Unknown{" "}
+                  {GROUPBY_FIELDS[node.field as keyof typeof GROUPBY_FIELDS]}
+                </i>
+              )}
+            </>
           ) : (
             <Stack justifyItems="center">
               <Typography variant="body1">{value}</Typography>

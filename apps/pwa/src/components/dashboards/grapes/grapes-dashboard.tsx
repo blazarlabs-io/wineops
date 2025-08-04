@@ -29,6 +29,7 @@ export default function GrapesDashboard() {
             { name: "by Processing Location", columnName: "groupByLocation" },
             { name: "by Date", columnName: "groupByDate" },
             { name: "by Grape Variety", columnName: "groupByVariety" },
+            { name: "by Status", columnName: "groupByStatus" },
           ]}
         />
 
