@@ -154,6 +154,7 @@ const actionRelationSchema = Joi.array()
     Joi.object({
       id: Joi.string().optional().allow(""),
       name: Joi.string().optional().allow(""),
+      date: TimestampOrString,
     }),
   )
   .optional();
@@ -232,4 +233,17 @@ export const vineyardSchema = Joi.object<Vineyard>().keys({
   actions: actionRelationSchema,
   batches: actionRelationSchema,
   labData: actionRelationSchema,
+  supply: Joi.number()
+    .min(0)
+    .max(1_000_000_000)
+    .precision(2)
+    .optional()
+    .allow("")
+    .messages({
+      "any.required": "Please enter a valid number for the supply",
+      "number.empty": "Please enter a valid number for the supply",
+      "number.base": "Please enter a valid number for the supply",
+      "number.min": "Please enter a valid number for the supply",
+      "number.max": "Supply cannot exceed 1 000 000 000.",
+    }),
 });

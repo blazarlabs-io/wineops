@@ -24,7 +24,6 @@ export const QuantityCellRenderer: FunctionComponent<
     (accumulator, currentValue) => accumulator + currentValue,
     0,
   );
-  const supply = 0;
   const demand = 0;
 
   const unit = (result
@@ -60,7 +59,7 @@ export const QuantityCellRenderer: FunctionComponent<
       ) : (
         <QuantityWidget
           actual={actual}
-          supply={supply}
+          supply={value?.supply || node.data?.supply}
           demand={demand}
           status={value?.status || node.data?.status}
           unit={unit}
