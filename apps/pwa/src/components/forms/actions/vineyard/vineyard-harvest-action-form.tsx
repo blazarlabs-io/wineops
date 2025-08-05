@@ -575,7 +575,7 @@ export default function VineyardHarvestActionForm({
                                 id: newValue.id,
                                 name: newValue.name,
                               }
-                            : "",
+                            : { id: "", name: "" },
                         );
                       }}
                     />

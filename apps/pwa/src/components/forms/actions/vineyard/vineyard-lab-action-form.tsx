@@ -301,11 +301,6 @@ export default function VineyardLabActionForm({
     setFormData(vineyardGlobalActionSample);
   }, [reset, selectedVineyards, userId]);
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
-
   if (!formData) return null;
 
   return (
@@ -358,12 +353,15 @@ export default function VineyardLabActionForm({
                     getOptionLabel={(option) => option.name}
                     filterSelectedOptions
                     onChange={(_event, newValue) => {
-                      if (!newValue) return;
-
-                      handleChange("inUseVineyard", {
-                        id: newValue.id,
-                        name: newValue.name,
-                      });
+                      handleChange(
+                        "inUseVineyard",
+                        newValue
+                          ? {
+                              id: newValue.id,
+                              name: newValue.name,
+                            }
+                          : { id: "", name: "" },
+                      );
                     }}
                     renderInput={(params) => (
                       <TextField

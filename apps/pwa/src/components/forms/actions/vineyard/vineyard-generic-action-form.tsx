@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { vineyardGlobalActionSample } from "@/data/actions-samples";
@@ -322,11 +323,6 @@ export default function VineyardGenericActionForm({
     setFormData(vineyardActionSample);
   }, [actionKey, filteredVineyards, reset, userId]);
 
-  useEffect(() => {
-    if (errors) {
-    }
-  }, [errors]);
-
   const filteredConsumables = useMemo(
     () =>
       allConsumables.filter(
@@ -397,12 +393,18 @@ export default function VineyardGenericActionForm({
                 getOptionLabel={({ name }) => name}
                 filterSelectedOptions
                 onChange={(_event, newValue) => {
-                  if (!newValue) return;
-
-                  handleChange("inUseVineyard", {
-                    id: newValue.id,
-                    name: newValue.name,
-                  });
+                  handleChange(
+                    "inUseVineyard",
+                    newValue
+                      ? {
+                          id: newValue.id,
+                          name: newValue.name,
+                        }
+                      : {
+                          id: "",
+                          name: "",
+                        },
+                  );
                 }}
                 renderInput={(params) => (
                   <TextField
