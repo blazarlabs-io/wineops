@@ -182,7 +182,7 @@ export default function VineyardLabActionForm({
       db.storage.uploadFile(
         file,
         user?.uid,
-        "labReport",
+        "lab-report",
         (progress: number) => {
           setIsUploading(true);
           setUploadProgress(progress);
@@ -225,13 +225,12 @@ export default function VineyardLabActionForm({
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
-        "labReport",
+        "lab-report",
         name,
       );
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid],

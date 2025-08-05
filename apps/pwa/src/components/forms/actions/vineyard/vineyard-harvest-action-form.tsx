@@ -233,7 +233,7 @@ export default function VineyardHarvestActionForm({
       db.storage.uploadFile(
         file,
         user?.uid,
-        "vineyardHarvest",
+        "harvest",
         (progress: number) => {
           setIsUploading(true);
           setUploadProgress(progress);
@@ -277,7 +277,7 @@ export default function VineyardHarvestActionForm({
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
-        "vineyardHarvest",
+        "harvest",
         name,
       );
 
