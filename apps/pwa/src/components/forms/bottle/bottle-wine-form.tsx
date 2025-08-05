@@ -215,7 +215,7 @@ export default function BottleWineForm() {
       db.storage.uploadFile(
         file,
         user?.uid,
-        "bottleWine",
+        "bottle-wine",
         (progress: number) => {
           setIsUploading(true);
           setUploadProgress(progress);
@@ -259,13 +259,12 @@ export default function BottleWineForm() {
 
       const deleteFileRes = await db.storage.deleteFile(
         user?.uid,
-        "bottleWine",
+        "bottle-wine",
         name,
       );
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid],

@@ -52,7 +52,15 @@ export default function DeleteUploadedDialog() {
   const entityName = vineyardId ? "vineyard" : mustId ? "must" : "";
 
   const handleDeleteFile = useCallback(async () => {
-    if (!itemType || !fileToDelete || !name) return;
+    if (
+      !user?.uid ||
+      !itemType ||
+      !fileToDelete ||
+      !name ||
+      !entityId ||
+      !entityName
+    )
+      return;
 
     const path = type ? type.split(" ").join("-") : "documents";
 
@@ -69,7 +77,7 @@ export default function DeleteUploadedDialog() {
     try {
       const deleteFileRes = await db.storage.deleteFile(user?.uid, path, name);
 
-      if (user?.uid && actionId && entityId && entityName) {
+      if (actionId) {
         const actionDocuments = allRows
           ?.filter(
             (row: any) =>
@@ -86,7 +94,7 @@ export default function DeleteUploadedDialog() {
           supportingDocuments: actionDocuments,
         });
 
-        const entityRes = await db["entityName"].update(user?.uid, entityId, {
+        const entityRes = await db[entityName].update(user?.uid, entityId, {
           actions: actions.map((action: ActionRelation) =>
             action.id === actionId
               ? { ...action, updatedAt: Timestamp.now() }
@@ -103,9 +111,7 @@ export default function DeleteUploadedDialog() {
         } else {
           enqueueSnackbar("File deletion failed", { variant: "error" });
         }
-      }
-
-      if (user?.uid && entityId && entityName && !actionId) {
+      } else {
         const entityDocuments = allRows
           ?.filter(
             (row: any) =>
@@ -132,7 +138,6 @@ export default function DeleteUploadedDialog() {
           enqueueSnackbar("File deletion failed", { variant: "error" });
         }
       }
-    } catch (e) {
     } finally {
       onClose();
       setIsDeleting(false);

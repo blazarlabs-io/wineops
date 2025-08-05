@@ -117,7 +117,6 @@ export default function FileUploaderField({
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
       }
     },
     [onDocumentUpload, path, user?.uid],

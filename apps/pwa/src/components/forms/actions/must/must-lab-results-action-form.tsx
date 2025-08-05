@@ -220,7 +220,6 @@ export default function MustLabResultsActionForm({
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
       }
     },
     [clearErrors, formData.supportingDocuments, setValue, user?.uid],

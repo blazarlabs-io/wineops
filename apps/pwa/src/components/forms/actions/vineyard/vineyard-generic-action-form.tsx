@@ -230,7 +230,6 @@ export default function VineyardGenericActionForm({
 
       if (deleteFileRes.status == 200) {
         if (fileInputRef.current) fileInputRef.current.value = "";
-      } else {
       }
     },
     [actionKey, clearErrors, formData.supportingDocuments, setValue, user?.uid],
