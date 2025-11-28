@@ -5,9 +5,6 @@
 WineOps PWA is a winery operations platform built on Next.js 15 (App Router) with React 19, MUI 7 + Toolpad, ag-Grid Enterprise, and Firebase Auth/Firestore. It covers:
 
 - Wine production: vineyards, grapes, primary/secondary vinification, bottling
-- Storage and vessel management
-- Expendables: chemistry and consumables
-- Team management: people and tasks
 - Reports: Anexa 7 and Anexa 14 (print-friendly)
 - Documents, preferences, and widgets dashboards
 
@@ -47,12 +44,38 @@ Place them in `apps/pwa/.env.local` for local work.
 ## Architecture Overview
 
 - **App Router layouts**: `src/app/layout.tsx` wraps `AppRouterCacheProvider` → `AuthProvider` (server-fed user from `getAuthenticatedAppForUser`) → `context/providers.tsx`. Public surface under `(auth)` + landing; workspace under `(private)/workspace`.
-- **Provider stack** (`src/context/providers.tsx`): Snackbar, Sidebar/Toolsbar/QuickDrawer, Bottle/Winery/Vineyard/Grape/Vessel/Consumable/Must/Chemistry/Wine/Anexa14/Anexa7 providers, LocalizationProvider (Day.js), Google Maps APIProvider. Order matters—leave as-is unless necessary.
+- **Provider stack** (`src/context/providers.tsx`): Snackbar, Sidebar/Toolsbar/QuickDrawer, Bottle/Winery/Vineyard/Grape/Must/Wine/Anexa14/Anexa7 providers, LocalizationProvider (Day.js), Google Maps APIProvider. Order matters—leave as-is unless necessary.
 - **State**: Domain data via React context; UI state via Zustand stores (`src/store` for dialogs, selections, pinning, grid grouping, etc.).
 - **Data layer**: Firebase client in `src/lib/firebase/client.ts`; Firestore service helpers in `src/lib/firebase/services/*` scoped to `WINERY/{uid}/<collection>` (constants in `config.ts`). Multi-step workflows live in `src/lib/actions/*`.
 - **Forms/validation**: `react-hook-form` + Joi resolvers; schemas in `src/models/schemas/**/*`, sample payloads in `src/data`.
 - **UI/theming**: MUI/Toolpad `DashboardLayout` (`components/layout/workspace-layout.tsx`), Notistack for toasts, Tailwind utilities in `src/app/globals.css`. Theme in `src/lib/themes/main-theme.ts` (Lato typography, light/dark, component overrides).
 - **Routing/nav**: Nav map in `components/navigation/sidebar-navigation.tsx`; routes mirror `app/(private)/workspace/...`.
+
+### Architecture Diagram
+
+```mermaid
+graph TD
+  subgraph App Router (Next.js 15)
+    L[app/layout.tsx] --> A[AuthProvider\n(getAuthenticatedAppForUser)]
+    A --> P[Context Providers\n(Snackbar, Sidebar, ToolsBar,\nQuickDrawer, Winery/Vineyard/Grape/Must/Wine,\nAnexa14/Anexa7, Localization, Google Maps)]
+    P --> UI[Pages & Components\n(workspace, reports, auth)]
+  end
+
+  subgraph Data Layer (Firebase)
+    C[client.ts\n(firebase app/auth/db)]
+    S[services/*\nFirestore CRUD\nWINERY/{uid}/collections]
+    Actions[lib/actions/*\nworkflows + toasts]
+  end
+
+  UI -->|uses| Grid[ag-Grid DataTable\n(grouping, tree data, search, pinning)]
+  UI -->|forms| Forms[react-hook-form + Joi schemas]
+  UI -->|state| Stores[Zustand stores\n(dialogs, selection, pinning, grouping)]
+  UI -->|theme| Theme[main-theme.ts\nMUI/Toolpad + Tailwind globals]
+
+  P --> C
+  UI --> S
+  Actions --> S
+```
 
 ## ag-Grid Deep Dive (DataTable)
 
@@ -79,12 +102,9 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 ## Feature Map (by area)
 
 - **Auth**: Email/password + Google (Toolpad `SignInPage`). `useAuth` exposes sign in/up, Google popup, sign out, password reset, and confirm password reset.
-- **Workspace shell**: Quick drawers for tasks/actions, session built from Firebase user, sidebar open state in `SidebarProvider`, ToolsBar controlling search/grouping/pinning, DashboardLayout slots for toolbar actions and account footer.
+- **Workspace shell**: Quick drawers for actions, session built from Firebase user, sidebar open state in `SidebarProvider`, ToolsBar controlling search/grouping/pinning, DashboardLayout slots for toolbar actions and account footer.
 - **Vineyards**: ag-Grid dashboard with grouping and actions (harvest, lab report, irrigation, pest inspection, pruning, weed removal, soil monitoring, green harvest, fertilizer/pesticide application). Harvest action writes vineyard status, creates grape batch, creates action; lab action writes lab report, links to vineyard.
 - **Grapes / Must / Wine**: Similar dashboards with action forms (decant, lab results, processing) and validation schemas in `src/models/schemas/actions/*`.
-- **Vessels**: CRUD via `services/vessel.ts`; drag/group behavior consistent with other tables.
-- **Expendables**: Chemistry and consumables contexts backed by `services/chemistry.ts` and `services/consumable.ts`.
-- **Team management**: People/tasks collections (`TEAM`, `TASKS`); tasks surface in Quick Tasks drawer.
 - **Reports**: Anexa 7/14 list pages and detail views; print-friendly tables in `components/table/anexa7` and `components/table/anexa14` with print CSS in `globals.css`.
 - **Documents**: Aggregated from Firestore `DOCUMENTS` plus attachments from lab reports (`context/winery`).
 - **Maps**: Google Maps API available through `APIProvider`; helper for centroid in `src/helpers/map-helpers.ts`.
@@ -93,7 +113,7 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 
 - `src/app` – App Router layouts and pages (auth, workspace, reports)
 - `src/components` – Layout shells, dashboards, ag-Grid tables, forms, dialogs, drawers, widgets
-- `src/context` – Domain providers (vineyard, grape, must, wine, vessel, consumable, chemistry, bottle, anexa7/14) and UI providers (sidebar, tools-bar, quick-drawer)
+- `src/context` – Domain providers (vineyard, grape, must, wine, bottle, anexa7/14) and UI providers (sidebar, tools-bar, quick-drawer)
 - `src/lib` – Firebase client/auth/server, actions, themes, env parsing
 - `src/models` – Types and Joi schemas for entities/actions
 - `src/store` – Zustand stores for dialogs, selections, pinning, grid grouping, search state
@@ -103,7 +123,7 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 ## Data Model Notes
 
 - Base entity: `id`, `name`, `group: string[]`, `rowType` (`item`/`group`). Normalize `group` to `[]` instead of `undefined`.
-- Collections: see `src/lib/firebase/config.ts` (`WINERY`, `VINEYARDS`, `GRAPES`, `VESSELS`, `CONSUMABLES`, `CHEMISTRY`, `TASKS`, `NOTES`, `LAB_REPORTS`, `ANEXA7`, `ANEXA14`, etc.).
+- Collections: see `src/lib/firebase/config.ts` (`WINERY`, `VINEYARDS`, `GRAPES`, `NOTES`, `LAB_REPORTS`, `ANEXA7`, `ANEXA14`, etc.).
 - Services return `{ data, error, status }`; prefer these over raw Firestore calls to keep paths consistent and merge semantics intact.
 
 ## UI/UX Conventions
