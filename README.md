@@ -4,12 +4,15 @@
 
 WineOps PWA is a winery operations platform built on Next.js 15 (App Router) with React 19, MUI 7 + Toolpad, ag-Grid Enterprise, and Firebase Auth/Firestore. It covers:
 
+Key capabilities in scope:
+
 - Wine production: vineyards, grapes, primary/secondary vinification, bottling
 - Reports: Anexa 7 and Anexa 14 (print-friendly)
 - Documents, preferences, and widgets dashboards
 
 ## Quickstart
 
+Use these commands to install, run, and validate:
 ```bash
 # Install deps
 pnpm install
@@ -29,7 +32,7 @@ pnpm format
 
 ## Environment Variables (required)
 
-Validated at import in `src/lib/envs/client.ts`; missing values throw immediately.
+Validated at import in `src/lib/envs/client.ts`; missing values throw immediately. Configure these before running:
 
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
@@ -42,6 +45,8 @@ Validated at import in `src/lib/envs/client.ts`; missing values throw immediatel
 Place them in `apps/pwa/.env.local` for local work.
 
 ## Architecture Overview
+
+How layouts, providers, data layer, and UI pieces connect:
 
 - **App Router layouts**: `src/app/layout.tsx` wraps `AppRouterCacheProvider` → `AuthProvider` (server-fed user from `getAuthenticatedAppForUser`) → `context/providers.tsx`. Public surface under `(auth)` + landing; workspace under `(private)/workspace`.
 - **Provider stack** (`src/context/providers.tsx`): Snackbar, Sidebar/Toolsbar/QuickDrawer, Bottle/Winery/Vineyard/Grape/Must/Wine/Anexa14/Anexa7 providers, LocalizationProvider (Day.js), Google Maps APIProvider. Order matters—leave as-is unless necessary.
@@ -79,6 +84,8 @@ graph TD
 
 ## ag-Grid Deep Dive (DataTable)
 
+How the shared grid behaves and what it expects:
+
 The reusable table lives in `components/table/data-table`. Modules enabled: RowGrouping, TreeData, RowDrag, SetFilter, SideBar, StatusBar, RichSelect, ExcelExport, MasterDetail, Find, Validation, PinnedRow, RowSelection. Key behaviors:
 
 - **Data shape**: Each row must have `id`, `group: string[]` (path segments), and `rowType` (`item`/`group`). The component normalizes missing `group` to `[]` and default `rowType` to `"item"`.
@@ -101,6 +108,8 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 
 ## Feature Map (by area)
 
+What lives where across the product:
+
 - **Auth**: Email/password + Google (Toolpad `SignInPage`). `useAuth` exposes sign in/up, Google popup, sign out, password reset, and confirm password reset.
 - **Workspace shell**: Quick drawers for actions, session built from Firebase user, sidebar open state in `SidebarProvider`, ToolsBar controlling search/grouping/pinning, DashboardLayout slots for toolbar actions and account footer.
 - **Vineyards**: ag-Grid dashboard with grouping and actions (harvest, lab report, irrigation, pest inspection, pruning, weed removal, soil monitoring, green harvest, fertilizer/pesticide application). Harvest action writes vineyard status, creates grape batch, creates action; lab action writes lab report, links to vineyard.
@@ -109,7 +118,20 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - **Documents**: Aggregated from Firestore `DOCUMENTS` plus attachments from lab reports (`context/winery`).
 - **Maps**: Google Maps API available through `APIProvider`; helper for centroid in `src/helpers/map-helpers.ts`.
 
+### Feature Map Diagram
+```mermaid
+graph TD
+  Auth[Auth\nEmail/Password + Google] --> Shell[Workspace Shell\nDashboardLayout + ToolsBar + QuickDrawer]
+  Shell --> Vineyards[Vineyards\nag-Grid + harvest/lab/actions]
+  Shell --> Grapes[Grapes / Must / Wine\naction forms + schemas]
+  Shell --> Reports[Reports\nAnexa 7/14 list + detail]
+  Shell --> Documents[Documents\nFirestore + report attachments]
+  Shell --> Maps[Maps\nGoogle Maps API integration]
+```
+
 ## Key Directories
+
+Main folders to know in the PWA workspace:
 
 - `src/app` – App Router layouts and pages (auth, workspace, reports)
 - `src/components` – Layout shells, dashboards, ag-Grid tables, forms, dialogs, drawers, widgets
@@ -120,13 +142,129 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - `src/data` – Sample data, constants, country list, system variables
 - `src/utils` / `src/helpers` – Object cleanup, generators, formatting, map math
 
+### Key Directories Tree
+```
+apps/pwa/src/
+- app/
+  - (auth), (private)/workspace, reports, layout.tsx, globals.css
+- components/
+  - layouts, dashboards, tables, forms, dialogs, drawers, widgets
+- context/
+  - vineyard, grape, must, wine, bottle, anexa7, anexa14, sidebar, tools-bar, quick-drawer, providers.tsx
+- lib/
+  - firebase (auth, client, services, server), actions, themes, envs
+- models/
+  - types, schemas (Joi)
+- store/
+  - zustand stores (dialogs, selection, pinning, grouping, search)
+- data/
+  - samples, constants, country list, system variables
+- utils/ and helpers/
+  - formatting, cleanup, generators, map helpers
+```
+
 ## Data Model Notes
 
-- Base entity: `id`, `name`, `group: string[]`, `rowType` (`item`/`group`). Normalize `group` to `[]` instead of `undefined`.
-- Collections: see `src/lib/firebase/config.ts` (`WINERY`, `VINEYARDS`, `GRAPES`, `NOTES`, `LAB_REPORTS`, `ANEXA7`, `ANEXA14`, etc.).
-- Services return `{ data, error, status }`; prefer these over raw Firestore calls to keep paths consistent and merge semantics intact.
+Conventions that keep entity shapes and Firestore collections consistent:
+
+- Base entity: `id`, `name`, `group: string[]`, `rowType` (`item`/`group`). Normalize `group` to `[]` instead of `undefined` to keep tree data stable.
+- Collections: `WINERY`, `VINEYARDS`, `GRAPES`, `NOTES`, `LAB_REPORTS`, `ANEXA7`, `ANEXA14`, plus related artifacts (wines, bottles, documents) scoped under `WINERY/{uid}/...`.
+- Vineyard: grape variety/color, cadastral numbers, certifications, status, actions, lab data refs, batches (grape lots), and supply metrics.
+- Grape: intake/entry weights, supplier and transport info, status, certifications, lab data, metrics, processing info, actions, and documents.
+- Must: qty, grape variety/source, status, lab data (current and historical), metrics, actions, and documents.
+- Wine: qty, grape varieties, status, lab data, metrics, actions, and documents.
+- Bottle: lot info, recipe links to wines, packaging info, lab metrics (alcohol, sugar, SO₂, etc.), documents, and notes.
+- LabReport: standalone reports with results (sugar, acidity, etc.) linked from actions.
+- Anexa7/Anexa14: report records stored per winery; tables render printable outputs.
+- Services return `{ data, error, status }`; prefer these over raw Firestore calls to keep paths consistent and merges intact.
+
+### Data Model Diagram
+```mermaid
+classDiagram
+  class Winery {
+    id: string
+    name: string
+  }
+  class Vineyard {
+    id: string
+    name: string
+    group: string[]
+    rowType: item|group
+    grapeVariety: string
+    status: enum
+    batches: [ActionRelation]
+    labData: [ActionRelation]
+  }
+  class Grape {
+    id: string
+    name: string
+    group: string[]
+    status: enum
+    entry: weights
+    supplier: info
+    labData: metrics
+  }
+  class Must {
+    id: string
+    name: string
+    group: string[]
+    status: enum
+    qty: number
+    labData: metrics
+  }
+  class Wine {
+    id: string
+    name: string
+    group: string[]
+    status: enum
+    qty: number
+    grapeVarieties: []
+    labData: metrics
+  }
+  class Bottle {
+    id: string
+    name: string
+    group: string[]
+    lotId: string
+    wines: []
+    labData: metrics
+  }
+  class LabReport {
+    id: string
+    date: date
+    results: sugar/acidity/etc.
+  }
+  class Note {
+    id: string
+    text: string
+  }
+  class Anexa7 {
+    id: string
+    fields: report data
+  }
+  class Anexa14 {
+    id: string
+    fields: report data
+  }
+
+  Winery "1" --> "*" Vineyard : contains
+  Vineyard "1" --> "*" Grape : harvest batches
+  Grape "1" --> "*" Must : processing
+  Must "1" --> "*" Wine : vinification
+  Wine "1" --> "*" Bottle : bottling
+  Vineyard "0..*" --> "*" LabReport : references
+  Grape "0..*" --> "*" LabReport : references
+  Must "0..*" --> "*" LabReport : references
+  Wine "0..*" --> "*" LabReport : references
+  Vineyard "0..*" --> "*" Note : notes
+  Wine "0..*" --> "*" Note : notes
+  Winery "1" --> "*" Anexa7 : reports
+  Winery "1" --> "*" Anexa14 : reports
+```
 
 ## UI/UX Conventions
+
+Styling and layout expectations to match the existing design system:
 
 - Use `mainTheme` + Toolpad `DashboardLayout`; avoid custom shells.
 - Mix MUI `sx` styling with Tailwind utilities present in `globals.css`. Print styles and scrollbar tweaks are already defined.
@@ -134,6 +272,8 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - Toasts through Notistack (`enqueueSnackbar`).
 
 ## Extending the App
+
+Guidelines for adding features without breaking established patterns:
 
 - Add routes under `app/(private)/workspace/...` and register them in `sidebar-navigation.tsx`.
 - Reuse contexts instead of new Firestore listeners; wire new entities into `context/providers.tsx` only when shared globally.
@@ -143,6 +283,8 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - For new tables, pass data with `group` arrays, supply `groupByButtons` if you want pivot toggles, and add column filters/sorts in column defs.
 
 ## Troubleshooting
+
+Common failure modes and what to check first:
 
 - Env vars: missing `NEXT_PUBLIC_*` values throw on import; set `.env.local` before running.
 - ag-Grid: ensure `group` is an array and `rowType` present; clean `.next` if Turbopack artifacts break module resolution; use `getRowId` when data lacks `id`.
