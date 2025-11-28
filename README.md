@@ -55,21 +55,21 @@ Place them in `apps/pwa/.env.local` for local work.
 
 ```mermaid
 graph TD
-  subgraph App Router (Next.js 15)
-    L[app/layout.tsx] --> A[AuthProvider\n(getAuthenticatedAppForUser)]
-    A --> P[Context Providers\n(Snackbar, Sidebar, ToolsBar,\nQuickDrawer, Winery/Vineyard/Grape/Must/Wine,\nAnexa14/Anexa7, Localization, Google Maps)]
-    P --> UI[Pages & Components\n(workspace, reports, auth)]
+  subgraph App Router Next.js 15
+    L[app/layout.tsx] --> A[AuthProvider\n getAuthenticatedAppForUser]
+    A --> P[Context Providers\n Snackbar, Sidebar, ToolsBar,\nQuickDrawer, Winery/Vineyard/Grape/Must/Wine,\nAnexa14/Anexa7, Localization, Google Maps]
+    P --> UI[Pages & Components\n workspace, reports, auth]
   end
 
-  subgraph Data Layer (Firebase)
-    C[client.ts\n(firebase app/auth/db)]
-    S[services/*\nFirestore CRUD\nWINERY/{uid}/collections]
+  subgraph Data Layer Firebase
+    C[client.ts\n firebase app/auth/db]
+    S[services/*\nFirestore CRUD\nWINERY/uid/collections]
     Actions[lib/actions/*\nworkflows + toasts]
   end
 
-  UI -->|uses| Grid[ag-Grid DataTable\n(grouping, tree data, search, pinning)]
+  UI -->|uses| Grid[ag-Grid DataTable\n grouping, tree data, search, pinning]
   UI -->|forms| Forms[react-hook-form + Joi schemas]
-  UI -->|state| Stores[Zustand stores\n(dialogs, selection, pinning, grouping)]
+  UI -->|state| Stores[Zustand stores\n dialogs, selection, pinning, grouping]
   UI -->|theme| Theme[main-theme.ts\nMUI/Toolpad + Tailwind globals]
 
   P --> C
