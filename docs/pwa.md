@@ -1,9 +1,7 @@
-# Wineops Developer Guide
+# PWA Developer Guide
 
 ## Product Snapshot
-
 WineOps PWA is a winery operations platform built on Next.js 15 (App Router) with React 19, MUI 7 + Toolpad, ag-Grid Enterprise, and Firebase Auth/Firestore. It covers:
-
 - Wine production: vineyards, grapes, primary/secondary vinification, bottling
 - Storage and vessel management
 - Expendables: chemistry and consumables
@@ -12,7 +10,6 @@ WineOps PWA is a winery operations platform built on Next.js 15 (App Router) wit
 - Documents, preferences, and widgets dashboards
 
 ## Quickstart
-
 ```bash
 # Install deps
 pnpm install
@@ -31,9 +28,7 @@ pnpm format
 ```
 
 ## Environment Variables (required)
-
 Validated at import in `src/lib/envs/client.ts`; missing values throw immediately.
-
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
@@ -45,7 +40,6 @@ Validated at import in `src/lib/envs/client.ts`; missing values throw immediatel
 Place them in `apps/pwa/.env.local` for local work.
 
 ## Architecture Overview
-
 - **App Router layouts**: `src/app/layout.tsx` wraps `AppRouterCacheProvider` → `AuthProvider` (server-fed user from `getAuthenticatedAppForUser`) → `context/providers.tsx`. Public surface under `(auth)` + landing; workspace under `(private)/workspace`.
 - **Provider stack** (`src/context/providers.tsx`): Snackbar, Sidebar/Toolsbar/QuickDrawer, Bottle/Winery/Vineyard/Grape/Vessel/Consumable/Must/Chemistry/Wine/Anexa14/Anexa7 providers, LocalizationProvider (Day.js), Google Maps APIProvider. Order matters—leave as-is unless necessary.
 - **State**: Domain data via React context; UI state via Zustand stores (`src/store` for dialogs, selections, pinning, grid grouping, etc.).
@@ -55,9 +49,7 @@ Place them in `apps/pwa/.env.local` for local work.
 - **Routing/nav**: Nav map in `components/navigation/sidebar-navigation.tsx`; routes mirror `app/(private)/workspace/...`.
 
 ## ag-Grid Deep Dive (DataTable)
-
 The reusable table lives in `components/table/data-table`. Modules enabled: RowGrouping, TreeData, RowDrag, SetFilter, SideBar, StatusBar, RichSelect, ExcelExport, MasterDetail, Find, Validation, PinnedRow, RowSelection. Key behaviors:
-
 - **Data shape**: Each row must have `id`, `group: string[]` (path segments), and `rowType` (`item`/`group`). The component normalizes missing `group` to `[]` and default `rowType` to `"item"`.
 - **Tree data vs column grouping**: Default mode uses tree data (`group` path). Pivot icon or `groupByButtons` switch to column grouping; tree data is restored when grouping is cleared. Auto-group columns toggle visibility when switching modes.
 - **Grouping/ungrouping dialogs**: ToolsBar “SelectAll/Deselect” icons open dialogs (`group-entities`, `ungroup-entities`). Selected items are regrouped via `updateRowsGroup`, which:
@@ -77,7 +69,6 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - **Exports**: ExcelExport module is enabled; add UI hooks to trigger `gridRef.current.api.exportDataAsExcel()` if needed.
 
 ## Feature Map (by area)
-
 - **Auth**: Email/password + Google (Toolpad `SignInPage`). `useAuth` exposes sign in/up, Google popup, sign out, password reset, and confirm password reset.
 - **Workspace shell**: Quick drawers for tasks/actions, session built from Firebase user, sidebar open state in `SidebarProvider`, ToolsBar controlling search/grouping/pinning, DashboardLayout slots for toolbar actions and account footer.
 - **Vineyards**: ag-Grid dashboard with grouping and actions (harvest, lab report, irrigation, pest inspection, pruning, weed removal, soil monitoring, green harvest, fertilizer/pesticide application). Harvest action writes vineyard status, creates grape batch, creates action; lab action writes lab report, links to vineyard.
@@ -90,7 +81,6 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - **Maps**: Google Maps API available through `APIProvider`; helper for centroid in `src/helpers/map-helpers.ts`.
 
 ## Key Directories
-
 - `src/app` – App Router layouts and pages (auth, workspace, reports)
 - `src/components` – Layout shells, dashboards, ag-Grid tables, forms, dialogs, drawers, widgets
 - `src/context` – Domain providers (vineyard, grape, must, wine, vessel, consumable, chemistry, bottle, anexa7/14) and UI providers (sidebar, tools-bar, quick-drawer)
@@ -101,20 +91,17 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - `src/utils` / `src/helpers` – Object cleanup, generators, formatting, map math
 
 ## Data Model Notes
-
 - Base entity: `id`, `name`, `group: string[]`, `rowType` (`item`/`group`). Normalize `group` to `[]` instead of `undefined`.
 - Collections: see `src/lib/firebase/config.ts` (`WINERY`, `VINEYARDS`, `GRAPES`, `VESSELS`, `CONSUMABLES`, `CHEMISTRY`, `TASKS`, `NOTES`, `LAB_REPORTS`, `ANEXA7`, `ANEXA14`, etc.).
 - Services return `{ data, error, status }`; prefer these over raw Firestore calls to keep paths consistent and merge semantics intact.
 
 ## UI/UX Conventions
-
 - Use `mainTheme` + Toolpad `DashboardLayout`; avoid custom shells.
 - Mix MUI `sx` styling with Tailwind utilities present in `globals.css`. Print styles and scrollbar tweaks are already defined.
 - ag-Grid theme is built from `themeMaterial` with Lato fonts; dark/light mode toggled via MUI color scheme and `data-ag-theme-mode`.
 - Toasts through Notistack (`enqueueSnackbar`).
 
 ## Extending the App
-
 - Add routes under `app/(private)/workspace/...` and register them in `sidebar-navigation.tsx`.
 - Reuse contexts instead of new Firestore listeners; wire new entities into `context/providers.tsx` only when shared globally.
 - Add forms with Joi schemas in `src/models/schemas`; pair them with sample payloads in `src/data` if helpful.
@@ -123,7 +110,6 @@ The reusable table lives in `components/table/data-table`. Modules enabled: RowG
 - For new tables, pass data with `group` arrays, supply `groupByButtons` if you want pivot toggles, and add column filters/sorts in column defs.
 
 ## Troubleshooting
-
 - Env vars: missing `NEXT_PUBLIC_*` values throw on import; set `.env.local` before running.
 - ag-Grid: ensure `group` is an array and `rowType` present; clean `.next` if Turbopack artifacts break module resolution; use `getRowId` when data lacks `id`.
 - Auth: `AuthProvider` listens to Firebase auth state; server user comes from `getAuthenticatedAppForUser`; refresh route if user state desyncs.

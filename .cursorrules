@@ -1,0 +1,8 @@
+# Cursor Rules for WineOps
+- Default to working in `apps/pwa`; keep other packages untouched unless required.
+- Use pnpm/turbo commands: `pnpm turbo run dev --filter pwa`, `pnpm turbo run lint --filter pwa`, `pnpm turbo run build --filter pwa`, format with `pnpm format`.
+- Next.js 15 App Router with strict TypeScript; add `"use client"` on components that use hooks/state and keep the `AppRouterCacheProvider` + `AuthProvider` + `context/providers.tsx` chain intact.
+- Import with `@/*` alias; prefer the Firebase service helpers in `src/lib/firebase/services` and existing contexts in `src/context` for Firestore access (collections live under `WINERY/{uid}/...` per `config.ts`).
+- UI uses MUI 7/Toolpad + Notistack + Tailwind v4; use `mainTheme` and existing layout shells (`PublicLayout`, `WorkspaceLayout`) instead of custom wrappers.
+- Forms rely on `react-hook-form` with Joi schemas in `src/models/schemas`; follow existing patterns for validation and defaults.
+- Required envs: `NEXT_PUBLIC_FIREBASE_*` plus `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`; code expects them at import time.

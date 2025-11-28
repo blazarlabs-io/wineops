@@ -95,6 +95,15 @@ export const DataTable = <T extends DashboardEntity>({
   entityName,
   defaultGroupedBy,
 }: DataTableProps<T>) => {
+  const normalizedData = useMemo(
+    () =>
+      (data ?? []).map((row) => ({
+        ...row,
+        group: Array.isArray(row.group) ? row.group : [],
+        rowType: row.rowType ?? "item",
+      })) as T[],
+    [data],
+  );
   const { colorScheme } = useColorScheme();
   const isDarkMode = colorScheme === "dark";
   const { pinned } = usePinnedEntitiesStore();
@@ -103,14 +112,14 @@ export const DataTable = <T extends DashboardEntity>({
 
   const colDefs = useMemo(() => columns, [columns]);
 
-  const [rowData, setRowData] = useState<T[]>();
+  const [rowData, setRowData] = useState<T[]>([]);
   const [rowHeight] = useState(ROW_HEIGHT_DEFAULT);
   const [potentialParent, setPotentialParent] = useState<any>(null);
   const [dragOverRowId, setDragOverRowId] = useState<string | null>(null);
   const enableRowPinning = true;
 
   const getDataPath = useCallback<GetDataPath>((data) => {
-    return data.group;
+    return Array.isArray(data.group) ? data.group : [];
   }, []);
 
   const themeClass = isDarkMode ? `${gridTheme}-dark` : gridTheme;
@@ -315,8 +324,8 @@ export const DataTable = <T extends DashboardEntity>({
   };
 
   useEffect(() => {
-    setRowData(data);
-  }, [data]);
+    setRowData(normalizedData);
+  }, [normalizedData]);
 
   const [groupToExpand, setGroupToExpand] = useState<string[]>([]);
 
